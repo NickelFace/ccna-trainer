@@ -1,0 +1,112 @@
+{
+  "398": {
+    "t": "Refer to the exhibit. A network associate has configured OSPF with the following command. After completing the configuration, the associate discovers that not all the interfaces are participating in OSPF. Which three of the interfaces shown in the exhibit will participate in OSPF according to this configuration statement? (Choose three.)",
+    "cli": "City(config-router)# network 192.168.12.64 0.0.0.63 area 0"
+  },
+  "399": {
+    "o": {
+      "A": "These commands need to be added to the configuration:\nC-router(config)# router eigrp 123\nC-router(config-router)# network 172.19.0.0",
+      "B": "These commands need to be added to the configuration:\nC-router(config)# router ospf 1\nC-router(config-router)# network 172.19.0.0 0.0.3.255 area 0",
+      "C": "These commands need to be added to the configuration:\nC-router(config)# router rip\nC-router(config-router)# network 172.19.0.0",
+      "D": "No further routing configuration is required."
+    }
+  },
+  "530": {
+    "o": {
+      "A": "R1(config)# interface fa0/0\nR1(config-if)# ip helper-address 198.51.100.100",
+      "B": "R2(config)# interface gi0/0\nR2(config-if)# ip helper-address 198.51.100.100",
+      "C": "R1(config)# interface fa0/0\nR1(config-if)# ip address dhcp\nR1(config-if)# no shutdown",
+      "D": "R2(config)# interface gi0/0\nR2(config-if)# ip address dhcp",
+      "E": "R1(config)# interface fa0/0\nR1(config-if)# ip helper-address 192.0.2.2"
+    }
+  },
+  "537": {
+    "o": {
+      "A": "enable\nconfigure terminal\nip nat pool mypool 192.168.3.1 192.168.3.3 prefix-length 30\naccess-list 1 permit 10.10.0.0 0.0.0.255\nip nat outside destination list 1 pool mypool\ninterface g1/1\nip nat inside\ninterface g1/2\nip nat outside",
+      "B": "enable\nconfigure terminal\nip nat pool mypool 192.168.3.1 192.168.3.3 prefix-length 30\naccess-list 1 permit 10.10.0.0 0.0.0.254\nip nat inside source list 1 pool mypool\ninterface g1/1\nip nat inside\ninterface g1/2\nip nat outside",
+      "C": "enable\nconfigure terminal\nip nat pool mypool 192.168.3.1 192.168.3.3 prefix-length 30\nroute map permit 10.10.0.0 255.255.255.0\nip nat outside destination list 1 pool mypool\ninterface g1/1\nip nat inside\ninterface g1/2\nip nat outside",
+      "D": "enable\nconfigure terminal\nip nat pool mypool 192.168.3.1 192.168.3.3 prefix-length 30\naccess-list 1 permit 10.10.0.0 0.0.0.255\nip nat inside source list 1 pool mypool\ninterface g1/1\nip nat inside\ninterface g1/2\nip nat outside"
+    }
+  },
+  "565": {
+    "o": {
+      "A": "Router1(config)#access-list 99 permit 192.168.100.32 0.0.0.31\nRouter1(config)#ip nat inside source list 99 interface gi1/0/0 overload\nRouter1(config)#interface gi2/0/1.200\nRouter1(config)#ip nat inside\nRouter1(config)#interface gi1/0/0\nRouter1(config)#ip nat outside",
+      "B": "Router1(config)#access-list 99 permit 192.168.100.0 0.0.0.255\nRouter1(config)#ip nat inside source list 99 interface gi1/0/0 overload\nRouter1(config)#interface gi2/0/1.200\nRouter1(config)#ip nat inside\nRouter1(config)#interface gi1/0/0\nRouter1(config)#ip nat outside",
+      "C": "Router1(config)#access-list 99 permit 209.165.201.2 255.255.255.255\nRouter1(config)#ip nat inside source list 99 interface gi1/0/0 overload\nRouter1(config)#interface gi2/0/1.200\nRouter1(config)#ip nat inside\nRouter1(config)#interface gi1/0/0\nRouter1(config)#ip nat outside",
+      "D": "Router1(config)#access-list 99 permit 209.165.201.2 0.0.0.0\nRouter1(config)#ip nat inside source list 99 interface gi1/0/0 overload\nRouter1(config)#interface gi2/0/1.200\nRouter1(config)#ip nat inside\nRouter1(config)#interface gi1/0/0\nRouter1(config)#ip nat outside"
+    }
+  },
+  "568": {
+    "o": {
+      "A": "ntp authenticate\nntp authentication-key 2 sha1 CISCO123\nntp source Loopback0\nntp access-group server-only 10\nntp master 2\n!\naccess-list 10 permit udp host 209.165.200.225 any eq 123",
+      "B": "ntp authenticate\nntp authentication-key 2 md5 CISCO123\nntp interface Loopback0\nntp access-group server-only 10\nntp stratum 2\n!\naccess-list 10 permit 209.165.200.225",
+      "C": "ntp authenticate\nntp authentication-key 2 md5 CISCO123\nntp source Loopback0\nntp access-group server-only 10\nntp master 2\n!\naccess-list 10 permit 209.165.200.225",
+      "D": "ntp authenticate\nntp authentication-key 2 md5 CISCO123\nntp source Loopback0\nntp access-group server-only 10\nntp stratum 2\n!\naccess-list 10 permit udp host 209.165.200.225 any eq 123"
+    }
+  },
+  "582": {
+    "o": {
+      "A": "interface FastEthernet0/1\nip helper-address 10.0.1.1\n!\naccess-list 100 permit tcp host 10.0.1.1 eq 67 host 10.148.2.1",
+      "B": "interface FastEthernet0/0\nip helper-address 10.0.1.1\n!\naccess-list 100 permit udp host 10.0.1.1 eq bootps host 10.148.2.1",
+      "C": "interface FastEthernet0/0\nip helper-address 10.0.1.1\n!\naccess-list 100 permit host 10.0.1.1 host 10.148.2.1 eq bootps",
+      "D": "interface FastEthernet0/1\nip helper-address 10.0.1.1\n!\naccess-list 100 permit udp host 10.0.1.1 eq bootps host 10.148.2.1"
+    }
+  },
+  "703": {
+    "o": {
+      "A": "SW1(config)#enable secret ccnaTest123",
+      "B": "SW1(config)#username NEW secret R3mote123",
+      "C": "SW1(config)#line vty 0 15\nSW1(config-line)#transport input ssh",
+      "D": "SW1(config)# crypto key generate rsa",
+      "E": "SW1(config)# interface f0/1\nSW1(confif-if)# switchport mode trunk"
+    }
+  },
+  "876": {
+    "o": {
+      "A": "#config t\nRouter A (config)#no cdp run\nRouter A (config)#interface gi0/0/1\nRouter A (config-if)#cdp enable",
+      "B": "#config t\nRouter A (config)#cdp run\nRouter A (config)#interface gi0/0/0\nRouter A (config-if)#no cdp enable",
+      "C": "#config t\nRouter A (config)#cdp run\nRouter A (config)#interface gi0/0/1\nRouter A (config-if)#cdp enable",
+      "D": "#config t\nRouter A (config)#cdp run\nRouter A (config)#interface gi0/0/0\nRouter A (config-if)#cdp enable"
+    }
+  },
+  "948": {
+    "o": {
+      "A": "ip nat pool CCNA 192.168.0.0 192.168.1.255 netmask 255.255.255.0\naccess-list 10 permit 192.168.0.0 0.0.0.255\nip nat inside source list 10 pool CCNA overload",
+      "B": "ip nat pool CCNA 209.165.202.129 209.165.202.129 netmask 255.255.255.255\naccess-list 10 permit 192.168.1.0 255.255.255.0\nip nat inside source list 10 pool CCNA overload",
+      "C": "ip nat pool CCNA 192.168.0.0 192.168.1.255 netmask 255.255.255.0\naccess-list 10 permit 192.168.0.0 255.255.255.0\nip nat inside source list 10 pool CCNA overload",
+      "D": "ip nat pool CCNA 209.165.202.129 209.165.202.129 netmask 255.255.255.255\naccess-list 10 permit 192.168.1.0 0.0.0.255\nip nat inside source list 10 pool CCNA overload"
+    }
+  },
+  "957": {
+    "o": {
+      "A": "interface FastEthernet0/1\nip helper-address 10.0.1.1\n!\naccess-list 100 permit tcp host 10.0.1.1 eq 67 host 10.148.2.1",
+      "B": "interface FastEthernet0/1\nip helper-address 10.0.1.1\n!\naccess-list 100 permit udp host 10.0.1.1 eq 67 host 10.148.2.1",
+      "C": "interface FastEthernet0/0\nip helper-address 10.0.1.1\n!\naccess-list 100 permit host 10.0.1.1 host 10.148.2.1 eq bootps",
+      "D": "interface FastEthernet0/1\nip helper-address 10.0.1.1\n!\naccess-list 100 permit udp host 10.0.1.1 eq bootps host 10.148.2.1"
+    }
+  },
+  "976": {
+    "o": {
+      "A": "ip access-list extended deny_outbound\n10 permit ip 192.168.240.0 255.255.240.0 10.0.0.0 255.0.0.0\n20 deny tcp 192.168.240.0 255.255.240.0 10.125.128.32 255.255.255.224 eq 443\n30 permit ip any any",
+      "B": "ip access-list extended deny_outbound\n10 deny tcp 192.168.240.0 0.0.15.255 10.125.128.32 0.0.0.31 eq 80\n20 permit ip 192.168.240.0 0.0.15.255 10.0.0.0 0.255.255.255\n30 deny ip any any log",
+      "C": "ip access-list extended deny_outbound\n10 deny tcp 10.125.128.32 255.255.255.224 192.168.240.0 255.255.240.0 eq 443\n20 deny tcp 192.168.240.0 255.255.240.0 10.125.128.32 255.255.255.224 eq 443\n30 permit ip 192.168.240.0 255.255.240.0 10.0.0.0 255.0.0.0",
+      "D": "ip access-list extended deny_outbound\n10 deny tcp 192.168.240.0 0.0.15.255 any eq 80\n20 deny tcp 192.168.240.0 0.0.15.255 10.125.128.32 0.0.0.31 eq 80\n30 permit ip 192.168.240.0 0.0.15.255 10.0.0.0 0.255.255.255"
+    }
+  },
+  "997": {
+    "o": {
+      "A": "no ip access-list extended Services\nip access-list extended Services\n30 permit tcp 10.0.0.0 0.255.255.255 host 198.51.100.11 eq domain",
+      "B": "ip access-list extended Services\n35 permit tcp 10.0.0.0 0.255.255.255 host 198.51.100.11 eq domain",
+      "C": "ip access-list extended Services permit tcp 10.0.0.0 0.255.255.255 host 198.51.100.11 eq domain",
+      "D": "no ip access-list extended Services\nip access-list extended Services\npermit udp 10.0.0.0 0.255.255.255 any eq 53\npermit tcp 10.0.0.0 0.255.255.255 host 198.51.100.11 eq domain\ndeny ip any any log"
+    }
+  },
+  "1339": {
+    "o": {
+      "A": "SW2# configure terminal\nSW2(config)# interface port-channel 4\nSW2(config-if)# port-channel min-links 2",
+      "B": "SW2# configure terminal\nSW2(config)# interface port-channel 4\nSW2(config-if)# lacp port-priority 32000",
+      "C": "SW2# configure terminal\nSW2(config)# interface port-channel 4\nSW2(config-if)# lacp max-bundle 2",
+      "D": "SW2# configure terminal\nSW2(config)# lacp system-priority 32000"
+    }
+  }
+}

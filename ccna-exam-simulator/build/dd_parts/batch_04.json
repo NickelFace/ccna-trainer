@@ -1,0 +1,258 @@
+{
+  "141": {
+    "items": [
+      "requires less computer resources",
+      "offers minimal overhead within a packet",
+      "provides support for retransmission of lost packets",
+      "guarantees packet delivery",
+      "uses a 32-bit sequence number",
+      "ideal for voice traffic"
+    ],
+    "buckets": [
+      {
+        "label": "TCP",
+        "correct": [
+          "provides support for retransmission of lost packets",
+          "guarantees packet delivery",
+          "uses a 32-bit sequence number"
+        ]
+      },
+      {
+        "label": "UDP",
+        "correct": [
+          "ideal for voice traffic",
+          "requires less computer resources",
+          "offers minimal overhead within a packet"
+        ]
+      }
+    ]
+  },
+  "272": {
+    "items": [
+      "configured and managed by a WLC",
+      "managed from a web-based dashboard",
+      "accessible for management via Telnet, SSH, or a web GUI",
+      "requires a management IP address",
+      "supports automatic deployment"
+    ],
+    "buckets": [
+      {
+        "label": "Autonomous Access Point",
+        "correct": [
+          "requires a management IP address",
+          "accessible for management via Telnet, SSH, or a web GUI"
+        ]
+      },
+      {
+        "label": "Cloud-Based Access Point",
+        "correct": [
+          "supports automatic deployment",
+          "managed from a web-based dashboard"
+        ]
+      }
+    ]
+  },
+  "586": {
+    "items": [
+      "cloud-based weighted fair queueing",
+      "classification",
+      "congestion",
+      "policing",
+      "shaping"
+    ],
+    "buckets": [
+      {
+        "label": "categorizes packets based on the value of a traffic descriptor",
+        "correct": ["classification"]
+      },
+      {
+        "label": "guarantees minimum bandwidth to specific traffic classes when an interface is congested",
+        "correct": ["cloud-based weighted fair queueing"]
+      },
+      {
+        "label": "prevents congestion by reducing the flow of outbound traffic",
+        "correct": ["shaping"]
+      },
+      {
+        "label": "outcome of overutilization",
+        "correct": ["congestion"]
+      },
+      {
+        "label": "uses defined criteria to limit the transmission of one or more classes of traffic",
+        "correct": ["policing"]
+      }
+    ]
+  },
+  "723": {
+    "items": [
+      "fundamental configuration elements are stored in a manifest",
+      "uses TCP port 10002 for configuration push jobs",
+      "uses Ruby for fundamental configuration elements",
+      "uses SSH for remote device communication",
+      "uses TCP 8140 for communication",
+      "uses YAML for fundamental configuration elements"
+    ],
+    "buckets": [
+      {
+        "label": "Ansible",
+        "correct": [
+          "uses SSH for remote device communication",
+          "uses YAML for fundamental configuration elements"
+        ]
+      },
+      {
+        "label": "Chef",
+        "correct": [
+          "uses TCP port 10002 for configuration push jobs",
+          "uses Ruby for fundamental configuration elements"
+        ]
+      },
+      {
+        "label": "Puppet",
+        "correct": [
+          "fundamental configuration elements are stored in a manifest",
+          "uses TCP 8140 for communication"
+        ]
+      }
+    ]
+  },
+  "801": {
+    "items": [
+      "guest operating system",
+      "host operating system",
+      "hypervisor",
+      "multithreading",
+      "virtual machine"
+    ],
+    "buckets": [
+      {
+        "label": "An operating system instance that is decoupled from the server hardware.",
+        "correct": ["virtual machine"]
+      },
+      {
+        "label": "Each core can run more than one process simultaneously.",
+        "correct": ["multithreading"]
+      },
+      {
+        "label": "Runs on a physical server, manages, and allocates the physical resources.",
+        "correct": ["hypervisor"]
+      },
+      {
+        "label": "The software that manages the basic functions of the physical hardware.",
+        "correct": ["host operating system"]
+      },
+      {
+        "label": "The software that manages the basic functions of the vital machine.",
+        "correct": ["guest operating system"]
+      }
+    ]
+  },
+  "958": {
+    "items": [
+      "An endpoint submits a request for the IP address of a domain name.",
+      "The DNS submits a request to the domain DNS server.",
+      "The DNS receives a reply from the domain DNS server.",
+      "The DNS responds to the endpoint.",
+      "The DNS submits a request to a root DNS server."
+    ],
+    "buckets": [
+      {
+        "label": "Step 1",
+        "correct": ["An endpoint submits a request for the IP address of a domain name."]
+      },
+      {
+        "label": "Step 2",
+        "correct": ["The DNS submits a request to a root DNS server."]
+      },
+      {
+        "label": "Step 3",
+        "correct": ["The DNS submits a request to the domain DNS server."]
+      },
+      {
+        "label": "Step 4",
+        "correct": ["The DNS receives a reply from the domain DNS server."]
+      },
+      {
+        "label": "Step 5",
+        "correct": ["The DNS responds to the endpoint."]
+      }
+    ]
+  },
+  "1052": {"skip": "simulation"},
+  "1092": {
+    "items": [
+      "ff00:a648:6ad8:4591:80a2:75db:4b5f:12",
+      "fe80:9885:e8c7:6f41:ac11:b954:cc04:7",
+      "fc00:6fd1:6158:034c:6144:eafe:8da6:3",
+      "2000:fda9:65b0:e8c0:1d84:6369:2daa:1"
+    ],
+    "buckets": [
+      {
+        "label": "Global Unicast",
+        "correct": ["2000:fda9:65b0:e8c0:1d84:6369:2daa:1"]
+      },
+      {
+        "label": "Unique Local",
+        "correct": ["fc00:6fd1:6158:034c:6144:eafe:8da6:3"]
+      },
+      {
+        "label": "Link-Local Unicast",
+        "correct": ["fe80:9885:e8c7:6f41:ac11:b954:cc04:7"]
+      },
+      {
+        "label": "Multicast",
+        "correct": ["ff00:a648:6ad8:4591:80a2:75db:4b5f:12"]
+      }
+    ]
+  },
+  "1137": {
+    "items": [
+      "contains a conductor, bedding, and sheathing",
+      "is ideal over longer distances with little loss of integrity",
+      "is typically used in small office applications",
+      "uses a single wavelength of light"
+    ],
+    "buckets": [
+      {
+        "label": "copper",
+        "correct": [
+          "contains a conductor, bedding, and sheathing",
+          "is typically used in small office applications"
+        ]
+      },
+      {
+        "label": "single mode fiber",
+        "correct": [
+          "is ideal over longer distances with little loss of integrity",
+          "uses a single wavelength of light"
+        ]
+      }
+    ]
+  },
+  "1256": {
+    "items": [
+      "never used as a source address",
+      "allows sites to be combined without address conflicts",
+      "unable to route on the internet",
+      "provides one-to-many communications"
+    ],
+    "buckets": [
+      {
+        "label": "Multicast",
+        "correct": [
+          "never used as a source address",
+          "provides one-to-many communications"
+        ]
+      },
+      {
+        "label": "Unique Local",
+        "correct": [
+          "allows sites to be combined without address conflicts",
+          "unable to route on the internet"
+        ]
+      }
+    ]
+  },
+  "1295": {"skip": "simulation"},
+  "1350": {"skip": "simulation"}
+}

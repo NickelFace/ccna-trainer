@@ -1,0 +1,175 @@
+{
+  "175": {
+    "items": [
+      "It encapsulates LWAPP traffic between the access point and the WLC in EtherType 0xBBBB.",
+      "It facilitates Layer 2 connectivity between the WLC’s wired interface and the WLAN clients.",
+      "It forwards only IP EtherType frames.",
+      "It requires IP addresses on the access point and the WLC.",
+      "It supports LWAPP tunneling within Ethernet frames and UDP packets.",
+      "It uses UDP or UDP Lite for IPv6 deployments."
+    ],
+    "buckets": [
+      {"label": "Layer 2 Tunnel", "correct": [
+        "It encapsulates LWAPP traffic between the access point and the WLC in EtherType 0xBBBB.",
+        "It requires IP addresses on the access point and the WLC."
+      ]},
+      {"label": "Layer 3 Tunnel", "correct": [
+        "It supports LWAPP tunneling within Ethernet frames and UDP packets.",
+        "It uses UDP or UDP Lite for IPv6 deployments."
+      ]}
+    ]
+  },
+  "383": {
+    "items": ["connected", "EBGP", "EIGRP", "OSPF", "RIP", "static"],
+    "buckets": [
+      {"label": "1", "correct": ["connected"]},
+      {"label": "2", "correct": ["static"]},
+      {"label": "3", "correct": ["EBGP"]},
+      {"label": "4", "correct": ["EIGRP"]},
+      {"label": "5", "correct": ["OSPF"]},
+      {"label": "6", "correct": ["RIP"]}
+    ]
+  },
+  "651": {
+    "items": [
+      "configure terminal",
+      "enable",
+      "enable secret $hf!@4fs",
+      "exit",
+      "line vty 0 4",
+      "service password-encryption"
+    ],
+    "buckets": [
+      {"label": "first", "correct": ["enable"]},
+      {"label": "second", "correct": ["configure terminal"]},
+      {"label": "third", "correct": ["enable secret $hf!@4fs"]},
+      {"label": "fourth", "correct": ["exit"]}
+    ]
+  },
+  "766": {
+    "items": [
+      "orchestrates background device configuration",
+      "provides greater flexibility for custom and non-standard configurations",
+      "relies on per-device management",
+      "supports centralized software management",
+      "supports open APIs",
+      "uses individual software management"
+    ],
+    "buckets": [
+      {"label": "Cisco DNA Center", "correct": [
+        "provides greater flexibility for custom and non-standard configurations",
+        "supports centralized software management",
+        "supports open APIs"
+      ]},
+      {"label": "Traditional", "correct": [
+        "orchestrates background device configuration",
+        "relies on per-device management",
+        "uses individual software management"
+      ]}
+    ]
+  },
+  "900": {
+    "items": [
+      "255.255.248.0",
+      "255.255.255.128",
+      "255.255.255.224",
+      "255.255.255.240",
+      "255.255.255.248",
+      "255.255.255.252"
+    ],
+    "buckets": [
+      {"label": "10.10.13.0", "correct": ["255.255.255.128"]},
+      {"label": "10.10.13.128", "correct": ["255.255.255.240"]},
+      {"label": "10.10.13.160", "correct": ["255.255.255.248"]},
+      {"label": "10.10.13.252", "correct": ["255.255.255.252"]}
+    ]
+  },
+  "1001": {
+    "items": [
+      "supports automation",
+      "communicates between the SDN controller and the application plane",
+      "communicates between the SDN controller and the data plane",
+      "supports data sharing between systems",
+      "supports network virtualization protocols",
+      "supports REST-based requirements",
+      "uses OpenFlow to interface between the data and control planes"
+    ],
+    "buckets": [
+      {"label": "1", "correct": ["supports automation"]},
+      {"label": "2", "correct": ["communicates between the SDN controller and the application plane"]},
+      {"label": "3", "correct": ["supports data sharing between systems"]},
+      {"label": "4", "correct": ["supports REST-based requirements"]}
+    ]
+  },
+  "1115": {
+    "items": [
+      "uses a single wavelength on light",
+      "becomes distorted at longer lengths",
+      "is typically used for internal datacenter connectivity",
+      "has minimal light reflection as it travels down the core"
+    ],
+    "buckets": [
+      {"label": "multimode fiber", "correct": [
+        "is typically used for internal datacenter connectivity",
+        "becomes distorted at longer lengths"
+      ]},
+      {"label": "single-mode fiber", "correct": [
+        "uses a single wavelength on light",
+        "has minimal light reflection as it travels down the core"
+      ]}
+    ]
+  },
+  "1171": {
+    "items": [
+      "fe80:ae46:d315:41c8:4593:12dc:9827:7",
+      "2000:6166:6ba9:cde4:d89e:4c4a:bdc8:1",
+      "ff00:a8bb:b2a1:7490:4ef0:f603:109b:12",
+      "fc00:382e:29e1:f7e2:1573:ff4f:04f9:3"
+    ],
+    "buckets": [
+      {"label": "Global Unicast", "correct": ["2000:6166:6ba9:cde4:d89e:4c4a:bdc8:1"]},
+      {"label": "Link-Local Unicast", "correct": ["fe80:ae46:d315:41c8:4593:12dc:9827:7"]},
+      {"label": "Multicast", "correct": ["ff00:a8bb:b2a1:7490:4ef0:f603:109b:12"]},
+      {"label": "Unique Local", "correct": ["fc00:382e:29e1:f7e2:1573:ff4f:04f9:3"]}
+    ]
+  },
+  "1272": {
+    "items": [
+      "publicly routable in the same way as IPv4 addresses",
+      "sends packets to a group address rather than a single address",
+      "never used as a source address",
+      "routable and reachable via the Internet"
+    ],
+    "buckets": [
+      {"label": "Global Unicast Address", "correct": [
+        "publicly routable in the same way as IPv4 addresses",
+        "routable and reachable via the Internet"
+      ]},
+      {"label": "Multicast", "correct": [
+        "sends packets to a group address rather than a single address",
+        "never used as a source address"
+      ]}
+    ]
+  },
+  "1327": {
+    "items": [
+      "uses templates to implement QOS configuration",
+      "ability to boost a wi-fi signal",
+      "requires a special adapter for PoE",
+      "supplies user connection data within a device group",
+      "configurable as a workgroup bridge"
+    ],
+    "buckets": [
+      {"label": "Access Point", "correct": [
+        "ability to boost a wi-fi signal",
+        "configurable as a workgroup bridge"
+      ]},
+      {"label": "Wireless LAN Controller", "correct": [
+        "uses templates to implement QOS configuration",
+        "supplies user connection data within a device group"
+      ]}
+    ]
+  },
+  "1072": {"skip": "simulation"},
+  "1373": {"skip": "simulation"}
+}

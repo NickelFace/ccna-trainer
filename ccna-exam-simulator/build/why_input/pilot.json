@@ -1,0 +1,176 @@
+[
+ {
+  "n": 427,
+  "t": "Refer to the graphic. R1 is unable to establish an OSPF neighbor relationship with R3. What are possible reasons for this problem? (Choose two.)",
+  "o": {
+   "A": "All of the routers need to be configured for backbone Area 1.",
+   "B": "R1 and R2 are the DR and BDR, so OSPF will not establish neighbor adjacency with R3.",
+   "C": "A static route has been configured from R1 to R3 and prevents the neighbor adjacency from being established.",
+   "D": "The hello and dead interval timers are not set to the same values on R1 and R3.",
+   "E": "EIGRP is also configured on these routers with a lower administrative distance.",
+   "F": "R1 and R3 are configured in different areas."
+  },
+  "a": "DF",
+  "dom": "IPC",
+  "tp": "OSPF",
+  "existing_exp": "Correct Answer DF подтверждено прямым совпадением."
+ },
+ {
+  "n": 388,
+  "t": "Refer to the exhibit. Which Command do you enter so that R1 advertises the loopback0 interface to the BGP Peers?",
+  "o": {
+   "A": "Network 172.16.1.32 mask 255.255.255.224",
+   "B": "Network 172.16.1.0 0.0.0.255",
+   "C": "Network 172.16.1.32 255.255.255.224",
+   "D": "Network 172.16.1.33 mask 255.255.255.224",
+   "E": "Network 172.16.1.32 mask 0.0.0.31",
+   "F": "Network 172.16.1.32 0.0.0.31"
+  },
+  "a": "A",
+  "dom": "IPC",
+  "tp": "BGP",
+  "img": "q388.jpg",
+  "existing_exp": "BGP network mask требует точный network address (.32) и явное слово mask."
+ },
+ {
+  "n": 70,
+  "t": "What are two functions of a Layer 2 switch? (Choose two.)",
+  "o": {
+   "A": "acts as a central point for association and authentication servers",
+   "B": "selects the best route between networks on a WAN",
+   "C": "moves packets within a VLAN",
+   "D": "moves packets between different VLANs",
+   "E": "makes forwarding decisions based on the MAC address of a packet"
+  },
+  "a": "CE",
+  "dom": "NA",
+  "tp": "Switching/VLAN"
+ },
+ {
+  "n": 1152,
+  "t": "Refer to the exhibit. Which switch becomes the root bridge?",
+  "o": {
+   "A": "SW4 - Bridge Priority - 8192 - mac-address 05:0f:e8:ed:b2:98",
+   "B": "SW2 - Bridge Priority - 8192 - mac-address 00:ac:f0:9b:dc:72",
+   "C": "SW3 - Bridge Priority - 16384 - mac-address 0e:6c:e4:b1:8a:57",
+   "D": "SW4 - Bridge Priority - 16384 - mac-address 0a:45:22:26:29:77"
+  },
+  "a": "B",
+  "dom": "NA",
+  "tp": "General",
+  "img": "q1152.jpg",
+  "existing_exp": "SW2: приоритет 8192 (ничья с SW4), MAC 00<05 — наименьший."
+ },
+ {
+  "n": 574,
+  "t": "A network analyst is tasked with configuring the date and time on a router using EXEC mode. The date must be set to January 1, 2020 and the time must be set to 12:00 am. Which command should be used?",
+  "o": {
+   "A": "clock timezone",
+   "B": "clock summer-time date",
+   "C": "clock summer-time recurring",
+   "D": "clock set"
+  },
+  "a": "D",
+  "dom": "NF",
+  "tp": "General"
+ },
+ {
+  "n": 754,
+  "t": "Refer to the exhibit. What is represented beginning with line 1 and ending with line 5?",
+  "o": {
+   "A": "object",
+   "B": "value",
+   "C": "key",
+   "D": "array"
+  },
+  "a": "D",
+  "dom": "NF",
+  "tp": "General",
+  "img": "q754.jpg",
+  "existing_exp": "JSON array (квадратные скобки). Suggested Answer D подтверждено."
+ },
+ {
+  "n": 529,
+  "t": "What event has occurred if a router sends a notice level message to a syslog server?",
+  "o": {
+   "A": "A certificate has expired",
+   "B": "An interface line has changed status",
+   "C": "A TCP connection has been torn down",
+   "D": "An ICMP connection has been built"
+  },
+  "a": "B",
+  "dom": "IPS",
+  "tp": "Ops/Mgmt"
+ },
+ {
+  "n": 275,
+  "t": "Refer to the exhibit. The network administrator must prevent the switch Cat9K-2 IP address from being visible in LLDP without disabling the protocol. Which action must be taken to complete the task?",
+  "o": {
+   "A": "Configure the no lldp mac-phy-cfg command globally on Cat9K-2.",
+   "B": "Configure the no lldp receive command on interface G1/0/21 on Cat9K-1.",
+   "C": "Configure the no lldp transmit command on interface G1/0/21 on Cat9K-1.",
+   "D": "Configure the no lldp tlv-select management-address command globally on Cat9K-2."
+  },
+  "a": "D",
+  "dom": "IPS",
+  "tp": "Ops/Mgmt",
+  "img": "q275.jpg",
+  "existing_exp": "no lldp tlv-select management-address подавляет IP-адрес в LLDP не отключая протокол."
+ },
+ {
+  "n": 602,
+  "t": "An organization secures its network with multi-factor authentication using an authenticator app on employee smartphones. How is the application secured in the case of a user's smartphone being lost or stolen?",
+  "o": {
+   "A": "The application requires the user to enter a PIN before it provides the second factor",
+   "B": "The application requires an administrator password to reactivate after a configured interval",
+   "C": "The application verifies that the user is in a specific location before it provides the second factor",
+   "D": "The application challenges a user by requiring an administrator password to reactivate when the smartphone is rebooted"
+  },
+  "a": "A",
+  "dom": "SEC",
+  "tp": "General"
+ },
+ {
+  "n": 997,
+  "t": "Refer to the exhibit. This ACL is configured to allow client access only to HTTP, HTTPS, and DNS services via UDP. The new administrator wants to add TCP access to the ONS service. Which configuration updates the ACL efficiently?",
+  "o": {
+   "A": "no ip access-list extended Services ip access-list extended Services 30 permit tcp 10.0.0.0 0.255.255.255 host 198.51.100.11 eq domain",
+   "B": "ip access-list extended Services 35 permit tcp 10.0.0.0 0.255.255.255 host 198.51.100.11 eq domain",
+   "C": "ip access-list extended Services permit tcp 10.0.0.0 0.255.255.255 host 198.51.100.11 eq domain",
+   "D": "no ip access-list extended Services ip access-list extended Services permit udp 10.0.0.0 0.255.255.255 any eq 53 permit tcp 10.0.0.0 0.255.255.255 host 198.51.100.11 eq domain deny ip any any log"
+  },
+  "a": "B",
+  "dom": "SEC",
+  "tp": "ACL",
+  "img": "q997.jpg",
+  "existing_exp": "Добавление ACE с номером последовательности (35) без перестройки всего ACL — эффективный способ (определение)."
+ },
+ {
+  "n": 642,
+  "t": "A port security violation has occurred on a switch port due to the maximum MAC address count being exceeded. Which command must be configured to increment the security-violation count and forward an SNMP trap?",
+  "o": {
+   "A": "switchport port-security violation access",
+   "B": "switchport port-security violation protect",
+   "C": "switchport port-security violation restrict",
+   "D": "switchport port-security violation shutdown"
+  },
+  "a": "C",
+  "dom": "AUT",
+  "tp": "Automation"
+ },
+ {
+  "n": 1205,
+  "t": "Refer to the exhibit. Which per-hop QoS behavior is R1 applying to incoming packets?",
+  "o": {
+   "A": "marking",
+   "B": "shaping",
+   "C": "queuing",
+   "D": "policing"
+  },
+  "a": "C",
+  "dom": "AUT",
+  "tp": "Automation",
+  "img": "q1205.jpg",
+  "existing_exp": "Queuing — совпадение по содержанию с ранее найденной карточкой (буквы переставлены)."
+ }
+]

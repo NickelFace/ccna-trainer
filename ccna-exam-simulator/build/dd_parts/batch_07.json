@@ -1,0 +1,87 @@
+{
+  "150": {
+    "items": ["3ffe:e54d:620:a87a::f00d", "fe80::a00:27ff:feeb:89aa", "ff05::1:3", "fd6d:c83b:5cef:b6b2::1"],
+    "buckets": [
+      {"label": "Global Unicast", "correct": ["3ffe:e54d:620:a87a::f00d"]},
+      {"label": "Link-Local Unicast", "correct": ["fe80::a00:27ff:feeb:89aa"]},
+      {"label": "Multicast", "correct": ["ff05::1:3"]},
+      {"label": "Unique Local", "correct": ["fd6d:c83b:5cef:b6b2::1"]}
+    ]
+  },
+  "290": {
+    "items": ["console", "HTTPS", "SSH", "Telnet"],
+    "buckets": [
+      {"label": "supports clear-text connections to the controller CLI", "correct": ["Telnet"]},
+      {"label": "supports encrypted access to CLI and a secure channel for data transfer", "correct": ["SSH"]},
+      {"label": "supports physical connections over a serial cable", "correct": ["console"]},
+      {"label": "supports secure web access for management of the device", "correct": ["HTTPS"]}
+    ]
+  },
+  "614": {
+    "items": ["controls the actions that a user can perform", "provides analytical information for the network administrator", "records user activities", "restricts the services that are available to a user", "verifies the password associated with a user", "identifies the user"],
+    "buckets": [
+      {"label": "Authentication", "correct": ["verifies the password associated with a user", "identifies the user"]},
+      {"label": "Authorization", "correct": ["controls the actions that a user can perform", "restricts the services that are available to a user"]},
+      {"label": "Accounting", "correct": ["provides analytical information for the network administrator", "records user activities"]}
+    ]
+  },
+  "732": {
+    "items": ["multitenancy", "on-demand", "resiliency", "scalability", "workload movement"],
+    "buckets": [
+      {"label": "One or more clients can be hosted with the same phisical or virtual infrastructure", "correct": ["multitenancy"]},
+      {"label": "Resources can be added and removed as needed to support current workload and tasks", "correct": ["scalability"]},
+      {"label": "Tasks can be migrated to different physical locations to increase efficiency or reduce cost.", "correct": ["workload movement"]},
+      {"label": "Resources are dedicated only when necessary instead of on a permanent", "correct": ["on-demand"]},
+      {"label": "Tasks and data residing on a failed server can be seamlessly migrated to other physical resources.", "correct": ["resiliency"]}
+    ]
+  },
+  "852": {
+    "items": ["dynamic access", "private", "static access", "trunk", "tunnel"],
+    "buckets": [
+      {"label": "allows the port to belong to one VLAN when manually configured", "correct": ["static access"]},
+      {"label": "allows the port to be assigned automatically to one VLAN", "correct": ["dynamic access"]},
+      {"label": "allows the port to belong to one or more VLANs", "correct": ["trunk"]},
+      {"label": "allows the port to support a single VLAN across a service-provider network", "correct": ["tunnel"]},
+      {"label": "allows the port to communicate with others within the same community VLAN", "correct": ["private"]}
+    ]
+  },
+  "970": {
+    "items": ["Configure the 802.1x authentication protocol", "Configure the DHCP snooping feature", "Configure the native VLAN with a nondefault VLAN", "Disable Dynamic Trunking Protocol – switch-spoofing VLAN-hopping attack"],
+    "buckets": [
+      {"label": "802.1q double-tagging VLAN-hopping attack", "correct": ["Configure the native VLAN with a nondefault VLAN"]},
+      {"label": "MAC flooding attack", "correct": ["Configure the 802.1x authentication protocol"]},
+      {"label": "man-in-the-middle spoofing attack", "correct": ["Disable Dynamic Trunking Protocol – switch-spoofing VLAN-hopping attack"]},
+      {"label": "switch-spoofing VLAN-hopping attack", "correct": ["Configure the DHCP snooping feature"]}
+    ]
+  },
+  "1059": {"skip": "simulation"},
+  "1102": {
+    "items": ["may be used by multiple organizations at the same time", "sends packets to a group address rather than a single address", "provides one-to-many communications", "allows sites to be combined without address conflicts"],
+    "buckets": [
+      {"label": "Unique Local", "correct": ["may be used by multiple organizations at the same time", "allows sites to be combined without address conflicts"]},
+      {"label": "Multicast", "correct": ["sends packets to a group address rather than a single address", "provides one-to-many communications"]}
+    ]
+  },
+  "1153": {
+    "items": ["contains a conductor, bedding, and sheathing", "is typically used for DWDM optical systems spanning long distances", "is typically used in small office applications", "eliminates distortion from overlapping light pulses"],
+    "buckets": [
+      {"label": "copper", "correct": ["contains a conductor, bedding, and sheathing", "is typically used in small office applications"]},
+      {"label": "single-mode fiber", "correct": ["is typically used for DWDM optical systems spanning long distances", "eliminates distortion from overlapping light pulses"]}
+    ]
+  },
+  "1263": {
+    "items": ["counterpart of private IPv4 addresses", "publicly routable in the same way as IPv4 addresses", "provides for one-to-one communication", "may be used by multiple organizations at the same time"],
+    "buckets": [
+      {"label": "Unique Local", "correct": ["may be used by multiple organizations at the same time", "counterpart of private IPv4 addresses"]},
+      {"label": "Global Unicast Address", "correct": ["publicly routable in the same way as IPv4 addresses", "provides for one-to-one communication"]}
+    ]
+  },
+  "1309": {
+    "items": ["comprised of shielded and unshielded twisted pairs", "comprised of insulated glass strands", "is affected by electrical and magnetic interference", "uses a single wavelength of light"],
+    "buckets": [
+      {"label": "cooper", "correct": ["comprised of shielded and unshielded twisted pairs", "is affected by electrical and magnetic interference"]},
+      {"label": "single-mode fiber", "correct": ["comprised of insulated glass strands", "uses a single wavelength of light"]}
+    ]
+  },
+  "1358": {"skip": "simulation"}
+}

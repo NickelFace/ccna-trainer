@@ -1,0 +1,48 @@
+{
+  "domains": [
+    {
+      "id": "NF",
+      "name": "1.0 Network Fundamentals",
+      "weight": 0.2,
+      "count": 378
+    },
+    {
+      "id": "NA",
+      "name": "2.0 Network Access",
+      "weight": 0.2,
+      "count": 296
+    },
+    {
+      "id": "IPC",
+      "name": "3.0 IP Connectivity",
+      "weight": 0.25,
+      "count": 244
+    },
+    {
+      "id": "IPS",
+      "name": "4.0 IP Services",
+      "weight": 0.1,
+      "count": 159
+    },
+    {
+      "id": "SEC",
+      "name": "5.0 Security Fundamentals",
+      "weight": 0.15,
+      "count": 173
+    },
+    {
+      "id": "AUT",
+      "name": "6.0 Automation and Programmability",
+      "weight": 0.1,
+      "count": 145
+    }
+  ],
+  "total": 1395,
+  "scored_mc": 1201,
+  "dd_total": 159,
+  "dd_ready": 159,
+  "sim_total": 35,
+  "with_exp": 566,
+  "with_why": 1201,
+  "exhibits": 232
+}

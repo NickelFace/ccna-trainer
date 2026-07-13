@@ -1,0 +1,20 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'JetBrains Mono','Fira Code',ui-monospace,monospace">
+  <title>Internet / WAN</title>
+  <desc>Internet cloud icon — slate grey, labelled WWW.</desc>
+  <defs>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#94a3b8" flood-opacity="0.8"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#glow)">
+    <path d="M38 80
+             a16 16 0 0 1 -2 -31
+             a20 20 0 0 1 38 -6
+             a15 15 0 0 1 14 12
+             a13 13 0 0 1 -2 25
+             Z"
+          fill="#11161f" stroke="#94a3b8" stroke-width="2.5" stroke-linejoin="round"/>
+  </g>
+  <text x="60" y="69" fill="#cbd5e1" font-size="13" font-weight="bold" text-anchor="middle">WWW</text>
+</svg>

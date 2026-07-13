@@ -1,0 +1,268 @@
+{
+  "136": {
+    "items": [
+      "IPv6 addresses in the format FF02::5",
+      "IPv6 addresses that begin with FD",
+      "may be used by multiple organizations at the same time",
+      "private IPv6 addresses",
+      "serve as next-hop addresses",
+      "unable to serve as destination addresses"
+    ],
+    "buckets": [
+      {
+        "label": "Unique Local Addresses",
+        "correct": [
+          "private IPv6 addresses",
+          "IPv6 addresses that begin with FD",
+          "may be used by multiple organizations at the same time"
+        ]
+      },
+      {
+        "label": "Link-Local Addresses",
+        "correct": [
+          "serve as next-hop addresses",
+          "unable to serve as destination addresses"
+        ]
+      }
+    ]
+  },
+  "207": {
+    "items": [
+      "Dynamic RF Feature",
+      "Easy Deployment Process",
+      "Optimized user performance",
+      "Easy upgrade process"
+    ],
+    "buckets": [
+      {
+        "label": "Controller provides centralized management of users and VLANs",
+        "correct": ["Easy Deployment Process"]
+      },
+      {
+        "label": "Access points auto adjust signal strength",
+        "correct": ["Dynamic RF Feature"]
+      },
+      {
+        "label": "Controller image auto deployed to access Points",
+        "correct": ["Easy upgrade process"]
+      },
+      {
+        "label": "Controller uses loadbalancing to maximize throughput",
+        "correct": ["Optimized user performance"]
+      }
+    ]
+  },
+  "545": {
+    "skip": "answer board does not map components onto descriptions (right column just repeats component names in left order)"
+  },
+  "689": {
+    "items": [
+      "awareness",
+      "education",
+      "security policy",
+      "security standard",
+      "training"
+    ],
+    "buckets": [
+      {
+        "label": "document that outlines an organization's security goals and practices and the roles and responsibilities of the organization's personnel",
+        "correct": ["security policy"]
+      },
+      {
+        "label": "tactical document that sets out specific tasks and methods to maintain security",
+        "correct": ["security standard"]
+      },
+      {
+        "label": "user-awareness learning level that focuses on learning about topics and practices beyond what is typically required by the user's job",
+        "correct": ["education"]
+      },
+      {
+        "label": "user-awareness learning level that focuses on security practices that all employees must understand and enforce",
+        "correct": ["awareness"]
+      },
+      {
+        "label": "user-awareness learning level that focuses on teaching employees how to perform tasks specifically required by their jobs",
+        "correct": ["training"]
+      }
+    ]
+  },
+  "779": {
+    "items": [
+      "control node",
+      "inventory",
+      "managed node",
+      "module",
+      "playbook",
+      "task"
+    ],
+    "buckets": [
+      {
+        "label": "collection of actions to perform on target devices, expressed in YAML format",
+        "correct": ["playbook"]
+      },
+      {
+        "label": "device with Ansible installed that manages target devices",
+        "correct": ["control node"]
+      },
+      {
+        "label": "network device, without Ansible installed, upon which commands can be executed",
+        "correct": ["managed node"]
+      },
+      {
+        "label": "specific action to be performed on one or more target devices",
+        "correct": ["task"]
+      },
+      {
+        "label": "unit of Python code to be executed",
+        "correct": ["module"]
+      },
+      {
+        "label": "Ansible file that defines the target devices upon which commands and tasks can be executed",
+        "correct": ["inventory"]
+      }
+    ]
+  },
+  "938": {
+    "items": [
+      "All protocols are up.",
+      "OSPF and eBGP are down.",
+      "The static route and eBGP are down.",
+      "The static route and EIGRP are down.",
+      "The static route and OSPF are down."
+    ],
+    "buckets": [
+      {
+        "label": "eBGP",
+        "correct": [
+          "The static route and EIGRP are down.",
+          "The static route and OSPF are down."
+        ]
+      },
+      {
+        "label": "EIGRP",
+        "correct": ["The static route and eBGP are down."]
+      },
+      {
+        "label": "Static",
+        "correct": [
+          "All protocols are up.",
+          "OSPF and eBGP are down."
+        ]
+      }
+    ]
+  },
+  "1028": {
+    "items": [
+      "agent",
+      "agentless",
+      "provision",
+      "pull",
+      "push",
+      "post"
+    ],
+    "buckets": [
+      {
+        "label": "daemon that determines when the central authority has updates available",
+        "correct": ["agent"]
+      },
+      {
+        "label": "model in which the central server sends updates to nodes on an as-needed basis",
+        "correct": ["push"]
+      },
+      {
+        "label": "easy-to-manage deployment option that may lack scalability",
+        "correct": ["provision"]
+      },
+      {
+        "label": "device hardware that runs without embedded management features",
+        "correct": ["agentless"]
+      },
+      {
+        "label": "to automatically install or deploy a configuration or update",
+        "correct": ["post"]
+      }
+    ]
+  },
+  "1089": {
+    "items": [
+      "uses a single wavelength on light",
+      "becomes distorted at longer lengths",
+      "transmits data up to 100 Gbits which degrades over distance",
+      "has minimal light reflection as it travels down the core"
+    ],
+    "buckets": [
+      {
+        "label": "single-mode fiber",
+        "correct": [
+          "uses a single wavelength on light",
+          "has minimal light reflection as it travels down the core"
+        ]
+      },
+      {
+        "label": "multimode fiber",
+        "correct": [
+          "becomes distorted at longer lengths",
+          "transmits data up to 100 Gbits which degrades over distance"
+        ]
+      }
+    ]
+  },
+  "1132": {
+    "items": [
+      "fe80:cc72:4b9e:445c:8179:0420:5988:7",
+      "2000:1092:a1e8:827d:527c:3ce7:9816:1",
+      "ff00:ec6c:dbb1:3e8b:6d46:bd27:a236:12",
+      "fc00:9860:653f:5146:8cb2:a27c:cb6f:3"
+    ],
+    "buckets": [
+      {
+        "label": "Global Unicast",
+        "correct": ["2000:1092:a1e8:827d:527c:3ce7:9816:1"]
+      },
+      {
+        "label": "Link-Local Unicast",
+        "correct": ["fe80:cc72:4b9e:445c:8179:0420:5988:7"]
+      },
+      {
+        "label": "Multicast",
+        "correct": ["ff00:ec6c:dbb1:3e8b:6d46:bd27:a236:12"]
+      },
+      {
+        "label": "Unique Local",
+        "correct": ["fc00:9860:653f:5146:8cb2:a27c:cb6f:3"]
+      }
+    ]
+  },
+  "1188": {
+    "items": [
+      "fe80:5db2:1f32:0ee4:32a3:855f:b0d5:7",
+      "2000:4011:2a0d:d571:1976:4bab:adb7:1",
+      "ff00:b823:1dc6:263b:ba6a:50f5:15b7:12",
+      "fc00:e896:c4cd:422b:7660:59e5:dd00:3"
+    ],
+    "buckets": [
+      {
+        "label": "Global Unicast",
+        "correct": ["2000:4011:2a0d:d571:1976:4bab:adb7:1"]
+      },
+      {
+        "label": "Link-Local Unicast",
+        "correct": ["fe80:5db2:1f32:0ee4:32a3:855f:b0d5:7"]
+      },
+      {
+        "label": "Multicast",
+        "correct": ["ff00:b823:1dc6:263b:ba6a:50f5:15b7:12"]
+      },
+      {
+        "label": "Unique Local",
+        "correct": ["fc00:e896:c4cd:422b:7660:59e5:dd00:3"]
+      }
+    ]
+  },
+  "1285": {
+    "skip": "simulation"
+  },
+  "1338": {
+    "skip": "simulation"
+  }
+}

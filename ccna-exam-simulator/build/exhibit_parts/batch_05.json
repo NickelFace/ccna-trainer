@@ -1,0 +1,192 @@
+{
+  "40": {"category":"topology","topology":{
+    "devices":[
+      {"id":"Switch1","type":"sw2","label":"Switch1"},
+      {"id":"PC_A","type":"pc","label":"PC_A"},
+      {"id":"PC_B","type":"pc","label":"PC_B"}
+    ],
+    "links":[
+      {"from":"PC_A","to":"Switch1","note":"VLAN 200"},
+      {"from":"PC_B","to":"Switch1","note":"VLAN 200"}
+    ]
+  }},
+  "166": {"category":"topology","topology":{
+    "devices":[
+      {"id":"Router","type":"router","label":"Router","note":"drawn as generic router icon, no explicit name shown"},
+      {"id":"SW","type":"sw2","label":"VLAN 10","note":"switch icon labeled with the VLAN it carries; no separate device name shown"},
+      {"id":"PC1","type":"pc","label":"PC1"},
+      {"id":"PC2","type":"pc","label":"PC2"},
+      {"id":"PC3","type":"pc","label":"PC3"}
+    ],
+    "links":[
+      {"from":"Router","to":"SW","label":"f0/1"},
+      {"from":"SW","to":"PC1"},
+      {"from":"SW","to":"PC2"},
+      {"from":"SW","to":"PC3"}
+    ]
+  }},
+  "242": {"category":"topology","topology":{
+    "devices":[
+      {"id":"HQ-1","type":"router","label":"HQ-1"},
+      {"id":"HQ-2","type":"router","label":"HQ-2"},
+      {"id":"Switch1","type":"sw2","label":"Switch 1"},
+      {"id":"Switch2","type":"sw2","label":"Switch 2"},
+      {"id":"Switch3","type":"sw2","label":"Switch 3"},
+      {"id":"Switch4","type":"sw2","label":"Switch 4"}
+    ],
+    "links":[
+      {"from":"HQ-1","to":"Switch1"},
+      {"from":"HQ-1","to":"Switch2"},
+      {"from":"HQ-2","to":"Switch1"},
+      {"from":"HQ-2","to":"Switch2"},
+      {"from":"Switch1","to":"Switch2"},
+      {"from":"Switch1","to":"Switch3"},
+      {"from":"Switch2","to":"Switch4"},
+      {"from":"Switch3","to":"Switch4"}
+    ],
+    "zones":[{"label":"HQ LAN","members":["Switch1","Switch2","Switch3","Switch4"]}]
+  }},
+  "280": {"category":"topology","topology":{
+    "devices":[
+      {"id":"SW1","type":"sw2","label":"SW1"},
+      {"id":"SW2","type":"sw2","label":"SW2"}
+    ],
+    "links":[
+      {"from":"SW1","to":"SW2","label":"G1/1","label2":"G1/1"},
+      {"from":"SW1","to":"SW2","label":"G1/2","label2":"G1/2"},
+      {"from":"SW1","to":"SW2","label":"G1/3","label2":"G1/3"}
+    ]
+  }},
+  "320": {"category":"cli_output","cli":"Switch(config)#hostname R1\nR1(config)#interface FastEthernet0/1\nR1(config-if)#no switchport\nR1(config-if)#ip address 10.100.20.42 255.255.255.0\nR1(config-if)#line vty 0 4\nR1(config-line)#login"},
+  "357": {"category":"mixed",
+    "topology":{
+      "devices":[
+        {"id":"Router1","type":"router","label":"Router1"},
+        {"id":"Router2","type":"router","label":"Router2"}
+      ],
+      "links":[
+        {"from":"Router1","to":"Router2","label":"Gi1/1","label2":"Gi1/1"}
+      ]
+    },
+    "cli":"Router1(config)#interface GigabitEthernet1/1\nRouter1(config-if)#description ***Connection to Router2***\nRouter1(config-if)#ip address 10.10.10.1 255.255.255.252\nRouter1(config-if)#ip ospf hello-interval 5\nRouter1(config)#router ospf 1000\nRouter1(config-router)#router-id 1.1.1.1\nRouter1(config-router)#network 10.10.10.0 0.0.0.3 area 0\n\nRouter2(config)#interface GigabitEthernet1/1\nRouter2(config-if)#description ***Connection to Router1***\nRouter2(config-if)#ip address 10.10.10.2 255.255.255.252\nRouter2(config)#router ospf 1001\nRouter2(config-router)#router-id 2.2.2.2\nRouter2(config-router)#network 10.10.10.0 0.0.0.3 area 0\nRouter2(config-router)#passive-interface default\nRouter2(config-router)#no passive-interface GigabitEthernet1/1"
+  },
+  "398": {"category":"cli_output","cli":"City(config-router)# network 192.168.12.64 0.0.0.63 area 0\n\nCity#show ip interface brief\n\nInterface           IP-Address       OK?  Method  Status  Protocol\nFastEthernet0/0     192.168.12.48    Yes  manual  up      up\nFastEthernet0/1     192.168.12.65    Yes  manual  up      up\nSerial0/0           192.168.12.121   Yes  manual  up      up\nSeriak0/1           unassigned       Yes  unset   up      up\nSerial0/1.102        192.168.12.125   Yes  manual  up      up\nSerial0/1.103        192.168.12.129   Yes  manual  up      up\nSerial0/1.104        192.168.12.133   Yes  manual  up      up\nCity#"},
+  "426": {"category":"cli_output","cli":"Gateway of last resort is 10.12.0.1 to network 0.0.0.0\n\nO*E2  0.0.0.0/0 [110/1] via 10.12.0.1, 00:00:01, GigabitEthernet0/0\n      10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\nC        10.0.0.0/24 is directly connected, GigabitEthernet0/0\nL        10.0.0.2/32 is directly connected, GigabitEthernet0/0\nC        10.13.0.0/24 is directly connected, GigabitEthernet0/1\nL        10.13.0.2/32 is directly connected, GigabitEthernet0/1"},
+  "449": {"category":"mixed",
+    "topology":{
+      "devices":[
+        {"id":"MPLS","type":"internet","label":"MPLS"},
+        {"id":"Internet","type":"internet","label":"Internet"},
+        {"id":"Router1","type":"router","label":"Router1"},
+        {"id":"Router2","type":"router","label":"Router2"},
+        {"id":"Router3","type":"router","label":"Router3"},
+        {"id":"Router4","type":"router","label":"Router4"},
+        {"id":"Router5","type":"router","label":"Router5"}
+      ],
+      "links":[
+        {"from":"Router1","to":"MPLS","note":"10.10.12.0/30"},
+        {"from":"Router1","to":"Internet","note":"10.10.11.0/30"},
+        {"from":"Router1","to":"Router2","note":"10.10.10.0/30"},
+        {"from":"Router1","to":"Router3","note":"10.10.10.4/30"},
+        {"from":"Router1","to":"Router4","note":"10.10.10.8/30"},
+        {"from":"Router1","to":"Router5","note":"10.10.10.12/30"}
+      ]
+    },
+    "cli":"Router1# show ip route\nGateway of last resort is 10.10.11.2 to network 0.0.0.0\n     209.165.200.0/27 is subnetted, 1 subnets\nB       209.165.200.224 [20/0] via 10.10.12.2, 03:22:14\n     209.165.201.0/27 is subnetted, 1 subnets\nB       209.165.201.0 [20/0] via 10.10.12.2, 02:26:33\n     209.165.202.0/27 is subnetted, 1 subnets\nB       209.165.202.128 [20/0] via 10.10.12.2, 02:26:03\n     10.0.0.0/8 is variably subnetted, 10 subnets, 4 masks\nO       10.10.13.0/25 [110/2] via 10.10.10.1, 00:00:04, GigabitEthernet0/0\nO       10.10.13.128/28 [110/2] via 10.10.10.5, 00:00:12, GigabitEthernet0/1\nO       10.10.13.144/28 [110/2] via 10.10.10.9, 00:01:57, GigabitEthernet0/2\nO       10.10.13.160/29 [110/2] via 10.10.10.5, 00:00:12, GigabitEthernet0/1\nO       10.10.13.208/29 [110/2] via 10.10.10.13, 00:01:57, GigabitEthernet0/3\nS*      0.0.0.0/0 [1/0] via 10.10.11.2"
+  },
+  "467": {"category":"cli_output","cli":"R1#show run\n!\nrouter ospf 1\nauto-cost reference-bandwidth 100000\n!\ninterface GigabitEthernet0/0\nbandwidth 10000000\n!\ninterface GigabitEthernet0/1\nbandwidth 100000000\n!\ninterface GigabitEthernet0/2\nip ospf cost 100\n!\ninterface GigabitEthernet0/3\nip ospf cost 1000\nend"},
+  "487": {"category":"topology","topology":{
+    "devices":[
+      {"id":"R2","type":"router","label":"R2","note":"RID: 192.168.2.1"},
+      {"id":"R1","type":"router","label":"R1","note":"DR; RID: 192.168.2.8"},
+      {"id":"R3","type":"router","label":"R3","note":"BDR; RID: 192.168.2.6"},
+      {"id":"R4","type":"router","label":"R4","note":"RID: 192.168.2.4"},
+      {"id":"SW","type":"sw2","label":"switch","note":"unlabeled central switch icon"}
+    ],
+    "links":[
+      {"from":"R2","to":"SW","label":"Gi0/0"},
+      {"from":"R1","to":"SW","label":"Gi0/1"},
+      {"from":"R3","to":"SW","label":"Gi0/0"},
+      {"from":"R4","to":"SW","label":"Gi0/1"}
+    ],
+    "zones":[{"label":"OSPF 1","members":["R1","R2","R3","R4"]}]
+  }},
+  "530": {"category":"topology","topology":{
+    "devices":[
+      {"id":"R1","type":"router","label":"R1"},
+      {"id":"SW","type":"sw2","label":"switch","note":"unlabeled switch icon between R1 and R2"},
+      {"id":"R2","type":"router","label":"R2"},
+      {"id":"DHCP","type":"server","label":"DHCP server"}
+    ],
+    "links":[
+      {"from":"R1","to":"SW","label":"fa0/0"},
+      {"from":"SW","to":"R2","label":"gi0/0","note":"192.0.2.2"},
+      {"from":"R2","to":"DHCP","label":"gi0/1","note":"198.51.100.1"}
+    ]
+  }},
+  "609": {"category":"cli_output","cli":"Port Security : Enabled\nPort Status : Secure-up\nViolation Mode : Protect\nAging Time : 5 mins\nAging Type : Inactivity\nSecureStatic Addres Aging : Disabled\nMaximum MAC Addresses : 3\nTotal MAC Addreses : 3\nConfigured MAC Addresses : 1\nSticky MAC Addresses : 2\nLast Source Address : Vlan : 0001.0fAA.33BB:1\nSecurity Violation Count : 0"},
+  "699": {"category":"gui_screenshot","crop_box":{"x":5.9,"y":27.7,"w":76.2,"h":47.9}},
+  "837": {"category":"gui_screenshot","crop_box":{"x":5.4,"y":2.9,"w":91.1,"h":58.3}},
+  "880": {"category":"gui_screenshot","crop_box":{"x":5.4,"y":2.4,"w":91.1,"h":58.3}},
+  "907": {"category":"topology","topology":{
+    "devices":[
+      {"id":"R14","type":"router","label":"R14","note":"Loopback0: 10.10.1.14/32"},
+      {"id":"R86","type":"router","label":"R86","note":"Loopback0: 10.10.1.86/32"},
+      {"id":"LAN","type":"internet","label":"10.80.65.0/29","note":"LAN subnet stub off R86's Fa0/1, not an actual cloud/device in the exhibit"}
+    ],
+    "links":[
+      {"from":"R14","to":"R86","label":"Fa0/0","label2":"Fa0/0","note":"10.73.65.64/30; near-end .65, far-end .66"},
+      {"from":"R86","to":"LAN","label":"Fa0/1","note":"10.80.65.0/29"}
+    ]
+  }},
+  "941": {"category":"cli_output","cli":"R_1# show ip route\n....\nD    192.168.20.0/26 [90/24513456] via 10.10.10.1\nR    192.168.20.0/24 [120/5] via 10.10.10.2\nO    192.168.0.0/19 [110/219414] via 10.10.10.13\nB    192.168.0.0/16 is variably subnetted, 4 subnets, 4 masks\nD    192.168.20.0/27 [90/4123710] via 10.10.10.12\nD    192.168.20.0/25 [90/14464211] via 10.10.10.11\nS.   0.0.0.0/0 [1/0] via 10.10.10.14"},
+  "1020": {"category":"cli_output","cli":"{\"apple\": [\"red\", 1], \"ripe\": true}"},
+  "1120": {"category":"topology","topology":{
+    "devices":[
+      {"id":"SW1","type":"sw2","label":"SW1"},
+      {"id":"SW2","type":"sw2","label":"SW2"},
+      {"id":"SW3","type":"sw2","label":"SW3"},
+      {"id":"SW4","type":"sw2","label":"SW4"}
+    ],
+    "links":[
+      {"from":"SW1","to":"SW2","label":"Gi1/0/1","label2":"Gi1/0/1"},
+      {"from":"SW1","to":"SW3","label":"Gi1/0/2","label2":"Gi1/0/3","note":"diagonal link"},
+      {"from":"SW1","to":"SW4","label":"Gi1/0/3","label2":"Gi1/0/1"},
+      {"from":"SW2","to":"SW3","label":"Gi1/0/2","label2":"Gi1/0/2"},
+      {"from":"SW4","to":"SW3","label":"Gi1/0/2","label2":"Gi1/0/2"}
+    ]
+  }},
+  "1202": {"category":"topology","topology":{
+    "devices":[
+      {"id":"AP","type":"ap","label":"AP"},
+      {"id":"SW1","type":"sw2","label":"switch","note":"unlabeled switch icon connecting AP to network cloud"},
+      {"id":"Cloud","type":"internet","label":"Network Cloud"},
+      {"id":"SW2","type":"sw2","label":"switch","note":"unlabeled switch icon connecting network cloud to WLC"},
+      {"id":"WLC","type":"router","label":"WLC","note":"wireless LAN controller, no closer device type available"}
+    ],
+    "links":[
+      {"from":"AP","to":"SW1","note":"SSID USERWL, 172.16.10.0/24"},
+      {"from":"SW1","to":"Cloud"},
+      {"from":"Cloud","to":"SW2"},
+      {"from":"SW2","to":"WLC","note":"Vlan 20, 172.16.10.0/24"}
+    ]
+  }},
+  "1242": {"category":"gui_screenshot","crop_box":{"x":5.4,"y":1.8,"w":91.1,"h":39.9}},
+  "1339": {"category":"topology","topology":{
+    "devices":[
+      {"id":"PC1","type":"pc","label":"PC1"},
+      {"id":"SW1","type":"sw2","label":"SW1"},
+      {"id":"SW2","type":"sw2","label":"SW2"},
+      {"id":"SW3","type":"sw2","label":"SW3"},
+      {"id":"Server","type":"server","label":"Server"}
+    ],
+    "links":[
+      {"from":"PC1","to":"SW1"},
+      {"from":"SW1","to":"SW2","label":"Ge0/0","label2":"Ge0/0","note":"LACP Port Channel 1; also Ge0/1 and Ge0/2 bundled"},
+      {"from":"SW1","to":"SW3","note":"part of LACP bundle to SW3"},
+      {"from":"SW2","to":"SW3","note":"part of LACP bundle to SW3"},
+      {"from":"SW2","to":"Server"}
+    ]
+  }},
+  "1372": {"category":"gui_screenshot","crop_box":{"x":5.4,"y":33.9,"w":89.3,"h":41.7}}
+}

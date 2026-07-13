@@ -1,0 +1,62 @@
+{
+  "90": {
+    "A": "{\n  \"response\": {\n    \"taskId\": {};\n    \"url\": \"string\"\n  };\n  \"version\": \"string\"\n}",
+    "B": "{\n  \"response\"- {\n  \"taskId\"- {},\n  \"url\"- \"string\"\n  },\n  \"version\"- \"string\"\n}",
+    "C": "{\n  \"response\": {\n  \"taskId\": {},\n  \"url\": \"string\"\n  },\n  \"version\": \"string\"\n}",
+    "D": "{\n  \"response\". {\n  \"taskId\". {};\n  \"url\". \"string\"\n  };\n  \"version\". \"string\"\n}"
+  },
+  "156": {
+    "A": "R7#\nconfigure terminal\ninterface Fa1/0\nip address 10.1.56.1 255.255.192.0\nno shutdown\nR8#\nconfigure terminal\ninterface Fa0/0\nip address 10.9.32.1 255.255.224.0\nno shutdown\nR9#\nconfigure terminal\ninterface Fa1/1\nip address 10.23.96.1 255.255.128.0\nno shutdown",
+    "B": "R7#\nconfigure terminal\ninterface Fa1/0\nip address 10.1.56.1 255.255.240.0\nno shutdown\nR8#\nconfigure terminal\ninterface Fa0/0\nip address 10.9.32.1 255.255.224.0\nno shutdown\nR9#\nconfigure terminal\ninterface Fa1/1\nip address 10.23.96.1 255.255.192.0\nno shutdown",
+    "C": "R7#\nconfigure terminal\ninterface Fa1/0\nip address 10.1.56.1 255.255.252.0\nno shutdown\nR8#\nconfigure terminal\ninterface Fa0/0\nip address 10.9.32.1 255.255.255.0\nno shutdown\nR9#\nconfigure terminal\ninterface Fa1/1\nip address 10.23.96.1 255.255.240.0\nno shutdown",
+    "D": "R7#\nconfigure terminal\ninterface Fa1/0\nip address 10.1.56.1 255.255.192.0\nno shutdown\nR8#\nconfigure terminal\ninterface Fa0/0\nip address 10.9.32.1 255.255.224.0\nno shutdown\nR9#\nconfigure terminal\ninterface Fa1/1\nip address 10.23.96.1 255.255.128.0\nno shutdown"
+  },
+  "319": {
+    "A": "Switch1(config-if)#channel-group 1 mode on\n\nSwitch2(config-if)#channel-group 1 mode active",
+    "B": "Switch1(config-if)#channel-group 1 mode active\n\nSwitch2(config-if)#channel-group 1 mode passive",
+    "C": "Switch1(config-if)#channel-group 1 mode passive\n\nSwitch2(config-if)#channel-group 1 mode active",
+    "D": "Switch1(config-if)#channel-group 1 mode on\n\nSwitch2(config-if)#channel-group 1 mode passive"
+  },
+  "320": {
+    "A": "R1(config)#username admin\nR1(config-if)#line vty 0 4\nR1(config-line)#password p@ss1234\nR1(config-line)#transport input telnet",
+    "B": "R1(config)#username admin privilege 15 secret p@ss1234\nR1(config-if)#line vty 0 4\nR1(config-line)#login local",
+    "C": "R1(config)#username admin secret p@ss1234\nR1(config-if)#line vty 0 4\nR1(config-line)#login local\nR1(config)#enable secret p@ss1234",
+    "D": "R1(config)#username admin\nR1(config-if)#line vty 0 4\nR1(config-line)#password p@ss1234"
+  },
+  "321": {
+    "A": "interface FastEthernet0/1\nswitchport mode access\nswitchport voice vlan 10",
+    "B": "interface FastEthernet0/1\nswitchport trunk native vlan 10\nswitchport trunk allowed vlan 10,15",
+    "C": "Interface FastEthernet0/1\nswitchport trunk allowed vlan add 10\nvlan 10\nprivate-vlan isolated",
+    "D": "interface FastEthernet0/1\nswitchport mode trunk\nswitchport trunk allowed vlan 10,15"
+  },
+  "494": {
+    "A": "interface FastEthernet0/0\n  ip address 10.100.1.1 255.255.255.252\n  ip ospf priority 0\n  ip access-group 102 in\n\nrouter ospf 10\n  log-adjacency-changes\n  network 10.1.1.1 0.0.0.0 area 0\n  network 10.100.1.0 0.0.0.3 area 0\n  router-id 10.1.1.1\n\naccess-list 102 permit 89 host 10.100.1.2 host 224.0.0.5\naccess-list 102 deny 89 any any\naccess-list 102 permit ip any any",
+    "B": "interface Loopback0\n  ip address 10.1.1.1 255.255.255.255\n\ninterface FastEthernet0/0\n  ip address 10.100.1.1 255.255.255.252\n  ip ospf priority 100\n  ip access-group 102 in\n\nrouter ospf 10\n  log-adjacency-changes\n  network 10.1.1.1 0.0.0.0 area 0\n  network 10.100.1.0 0.0.0.3 area 0\n  ospf router-id 10.1.1.1\n\naccess-list 102 permit 88 host 10.100.1.2 host 224.0.0.5\naccess-list 102 deny 88 any any\naccess-list 102 permit ip any any",
+    "C": "interface FastEthernet0/0\n  ip address 10.100.1.1 255.255.255.252\n  ip ospf priority 100\n  ip access-group 102 in\n\nrouter ospf 10\n  log-adjacency-changes\n  network 10.1.1.1 0.0.0.0 area 0\n  network 10.100.1.0 0.0.0.3 area 0\n  ospf router-id 10.1.1.1\n\naccess-list 102 permit 89 host 10.100.1.2 host 224.0.0.5\naccess-list 102 deny 89 any any\naccess-list 102 permit ip any any",
+    "D": "interface Loopback0\n  ip address 10.1.1.1 255.255.255.255\n\ninterface FastEthernet0/0\n  ip address 10.100.1.1 255.255.255.252\n  ip ospf priority 0\n  ip access-group 102 in\n\nrouter ospf 10\n  log-adjacency-changes\n  network 10.1.1.1 0.0.0.0 area 0\n  network 10.100.1.0 0.0.0.3 area 0\n  ospf router-id 10.1.1.1\n\naccess-list 102 permit 88 host 10.100.1.2 host 224.0.0.5\naccess-list 102 deny 88 any any\naccess-list 102 permit ip any any"
+  },
+  "624": {
+    "A": "access-list 100 deny tcp host 172.16.1.33 any eq 22\naccess-list 100 permit ip any any\n\ninterface GigabitEthernet0/0\nip access-group 100 in",
+    "B": "access-list 100 deny tcp host 172.16.1.33 any eq 22\naccess-list 100 permit ip any any\n\nline vty 0 15\naccess-class 100 in",
+    "C": "access-list 100 deny tcp host 172.16.1.33 any eq 23\naccess-list 100 permit ip any any\n\ninterface GigabitEthernet0/0\nip access-group 100 in",
+    "D": "access-list 100 deny tcp host 172.16.1.33 any eq 23\naccess-list 100 permit ip any any\n\nline vty 0 15\naccess-class 100 in"
+  },
+  "635": {
+    "A": "config t\nip access-list extended wwwblock\npermit ip any any\ndeny tcp any host 10.30.0.100 eq 80\nint vlan 20\nip access-group wwwblock in",
+    "B": "config t\nip access-list extended wwwblock\npermit ip any any\ndeny tcp any host 10.30.0.100 eq 80\nint vlan 30\nip access-group wwwblock in",
+    "C": "config t\nip access-list extended wwwblock\ndeny tcp any host 10.30.0.100 eq 80\nint vlan 10\nip access-group wwwblock in",
+    "D": "config t\nip access-list extended wwwblock\ndeny tcp any host 10.30.0.100 eq 80\npermit ip any any\nint vlan 20\nip access-group wwwblock in"
+  },
+  "722": {
+    "A": "{\n  \"response\": {\n    \"taskId\": {};\n    \"url\": \"string\"\n  };\n  \"version\": \"string\"\n}",
+    "B": "{\n\"response\"- {\n\"taskId\"- {},\n\"url\"- \"string\"\n},\n\"version\"- \"string\"\n}",
+    "C": "{\n\"response\": {\n\"taskId\": {},\n\"url\": \"string\"\n},\n\"version\": \"string\"\n}",
+    "D": "{\n\"response\", {\n\"taskId\", {};\n\"url\", \"string\"\n};\n\"version\", \"string\"\n}"
+  },
+  "1196": {
+    "A": "SW2(config)#interface gigabitEthernet0/1\nSW2(config-if)#channel-group 1 mode active\nSW2(config-if)#interface gigabitEthernet0/2\nSW2(config-if)#channel-group 1 mode active",
+    "B": "SW2(config)#interface gigabitEthernet0/1\nSW2(config-if)#channel-group 2 mode desirable\nSW2(config-if)#interface gigabitEthernet0/2\nSW2(config-if)#channel-group 2 mode desirable",
+    "C": "SW2(config)#interface gigabitEthernet0/1\nSW2(config-if)#channel-group 1 mode on\nSW2(config-if)#interface gigabitEthernet0/2\nSW2(config-if)#channel-group 1 mode on",
+    "D": "SW2(config)#interface gigabitEthernet0/1\nSW2(config-if)#channel-group 2 mode auto\nSW2(config-if)#interface gigabitEthernet0/2\nSW2(config-if)#channel-group 2 mode auto"
+  }
+}

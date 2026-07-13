@@ -1,0 +1,4958 @@
+{
+ "3": {
+  "items": [
+   "provides reliability when loading an IOS image upon boot up",
+   "does not require user authentication",
+   "uses port 69",
+   "uses ports 20 and 21",
+   "uses TCP",
+   "uses UDP"
+  ],
+  "buckets": [
+   {
+    "label": "FTP",
+    "correct": [
+     "uses ports 20 and 21",
+     "provides reliability when loading an IOS image upon boot up",
+     "uses TCP"
+    ]
+   },
+   {
+    "label": "TFTP",
+    "correct": [
+     "uses port 69",
+     "does not require user authentication",
+     "uses UDP"
+    ]
+   }
+  ]
+ },
+ "134": {
+  "items": [
+   "2001:DB8::bced:1234:456d:aacc",
+   "FD00:0000:0000:1a2d:a153:3992:a19d:ccca",
+   "FE80::abcdf:ffff:12de:3992",
+   "FF05::23:becf:22:1111"
+  ],
+  "buckets": [
+   {
+    "label": "multicast address used only locally within the site",
+    "correct": [
+     "FF05::23:becf:22:1111"
+    ]
+   },
+   {
+    "label": "address that is automatically created on a link when IPv6 is enabled on an interface",
+    "correct": [
+     "FE80::abcdf:ffff:12de:3992"
+    ]
+   },
+   {
+    "label": "address that is prohibited from routing to the Internet",
+    "correct": [
+     "FD00:0000:0000:1a2d:a153:3992:a19d:ccca"
+    ]
+   },
+   {
+    "label": "address that is unique and reserved for documentation purposes",
+    "correct": [
+     "2001:DB8::bced:1234:456d:aacc"
+    ]
+   }
+  ]
+ },
+ "193": {
+  "items": [
+   "configured and managed by a WLC",
+   "managed from a web-based dashboard",
+   "accessible for management via Telnet, SSH, or a web GUI",
+   "requires a management IP address",
+   "supports automatic deployment"
+  ],
+  "buckets": [
+   {
+    "label": "Autonomous Access Point",
+    "correct": [
+     "accessible for management via Telnet, SSH, or a web GUI",
+     "requires a management IP address"
+    ]
+   },
+   {
+    "label": "Cloud-Based Access Point",
+    "correct": [
+     "managed from a web-based dashboard",
+     "supports automatic deployment"
+    ]
+   }
+  ]
+ },
+ "534": {
+  "items": [
+   "resolves web URLs to IP addresses",
+   "assigns a default gateway to a client",
+   "holds the TCP/IP settings to be distributed to the clients",
+   "stores a list of IP addresses mapped to names",
+   "assigns IP addresses to enabled clients"
+  ],
+  "buckets": [
+   {
+    "label": "DHCP Server",
+    "correct": [
+     "assigns a default gateway to a client",
+     "holds the TCP/IP settings to be distributed to the clients",
+     "assigns IP addresses to enabled clients"
+    ]
+   },
+   {
+    "label": "DNS Server",
+    "correct": [
+     "resolves web URLs to IP addresses",
+     "stores a list of IP addresses mapped to names"
+    ]
+   }
+  ]
+ },
+ "688": {
+  "items": [
+   "It supports local, PPP, RADIUS, and TACACS+ options",
+   "It tracks the services that a user is using.",
+   "It records the amount of network resources consumed by the user.",
+   "It assigns per-user attributes.",
+   "It permits and denies login attempts."
+  ],
+  "buckets": [
+   {
+    "label": "Accounting",
+    "correct": [
+     "It records the amount of network resources consumed by the user.",
+     "It tracks the services that a user is using."
+    ]
+   },
+   {
+    "label": "Authentication",
+    "correct": [
+     "It permits and denies login attempts.",
+     "It supports local, PPP, RADIUS, and TACACS+ options"
+    ]
+   }
+  ]
+ },
+ "778": {
+  "items": [
+   "cacheable",
+   "client-server",
+   "layered system",
+   "stateless",
+   "uniform interface"
+  ],
+  "buckets": [
+   {
+    "label": "divides architecture components into the consumers and producers of a service",
+    "correct": [
+     "client-server"
+    ]
+   },
+   {
+    "label": "divides the architecture into a hierarchy of levels",
+    "correct": [
+     "layered system"
+    ]
+   },
+   {
+    "label": "enables the client to reuse a previous response for subsequent equivalent requests",
+    "correct": [
+     "cacheable"
+    ]
+   },
+   {
+    "label": "operates without any stored session information on the server",
+    "correct": [
+     "stateless"
+    ]
+   },
+   {
+    "label": "simplifies the communication between components, regardless of the architecture supporting them",
+    "correct": [
+     "uniform interface"
+    ]
+   }
+  ]
+ },
+ "936": {
+  "items": [
+   "172.16.3.128",
+   "172.16.3.64",
+   "172.16.2.128",
+   "172.16.3.192",
+   "172.16.4.0"
+  ],
+  "buckets": [
+   {
+    "label": "255.255.254.0",
+    "correct": [
+     "172.16.4.0"
+    ]
+   },
+   {
+    "label": "255.255.255.128",
+    "correct": [
+     "172.16.2.128"
+    ]
+   },
+   {
+    "label": "255.255.255.224",
+    "correct": [
+     "172.16.3.64"
+    ]
+   },
+   {
+    "label": "255.255.255.240",
+    "correct": [
+     "172.16.3.128"
+    ]
+   },
+   {
+    "label": "255.255.255.248",
+    "correct": [
+     "172.16.3.192"
+    ]
+   }
+  ]
+ },
+ "1024": {
+  "items": [
+   "It uses multiple tools and applications to analyze and troubleshoot different types of data.",
+   "It manages device configurations on a per-device basis.",
+   "It provides a single interface for network security and analytics.",
+   "Security is managed near the perimeter of the network with firewalls, VPNs, and IPS.",
+   "It supports CLI templates to apply a consistent configuration to multiple devices.",
+   "It uses NetFlow to analyze potential security threats and take appropriate action on that traffic."
+  ],
+  "buckets": [
+   {
+    "label": "Cisco DNA Center Device Management",
+    "correct": [
+     "It provides a single interface for network security and analytics.",
+     "It supports CLI templates to apply a consistent configuration to multiple devices.",
+     "It uses NetFlow to analyze potential security threats and take appropriate action on that traffic."
+    ]
+   },
+   {
+    "label": "Traditional Device Management",
+    "correct": [
+     "It manages device configurations on a per-device basis.",
+     "Security is managed near the perimeter of the network with firewalls, VPNs, and IPS.",
+     "It uses multiple tools and applications to analyze and troubleshoot different types of data."
+    ]
+   }
+  ]
+ },
+ "1088": {
+  "items": [
+   "is ideal longer distances with little loss of integrity",
+   "is not easily broken",
+   "contains a single solid conductor",
+   "has minimal light reflection as it travels down the core"
+  ],
+  "buckets": [
+   {
+    "label": "single-mode fiber",
+    "correct": [
+     "is ideal longer distances with little loss of integrity",
+     "has minimal light reflection as it travels down the core"
+    ]
+   },
+   {
+    "label": "copper",
+    "correct": [
+     "is not easily broken",
+     "contains a single solid conductor"
+    ]
+   }
+  ]
+ },
+ "1130": {
+  "items": [
+   "It grants access to network assets, such as FTP servers.",
+   "It restricts the CLI commands that a user is able to perform.",
+   "It performs user validation via TACACS+.",
+   "It records the duration of each connection.",
+   "It supports User Access Reporting.",
+   "It verifies \"who you are\"."
+  ],
+  "buckets": [
+   {
+    "label": "Accounting",
+    "correct": [
+     "It records the duration of each connection.",
+     "It supports User Access Reporting."
+    ]
+   },
+   {
+    "label": "Authorization",
+    "correct": [
+     "It grants access to network assets, such as FTP servers.",
+     "It restricts the CLI commands that a user is able to perform."
+    ]
+   }
+  ]
+ },
+ "1186": {
+  "items": [
+   "is typically used in small office applications",
+   "transmits data of up to 40Gbit/s over long distances",
+   "is not easily broken",
+   "eliminates distortion from overlapping light pulses"
+  ],
+  "buckets": [
+   {
+    "label": "copper",
+    "correct": [
+     "is typically used in small office applications",
+     "is not easily broken"
+    ]
+   },
+   {
+    "label": "single-mode fiber",
+    "correct": [
+     "transmits data of up to 40Gbit/s over long distances",
+     "eliminates distortion from overlapping light pulses"
+    ]
+   }
+  ]
+ },
+ "1284": {
+  "items": [
+   "affected by electrical and magnetic interference",
+   "increased refraction between cladding and core as it travels",
+   "easy to tap into and obtain secure information",
+   "transmits signals using pulses of light"
+  ],
+  "buckets": [
+   {
+    "label": "copper",
+    "correct": [
+     "affected by electrical and magnetic interference",
+     "easy to tap into and obtain secure information"
+    ]
+   },
+   {
+    "label": "multi-mode fiber",
+    "correct": [
+     "increased refraction between cladding and core as it travels",
+     "transmits signals using pulses of light"
+    ]
+   }
+  ]
+ },
+ "136": {
+  "items": [
+   "IPv6 addresses in the format FF02::5",
+   "IPv6 addresses that begin with FD",
+   "may be used by multiple organizations at the same time",
+   "private IPv6 addresses",
+   "serve as next-hop addresses",
+   "unable to serve as destination addresses"
+  ],
+  "buckets": [
+   {
+    "label": "Unique Local Addresses",
+    "correct": [
+     "private IPv6 addresses",
+     "IPv6 addresses that begin with FD",
+     "may be used by multiple organizations at the same time"
+    ]
+   },
+   {
+    "label": "Link-Local Addresses",
+    "correct": [
+     "serve as next-hop addresses",
+     "unable to serve as destination addresses"
+    ]
+   }
+  ]
+ },
+ "207": {
+  "items": [
+   "Dynamic RF Feature",
+   "Easy Deployment Process",
+   "Optimized user performance",
+   "Easy upgrade process"
+  ],
+  "buckets": [
+   {
+    "label": "Controller provides centralized management of users and VLANs",
+    "correct": [
+     "Easy Deployment Process"
+    ]
+   },
+   {
+    "label": "Access points auto adjust signal strength",
+    "correct": [
+     "Dynamic RF Feature"
+    ]
+   },
+   {
+    "label": "Controller image auto deployed to access Points",
+    "correct": [
+     "Easy upgrade process"
+    ]
+   },
+   {
+    "label": "Controller uses loadbalancing to maximize throughput",
+    "correct": [
+     "Optimized user performance"
+    ]
+   }
+  ]
+ },
+ "689": {
+  "items": [
+   "awareness",
+   "education",
+   "security policy",
+   "security standard",
+   "training"
+  ],
+  "buckets": [
+   {
+    "label": "document that outlines an organization's security goals and practices and the roles and responsibilities of the organization's personnel",
+    "correct": [
+     "security policy"
+    ]
+   },
+   {
+    "label": "tactical document that sets out specific tasks and methods to maintain security",
+    "correct": [
+     "security standard"
+    ]
+   },
+   {
+    "label": "user-awareness learning level that focuses on learning about topics and practices beyond what is typically required by the user's job",
+    "correct": [
+     "education"
+    ]
+   },
+   {
+    "label": "user-awareness learning level that focuses on security practices that all employees must understand and enforce",
+    "correct": [
+     "awareness"
+    ]
+   },
+   {
+    "label": "user-awareness learning level that focuses on teaching employees how to perform tasks specifically required by their jobs",
+    "correct": [
+     "training"
+    ]
+   }
+  ]
+ },
+ "779": {
+  "items": [
+   "control node",
+   "inventory",
+   "managed node",
+   "module",
+   "playbook",
+   "task"
+  ],
+  "buckets": [
+   {
+    "label": "collection of actions to perform on target devices, expressed in YAML format",
+    "correct": [
+     "playbook"
+    ]
+   },
+   {
+    "label": "device with Ansible installed that manages target devices",
+    "correct": [
+     "control node"
+    ]
+   },
+   {
+    "label": "network device, without Ansible installed, upon which commands can be executed",
+    "correct": [
+     "managed node"
+    ]
+   },
+   {
+    "label": "specific action to be performed on one or more target devices",
+    "correct": [
+     "task"
+    ]
+   },
+   {
+    "label": "unit of Python code to be executed",
+    "correct": [
+     "module"
+    ]
+   },
+   {
+    "label": "Ansible file that defines the target devices upon which commands and tasks can be executed",
+    "correct": [
+     "inventory"
+    ]
+   }
+  ]
+ },
+ "938": {
+  "items": [
+   "All protocols are up.",
+   "OSPF and eBGP are down.",
+   "The static route and eBGP are down.",
+   "The static route and EIGRP are down.",
+   "The static route and OSPF are down."
+  ],
+  "buckets": [
+   {
+    "label": "eBGP",
+    "correct": [
+     "The static route and EIGRP are down.",
+     "The static route and OSPF are down."
+    ]
+   },
+   {
+    "label": "EIGRP",
+    "correct": [
+     "The static route and eBGP are down."
+    ]
+   },
+   {
+    "label": "Static",
+    "correct": [
+     "All protocols are up.",
+     "OSPF and eBGP are down."
+    ]
+   }
+  ]
+ },
+ "1028": {
+  "items": [
+   "agent",
+   "agentless",
+   "provision",
+   "pull",
+   "push",
+   "post"
+  ],
+  "buckets": [
+   {
+    "label": "daemon that determines when the central authority has updates available",
+    "correct": [
+     "agent"
+    ]
+   },
+   {
+    "label": "model in which the central server sends updates to nodes on an as-needed basis",
+    "correct": [
+     "push"
+    ]
+   },
+   {
+    "label": "easy-to-manage deployment option that may lack scalability",
+    "correct": [
+     "provision"
+    ]
+   },
+   {
+    "label": "device hardware that runs without embedded management features",
+    "correct": [
+     "agentless"
+    ]
+   },
+   {
+    "label": "to automatically install or deploy a configuration or update",
+    "correct": [
+     "post"
+    ]
+   }
+  ]
+ },
+ "1089": {
+  "items": [
+   "uses a single wavelength on light",
+   "becomes distorted at longer lengths",
+   "transmits data up to 100 Gbits which degrades over distance",
+   "has minimal light reflection as it travels down the core"
+  ],
+  "buckets": [
+   {
+    "label": "single-mode fiber",
+    "correct": [
+     "uses a single wavelength on light",
+     "has minimal light reflection as it travels down the core"
+    ]
+   },
+   {
+    "label": "multimode fiber",
+    "correct": [
+     "becomes distorted at longer lengths",
+     "transmits data up to 100 Gbits which degrades over distance"
+    ]
+   }
+  ]
+ },
+ "1132": {
+  "items": [
+   "fe80:cc72:4b9e:445c:8179:0420:5988:7",
+   "2000:1092:a1e8:827d:527c:3ce7:9816:1",
+   "ff00:ec6c:dbb1:3e8b:6d46:bd27:a236:12",
+   "fc00:9860:653f:5146:8cb2:a27c:cb6f:3"
+  ],
+  "buckets": [
+   {
+    "label": "Global Unicast",
+    "correct": [
+     "2000:1092:a1e8:827d:527c:3ce7:9816:1"
+    ]
+   },
+   {
+    "label": "Link-Local Unicast",
+    "correct": [
+     "fe80:cc72:4b9e:445c:8179:0420:5988:7"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "ff00:ec6c:dbb1:3e8b:6d46:bd27:a236:12"
+    ]
+   },
+   {
+    "label": "Unique Local",
+    "correct": [
+     "fc00:9860:653f:5146:8cb2:a27c:cb6f:3"
+    ]
+   }
+  ]
+ },
+ "1188": {
+  "items": [
+   "fe80:5db2:1f32:0ee4:32a3:855f:b0d5:7",
+   "2000:4011:2a0d:d571:1976:4bab:adb7:1",
+   "ff00:b823:1dc6:263b:ba6a:50f5:15b7:12",
+   "fc00:e896:c4cd:422b:7660:59e5:dd00:3"
+  ],
+  "buckets": [
+   {
+    "label": "Global Unicast",
+    "correct": [
+     "2000:4011:2a0d:d571:1976:4bab:adb7:1"
+    ]
+   },
+   {
+    "label": "Link-Local Unicast",
+    "correct": [
+     "fe80:5db2:1f32:0ee4:32a3:855f:b0d5:7"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "ff00:b823:1dc6:263b:ba6a:50f5:15b7:12"
+    ]
+   },
+   {
+    "label": "Unique Local",
+    "correct": [
+     "fc00:e896:c4cd:422b:7660:59e5:dd00:3"
+    ]
+   }
+  ]
+ },
+ "137": {
+  "items": [
+   "2001:db8:600d:cafe::123",
+   "fcba:926a:e8e:7a25:b1:c6d2:1a76:8fdc",
+   "fe80::a00:27ff:feeb:89aa",
+   "ff05:1:3"
+  ],
+  "buckets": [
+   {
+    "label": "Global Unicast",
+    "correct": [
+     "2001:db8:600d:cafe::123"
+    ]
+   },
+   {
+    "label": "Link-Local Unicast",
+    "correct": [
+     "fe80::a00:27ff:feeb:89aa"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "ff05:1:3"
+    ]
+   },
+   {
+    "label": "Unique Local",
+    "correct": [
+     "fcba:926a:e8e:7a25:b1:c6d2:1a76:8fdc"
+    ]
+   }
+  ]
+ },
+ "258": {
+  "items": [
+   "encrypts only the password when it sends an access request",
+   "encrypts the entire body of the access-request packet",
+   "separates all three AAA operations",
+   "combines authentication and authorization",
+   "uses TCP",
+   "uses UDP"
+  ],
+  "buckets": [
+   {
+    "label": "RADIUS",
+    "correct": [
+     "encrypts only the password when it sends an access request",
+     "uses UDP",
+     "combines authentication and authorization"
+    ]
+   },
+   {
+    "label": "TACACS+",
+    "correct": [
+     "encrypts the entire body of the access-request packet",
+     "separates all three AAA operations",
+     "uses TCP"
+    ]
+   }
+  ]
+ },
+ "552": {
+  "items": [
+   "ip address 172.16.1.1 255.255.255.0",
+   "ip address 45.83.2.214 255.255.255.240",
+   "ip nat inside",
+   "ip nat inside source list 1 interface s0 overload",
+   "ip nat inside source static tcp 172.16.1.2 80 45.83.2.214 80 extendable",
+   "ip nat outside"
+  ],
+  "buckets": [
+   {
+    "label": "position A",
+    "correct": [
+     "ip address 172.16.1.1 255.255.255.0"
+    ]
+   },
+   {
+    "label": "position B",
+    "correct": [
+     "ip nat inside"
+    ]
+   },
+   {
+    "label": "position C",
+    "correct": [
+     "ip address 45.83.2.214 255.255.255.240"
+    ]
+   },
+   {
+    "label": "position D",
+    "correct": [
+     "ip nat outside"
+    ]
+   },
+   {
+    "label": "position E",
+    "correct": [
+     "ip nat inside source static tcp 172.16.1.2 80 45.83.2.214 80 extendable"
+    ]
+   },
+   {
+    "label": "position F",
+    "correct": [
+     "ip nat inside source list 1 interface s0 overload"
+    ]
+   }
+  ]
+ },
+ "701": {
+  "items": [
+   "DHCP snooping",
+   "Dynamic ARP Inspection",
+   "IP Source Guard",
+   "storm control"
+  ],
+  "buckets": [
+   {
+    "label": "rogue server that spoofs IP configuration",
+    "correct": [
+     "DHCP snooping"
+    ]
+   },
+   {
+    "label": "cache poisoning",
+    "correct": [
+     "Dynamic ARP Inspection"
+    ]
+   },
+   {
+    "label": "flood attacks",
+    "correct": [
+     "storm control"
+    ]
+   },
+   {
+    "label": "rogue clients on the network",
+    "correct": [
+     "IP Source Guard"
+    ]
+   }
+  ]
+ },
+ "784": {
+  "items": [
+   "Maintenance costs are higher than with other networking options.",
+   "This type provides a centralized view of the network.",
+   "This type implements changes individually at each device.",
+   "This type leverages controllers to handle network management."
+  ],
+  "buckets": [
+   {
+    "label": "Traditional Networking",
+    "correct": [
+     "This type implements changes individually at each device.",
+     "Maintenance costs are higher than with other networking options."
+    ]
+   },
+   {
+    "label": "Controller-Based Networking",
+    "correct": [
+     "This type leverages controllers to handle network management.",
+     "This type provides a centralized view of the network."
+    ]
+   }
+  ]
+ },
+ "950": {
+  "items": [
+   "agent",
+   "managed device",
+   "MIB",
+   "NMS"
+  ],
+  "buckets": [
+   {
+    "label": "collection of uniquely identifiable objects whose state can be interrogated over SNMP",
+    "correct": [
+     "MIB"
+    ]
+   },
+   {
+    "label": "network node-controlled by SNMP",
+    "correct": [
+     "managed device"
+    ]
+   },
+   {
+    "label": "system that runs monitoring applications and controls network nodes",
+    "correct": [
+     "NMS"
+    ]
+   },
+   {
+    "label": "SNMP component that captures and translates device and network data",
+    "correct": [
+     "agent"
+    ]
+   }
+  ]
+ },
+ "956": {
+  "items": [
+   "classification",
+   "marking",
+   "policing",
+   "queuing"
+  ],
+  "buckets": [
+   {
+    "label": "applies a specific action to packets whenever the maximum rate of packets is exceeded",
+    "correct": [
+     "policing"
+    ]
+   },
+   {
+    "label": "set the ToS value to associate a packet with a QoS group",
+    "correct": [
+     "marking"
+    ]
+   },
+   {
+    "label": "reduces traffic congestion by holding packets and distributing them when the available bandwidth allows",
+    "correct": [
+     "queuing"
+    ]
+   },
+   {
+    "label": "the overall process of using specific criteria to differentiate traffic into categories",
+    "correct": [
+     "classification"
+    ]
+   }
+  ]
+ },
+ "1090": {
+  "items": [
+   "ff00:c279:edd5:99c4:b0de:fc11:4b12:12",
+   "fe80:e6ab:b5f9:c358:ea58:0029:b4db:7",
+   "fc00:1664:bc95:3c7a:c300:c468:3969:3",
+   "2000:2eb8:3e5f:376c:da66:bf1d:d36a:1"
+  ],
+  "buckets": [
+   {
+    "label": "Global Unicast",
+    "correct": [
+     "2000:2eb8:3e5f:376c:da66:bf1d:d36a:1"
+    ]
+   },
+   {
+    "label": "Unique Local",
+    "correct": [
+     "fc00:1664:bc95:3c7a:c300:c468:3969:3"
+    ]
+   },
+   {
+    "label": "Link-Local Unicast",
+    "correct": [
+     "fe80:e6ab:b5f9:c358:ea58:0029:b4db:7"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "ff00:c279:edd5:99c4:b0de:fc11:4b12:12"
+    ]
+   }
+  ]
+ },
+ "1190": {
+  "items": [
+   "may be used by multiple organizations at the same time",
+   "cannot be used as a source address",
+   "allows sites to be combined without address conflicts",
+   "has a unicast source sent to a group"
+  ],
+  "buckets": [
+   {
+    "label": "Unique Local",
+    "correct": [
+     "may be used by multiple organizations at the same time",
+     "allows sites to be combined without address conflicts"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "cannot be used as a source address",
+     "has a unicast source sent to a group"
+    ]
+   }
+  ]
+ },
+ "139": {
+  "items": [
+   "configured only once per interface",
+   "addressing for exclusive use internally without Internet routing",
+   "addresses with prefix FC00::/7",
+   "attached to a single subnet"
+  ],
+  "buckets": [
+   {
+    "label": "Link-Local Address",
+    "correct": [
+     "attached to a single subnet",
+     "configured only once per interface"
+    ]
+   },
+   {
+    "label": "Unique Local Address",
+    "correct": [
+     "addresses with prefix FC00::/7",
+     "addressing for exclusive use internally without Internet routing"
+    ]
+   }
+  ]
+ },
+ "261": {
+  "items": [
+   "BPDUs received are forwarded to the system module",
+   "BPDUs received from the system module are processed and transmitted",
+   "Frames received from the attached segment are discarded",
+   "Frames received from the attached segment are processed",
+   "Switched frames received from other ports are advanced",
+   "The port in the forwarding state responds to network management messages"
+  ],
+  "buckets": [
+   {
+    "label": "action",
+    "correct": [
+     "BPDUs received are forwarded to the system module"
+    ]
+   },
+   {
+    "label": "action",
+    "correct": [
+     "BPDUs received from the system module are processed and transmitted"
+    ]
+   },
+   {
+    "label": "action",
+    "correct": [
+     "Switched frames received from other ports are advanced"
+    ]
+   },
+   {
+    "label": "action",
+    "correct": [
+     "The port in the forwarding state responds to network management messages"
+    ]
+   }
+  ]
+ },
+ "583": {
+  "items": [
+   "show snmp chassis",
+   "show snmp community",
+   "show snmp engineID",
+   "show snmp group",
+   "show snmp host"
+  ],
+  "buckets": [
+   {
+    "label": "displays information about the SNMP recipient",
+    "correct": [
+     "show snmp host"
+    ]
+   },
+   {
+    "label": "displays the IP address of the remote SNMP device",
+    "correct": [
+     "show snmp engineID"
+    ]
+   },
+   {
+    "label": "displays the SNMP security model in use",
+    "correct": [
+     "show snmp group"
+    ]
+   },
+   {
+    "label": "displays the SNMP access string",
+    "correct": [
+     "show snmp community"
+    ]
+   },
+   {
+    "label": "displays the SNMP server serial number",
+    "correct": [
+     "show snmp chassis"
+    ]
+   }
+  ]
+ },
+ "715": {
+  "items": [
+   "focused on network",
+   "focused on devices",
+   "user input is a configuration",
+   "user input is a policy",
+   "uses allow list security model",
+   "uses block list security model"
+  ],
+  "buckets": [
+   {
+    "label": "Controller-Based Networking",
+    "correct": [
+     "focused on network",
+     "user input is a policy",
+     "uses allow list security model"
+    ]
+   },
+   {
+    "label": "Traditional Networking",
+    "correct": [
+     "focused on devices",
+     "user input is a configuration",
+     "uses block list security model"
+    ]
+   }
+  ]
+ },
+ "799": {
+  "items": [
+   "absorption",
+   "noise floor",
+   "reflection",
+   "receiver sensitivity",
+   "signal-to-noise ratio"
+  ],
+  "buckets": [
+   {
+    "label": "measure of the minimum power required to decode a radio signal without excessive errors",
+    "correct": [
+     "receiver sensitivity"
+    ]
+   },
+   {
+    "label": "measure of the total unwanted signals at the receiver",
+    "correct": [
+     "noise floor"
+    ]
+   },
+   {
+    "label": "deviation from the propagation path that occurs when a signal encounters an obstacle",
+    "correct": [
+     "reflection"
+    ]
+   },
+   {
+    "label": "reduction of energy in a signal as it travels away from the access point and encounters free space or obstacles",
+    "correct": [
+     "absorption"
+    ]
+   },
+   {
+    "label": "relative power of the desired radio signal to unwanted signals at the receiver",
+    "correct": [
+     "signal-to-noise ratio"
+    ]
+   }
+  ]
+ },
+ "1091": {
+  "items": [
+   "uses a single wavelength of light",
+   "is comprised of shielded and unshielded twisted pairs",
+   "contains a conductor, bedding, and sheathing",
+   "has a core diameter of 9 microns"
+  ],
+  "buckets": [
+   {
+    "label": "single-mode fiber",
+    "correct": [
+     "uses a single wavelength of light",
+     "has a core diameter of 9 microns"
+    ]
+   },
+   {
+    "label": "copper",
+    "correct": [
+     "is comprised of shielded and unshielded twisted pairs",
+     "contains a conductor, bedding, and sheathing"
+    ]
+   }
+  ]
+ },
+ "1135": {
+  "items": [
+   "is assigned to more than one interface",
+   "cannot be used as a source address",
+   "is used exclusively by a non-host device",
+   "provides one-to-many communications"
+  ],
+  "buckets": [
+   {
+    "label": "Anycast",
+    "correct": [
+     "is assigned to more than one interface",
+     "is used exclusively by a non-host device"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "provides one-to-many communications",
+     "cannot be used as a source address"
+    ]
+   }
+  ]
+ },
+ "1292": {
+  "items": [
+   "172.16.2.0/24",
+   "192.168.1.0/24",
+   "192.168.2.0/24",
+   "207.165.200.244/30",
+   "207.165.200.248/30"
+  ],
+  "buckets": [
+   {
+    "label": "static",
+    "correct": [
+     "207.165.200.244/30"
+    ]
+   },
+   {
+    "label": "EIGRP",
+    "correct": [
+     "192.168.2.0/24"
+    ]
+   },
+   {
+    "label": "OSPF",
+    "correct": [
+     "192.168.1.0/24"
+    ]
+   },
+   {
+    "label": "RIP",
+    "correct": [
+     "172.16.2.0/24"
+    ]
+   }
+  ]
+ },
+ "141": {
+  "items": [
+   "requires less computer resources",
+   "offers minimal overhead within a packet",
+   "provides support for retransmission of lost packets",
+   "guarantees packet delivery",
+   "uses a 32-bit sequence number",
+   "ideal for voice traffic"
+  ],
+  "buckets": [
+   {
+    "label": "TCP",
+    "correct": [
+     "provides support for retransmission of lost packets",
+     "guarantees packet delivery",
+     "uses a 32-bit sequence number"
+    ]
+   },
+   {
+    "label": "UDP",
+    "correct": [
+     "ideal for voice traffic",
+     "requires less computer resources",
+     "offers minimal overhead within a packet"
+    ]
+   }
+  ]
+ },
+ "272": {
+  "items": [
+   "configured and managed by a WLC",
+   "managed from a web-based dashboard",
+   "accessible for management via Telnet, SSH, or a web GUI",
+   "requires a management IP address",
+   "supports automatic deployment"
+  ],
+  "buckets": [
+   {
+    "label": "Autonomous Access Point",
+    "correct": [
+     "requires a management IP address",
+     "accessible for management via Telnet, SSH, or a web GUI"
+    ]
+   },
+   {
+    "label": "Cloud-Based Access Point",
+    "correct": [
+     "supports automatic deployment",
+     "managed from a web-based dashboard"
+    ]
+   }
+  ]
+ },
+ "586": {
+  "items": [
+   "cloud-based weighted fair queueing",
+   "classification",
+   "congestion",
+   "policing",
+   "shaping"
+  ],
+  "buckets": [
+   {
+    "label": "categorizes packets based on the value of a traffic descriptor",
+    "correct": [
+     "classification"
+    ]
+   },
+   {
+    "label": "guarantees minimum bandwidth to specific traffic classes when an interface is congested",
+    "correct": [
+     "cloud-based weighted fair queueing"
+    ]
+   },
+   {
+    "label": "prevents congestion by reducing the flow of outbound traffic",
+    "correct": [
+     "shaping"
+    ]
+   },
+   {
+    "label": "outcome of overutilization",
+    "correct": [
+     "congestion"
+    ]
+   },
+   {
+    "label": "uses defined criteria to limit the transmission of one or more classes of traffic",
+    "correct": [
+     "policing"
+    ]
+   }
+  ]
+ },
+ "723": {
+  "items": [
+   "fundamental configuration elements are stored in a manifest",
+   "uses TCP port 10002 for configuration push jobs",
+   "uses Ruby for fundamental configuration elements",
+   "uses SSH for remote device communication",
+   "uses TCP 8140 for communication",
+   "uses YAML for fundamental configuration elements"
+  ],
+  "buckets": [
+   {
+    "label": "Ansible",
+    "correct": [
+     "uses SSH for remote device communication",
+     "uses YAML for fundamental configuration elements"
+    ]
+   },
+   {
+    "label": "Chef",
+    "correct": [
+     "uses TCP port 10002 for configuration push jobs",
+     "uses Ruby for fundamental configuration elements"
+    ]
+   },
+   {
+    "label": "Puppet",
+    "correct": [
+     "fundamental configuration elements are stored in a manifest",
+     "uses TCP 8140 for communication"
+    ]
+   }
+  ]
+ },
+ "801": {
+  "items": [
+   "guest operating system",
+   "host operating system",
+   "hypervisor",
+   "multithreading",
+   "virtual machine"
+  ],
+  "buckets": [
+   {
+    "label": "An operating system instance that is decoupled from the server hardware.",
+    "correct": [
+     "virtual machine"
+    ]
+   },
+   {
+    "label": "Each core can run more than one process simultaneously.",
+    "correct": [
+     "multithreading"
+    ]
+   },
+   {
+    "label": "Runs on a physical server, manages, and allocates the physical resources.",
+    "correct": [
+     "hypervisor"
+    ]
+   },
+   {
+    "label": "The software that manages the basic functions of the physical hardware.",
+    "correct": [
+     "host operating system"
+    ]
+   },
+   {
+    "label": "The software that manages the basic functions of the vital machine.",
+    "correct": [
+     "guest operating system"
+    ]
+   }
+  ]
+ },
+ "958": {
+  "items": [
+   "An endpoint submits a request for the IP address of a domain name.",
+   "The DNS submits a request to the domain DNS server.",
+   "The DNS receives a reply from the domain DNS server.",
+   "The DNS responds to the endpoint.",
+   "The DNS submits a request to a root DNS server."
+  ],
+  "buckets": [
+   {
+    "label": "Step 1",
+    "correct": [
+     "An endpoint submits a request for the IP address of a domain name."
+    ]
+   },
+   {
+    "label": "Step 2",
+    "correct": [
+     "The DNS submits a request to a root DNS server."
+    ]
+   },
+   {
+    "label": "Step 3",
+    "correct": [
+     "The DNS submits a request to the domain DNS server."
+    ]
+   },
+   {
+    "label": "Step 4",
+    "correct": [
+     "The DNS receives a reply from the domain DNS server."
+    ]
+   },
+   {
+    "label": "Step 5",
+    "correct": [
+     "The DNS responds to the endpoint."
+    ]
+   }
+  ]
+ },
+ "1092": {
+  "items": [
+   "ff00:a648:6ad8:4591:80a2:75db:4b5f:12",
+   "fe80:9885:e8c7:6f41:ac11:b954:cc04:7",
+   "fc00:6fd1:6158:034c:6144:eafe:8da6:3",
+   "2000:fda9:65b0:e8c0:1d84:6369:2daa:1"
+  ],
+  "buckets": [
+   {
+    "label": "Global Unicast",
+    "correct": [
+     "2000:fda9:65b0:e8c0:1d84:6369:2daa:1"
+    ]
+   },
+   {
+    "label": "Unique Local",
+    "correct": [
+     "fc00:6fd1:6158:034c:6144:eafe:8da6:3"
+    ]
+   },
+   {
+    "label": "Link-Local Unicast",
+    "correct": [
+     "fe80:9885:e8c7:6f41:ac11:b954:cc04:7"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "ff00:a648:6ad8:4591:80a2:75db:4b5f:12"
+    ]
+   }
+  ]
+ },
+ "1137": {
+  "items": [
+   "contains a conductor, bedding, and sheathing",
+   "is ideal over longer distances with little loss of integrity",
+   "is typically used in small office applications",
+   "uses a single wavelength of light"
+  ],
+  "buckets": [
+   {
+    "label": "copper",
+    "correct": [
+     "contains a conductor, bedding, and sheathing",
+     "is typically used in small office applications"
+    ]
+   },
+   {
+    "label": "single mode fiber",
+    "correct": [
+     "is ideal over longer distances with little loss of integrity",
+     "uses a single wavelength of light"
+    ]
+   }
+  ]
+ },
+ "1256": {
+  "items": [
+   "never used as a source address",
+   "allows sites to be combined without address conflicts",
+   "unable to route on the internet",
+   "provides one-to-many communications"
+  ],
+  "buckets": [
+   {
+    "label": "Multicast",
+    "correct": [
+     "never used as a source address",
+     "provides one-to-many communications"
+    ]
+   },
+   {
+    "label": "Unique Local",
+    "correct": [
+     "allows sites to be combined without address conflicts",
+     "unable to route on the internet"
+    ]
+   }
+  ]
+ },
+ "146": {
+  "items": [
+   "used to reliably share files between devices",
+   "appropriate for streaming operations with minimal latency",
+   "provides best-effort service",
+   "supports reliable data transmission"
+  ],
+  "buckets": [
+   {
+    "label": "TCP",
+    "correct": [
+     "used to reliably share files between devices",
+     "supports reliable data transmission"
+    ]
+   },
+   {
+    "label": "UDP",
+    "correct": [
+     "appropriate for streaming operations with minimal latency",
+     "provides best-effort service"
+    ]
+   }
+  ]
+ },
+ "278": {
+  "items": [
+   "configured and managed by a WLC",
+   "accessible for management via Telnet, SSH, or a Web GUI",
+   "supports different operational modes",
+   "requires a management IP address",
+   "supports automatic deployment"
+  ],
+  "buckets": [
+   {
+    "label": "Autonomous Access Point",
+    "correct": [
+     "accessible for management via Telnet, SSH, or a Web GUI",
+     "requires a management IP address"
+    ]
+   },
+   {
+    "label": "Lightweight Access Point",
+    "correct": [
+     "configured and managed by a WLC",
+     "supports different operational modes"
+    ]
+   }
+  ]
+ },
+ "588": {
+  "items": [
+   "event correlation and aggregation",
+   "fault detection",
+   "fault diagnosis and isolation",
+   "problem resolution",
+   "restoration of service"
+  ],
+  "buckets": [
+   {
+    "label": "The administrator can manually intervene at the source of the fault.",
+    "correct": [
+     "problem resolution"
+    ]
+   },
+   {
+    "label": "The network management system launches a preconfigured script to restore functionality.",
+    "correct": [
+     "restoration of service"
+    ]
+   },
+   {
+    "label": "The system groups alarms from related issues.",
+    "correct": [
+     "event correlation and aggregation"
+    ]
+   },
+   {
+    "label": "The system identifies performance degradation or service interruption.",
+    "correct": [
+     "fault detection"
+    ]
+   },
+   {
+    "label": "The system reports on the source of the issue.",
+    "correct": [
+     "fault diagnosis and isolation"
+    ]
+   }
+  ]
+ },
+ "725": {
+  "items": [
+   "implements changes via an SSH terminal",
+   "manages device configurations on a per-device basis",
+   "monitors the cloud for software updates",
+   "security is managed near the perimeter of the network with firewalls, VPNs, and IPS",
+   "uses CLI templates to apply a consistent configuration to multiple devices at an individual location",
+   "uses NetFlow to analyze potential security threats throughout the network and take appropriate action on that traffic"
+  ],
+  "buckets": [
+   {
+    "label": "Cisco DNA Center Device Management",
+    "correct": [
+     "monitors the cloud for software updates",
+     "uses CLI templates to apply a consistent configuration to multiple devices at an individual location",
+     "uses NetFlow to analyze potential security threats throughout the network and take appropriate action on that traffic"
+    ]
+   },
+   {
+    "label": "Traditional Device Management",
+    "correct": [
+     "implements changes via an SSH terminal",
+     "manages device configurations on a per-device basis",
+     "security is managed near the perimeter of the network with firewalls, VPNs, and IPS"
+    ]
+   }
+  ]
+ },
+ "811": {
+  "items": [
+   "802.11a",
+   "802.11b",
+   "802.11g",
+   "802.11n 2.4 GHz",
+   "802.11n 5 Ghz"
+  ],
+  "buckets": [
+   {
+    "label": "J Non-Overlapping Channels",
+    "correct": [
+     "802.11a",
+     "802.11b",
+     "802.11n 2.4 GHz"
+    ]
+   },
+   {
+    "label": "2J Non-Overlapping Channels",
+    "correct": [
+     "802.11g",
+     "802.11n 5 Ghz"
+    ]
+   }
+  ]
+ },
+ "960": {
+  "items": [
+   "ip domain-lookup",
+   "ip domain-name",
+   "ip host switch_1 192.168.0.1",
+   "ip name-server",
+   "show hosts"
+  ],
+  "buckets": [
+   {
+    "label": "adds an entry to the host table",
+    "correct": [
+     "ip host switch_1 192.168.0.1"
+    ]
+   },
+   {
+    "label": "completes the FQDN of the DNS server",
+    "correct": [
+     "ip domain-name"
+    ]
+   },
+   {
+    "label": "displays address-mapping information",
+    "correct": [
+     "show hosts"
+    ]
+   },
+   {
+    "label": "enables host-to-IP-address translation",
+    "correct": [
+     "ip domain-lookup"
+    ]
+   },
+   {
+    "label": "specifies the IP address of the DNS server",
+    "correct": [
+     "ip name-server"
+    ]
+   }
+  ]
+ },
+ "1093": {
+  "items": [
+   "is ideal over longer distances with little loss of integrity",
+   "uses a single wavelength on light",
+   "has a core diameter of either 62.5 or 50 microns",
+   "is typically used for DWDM optical systems spanning long distances"
+  ],
+  "buckets": [
+   {
+    "label": "single-mode fiber",
+    "correct": [
+     "is ideal over longer distances with little loss of integrity",
+     "uses a single wavelength on light"
+    ]
+   },
+   {
+    "label": "multimode fiber",
+    "correct": [
+     "is typically used for DWDM optical systems spanning long distances",
+     "has a core diameter of either 62.5 or 50 microns"
+    ]
+   }
+  ]
+ },
+ "1144": {
+  "items": [
+   "has a unicast source sent to a group",
+   "is unable to route on the internet",
+   "allows sites to be combined without address conflicts",
+   "sends packets to a group address rather than a single address"
+  ],
+  "buckets": [
+   {
+    "label": "Unique Local",
+    "correct": [
+     "is unable to route on the internet",
+     "allows sites to be combined without address conflicts"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "has a unicast source sent to a group",
+     "sends packets to a group address rather than a single address"
+    ]
+   }
+  ]
+ },
+ "1298": {
+  "items": [
+   "transmits signals using pulses of light",
+   "has minimal light reflection as the signal travels down the core",
+   "contains a conductor, bedding, and sheathing",
+   "comprised of shielded or unshielded twisted pairs"
+  ],
+  "buckets": [
+   {
+    "label": "copper",
+    "correct": [
+     "comprised of shielded or unshielded twisted pairs",
+     "contains a conductor, bedding, and sheathing"
+    ]
+   },
+   {
+    "label": "single-mode fiber",
+    "correct": [
+     "transmits signals using pulses of light",
+     "has minimal light reflection as the signal travels down the core"
+    ]
+   }
+  ]
+ },
+ "148": {
+  "items": [
+   "AAAA",
+   "CNAME",
+   "NS",
+   "PTR",
+   "SOA"
+  ],
+  "buckets": [
+   {
+    "label": "aliases one name to another",
+    "correct": [
+     "CNAME"
+    ]
+   },
+   {
+    "label": "associates the domain serial number with its owner",
+    "correct": [
+     "SOA"
+    ]
+   },
+   {
+    "label": "correlates a domain with its authoritative name servers",
+    "correct": [
+     "NS"
+    ]
+   },
+   {
+    "label": "correlates a host name with an IP address",
+    "correct": [
+     "AAAA"
+    ]
+   },
+   {
+    "label": "supports reverse name lookups",
+    "correct": [
+     "PTR"
+    ]
+   }
+  ]
+ },
+ "284": {
+  "items": [
+   "configure the BPDU guard feature",
+   "configure the dynamic ARP inspection feature",
+   "configure the root guard feature",
+   "configure a VLAN access control list"
+  ],
+  "buckets": [
+   {
+    "label": "802.1q double tagging",
+    "correct": [
+     "configure a VLAN access control list"
+    ]
+   },
+   {
+    "label": "ARP spoofing",
+    "correct": [
+     "configure the dynamic ARP inspection feature"
+    ]
+   },
+   {
+    "label": "unwanted superior BPDUs",
+    "correct": [
+     "configure the root guard feature"
+    ]
+   },
+   {
+    "label": "unwanted BPDUs on Port-Fast enabled interfaces",
+    "correct": [
+     "configure the BPDU guard feature"
+    ]
+   }
+  ]
+ },
+ "592": {
+  "items": [
+   "provides local control for network segments using a client-server scheme",
+   "uses authoritative servers for record keeping",
+   "maintains an address pool",
+   "associates hostnames to IP address",
+   "offers domain name server configuration",
+   "reduces the administrative burden for onboarding end users",
+   "assigns IP addresses to local hosts for a configurable lease time"
+  ],
+  "buckets": [
+   {
+    "label": "function",
+    "correct": [
+     "maintains an address pool"
+    ]
+   },
+   {
+    "label": "function",
+    "correct": [
+     "offers domain name server configuration"
+    ]
+   },
+   {
+    "label": "function",
+    "correct": [
+     "reduces the administrative burden for onboarding end users"
+    ]
+   },
+   {
+    "label": "function",
+    "correct": [
+     "assigns IP addresses to local hosts for a configurable lease time"
+    ]
+   }
+  ]
+ },
+ "729": {
+  "items": [
+   "accounting",
+   "authentication",
+   "authorization",
+   "CoA"
+  ],
+  "buckets": [
+   {
+    "label": "tracks activity",
+    "correct": [
+     "accounting"
+    ]
+   },
+   {
+    "label": "updates session attributes",
+    "correct": [
+     "CoA"
+    ]
+   },
+   {
+    "label": "verifies access rights",
+    "correct": [
+     "authorization"
+    ]
+   },
+   {
+    "label": "verifies identity",
+    "correct": [
+     "authentication"
+    ]
+   }
+  ]
+ },
+ "832": {
+  "items": [
+   "broad network access",
+   "measured service",
+   "on-demand self-service",
+   "rapid elasticity",
+   "resource pooling"
+  ],
+  "buckets": [
+   {
+    "label": "The consumer can choose when to start or stop using the service.",
+    "correct": [
+     "on-demand self-service"
+    ]
+   },
+   {
+    "label": "The provider can bill the consumer in accordance with the level of usage.",
+    "correct": [
+     "measured service"
+    ]
+   },
+   {
+    "label": "The provider allocates CPU, memory, and disk from its shared compute resources to multiple customers.",
+    "correct": [
+     "resource pooling"
+    ]
+   },
+   {
+    "label": "The resource pool can expand quickly to meet demand.",
+    "correct": [
+     "rapid elasticity"
+    ]
+   },
+   {
+    "label": "The service is available from many types of devices and networks.",
+    "correct": [
+     "broad network access"
+    ]
+   }
+  ]
+ },
+ "963": {
+  "items": [
+   "ip dns server",
+   "ip domain list",
+   "ip domain lookup source-interface",
+   "ip domain name",
+   "ip host",
+   "ip name-server"
+  ],
+  "buckets": [
+   {
+    "label": "enables DNS lookup on an individual interface",
+    "correct": [
+     "ip domain lookup source-interface"
+    ]
+   },
+   {
+    "label": "enables the DNS server on the device",
+    "correct": [
+     "ip dns server"
+    ]
+   },
+   {
+    "label": "identifies a DNS server to provide lookup services",
+    "correct": [
+     "ip name-server"
+    ]
+   },
+   {
+    "label": "specifies a sequence of domain names",
+    "correct": [
+     "ip domain list"
+    ]
+   },
+   {
+    "label": "specifies the default domain to append to unqualified host names",
+    "correct": [
+     "ip domain name"
+    ]
+   },
+   {
+    "label": "statically maps an IP address to a hostname",
+    "correct": [
+     "ip host"
+    ]
+   }
+  ]
+ },
+ "1101": {
+  "items": [
+   "ff00:0a7c:cf36:cd7c:6dad:44fa:c11c:12",
+   "fe80:27bb:1ef9:6b3d:b347:686f:f3b7:7",
+   "fc00:9e81:2346:4929:7fec:34e9:7b8c:3",
+   "2000:0962:6dee:8c78:93b8:c429:c78d:1"
+  ],
+  "buckets": [
+   {
+    "label": "Global Unicast",
+    "correct": [
+     "2000:0962:6dee:8c78:93b8:c429:c78d:1"
+    ]
+   },
+   {
+    "label": "Unique Local",
+    "correct": [
+     "fc00:9e81:2346:4929:7fec:34e9:7b8c:3"
+    ]
+   },
+   {
+    "label": "Link-Local Unicast",
+    "correct": [
+     "fe80:27bb:1ef9:6b3d:b347:686f:f3b7:7"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "ff00:0a7c:cf36:cd7c:6dad:44fa:c11c:12"
+    ]
+   }
+  ]
+ },
+ "1147": {
+  "items": [
+   "database synchronization traffic",
+   "standard Web browsing traffic",
+   "video traffic",
+   "VoIP traffic"
+  ],
+  "buckets": [
+   {
+    "label": "best effort",
+    "correct": [
+     "standard Web browsing traffic"
+    ]
+   },
+   {
+    "label": "policing",
+    "correct": [
+     "video traffic"
+    ]
+   },
+   {
+    "label": "priority queue",
+    "correct": [
+     "VoIP traffic"
+    ]
+   },
+   {
+    "label": "shaping",
+    "correct": [
+     "database synchronization traffic"
+    ]
+   }
+  ]
+ },
+ "1301": {
+  "items": [
+   "sends packets to a group address rather than a single address",
+   "confined to a single link",
+   "provides one-to-many communications",
+   "serves as the next-hop addresses in IGP"
+  ],
+  "buckets": [
+   {
+    "label": "Multicast",
+    "correct": [
+     "sends packets to a group address rather than a single address",
+     "provides one-to-many communications"
+    ]
+   },
+   {
+    "label": "Link-Local Address",
+    "correct": [
+     "confined to a single link",
+     "serves as the next-hop addresses in IGP"
+    ]
+   }
+  ]
+ },
+ "150": {
+  "items": [
+   "3ffe:e54d:620:a87a::f00d",
+   "fe80::a00:27ff:feeb:89aa",
+   "ff05::1:3",
+   "fd6d:c83b:5cef:b6b2::1"
+  ],
+  "buckets": [
+   {
+    "label": "Global Unicast",
+    "correct": [
+     "3ffe:e54d:620:a87a::f00d"
+    ]
+   },
+   {
+    "label": "Link-Local Unicast",
+    "correct": [
+     "fe80::a00:27ff:feeb:89aa"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "ff05::1:3"
+    ]
+   },
+   {
+    "label": "Unique Local",
+    "correct": [
+     "fd6d:c83b:5cef:b6b2::1"
+    ]
+   }
+  ]
+ },
+ "290": {
+  "items": [
+   "console",
+   "HTTPS",
+   "SSH",
+   "Telnet"
+  ],
+  "buckets": [
+   {
+    "label": "supports clear-text connections to the controller CLI",
+    "correct": [
+     "Telnet"
+    ]
+   },
+   {
+    "label": "supports encrypted access to CLI and a secure channel for data transfer",
+    "correct": [
+     "SSH"
+    ]
+   },
+   {
+    "label": "supports physical connections over a serial cable",
+    "correct": [
+     "console"
+    ]
+   },
+   {
+    "label": "supports secure web access for management of the device",
+    "correct": [
+     "HTTPS"
+    ]
+   }
+  ]
+ },
+ "614": {
+  "items": [
+   "controls the actions that a user can perform",
+   "provides analytical information for the network administrator",
+   "records user activities",
+   "restricts the services that are available to a user",
+   "verifies the password associated with a user",
+   "identifies the user"
+  ],
+  "buckets": [
+   {
+    "label": "Authentication",
+    "correct": [
+     "verifies the password associated with a user",
+     "identifies the user"
+    ]
+   },
+   {
+    "label": "Authorization",
+    "correct": [
+     "controls the actions that a user can perform",
+     "restricts the services that are available to a user"
+    ]
+   },
+   {
+    "label": "Accounting",
+    "correct": [
+     "provides analytical information for the network administrator",
+     "records user activities"
+    ]
+   }
+  ]
+ },
+ "732": {
+  "items": [
+   "multitenancy",
+   "on-demand",
+   "resiliency",
+   "scalability",
+   "workload movement"
+  ],
+  "buckets": [
+   {
+    "label": "One or more clients can be hosted with the same phisical or virtual infrastructure",
+    "correct": [
+     "multitenancy"
+    ]
+   },
+   {
+    "label": "Resources can be added and removed as needed to support current workload and tasks",
+    "correct": [
+     "scalability"
+    ]
+   },
+   {
+    "label": "Tasks can be migrated to different physical locations to increase efficiency or reduce cost.",
+    "correct": [
+     "workload movement"
+    ]
+   },
+   {
+    "label": "Resources are dedicated only when necessary instead of on a permanent",
+    "correct": [
+     "on-demand"
+    ]
+   },
+   {
+    "label": "Tasks and data residing on a failed server can be seamlessly migrated to other physical resources.",
+    "correct": [
+     "resiliency"
+    ]
+   }
+  ]
+ },
+ "852": {
+  "items": [
+   "dynamic access",
+   "private",
+   "static access",
+   "trunk",
+   "tunnel"
+  ],
+  "buckets": [
+   {
+    "label": "allows the port to belong to one VLAN when manually configured",
+    "correct": [
+     "static access"
+    ]
+   },
+   {
+    "label": "allows the port to be assigned automatically to one VLAN",
+    "correct": [
+     "dynamic access"
+    ]
+   },
+   {
+    "label": "allows the port to belong to one or more VLANs",
+    "correct": [
+     "trunk"
+    ]
+   },
+   {
+    "label": "allows the port to support a single VLAN across a service-provider network",
+    "correct": [
+     "tunnel"
+    ]
+   },
+   {
+    "label": "allows the port to communicate with others within the same community VLAN",
+    "correct": [
+     "private"
+    ]
+   }
+  ]
+ },
+ "970": {
+  "items": [
+   "Configure the 802.1x authentication protocol",
+   "Configure the DHCP snooping feature",
+   "Configure the native VLAN with a nondefault VLAN",
+   "Disable Dynamic Trunking Protocol – switch-spoofing VLAN-hopping attack"
+  ],
+  "buckets": [
+   {
+    "label": "802.1q double-tagging VLAN-hopping attack",
+    "correct": [
+     "Configure the native VLAN with a nondefault VLAN"
+    ]
+   },
+   {
+    "label": "MAC flooding attack",
+    "correct": [
+     "Configure the 802.1x authentication protocol"
+    ]
+   },
+   {
+    "label": "man-in-the-middle spoofing attack",
+    "correct": [
+     "Disable Dynamic Trunking Protocol – switch-spoofing VLAN-hopping attack"
+    ]
+   },
+   {
+    "label": "switch-spoofing VLAN-hopping attack",
+    "correct": [
+     "Configure the DHCP snooping feature"
+    ]
+   }
+  ]
+ },
+ "1102": {
+  "items": [
+   "may be used by multiple organizations at the same time",
+   "sends packets to a group address rather than a single address",
+   "provides one-to-many communications",
+   "allows sites to be combined without address conflicts"
+  ],
+  "buckets": [
+   {
+    "label": "Unique Local",
+    "correct": [
+     "may be used by multiple organizations at the same time",
+     "allows sites to be combined without address conflicts"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "sends packets to a group address rather than a single address",
+     "provides one-to-many communications"
+    ]
+   }
+  ]
+ },
+ "1153": {
+  "items": [
+   "contains a conductor, bedding, and sheathing",
+   "is typically used for DWDM optical systems spanning long distances",
+   "is typically used in small office applications",
+   "eliminates distortion from overlapping light pulses"
+  ],
+  "buckets": [
+   {
+    "label": "copper",
+    "correct": [
+     "contains a conductor, bedding, and sheathing",
+     "is typically used in small office applications"
+    ]
+   },
+   {
+    "label": "single-mode fiber",
+    "correct": [
+     "is typically used for DWDM optical systems spanning long distances",
+     "eliminates distortion from overlapping light pulses"
+    ]
+   }
+  ]
+ },
+ "1263": {
+  "items": [
+   "counterpart of private IPv4 addresses",
+   "publicly routable in the same way as IPv4 addresses",
+   "provides for one-to-one communication",
+   "may be used by multiple organizations at the same time"
+  ],
+  "buckets": [
+   {
+    "label": "Unique Local",
+    "correct": [
+     "may be used by multiple organizations at the same time",
+     "counterpart of private IPv4 addresses"
+    ]
+   },
+   {
+    "label": "Global Unicast Address",
+    "correct": [
+     "publicly routable in the same way as IPv4 addresses",
+     "provides for one-to-one communication"
+    ]
+   }
+  ]
+ },
+ "1309": {
+  "items": [
+   "comprised of shielded and unshielded twisted pairs",
+   "comprised of insulated glass strands",
+   "is affected by electrical and magnetic interference",
+   "uses a single wavelength of light"
+  ],
+  "buckets": [
+   {
+    "label": "cooper",
+    "correct": [
+     "comprised of shielded and unshielded twisted pairs",
+     "is affected by electrical and magnetic interference"
+    ]
+   },
+   {
+    "label": "single-mode fiber",
+    "correct": [
+     "comprised of insulated glass strands",
+     "uses a single wavelength of light"
+    ]
+   }
+  ]
+ },
+ "153": {
+  "items": [
+   "192.168.1.1",
+   "192.168.1.20",
+   "192.168.1.254",
+   "192.168.1.255",
+   "B8-76-3F-7C-57-DF"
+  ],
+  "buckets": [
+   {
+    "label": "broadcast address",
+    "correct": [
+     "192.168.1.255"
+    ]
+   },
+   {
+    "label": "default gateway",
+    "correct": [
+     "192.168.1.1"
+    ]
+   },
+   {
+    "label": "host IP address",
+    "correct": [
+     "192.168.1.20"
+    ]
+   },
+   {
+    "label": "last assignable IP address in the subnet",
+    "correct": [
+     "192.168.1.254"
+    ]
+   },
+   {
+    "label": "MAC address",
+    "correct": [
+     "B8-76-3F-7C-57-DF"
+    ]
+   }
+  ]
+ },
+ "330": {
+  "items": [
+   "configured and managed by a WLC",
+   "managed from a Web-based dashboard",
+   "accessible for management via Telnet, SSH, or a Web GUI",
+   "supports different operational modes",
+   "supports automatic deployment"
+  ],
+  "buckets": [
+   {
+    "label": "Cloud-Based Access Point",
+    "correct": [
+     "managed from a Web-based dashboard",
+     "supports automatic deployment"
+    ]
+   },
+   {
+    "label": "Lightweight Access Point",
+    "correct": [
+     "configured and managed by a WLC",
+     "supports different operational modes"
+    ]
+   }
+  ]
+ },
+ "617": {
+  "items": [
+   "web policy",
+   "Passthrough",
+   "WPA+WPA2",
+   "802.1X"
+  ],
+  "buckets": [
+   {
+    "label": "Layer 2 Security Mechanisms",
+    "correct": [
+     "WPA+WPA2",
+     "802.1X"
+    ]
+   },
+   {
+    "label": "Layer 3 Security Mechanisms (for WLAN)",
+    "correct": [
+     "web policy",
+     "Passthrough"
+    ]
+   }
+  ]
+ },
+ "753": {
+  "items": [
+   "This type allows better control over how networks work and how networks are configured.",
+   "This type enables networks to integrate with applications through APIs.",
+   "New devices are configured using the physical infrastructure.",
+   "This type provisions resources from a centralized location.",
+   "This type requires a distributed control plane."
+  ],
+  "buckets": [
+   {
+    "label": "Controller-Based Networking",
+    "correct": [
+     "This type allows better control over how networks work and how networks are configured.",
+     "This type enables networks to integrate with applications through APIs.",
+     "This type provisions resources from a centralized location."
+    ]
+   },
+   {
+    "label": "Traditional Networking",
+    "correct": [
+     "New devices are configured using the physical infrastructure.",
+     "This type requires a distributed control plane."
+    ]
+   }
+  ]
+ },
+ "868": {
+  "items": [
+   "Appropriate for a small-business environment.",
+   "Work is divided between the access point and the controller.",
+   "The access points transmit beacon frames.",
+   "Supports per device configuration and management.",
+   "Uses the CAPWAP tunneling protocol."
+  ],
+  "buckets": [
+   {
+    "label": "Split-MAC",
+    "correct": [
+     "Work is divided between the access point and the controller.",
+     "Uses the CAPWAP tunneling protocol.",
+     "The access points transmit beacon frames."
+    ]
+   },
+   {
+    "label": "Autonomous",
+    "correct": [
+     "Appropriate for a small-business environment.",
+     "Supports per device configuration and management."
+    ]
+   }
+  ]
+ },
+ "871": {
+  "items": [
+   "access point",
+   "virtual interface",
+   "dynamic interface",
+   "service port",
+   "wireless LAN controller"
+  ],
+  "buckets": [
+   {
+    "label": "manages access points",
+    "correct": [
+     "wireless LAN controller"
+    ]
+   },
+   {
+    "label": "provides Wi-Fi devices with a connection to a wired network",
+    "correct": [
+     "access point"
+    ]
+   },
+   {
+    "label": "used for out-of-band management",
+    "correct": [
+     "service port"
+    ]
+   },
+   {
+    "label": "used for guest authentication",
+    "correct": [
+     "dynamic interface"
+    ]
+   },
+   {
+    "label": "applied to the WLAN for wireless client communication",
+    "correct": [
+     "virtual interface"
+    ]
+   }
+  ]
+ },
+ "975": {
+  "items": [
+   "It grants access to network assets, such as FTP servers.",
+   "It restricts the CLI commands that a user is able to perform.",
+   "It performs user validation via TACACS+.",
+   "It records the duration of each connection.",
+   "It supports User Access Reporting.",
+   "It verifies “who you are”."
+  ],
+  "buckets": [
+   {
+    "label": "Authentication",
+    "correct": [
+     "It performs user validation via TACACS+.",
+     "It verifies “who you are”."
+    ]
+   },
+   {
+    "label": "Authorization",
+    "correct": [
+     "It grants access to network assets, such as FTP servers.",
+     "It restricts the CLI commands that a user is able to perform."
+    ]
+   }
+  ]
+ },
+ "1103": {
+  "items": [
+   "may be used by multiple organizations at the same time",
+   "attached to a single subnet",
+   "required on all IPv6 devices",
+   "is a counterpart of private IPv4 address"
+  ],
+  "buckets": [
+   {
+    "label": "Unique Local",
+    "correct": [
+     "may be used by multiple organizations at the same time",
+     "is a counterpart of private IPv4 address"
+    ]
+   },
+   {
+    "label": "Link-Local Address",
+    "correct": [
+     "attached to a single subnet",
+     "required on all IPv6 devices"
+    ]
+   }
+  ]
+ },
+ "1155": {
+  "items": [
+   "DELETE",
+   "GET",
+   "PATCH",
+   "POST",
+   "PUT"
+  ],
+  "buckets": [
+   {
+    "label": "creates a subordinate resource under the specified URI",
+    "correct": [
+     "POST"
+    ]
+   },
+   {
+    "label": "erases a specific resource",
+    "correct": [
+     "DELETE"
+    ]
+   },
+   {
+    "label": "fully replaces the current version of a specific resource with new content from the payload",
+    "correct": [
+     "PUT"
+    ]
+   },
+   {
+    "label": "partially modifies a specific resource",
+    "correct": [
+     "PATCH"
+    ]
+   },
+   {
+    "label": "requests specific information about a resource",
+    "correct": [
+     "GET"
+    ]
+   }
+  ]
+ },
+ "154": {
+  "items": [
+   "domain",
+   "cache",
+   "name resolver",
+   "DNS",
+   "no ip domain-lookup"
+  ],
+  "buckets": [
+   {
+    "label": "service that maps hostname to IP addresses",
+    "correct": [
+     "DNS"
+    ]
+   },
+   {
+    "label": "local database of address mappings that improves name resolution performance",
+    "correct": [
+     "cache"
+    ]
+   },
+   {
+    "label": "in response to client requests, queries a name server for IP address information",
+    "correct": [
+     "name resolver"
+    ]
+   },
+   {
+    "label": "component of a URL that indicates the location or organization type",
+    "correct": [
+     "domain"
+    ]
+   },
+   {
+    "label": "disables DNS services on a Cisco device",
+    "correct": [
+     "no ip domain-lookup"
+    ]
+   }
+  ]
+ },
+ "336": {
+  "items": [
+   "It supports real-time Wi-Fi client troubleshooting when network engineers are offsite.",
+   "It captures and forwards packets on a specific wireless channel.",
+   "It enables enhanced RFID-tag location tracking.",
+   "It provides air-quality data and interference detection across all enabled channels.",
+   "It supports analytics for wireless performance testing.",
+   "It supports software that analyzes wireless frames on a remote device."
+  ],
+  "buckets": [
+   {
+    "label": "Monitor",
+    "correct": [
+     "It enables enhanced RFID-tag location tracking.",
+     "It provides air-quality data and interference detection across all enabled channels."
+    ]
+   },
+   {
+    "label": "Sensor",
+    "correct": [
+     "It supports real-time Wi-Fi client troubleshooting when network engineers are offsite.",
+     "It supports analytics for wireless performance testing."
+    ]
+   },
+   {
+    "label": "Sniffer",
+    "correct": [
+     "It captures and forwards packets on a specific wireless channel.",
+     "It supports software that analyzes wireless frames on a remote device."
+    ]
+   }
+  ]
+ },
+ "623": {
+  "items": [
+   "configure 802.1x authenticate",
+   "configure DHCP snooping",
+   "configure the native VLAN with a nondefault VLAN ID",
+   "disable DTP"
+  ],
+  "buckets": [
+   {
+    "label": "802.1q double-tagging VLAN-hopping attack",
+    "correct": [
+     "configure the native VLAN with a nondefault VLAN ID"
+    ]
+   },
+   {
+    "label": "MAC flooding attack",
+    "correct": [
+     "configure 802.1x authenticate"
+    ]
+   },
+   {
+    "label": "man-in-the-middle spoofing attack",
+    "correct": [
+     "configure DHCP snooping"
+    ]
+   },
+   {
+    "label": "switch-spoofing VLAN-hopping attack",
+    "correct": [
+     "disable DTP"
+    ]
+   }
+  ]
+ },
+ "757": {
+  "items": [
+   "This type deploys a consistent configuration across multiple devices.",
+   "A distributed control plane is needed.",
+   "This type requires a distributed management plane.",
+   "Southbound APIs are used to apply configurations.",
+   "Northbound APIs interact with end devices."
+  ],
+  "buckets": [
+   {
+    "label": "Controller-Based Networking",
+    "correct": [
+     "This type deploys a consistent configuration across multiple devices.",
+     "Southbound APIs are used to apply configurations."
+    ]
+   },
+   {
+    "label": "Traditional Networking",
+    "correct": [
+     "A distributed control plane is needed.",
+     "This type requires a distributed management plane."
+    ]
+   }
+  ]
+ },
+ "989": {
+  "items": [
+   "It assigns per-user attributes.",
+   "It reaches the CLI commands that a user is able to perform.",
+   "It permits and derives login attempts.",
+   "It records the amount of network resources consumed by the user.",
+   "It supports local, PPP, RADIUS, and TACACS+ options.",
+   "It tracks the services that a user is using."
+  ],
+  "buckets": [
+   {
+    "label": "Authentication",
+    "correct": [
+     "It permits and derives login attempts.",
+     "It supports local, PPP, RADIUS, and TACACS+ options."
+    ]
+   },
+   {
+    "label": "Authorization",
+    "correct": [
+     "It assigns per-user attributes.",
+     "It reaches the CLI commands that a user is able to perform."
+    ]
+   }
+  ]
+ },
+ "1112": {
+  "items": [
+   "DHCP server",
+   "snooping binding database",
+   "spurious DHCP server",
+   "trusted",
+   "untrusted"
+  ],
+  "buckets": [
+   {
+    "label": "list of hosts on the network that are unknown to the administrative domain",
+    "correct": [
+     "snooping binding database"
+    ]
+   },
+   {
+    "label": "network component that propagates IP addresses to hosts on the network",
+    "correct": [
+     "DHCP server"
+    ]
+   },
+   {
+    "label": "internal device under the control of the network administrator",
+    "correct": [
+     "trusted"
+    ]
+   },
+   {
+    "label": "unknown DHCP server within an adminictrative domain",
+    "correct": [
+     "spurious DHCP server"
+    ]
+   },
+   {
+    "label": "default state of all interfaces",
+    "correct": [
+     "untrusted"
+    ]
+   }
+  ]
+ },
+ "1165": {
+  "items": [
+   "is easy to tap into and obtain secure information",
+   "transmits data of up to 40Gbit/s over long distances",
+   "is affected by electrical and magnetic interference",
+   "has minimal light reflection as it travels down the core"
+  ],
+  "buckets": [
+   {
+    "label": "copper",
+    "correct": [
+     "is easy to tap into and obtain secure information",
+     "is affected by electrical and magnetic interference"
+    ]
+   },
+   {
+    "label": "single-mode fiber",
+    "correct": [
+     "transmits data of up to 40Gbit/s over long distances",
+     "has minimal light reflection as it travels down the core"
+    ]
+   }
+  ]
+ },
+ "1267": {
+  "items": [
+   "is easy to tap into and obtain secure information",
+   "transmits signals using pulses of light",
+   "transmits data in the form of electronic signals",
+   "contains a core, cladding, and coating"
+  ],
+  "buckets": [
+   {
+    "label": "copper",
+    "correct": [
+     "is easy to tap into and obtain secure information",
+     "transmits data in the form of electronic signals"
+    ]
+   },
+   {
+    "label": "multi-mode fiber",
+    "correct": [
+     "transmits signals using pulses of light",
+     "contains a core, cladding, and coating"
+    ]
+   }
+  ]
+ },
+ "1323": {
+  "items": [
+   "contains a conductor, bedding, and sheathing",
+   "contains a core, cladding, and coating",
+   "affected by electrical and magnetic interference",
+   "comprised of insulated glass strands"
+  ],
+  "buckets": [
+   {
+    "label": "cooper",
+    "correct": [
+     "contains a conductor, bedding, and sheathing",
+     "affected by electrical and magnetic interference"
+    ]
+   },
+   {
+    "label": "single-mode fiber",
+    "correct": [
+     "contains a core, cladding, and coating",
+     "comprised of insulated glass strands"
+    ]
+   }
+  ]
+ },
+ "155": {
+  "items": [
+   "transmitted based on data contained in the packet without the need for a data channel",
+   "requires the client and the server to establish a connect on before sending the packet",
+   "used to reliably share files between devices",
+   "appropriate for streaming operations with minimal latency"
+  ],
+  "buckets": [
+   {
+    "label": "TCP",
+    "correct": [
+     "used to reliably share files between devices",
+     "requires the client and the server to establish a connect on before sending the packet"
+    ]
+   },
+   {
+    "label": "UDP",
+    "correct": [
+     "appropriate for streaming operations with minimal latency",
+     "transmitted based on data contained in the packet without the need for a data channel"
+    ]
+   }
+  ]
+ },
+ "338": {
+  "items": [
+   "MIB",
+   "SNMP agent",
+   "SNMP manager",
+   "SNMP trap"
+  ],
+  "buckets": [
+   {
+    "label": "collection of variables that can be monitored",
+    "correct": [
+     "MIB"
+    ]
+   },
+   {
+    "label": "unsolicited message",
+    "correct": [
+     "SNMP trap"
+    ]
+   },
+   {
+    "label": "responds to status requests and requests for information about a device",
+    "correct": [
+     "SNMP agent"
+    ]
+   },
+   {
+    "label": "resides on an NMS",
+    "correct": [
+     "SNMP manager"
+    ]
+   }
+  ]
+ },
+ "633": {
+  "items": [
+   "Configure BPDU guard.",
+   "Configure dynamic ARP inspection.",
+   "Configure root guard.",
+   "Configure VACL."
+  ],
+  "buckets": [
+   {
+    "label": "802.1q double tagging",
+    "correct": [
+     "Configure VACL."
+    ]
+   },
+   {
+    "label": "ARP spoofing",
+    "correct": [
+     "Configure dynamic ARP inspection."
+    ]
+   },
+   {
+    "label": "unwanted superior BPDUs",
+    "correct": [
+     "Configure root guard."
+    ]
+   },
+   {
+    "label": "unwanted BPDUs on PortFast-enabled interfaces",
+    "correct": [
+     "Configure BPDU guard."
+    ]
+   }
+  ]
+ },
+ "761": {
+  "items": [
+   "DELETE",
+   "GET",
+   "POST",
+   "PATCH",
+   "PUT"
+  ],
+  "buckets": [
+   {
+    "label": "creates a resource and returns its URI in the response header",
+    "correct": [
+     "POST"
+    ]
+   },
+   {
+    "label": "creates or replaces a previously modified resource using information in the request body",
+    "correct": [
+     "PUT"
+    ]
+   },
+   {
+    "label": "removes a resource",
+    "correct": [
+     "DELETE"
+    ]
+   },
+   {
+    "label": "retrieves a list of a resource's URIs",
+    "correct": [
+     "GET"
+    ]
+   },
+   {
+    "label": "updates a resource using instructions included in the request body",
+    "correct": [
+     "PATCH"
+    ]
+   }
+  ]
+ },
+ "897": {
+  "items": [
+   "1.1.1.1",
+   "10.10.13.126",
+   "10.10.13.129",
+   "10.10.13.150",
+   "10.10.13.209",
+   "209.165.200.30"
+  ],
+  "buckets": [
+   {
+    "label": "Router2",
+    "correct": [
+     "10.10.13.126"
+    ]
+   },
+   {
+    "label": "Router3",
+    "correct": [
+     "10.10.13.129"
+    ]
+   },
+   {
+    "label": "Router5",
+    "correct": [
+     "10.10.13.209"
+    ]
+   },
+   {
+    "label": "Internet cloud",
+    "correct": [
+     "1.1.1.1"
+    ]
+   },
+   {
+    "label": "Router4",
+    "correct": [
+     "10.10.13.150"
+    ]
+   },
+   {
+    "label": "MPLS cloud",
+    "correct": [
+     "209.165.200.30"
+    ]
+   }
+  ]
+ },
+ "992": {
+  "items": [
+   "It grants access to network assets, such as FTP servers.",
+   "It limits the services available to a user.",
+   "It performs user validation via TACACS+.",
+   "It records the duration of each connection.",
+   "It supports User Access Reporting.",
+   "It verifies “who you are”."
+  ],
+  "buckets": [
+   {
+    "label": "Accounting",
+    "correct": [
+     "It records the duration of each connection.",
+     "It supports User Access Reporting."
+    ]
+   },
+   {
+    "label": "Authorization",
+    "correct": [
+     "It limits the services available to a user.",
+     "It grants access to network assets, such as FTP servers."
+    ]
+   }
+  ]
+ },
+ "1068": {
+  "items": [
+   "ff00:af60:767d:9258:e688:c478:ec75:12",
+   "fe80:b680:8af8:7cc1:6df1:71e1:b8f3:7",
+   "fc00:a4d3:af37:cbc6:cdbd:b73d:5561:3",
+   "2000:6794:5699:e122:42e0:4236:085d:1"
+  ],
+  "buckets": [
+   {
+    "label": "Global Unicast",
+    "correct": [
+     "2000:6794:5699:e122:42e0:4236:085d:1"
+    ]
+   },
+   {
+    "label": "Unique Local",
+    "correct": [
+     "fc00:a4d3:af37:cbc6:cdbd:b73d:5561:3"
+    ]
+   },
+   {
+    "label": "Link-Local Unicast",
+    "correct": [
+     "fe80:b680:8af8:7cc1:6df1:71e1:b8f3:7"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "ff00:af60:767d:9258:e688:c478:ec75:12"
+    ]
+   }
+  ]
+ },
+ "1114": {
+  "items": [
+   "is a counterpart of private IPv4 addresses",
+   "sends packets to a group address rather than a single address",
+   "has a unicast source sent to a group",
+   "allows sites to be combined without address conflicts"
+  ],
+  "buckets": [
+   {
+    "label": "Unique Local",
+    "correct": [
+     "is a counterpart of private IPv4 addresses",
+     "allows sites to be combined without address conflicts"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "sends packets to a group address rather than a single address",
+     "has a unicast source sent to a group"
+    ]
+   }
+  ]
+ },
+ "1170": {
+  "items": [
+   "allows sites to be combined without address conflicts",
+   "sends packets to a group address rather than a single address",
+   "is unable to route on the internet",
+   "provides one-to-many communications"
+  ],
+  "buckets": [
+   {
+    "label": "Unique Local",
+    "correct": [
+     "is unable to route on the internet",
+     "allows sites to be combined without address conflicts"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "provides one-to-many communications",
+     "sends packets to a group address rather than a single address"
+    ]
+   }
+  ]
+ },
+ "1271": {
+  "items": [
+   "is easy to tap into and obtain secure information",
+   "attenuation increases over long distances",
+   "is comprised of shielded and unshielded twisted pairs",
+   "vulnerable to damage when handled"
+  ],
+  "buckets": [
+   {
+    "label": "copper",
+    "correct": [
+     "is easy to tap into and obtain secure information",
+     "is comprised of shielded and unshielded twisted pairs"
+    ]
+   },
+   {
+    "label": "multi-mode fiber",
+    "correct": [
+     "attenuation increases over long distances",
+     "vulnerable to damage when handled"
+    ]
+   }
+  ]
+ },
+ "1325": {
+  "items": [
+   "counterpart of private IPv4 addresses",
+   "never used as a source address",
+   "provides one-to-many communications",
+   "may be used by multiple organizations at the same time"
+  ],
+  "buckets": [
+   {
+    "label": "Unique Local",
+    "correct": [
+     "counterpart of private IPv4 addresses",
+     "may be used by multiple organizations at the same time"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "never used as a source address",
+     "provides one-to-many communications"
+    ]
+   }
+  ]
+ },
+ "175": {
+  "items": [
+   "It encapsulates LWAPP traffic between the access point and the WLC in EtherType 0xBBBB.",
+   "It facilitates Layer 2 connectivity between the WLC’s wired interface and the WLAN clients.",
+   "It forwards only IP EtherType frames.",
+   "It requires IP addresses on the access point and the WLC.",
+   "It supports LWAPP tunneling within Ethernet frames and UDP packets.",
+   "It uses UDP or UDP Lite for IPv6 deployments."
+  ],
+  "buckets": [
+   {
+    "label": "Layer 2 Tunnel",
+    "correct": [
+     "It encapsulates LWAPP traffic between the access point and the WLC in EtherType 0xBBBB.",
+     "It requires IP addresses on the access point and the WLC."
+    ]
+   },
+   {
+    "label": "Layer 3 Tunnel",
+    "correct": [
+     "It supports LWAPP tunneling within Ethernet frames and UDP packets.",
+     "It uses UDP or UDP Lite for IPv6 deployments."
+    ]
+   }
+  ]
+ },
+ "383": {
+  "items": [
+   "connected",
+   "EBGP",
+   "EIGRP",
+   "OSPF",
+   "RIP",
+   "static"
+  ],
+  "buckets": [
+   {
+    "label": "1",
+    "correct": [
+     "connected"
+    ]
+   },
+   {
+    "label": "2",
+    "correct": [
+     "static"
+    ]
+   },
+   {
+    "label": "3",
+    "correct": [
+     "EBGP"
+    ]
+   },
+   {
+    "label": "4",
+    "correct": [
+     "EIGRP"
+    ]
+   },
+   {
+    "label": "5",
+    "correct": [
+     "OSPF"
+    ]
+   },
+   {
+    "label": "6",
+    "correct": [
+     "RIP"
+    ]
+   }
+  ]
+ },
+ "651": {
+  "items": [
+   "configure terminal",
+   "enable",
+   "enable secret $hf!@4fs",
+   "exit",
+   "line vty 0 4",
+   "service password-encryption"
+  ],
+  "buckets": [
+   {
+    "label": "first",
+    "correct": [
+     "enable"
+    ]
+   },
+   {
+    "label": "second",
+    "correct": [
+     "configure terminal"
+    ]
+   },
+   {
+    "label": "third",
+    "correct": [
+     "enable secret $hf!@4fs"
+    ]
+   },
+   {
+    "label": "fourth",
+    "correct": [
+     "exit"
+    ]
+   }
+  ]
+ },
+ "766": {
+  "items": [
+   "orchestrates background device configuration",
+   "provides greater flexibility for custom and non-standard configurations",
+   "relies on per-device management",
+   "supports centralized software management",
+   "supports open APIs",
+   "uses individual software management"
+  ],
+  "buckets": [
+   {
+    "label": "Cisco DNA Center",
+    "correct": [
+     "provides greater flexibility for custom and non-standard configurations",
+     "supports centralized software management",
+     "supports open APIs"
+    ]
+   },
+   {
+    "label": "Traditional",
+    "correct": [
+     "orchestrates background device configuration",
+     "relies on per-device management",
+     "uses individual software management"
+    ]
+   }
+  ]
+ },
+ "900": {
+  "items": [
+   "255.255.248.0",
+   "255.255.255.128",
+   "255.255.255.224",
+   "255.255.255.240",
+   "255.255.255.248",
+   "255.255.255.252"
+  ],
+  "buckets": [
+   {
+    "label": "10.10.13.0",
+    "correct": [
+     "255.255.255.128"
+    ]
+   },
+   {
+    "label": "10.10.13.128",
+    "correct": [
+     "255.255.255.240"
+    ]
+   },
+   {
+    "label": "10.10.13.160",
+    "correct": [
+     "255.255.255.248"
+    ]
+   },
+   {
+    "label": "10.10.13.252",
+    "correct": [
+     "255.255.255.252"
+    ]
+   }
+  ]
+ },
+ "1001": {
+  "items": [
+   "supports automation",
+   "communicates between the SDN controller and the application plane",
+   "communicates between the SDN controller and the data plane",
+   "supports data sharing between systems",
+   "supports network virtualization protocols",
+   "supports REST-based requirements",
+   "uses OpenFlow to interface between the data and control planes"
+  ],
+  "buckets": [
+   {
+    "label": "1",
+    "correct": [
+     "supports automation"
+    ]
+   },
+   {
+    "label": "2",
+    "correct": [
+     "communicates between the SDN controller and the application plane"
+    ]
+   },
+   {
+    "label": "3",
+    "correct": [
+     "supports data sharing between systems"
+    ]
+   },
+   {
+    "label": "4",
+    "correct": [
+     "supports REST-based requirements"
+    ]
+   }
+  ]
+ },
+ "1115": {
+  "items": [
+   "uses a single wavelength on light",
+   "becomes distorted at longer lengths",
+   "is typically used for internal datacenter connectivity",
+   "has minimal light reflection as it travels down the core"
+  ],
+  "buckets": [
+   {
+    "label": "multimode fiber",
+    "correct": [
+     "is typically used for internal datacenter connectivity",
+     "becomes distorted at longer lengths"
+    ]
+   },
+   {
+    "label": "single-mode fiber",
+    "correct": [
+     "uses a single wavelength on light",
+     "has minimal light reflection as it travels down the core"
+    ]
+   }
+  ]
+ },
+ "1171": {
+  "items": [
+   "fe80:ae46:d315:41c8:4593:12dc:9827:7",
+   "2000:6166:6ba9:cde4:d89e:4c4a:bdc8:1",
+   "ff00:a8bb:b2a1:7490:4ef0:f603:109b:12",
+   "fc00:382e:29e1:f7e2:1573:ff4f:04f9:3"
+  ],
+  "buckets": [
+   {
+    "label": "Global Unicast",
+    "correct": [
+     "2000:6166:6ba9:cde4:d89e:4c4a:bdc8:1"
+    ]
+   },
+   {
+    "label": "Link-Local Unicast",
+    "correct": [
+     "fe80:ae46:d315:41c8:4593:12dc:9827:7"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "ff00:a8bb:b2a1:7490:4ef0:f603:109b:12"
+    ]
+   },
+   {
+    "label": "Unique Local",
+    "correct": [
+     "fc00:382e:29e1:f7e2:1573:ff4f:04f9:3"
+    ]
+   }
+  ]
+ },
+ "1272": {
+  "items": [
+   "publicly routable in the same way as IPv4 addresses",
+   "sends packets to a group address rather than a single address",
+   "never used as a source address",
+   "routable and reachable via the Internet"
+  ],
+  "buckets": [
+   {
+    "label": "Global Unicast Address",
+    "correct": [
+     "publicly routable in the same way as IPv4 addresses",
+     "routable and reachable via the Internet"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "sends packets to a group address rather than a single address",
+     "never used as a source address"
+    ]
+   }
+  ]
+ },
+ "1327": {
+  "items": [
+   "uses templates to implement QOS configuration",
+   "ability to boost a wi-fi signal",
+   "requires a special adapter for PoE",
+   "supplies user connection data within a device group",
+   "configurable as a workgroup bridge"
+  ],
+  "buckets": [
+   {
+    "label": "Access Point",
+    "correct": [
+     "ability to boost a wi-fi signal",
+     "configurable as a workgroup bridge"
+    ]
+   },
+   {
+    "label": "Wireless LAN Controller",
+    "correct": [
+     "uses templates to implement QOS configuration",
+     "supplies user connection data within a device group"
+    ]
+   }
+  ]
+ },
+ "176": {
+  "items": [
+   "Wi-Fi option in which cells from different access points are linked together",
+   "Wi-Fi option that enables two or more clients to communicate directly without a central access point",
+   "Wi-Fi option based around one or more access points",
+   "alphanumeric text string that identifies a wireless network",
+   "entire wireless cell of an access point and the linkage to the wired network"
+  ],
+  "buckets": [
+   {
+    "label": "extended service set",
+    "correct": [
+     "Wi-Fi option in which cells from different access points are linked together"
+    ]
+   },
+   {
+    "label": "independent basic service set",
+    "correct": [
+     "Wi-Fi option that enables two or more clients to communicate directly without a central access point"
+    ]
+   },
+   {
+    "label": "infrastructure mode",
+    "correct": [
+     "Wi-Fi option based around one or more access points"
+    ]
+   },
+   {
+    "label": "SSID",
+    "correct": [
+     "alphanumeric text string that identifies a wireless network"
+    ]
+   },
+   {
+    "label": "distribution system",
+    "correct": [
+     "entire wireless cell of an access point and the linkage to the wired network"
+    ]
+   }
+  ]
+ },
+ "416": {
+  "items": [
+   "area ID",
+   "IP address",
+   "netmask",
+   "OSPF process ID",
+   "router ID",
+   "timers"
+  ],
+  "buckets": [
+   {
+    "label": "must match",
+    "correct": [
+     "area ID",
+     "netmask",
+     "timers"
+    ]
+   },
+   {
+    "label": "must be unique",
+    "correct": [
+     "IP address",
+     "router ID"
+    ]
+   }
+  ]
+ },
+ "665": {
+  "items": [
+   "switchport mode access",
+   "switchport port-security",
+   "switchport port-security mac-address 0060.3EDD.77AB",
+   "switchport port-security mac-address 00D0.D3ED.622A",
+   "switchport port-security mac-address sticky",
+   "switchport port-security maximum 2",
+   "switchport port-security violation shutdown"
+  ],
+  "buckets": [
+   {
+    "label": "1",
+    "correct": [
+     "switchport mode access"
+    ]
+   },
+   {
+    "label": "2",
+    "correct": [
+     "switchport port-security"
+    ]
+   },
+   {
+    "label": "3",
+    "correct": [
+     "switchport port-security maximum 2"
+    ]
+   },
+   {
+    "label": "4",
+    "correct": [
+     "switchport port-security mac-address sticky"
+    ]
+   }
+  ]
+ },
+ "773": {
+  "items": [
+   "This type of technology provides automation across multiple technologies and domains.",
+   "This type of technology enables consistent configuration of infrastructure resources.",
+   "Puppet is used for this type of technology.",
+   "Ansible is used for this type of technology."
+  ],
+  "buckets": [
+   {
+    "label": "Configuration Management",
+    "correct": [
+     "Puppet is used for this type of technology.",
+     "This type of technology enables consistent configuration of infrastructure resources."
+    ]
+   },
+   {
+    "label": "Orchestration",
+    "correct": [
+     "This type of technology provides automation across multiple technologies and domains.",
+     "Ansible is used for this type of technology."
+    ]
+   }
+  ]
+ },
+ "905": {
+  "items": [
+   "has heard from the neighbor device and is receiving hello packets",
+   "is forwarding packets",
+   "is ready to forward packets if the device that is currently forwarding packets fails",
+   "is transmitting and receiving hello packets",
+   "is waiting to hear from the neighbor device"
+  ],
+  "buckets": [
+   {
+    "label": "Active",
+    "correct": [
+     "is forwarding packets"
+    ]
+   },
+   {
+    "label": "Learn",
+    "correct": [
+     "is waiting to hear from the neighbor device"
+    ]
+   },
+   {
+    "label": "Listen",
+    "correct": [
+     "is transmitting and receiving hello packets"
+    ]
+   },
+   {
+    "label": "Speak",
+    "correct": [
+     "has heard from the neighbor device and is receiving hello packets"
+    ]
+   },
+   {
+    "label": "Standby",
+    "correct": [
+     "is ready to forward packets if the device that is currently forwarding packets fails"
+    ]
+   }
+  ]
+ },
+ "1008": {
+  "items": [
+   "leverages Cisco Prime Infrastructure",
+   "reduces the workload for enterprise customers",
+   "requires manual configuration of complex protocols",
+   "lacks support for SDA",
+   "uses algorithms to detect security threats",
+   "uses northbound APIs"
+  ],
+  "buckets": [
+   {
+    "label": "Traditional Campus Device Management",
+    "correct": [
+     "leverages Cisco Prime Infrastructure",
+     "reduces the workload for enterprise customers",
+     "requires manual configuration of complex protocols"
+    ]
+   },
+   {
+    "label": "Cisco DNA Center",
+    "correct": [
+     "lacks support for SDA",
+     "uses algorithms to detect security threats",
+     "uses northbound APIs"
+    ]
+   }
+  ]
+ },
+ "1081": {
+  "items": [
+   "contains a single solid conductor",
+   "is typically used for DWDM optical systems spanning long distances",
+   "eliminates distortion from overlapping light pulses",
+   "is affected by electrical and magnetic interference"
+  ],
+  "buckets": [
+   {
+    "label": "copper",
+    "correct": [
+     "contains a single solid conductor",
+     "is affected by electrical and magnetic interference"
+    ]
+   },
+   {
+    "label": "single-mode fiber",
+    "correct": [
+     "is typically used for DWDM optical systems spanning long distances",
+     "eliminates distortion from overlapping light pulses"
+    ]
+   }
+  ]
+ },
+ "1119": {
+  "items": [
+   "2000:87aa:84ab:fdd9:5ac3:41a5:ef72:1",
+   "fc00:c51f:922d:0c12:9c54:7644:28f5:3",
+   "fe80:ccc7:17f1:5d15:f611:5cea:ef92:7",
+   "ff00:520a:3e47:de13:fe6f:476e:5325:12"
+  ],
+  "buckets": [
+   {
+    "label": "Global Unicast",
+    "correct": [
+     "2000:87aa:84ab:fdd9:5ac3:41a5:ef72:1"
+    ]
+   },
+   {
+    "label": "Link-Local Unicast",
+    "correct": [
+     "fe80:ccc7:17f1:5d15:f611:5cea:ef92:7"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "ff00:520a:3e47:de13:fe6f:476e:5325:12"
+    ]
+   },
+   {
+    "label": "Unique Local",
+    "correct": [
+     "fc00:c51f:922d:0c12:9c54:7644:28f5:3"
+    ]
+   }
+  ]
+ },
+ "1275": {
+  "items": [
+   "provides centralized management and security",
+   "formats an Ethernet frame and forwards to a destination",
+   "makes forwarding decisions when in LWAP mode",
+   "used on-premise and/or cloud-based",
+   "supports both IEEE 802.11 and Ethernet standards"
+  ],
+  "buckets": [
+   {
+    "label": "Access Point",
+    "correct": [
+     "supports both IEEE 802.11 and Ethernet standards",
+     "formats an Ethernet frame and forwards to a destination"
+    ]
+   },
+   {
+    "label": "Wireless LAN Controller",
+    "correct": [
+     "used on-premise and/or cloud-based",
+     "provides centralized management and security"
+    ]
+   }
+  ]
+ },
+ "1329": {
+  "items": [
+   "is affected by electrical and magnetic interference",
+   "is ideal over longer distances with little loss of integrity",
+   "is comprised of shielded and unshielded twisted pairs",
+   "transmits signals using pulses of light"
+  ],
+  "buckets": [
+   {
+    "label": "copper",
+    "correct": [
+     "is affected by electrical and magnetic interference",
+     "is comprised of shielded and unshielded twisted pairs"
+    ]
+   },
+   {
+    "label": "single-mode fiber",
+    "correct": [
+     "transmits signals using pulses of light",
+     "is ideal over longer distances with little loss of integrity"
+    ]
+   }
+  ]
+ },
+ "182": {
+  "items": [
+   "192.168.1.1",
+   "192.168.1.20",
+   "192.168.1.254",
+   "192.168.1.255",
+   "B8-76-3F-7C-57-DF",
+   "1A-76-3F-7C-57-DF",
+   "192.168.1.0"
+  ],
+  "buckets": [
+   {
+    "label": "broadcast address",
+    "correct": [
+     "192.168.1.255"
+    ]
+   },
+   {
+    "label": "default gateway",
+    "correct": [
+     "192.168.1.1"
+    ]
+   },
+   {
+    "label": "host IP address",
+    "correct": [
+     "192.168.1.20"
+    ]
+   },
+   {
+    "label": "last assignable IP address in the subnet",
+    "correct": [
+     "192.168.1.254"
+    ]
+   },
+   {
+    "label": "MAC address",
+    "correct": [
+     "B8-76-3F-7C-57-DF"
+    ]
+   },
+   {
+    "label": "Network address",
+    "correct": [
+     "192.168.1.0"
+    ]
+   }
+  ]
+ },
+ "480": {
+  "items": [
+   "255.255.255.128",
+   "255.255.255.224",
+   "255.255.255.240",
+   "255.255.255.248",
+   "255.255.255.252"
+  ],
+  "buckets": [
+   {
+    "label": "10.10.13.0",
+    "correct": [
+     "255.255.255.128"
+    ]
+   },
+   {
+    "label": "10.10.13.144",
+    "correct": [
+     "255.255.255.240"
+    ]
+   },
+   {
+    "label": "10.10.13.160",
+    "correct": [
+     "255.255.255.248"
+    ]
+   },
+   {
+    "label": "209.165.202.128",
+    "correct": [
+     "255.255.255.224"
+    ]
+   }
+  ]
+ },
+ "667": {
+  "items": [
+   "It enables the device to allow user- or group-based access.",
+   "It leverages a RADIUS server to grant user access to a reverse Telnet session.",
+   "It records the amount of time for which a user accesses the network on a remote server.",
+   "It restricts the CLI commands that a user can perform.",
+   "It uses TACACS+ to log the configuration commands entered by a network administrator.",
+   "It verifies the user and password before granting access to the device."
+  ],
+  "buckets": [
+   {
+    "label": "Accounting",
+    "correct": [
+     "It records the amount of time for which a user accesses the network on a remote server.",
+     "It uses TACACS+ to log the configuration commands entered by a network administrator."
+    ]
+   },
+   {
+    "label": "Authorization",
+    "correct": [
+     "It leverages a RADIUS server to grant user access to a reverse Telnet session.",
+     "It restricts the CLI commands that a user can perform."
+    ]
+   }
+  ]
+ },
+ "776": {
+  "items": [
+   "fundamental configuration elements are stored in a manifest",
+   "uses TCP port 10002 for configuration push jobs",
+   "uses Ruby for fundamental configuration elements",
+   "uses SSH for remote device communication",
+   "uses TCP 8140 for communication",
+   "uses YAML for fundamental configuration elements"
+  ],
+  "buckets": [
+   {
+    "label": "Ansible",
+    "correct": [
+     "uses SSH for remote device communication",
+     "uses YAML for fundamental configuration elements"
+    ]
+   },
+   {
+    "label": "Chef",
+    "correct": [
+     "uses TCP port 10002 for configuration push jobs",
+     "uses Ruby for fundamental configuration elements"
+    ]
+   },
+   {
+    "label": "Puppet",
+    "correct": [
+     "fundamental configuration elements are stored in a manifest",
+     "uses TCP 8140 for communication"
+    ]
+   }
+  ]
+ },
+ "909": {
+  "items": [
+   "ip route 10.10.13.0 255.255.255.128 10.10.10.1",
+   "ip route 10.10.13.0 255.255.255.128 10.10.10.5",
+   "ip route 10.10.13.10 255.255.255.255 10.10.10.1",
+   "ip route 10.10.14.0 255.255.255.0 10.10.10.2",
+   "ip route 10.10.14.0 255.255.255.0 10.10.10.6",
+   "ip route 10.10.14.10 255.255.255.255 10.10.10.6"
+  ],
+  "buckets": [
+   {
+    "label": "R1",
+    "correct": [
+     "ip route 10.10.13.0 255.255.255.128 10.10.10.1"
+    ]
+   },
+   {
+    "label": "R2",
+    "correct": [
+     "ip route 10.10.13.0 255.255.255.128 10.10.10.5",
+     "ip route 10.10.14.0 255.255.255.0 10.10.10.2"
+    ]
+   },
+   {
+    "label": "R3",
+    "correct": [
+     "ip route 10.10.14.0 255.255.255.0 10.10.10.6"
+    ]
+   }
+  ]
+ },
+ "1018": {
+  "items": [
+   "executes modules via SSH by default",
+   "uses the YAML language",
+   "uses agents to manage hosts",
+   "pushes configurations to the client",
+   "requires clients to pull configurations from the server",
+   "operates without agents"
+  ],
+  "buckets": [
+   {
+    "label": "feature",
+    "correct": [
+     "executes modules via SSH by default",
+     "uses the YAML language",
+     "pushes configurations to the client",
+     "operates without agents"
+    ]
+   }
+  ]
+ },
+ "1086": {
+  "items": [
+   "contains a single solid conductor",
+   "is typically used for DWDM optical systems spanning long distances",
+   "uses a single wavelength of light",
+   "transmits data in the form of electronic signals"
+  ],
+  "buckets": [
+   {
+    "label": "copper",
+    "correct": [
+     "contains a single solid conductor",
+     "transmits data in the form of electronic signals"
+    ]
+   },
+   {
+    "label": "single-mode fiber",
+    "correct": [
+     "is typically used for DWDM optical systems spanning long distances",
+     "uses a single wavelength of light"
+    ]
+   }
+  ]
+ },
+ "1125": {
+  "items": [
+   "uses multiple wavelengths of light",
+   "has a core diameter of 9 microns",
+   "has increased attenuation over long distances",
+   "uses a single wavelength of light"
+  ],
+  "buckets": [
+   {
+    "label": "multimode fiber",
+    "correct": [
+     "uses multiple wavelengths of light",
+     "has increased attenuation over long distances"
+    ]
+   },
+   {
+    "label": "single-mode fiber",
+    "correct": [
+     "has a core diameter of 9 microns",
+     "uses a single wavelength of light"
+    ]
+   }
+  ]
+ },
+ "1277": {
+  "items": [
+   "supplies conduit for PoE implementations",
+   "used for DWDM optical systems spanning long distances",
+   "easy to tap into and obtain secure information",
+   "has a core diameter of 9 microns"
+  ],
+  "buckets": [
+   {
+    "label": "copper",
+    "correct": [
+     "supplies conduit for PoE implementations",
+     "easy to tap into and obtain secure information"
+    ]
+   },
+   {
+    "label": "single-mode fiber",
+    "correct": [
+     "used for DWDM optical systems spanning long distances",
+     "has a core diameter of 9 microns"
+    ]
+   }
+  ]
+ },
+ "187": {
+  "items": [
+   "access point",
+   "virtual interface",
+   "dynamic interface",
+   "service port",
+   "wireless LAN controller"
+  ],
+  "buckets": [
+   {
+    "label": "device that manages access points",
+    "correct": [
+     "wireless LAN controller"
+    ]
+   },
+   {
+    "label": "device that provides Wi-Fi devices with a connection to a wired network",
+    "correct": [
+     "access point"
+    ]
+   },
+   {
+    "label": "used for out of band management of a WLC",
+    "correct": [
+     "service port"
+    ]
+   },
+   {
+    "label": "used to support mobility management of the WLC",
+    "correct": [
+     "virtual interface"
+    ]
+   },
+   {
+    "label": "applied to the WLAN for wireless client communication",
+    "correct": [
+     "dynamic interface"
+    ]
+   }
+  ]
+ },
+ "523": {
+  "items": [
+   "FTP",
+   "SMTP",
+   "SNMP",
+   "SSH",
+   "TFTP",
+   "VoIP"
+  ],
+  "buckets": [
+   {
+    "label": "Connection Oriented",
+    "correct": [
+     "FTP",
+     "SMTP",
+     "SSH"
+    ]
+   },
+   {
+    "label": "Connectionless",
+    "correct": [
+     "SNMP",
+     "TFTP",
+     "VoIP"
+    ]
+   }
+  ]
+ },
+ "676": {
+  "items": [
+   "allows the user to change to enable mode",
+   "limits the user’s access permissions",
+   "log session statistics",
+   "records user commands",
+   "secures access to routers",
+   "validates user credentials"
+  ],
+  "buckets": [
+   {
+    "label": "Accounting",
+    "correct": [
+     "log session statistics",
+     "records user commands"
+    ]
+   },
+   {
+    "label": "Authentication",
+    "correct": [
+     "validates user credentials",
+     "secures access to routers"
+    ]
+   },
+   {
+    "label": "Authorization",
+    "correct": [
+     "limits the user’s access permissions",
+     "allows the user to change to enable mode"
+    ]
+   }
+  ]
+ },
+ "777": {
+  "items": [
+   "DELETE",
+   "GET",
+   "POST",
+   "PUT",
+   "PATCH"
+  ],
+  "buckets": [
+   {
+    "label": "creates a resource on the server",
+    "correct": [
+     "POST"
+    ]
+   },
+   {
+    "label": "reads data from the server",
+    "correct": [
+     "GET"
+    ]
+   },
+   {
+    "label": "removes a resource from the server",
+    "correct": [
+     "DELETE"
+    ]
+   },
+   {
+    "label": "updates an entry in the database",
+    "correct": [
+     "PUT"
+    ]
+   }
+  ]
+ },
+ "928": {
+  "items": [
+   "10.10.10.16",
+   "10.10.13.1",
+   "10.10.13.129",
+   "10.10.13.150",
+   "10.10.100.128"
+  ],
+  "buckets": [
+   {
+    "label": "Internet",
+    "correct": [
+     "10.10.10.16",
+     "10.10.13.129",
+     "10.10.100.128"
+    ]
+   },
+   {
+    "label": "Router1",
+    "correct": [
+     "10.10.13.1",
+     "10.10.13.150"
+    ]
+   }
+  ]
+ },
+ "1021": {
+  "items": [
+   "overlay and underlay configuration",
+   "routed access deployment",
+   "STP deployment",
+   "VLAN and HSRP configuration",
+   "VXLAN and LISP configuration",
+   "configuration via console"
+  ],
+  "buckets": [
+   {
+    "label": "Cisco DNA Center",
+    "correct": [
+     "overlay and underlay configuration",
+     "routed access deployment",
+     "VXLAN and LISP configuration"
+    ]
+   },
+   {
+    "label": "Traditional",
+    "correct": [
+     "STP deployment",
+     "VLAN and HSRP configuration",
+     "configuration via console"
+    ]
+   }
+  ]
+ },
+ "1087": {
+  "items": [
+   "is typically used in small office applications",
+   "is typically used for internal datacenter connectivity",
+   "has increased attenuation over long distances",
+   "is comprised of shielded and unshielded twisted pairs"
+  ],
+  "buckets": [
+   {
+    "label": "copper",
+    "correct": [
+     "is typically used in small office applications",
+     "is comprised of shielded and unshielded twisted pairs"
+    ]
+   },
+   {
+    "label": "multimode fiber",
+    "correct": [
+     "is typically used for internal datacenter connectivity",
+     "has increased attenuation over long distances"
+    ]
+   }
+  ]
+ },
+ "1127": {
+  "items": [
+   "is assigned to multiple devices on the same network simultaneously",
+   "cannot be used as a source address",
+   "is routed to the nearest interface that has the address",
+   "provides one-to-many communications"
+  ],
+  "buckets": [
+   {
+    "label": "Anycast",
+    "correct": [
+     "is assigned to multiple devices on the same network simultaneously",
+     "is routed to the nearest interface that has the address"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "cannot be used as a source address",
+     "provides one-to-many communications"
+    ]
+   }
+  ]
+ },
+ "1282": {
+  "items": [
+   "fe80:efae:0b2a:56fe:4a87:147f:dc21:7",
+   "ff00:3b64:fbca:171a:6140:6a35:1ea6:12",
+   "fc00:733d:b542:a948:d7fa:eeea:989a:3",
+   "2000:e2a1:a1ee:03ed:39a0:4f8e:9f02:1"
+  ],
+  "buckets": [
+   {
+    "label": "Global Unicast",
+    "correct": [
+     "2000:e2a1:a1ee:03ed:39a0:4f8e:9f02:1"
+    ]
+   },
+   {
+    "label": "Link-Local Unicast",
+    "correct": [
+     "fe80:efae:0b2a:56fe:4a87:147f:dc21:7"
+    ]
+   },
+   {
+    "label": "Unique Local",
+    "correct": [
+     "fc00:733d:b542:a948:d7fa:eeea:989a:3"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "ff00:3b64:fbca:171a:6140:6a35:1ea6:12"
+    ]
+   }
+  ]
+ },
+ "1336": {
+  "items": [
+   "publicly routable in the same way as IPv4 addresses",
+   "provides one-to-many communications",
+   "has a unicast source sent to a group",
+   "routable and reachable via the Internet"
+  ],
+  "buckets": [
+   {
+    "label": "Global Unicast Address",
+    "correct": [
+     "publicly routable in the same way as IPv4 addresses",
+     "routable and reachable via the Internet"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "provides one-to-many communications",
+     "has a unicast source sent to a group"
+    ]
+   }
+  ]
+ },
+ "5": {
+  "items": [
+   "172.28.228.144/18",
+   "172.28.228.144/21",
+   "172.28.228.144/23",
+   "172.28.228.144/25",
+   "172.28.228.144/29"
+  ],
+  "buckets": [
+   {
+    "label": "172.28.228.1 - 172.28.229.254",
+    "correct": [
+     "172.28.228.144/23"
+    ]
+   },
+   {
+    "label": "172.28.224.1 - 172.28.231.254",
+    "correct": [
+     "172.28.228.144/21"
+    ]
+   },
+   {
+    "label": "172.28.228.129 - 172.28.228.254",
+    "correct": [
+     "172.28.228.144/25"
+    ]
+   },
+   {
+    "label": "172.28.228.145 - 172.28.228.150",
+    "correct": [
+     "172.28.228.144/29"
+    ]
+   },
+   {
+    "label": "172.28.192.1 - 172.28.255.254",
+    "correct": [
+     "172.28.228.144/18"
+    ]
+   }
+  ]
+ },
+ "11": {
+  "items": [
+   "default gateway",
+   "host IP address",
+   "NIC MAC address",
+   "NIC vendor OUI",
+   "subnet mask"
+  ],
+  "buckets": [
+   {
+    "label": "00:0C:22",
+    "correct": [
+     "NIC vendor OUI"
+    ]
+   },
+   {
+    "label": "00:0C:22:83:79:A3",
+    "correct": [
+     "NIC MAC address"
+    ]
+   },
+   {
+    "label": "192.168.1.193",
+    "correct": [
+     "default gateway"
+    ]
+   },
+   {
+    "label": "192.168.1.200",
+    "correct": [
+     "host IP address"
+    ]
+   },
+   {
+    "label": "255.255.255.192",
+    "correct": [
+     "subnet mask"
+    ]
+   }
+  ]
+ },
+ "12": {
+  "items": [
+   "default gateway",
+   "host IP address",
+   "NIC MAC address",
+   "NIC vendor OUI",
+   "subnet mask"
+  ],
+  "buckets": [
+   {
+    "label": "00:0C:22",
+    "correct": [
+     "NIC vendor OUI"
+    ]
+   },
+   {
+    "label": "00:0C:22:83:79:A3",
+    "correct": [
+     "NIC MAC address"
+    ]
+   },
+   {
+    "label": "192.168.1.193",
+    "correct": [
+     "default gateway"
+    ]
+   },
+   {
+    "label": "192.168.1.200",
+    "correct": [
+     "host IP address"
+    ]
+   },
+   {
+    "label": "255.255.255.192",
+    "correct": [
+     "subnet mask"
+    ]
+   }
+  ]
+ },
+ "38": {
+  "items": [
+   "sends transmissions in sequence",
+   "transmissions include an 8-byte header",
+   "transmits packets as a stream",
+   "transmits packets individually",
+   "uses a higher transmission rate to support latency-sensitive applications",
+   "uses a lower transmission rate to ensure reliability"
+  ],
+  "buckets": [
+   {
+    "label": "TCP",
+    "correct": [
+     "sends transmissions in sequence",
+     "uses a lower transmission rate to ensure reliability",
+     "transmits packets as a stream"
+    ]
+   },
+   {
+    "label": "UDP",
+    "correct": [
+     "transmissions include an 8-byte header",
+     "transmits packets individually",
+     "uses a higher transmission rate to support latency-sensitive applications"
+    ]
+   }
+  ]
+ },
+ "44": {
+  "items": [
+   "DHCP",
+   "FTP",
+   "SMTP",
+   "SSH",
+   "SNMP",
+   "TFTP"
+  ],
+  "buckets": [
+   {
+    "label": "TCP",
+    "correct": [
+     "FTP",
+     "SMTP",
+     "SSH"
+    ]
+   },
+   {
+    "label": "UDP",
+    "correct": [
+     "DHCP",
+     "SNMP",
+     "TFTP"
+    ]
+   }
+  ]
+ },
+ "47": {
+  "items": [
+   "SMTP",
+   "SNMP",
+   "TFTP",
+   "VoIP",
+   "SSH",
+   "FTP"
+  ],
+  "buckets": [
+   {
+    "label": "Connection Oriented",
+    "correct": [
+     "SMTP",
+     "SSH",
+     "FTP"
+    ]
+   },
+   {
+    "label": "Connectionless",
+    "correct": [
+     "SNMP",
+     "TFTP",
+     "VoIP"
+    ]
+   }
+  ]
+ },
+ "71": {
+  "items": [
+   "DNS",
+   "HTTP",
+   "RTP",
+   "SMTP",
+   "SNMP",
+   "Telnet"
+  ],
+  "buckets": [
+   {
+    "label": "TCP",
+    "correct": [
+     "HTTP",
+     "SMTP",
+     "Telnet"
+    ]
+   },
+   {
+    "label": "UDP",
+    "correct": [
+     "DNS",
+     "RTP",
+     "SNMP"
+    ]
+   }
+  ]
+ },
+ "82": {
+  "items": [
+   "single device handles the core and the distribution layer",
+   "enhances network availability",
+   "more cost-effective than other options",
+   "most appropriate for small network designs",
+   "separate devices handle the core and the distribution layer"
+  ],
+  "buckets": [
+   {
+    "label": "Collapsed Core",
+    "correct": [
+     "single device handles the core and the distribution layer",
+     "more cost-effective than other options",
+     "most appropriate for small network designs"
+    ]
+   },
+   {
+    "label": "Three-Tier",
+    "correct": [
+     "enhances network availability",
+     "separate devices handle the core and the distribution layer"
+    ]
+   }
+  ]
+ },
+ "95": {
+  "items": [
+   "transmitted based on data contained in the packet without the need for a data channel",
+   "requires the client and the server to establish a connection before sending the packet",
+   "provides best-effort service",
+   "supports reliable data transmission"
+  ],
+  "buckets": [
+   {
+    "label": "TCP",
+    "correct": [
+     "requires the client and the server to establish a connection before sending the packet",
+     "supports reliable data transmission"
+    ]
+   },
+   {
+    "label": "UDP",
+    "correct": [
+     "transmitted based on data contained in the packet without the need for a data channel",
+     "provides best-effort service"
+    ]
+   }
+  ]
+ },
+ "96": {
+  "items": [
+   "2001:db8:600d:cafe::123",
+   "fcba:926a:e8e:7a25:b1:c6d2:1a76:8fdc",
+   "fd6d:c83b:5cef:b6b2::1",
+   "3ffe:e54d:620:a87a::f00d"
+  ],
+  "buckets": [
+   {
+    "label": "Global Unicast",
+    "correct": [
+     "2001:db8:600d:cafe::123",
+     "3ffe:e54d:620:a87a::f00d"
+    ]
+   },
+   {
+    "label": "Unique Local",
+    "correct": [
+     "fcba:926a:e8e:7a25:b1:c6d2:1a76:8fdc",
+     "fd6d:c83b:5cef:b6b2::1"
+    ]
+   }
+  ]
+ },
+ "99": {
+  "items": [
+   "fe80::a00:27ff:feeb:89aa",
+   "3ffe:e54d:620:a87a::f00d",
+   "ff05::1:3",
+   "2001:db8:600d:cafe::123"
+  ],
+  "buckets": [
+   {
+    "label": "Global Unicast",
+    "correct": [
+     "3ffe:e54d:620:a87a::f00d",
+     "2001:db8:600d:cafe::123"
+    ]
+   },
+   {
+    "label": "Link-Local Unicast",
+    "correct": [
+     "fe80::a00:27ff:feeb:89aa"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "ff05::1:3"
+    ]
+   }
+  ]
+ },
+ "118": {
+  "items": [
+   "includes link-local and loopback addresses",
+   "used exclusively by a non-host device",
+   "identifies an interface on an IPv6 device",
+   "assigned to more than one interface",
+   "derived from the FF00::/8 address range",
+   "provides one-to-many communications"
+  ],
+  "buckets": [
+   {
+    "label": "Anycast",
+    "correct": [
+     "assigned to more than one interface",
+     "used exclusively by a non-host device"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "derived from the FF00::/8 address range",
+     "provides one-to-many communications"
+    ]
+   },
+   {
+    "label": "Unicast",
+    "correct": [
+     "identifies an interface on an IPv6 device",
+     "includes link-local and loopback addresses"
+    ]
+   }
+  ]
+ },
+ "131": {
+  "items": [
+   "configured only once per interface",
+   "equivalent to public IPv4 addresses",
+   "attached to a single subnet",
+   "routable and reachable via the Internet"
+  ],
+  "buckets": [
+   {
+    "label": "Global Unicast Address",
+    "correct": [
+     "equivalent to public IPv4 addresses",
+     "routable and reachable via the Internet"
+    ]
+   },
+   {
+    "label": "Link-Local Address",
+    "correct": [
+     "configured only once per interface",
+     "attached to a single subnet"
+    ]
+   }
+  ]
+ },
+ "132": {
+  "items": [
+   "ip address 192.168.4.9 255.255.255.248",
+   "ip address 192.168.3.14 255.255.255.240",
+   "ip address 209.165.202.129 255.255.255.252",
+   "ip address 192.168.4.13 255.255.255.240",
+   "ip address 209.165.202.130 255.255.255.252",
+   "ip address 209.165.202.131 255.255.255.252",
+   "ip address 192.168.3.14 255.255.255.248"
+  ],
+  "buckets": [
+   {
+    "label": "DC-1 Gi1/0",
+    "correct": [
+     "ip address 209.165.202.130 255.255.255.252"
+    ]
+   },
+   {
+    "label": "DC-1 Gi1/1",
+    "correct": [
+     "ip address 192.168.4.9 255.255.255.248"
+    ]
+   },
+   {
+    "label": "DC-1 Gi1/2",
+    "correct": [
+     "ip address 192.168.3.14 255.255.255.240"
+    ]
+   },
+   {
+    "label": "HQ-1 Gi1/3",
+    "correct": [
+     "ip address 192.168.3.14 255.255.255.248"
+    ]
+   }
+  ]
+ },
+ "545": {
+  "items": [
+   "MIB",
+   "SNMP agent",
+   "SNMP manager",
+   "SNMP trap"
+  ],
+  "buckets": [
+   {
+    "label": "collection of variables that can be monitored",
+    "correct": [
+     "MIB"
+    ]
+   },
+   {
+    "label": "unsolicited message",
+    "correct": [
+     "SNMP trap"
+    ]
+   },
+   {
+    "label": "responds to status requests and requests for information about a device",
+    "correct": [
+     "SNMP agent"
+    ]
+   },
+   {
+    "label": "resides on an NMS",
+    "correct": [
+     "SNMP manager"
+    ]
+   }
+  ]
+ },
+ "1289": {
+  "items": [
+   "serves as the next-hop addresses in IGP",
+   "has a unicast source sent to a group",
+   "never used as a source address",
+   "confined to a single link"
+  ],
+  "buckets": [
+   {
+    "label": "Link-Local Address",
+    "correct": [
+     "serves as the next-hop addresses in IGP",
+     "confined to a single link"
+    ]
+   },
+   {
+    "label": "Multicast",
+    "correct": [
+     "has a unicast source sent to a group",
+     "never used as a source address"
+    ]
+   }
+  ]
+ }
+}

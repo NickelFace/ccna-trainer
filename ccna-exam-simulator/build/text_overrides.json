@@ -1,0 +1,801 @@
+{
+ "379": {
+  "t": "Refer to the exhibit. Router R1 must be configured to reach the 10.0.3.0/24 network from the 10.0.1.0/24 segment. Which command must be used to configure the route?"
+ },
+ "380": {
+  "t": "Refer to the exhibit. Which two statements about the routing table are true? (Choose two.)",
+  "cli": "R1#show ip route\nGateway of last resort is 10.85.33.14 to network 0.0.0.0\n\nD*EX  0.0.0.0/0\n        [170/257024] via 10.85.33.14, 7w0d, TenGigabitEthernet0/2/0.100\n        [170/257024] via 10.85.33.10, 7w0d, TenGigabitEthernet0/1/0.100\n     10.0.0.0/8 is variably subnetted, 6692 subnets, 20 masks\nB        10.0.0.0/8 [20/0] via 10.48.144.14, 1w5d\nD EX     10.0.1.0/24\n        [170/51968] via 10.85.33.14, 7w0d, TenGigabitEthernet0/2/0.100\n        [170/51968] via 10.85.33.10, 7w0d, TenGigabitEthernet0/1/0.100\nD EX     10.0.2.0/23\n        [170/51968] via 10.85.33.14, 7w0d, TenGigabitEthernet0/2/0.100\n        [170/51968] via 10.85.33.10, 7w0d, TenGigabitEthernet0/1/0.100\nD EX     10.0.4.0/22\n        [170/51968] via 10.85.33.14, 7w0d, TenGigabitEthernet0/2/0.100\n        [170/51968] via 10.85.33.10, 7w0d, TenGigabitEthernet0/1/0.100\nD EX     10.0.8.0/21\n        [170/51968] via 10.85.33.14, 7w0d, TenGigabitEthernet0/2/0.100\n        [170/51968] via 10.85.33.10, 7w0d, TenGigabitEthernet0/1/0.100\nD EX     10.0.16.0/20\n        [170/51968] via 10.85.33.14, 7w0d, TenGigabitEthernet0/2/0.100\n        [170/51968] via 10.85.33.10, 7w0d, TenGigabitEthernet0/1/0.100\nD EX     10.0.32.0/19\n        [170/51968] via 10.85.33.14, 7w0d, TenGigabitEthernet0/2/0.100\n        [170/51968] via 10.85.33.10, 7w0d, TenGigabitEthernet0/1/0.100\nB        10.1.96.0/23 [20/0] via 10.111.33.217, 2w3d\nB        10.1.96.0/24 [20/0] via 10.111.33.217, 2w3d\nB        10.1.97.0/24 [20/0] via 10.111.33.217, 4w5d\nD EX     10.1.255.240/28\n        [170/51968] via 10.85.33.14, 7w0d, TenGigabitEthernet0/2/0.100\n        [170/51968] via 10.85.33.10, 7w0d, TenGigabitEthernet0/1/0.100\nD EX     10.2.0.0/16\n        [170/51968] via 10.85.33.14, 7w0d, TenGigabitEthernet0/2/0.100\n        [170/51968] via 10.85.33.10, 7w0d, TenGigabitEthernet0/1/0.100\nB        10.2.0.0/24 [20/0] via 10.111.33.217, 4w5d\nB        10.2.96.0/23 [20/0] via 10.111.33.217, 4w5d\nB        10.2.96.0/24 [20/0] via 10.48.144.14, 3w1d\nB        10.2.97.0/24 [20/0] via 10.48.144.14, 4w5d\nD EX     10.3.0.0/16\n        [170/51968] via 10.85.33.14, 7w0d, TenGigabitEthernet0/2/0.100\n        [170/51968] via 10.85.33.10, 7w0d, TenGigabitEthernet0/1/0.100\nB        10.5.1.0/24 [20/0] via 10.111.33.217, 1w4d\nB        10.5.5.0/24 [20/0] via 10.111.33.217, 4w3d\nB        10.6.0.0/24 [20/0] via 10.111.33.217, 3w3d"
+ },
+ "398": {
+  "t": "Refer to the exhibit. A network associate has configured OSPF with the following command. After completing the configuration, the associate discovers that not all the interfaces are participating in OSPF. Which three of the interfaces shown in the exhibit will participate in OSPF according to this configuration statement? (Choose three.)",
+  "cli": "City(config-router)# network 192.168.12.64 0.0.0.63 area 0\n\nCity#show ip interface brief\n\nInterface           IP-Address       OK?  Method  Status  Protocol\nFastEthernet0/0     192.168.12.48    Yes  manual  up      up\nFastEthernet0/1     192.168.12.65    Yes  manual  up      up\nSerial0/0           192.168.12.121   Yes  manual  up      up\nSeriak0/1           unassigned       Yes  unset   up      up\nSerial0/1.102        192.168.12.125   Yes  manual  up      up\nSerial0/1.103        192.168.12.129   Yes  manual  up      up\nSerial0/1.104        192.168.12.133   Yes  manual  up      up\nCity#"
+ },
+ "399": {
+  "o": {
+   "A": "These commands need to be added to the configuration:\nC-router(config)# router eigrp 123\nC-router(config-router)# network 172.19.0.0",
+   "B": "These commands need to be added to the configuration:\nC-router(config)# router ospf 1\nC-router(config-router)# network 172.19.0.0 0.0.3.255 area 0",
+   "C": "These commands need to be added to the configuration:\nC-router(config)# router rip\nC-router(config-router)# network 172.19.0.0",
+   "D": "No further routing configuration is required."
+  }
+ },
+ "530": {
+  "o": {
+   "A": "R1(config)# interface fa0/0\nR1(config-if)# ip helper-address 198.51.100.100",
+   "B": "R2(config)# interface gi0/0\nR2(config-if)# ip helper-address 198.51.100.100",
+   "C": "R1(config)# interface fa0/0\nR1(config-if)# ip address dhcp\nR1(config-if)# no shutdown",
+   "D": "R2(config)# interface gi0/0\nR2(config-if)# ip address dhcp",
+   "E": "R1(config)# interface fa0/0\nR1(config-if)# ip helper-address 192.0.2.2"
+  }
+ },
+ "537": {
+  "o": {
+   "A": "enable\nconfigure terminal\nip nat pool mypool 192.168.3.1 192.168.3.3 prefix-length 30\naccess-list 1 permit 10.10.0.0 0.0.0.255\nip nat outside destination list 1 pool mypool\ninterface g1/1\nip nat inside\ninterface g1/2\nip nat outside",
+   "B": "enable\nconfigure terminal\nip nat pool mypool 192.168.3.1 192.168.3.3 prefix-length 30\naccess-list 1 permit 10.10.0.0 0.0.0.254\nip nat inside source list 1 pool mypool\ninterface g1/1\nip nat inside\ninterface g1/2\nip nat outside",
+   "C": "enable\nconfigure terminal\nip nat pool mypool 192.168.3.1 192.168.3.3 prefix-length 30\nroute map permit 10.10.0.0 255.255.255.0\nip nat outside destination list 1 pool mypool\ninterface g1/1\nip nat inside\ninterface g1/2\nip nat outside",
+   "D": "enable\nconfigure terminal\nip nat pool mypool 192.168.3.1 192.168.3.3 prefix-length 30\naccess-list 1 permit 10.10.0.0 0.0.0.255\nip nat inside source list 1 pool mypool\ninterface g1/1\nip nat inside\ninterface g1/2\nip nat outside"
+  }
+ },
+ "565": {
+  "o": {
+   "A": "Router1(config)#access-list 99 permit 192.168.100.32 0.0.0.31\nRouter1(config)#ip nat inside source list 99 interface gi1/0/0 overload\nRouter1(config)#interface gi2/0/1.200\nRouter1(config)#ip nat inside\nRouter1(config)#interface gi1/0/0\nRouter1(config)#ip nat outside",
+   "B": "Router1(config)#access-list 99 permit 192.168.100.0 0.0.0.255\nRouter1(config)#ip nat inside source list 99 interface gi1/0/0 overload\nRouter1(config)#interface gi2/0/1.200\nRouter1(config)#ip nat inside\nRouter1(config)#interface gi1/0/0\nRouter1(config)#ip nat outside",
+   "C": "Router1(config)#access-list 99 permit 209.165.201.2 255.255.255.255\nRouter1(config)#ip nat inside source list 99 interface gi1/0/0 overload\nRouter1(config)#interface gi2/0/1.200\nRouter1(config)#ip nat inside\nRouter1(config)#interface gi1/0/0\nRouter1(config)#ip nat outside",
+   "D": "Router1(config)#access-list 99 permit 209.165.201.2 0.0.0.0\nRouter1(config)#ip nat inside source list 99 interface gi1/0/0 overload\nRouter1(config)#interface gi2/0/1.200\nRouter1(config)#ip nat inside\nRouter1(config)#interface gi1/0/0\nRouter1(config)#ip nat outside"
+  }
+ },
+ "568": {
+  "o": {
+   "A": "ntp authenticate\nntp authentication-key 2 sha1 CISCO123\nntp source Loopback0\nntp access-group server-only 10\nntp master 2\n!\naccess-list 10 permit udp host 209.165.200.225 any eq 123",
+   "B": "ntp authenticate\nntp authentication-key 2 md5 CISCO123\nntp interface Loopback0\nntp access-group server-only 10\nntp stratum 2\n!\naccess-list 10 permit 209.165.200.225",
+   "C": "ntp authenticate\nntp authentication-key 2 md5 CISCO123\nntp source Loopback0\nntp access-group server-only 10\nntp master 2\n!\naccess-list 10 permit 209.165.200.225",
+   "D": "ntp authenticate\nntp authentication-key 2 md5 CISCO123\nntp source Loopback0\nntp access-group server-only 10\nntp stratum 2\n!\naccess-list 10 permit udp host 209.165.200.225 any eq 123"
+  }
+ },
+ "582": {
+  "o": {
+   "A": "interface FastEthernet0/1\nip helper-address 10.0.1.1\n!\naccess-list 100 permit tcp host 10.0.1.1 eq 67 host 10.148.2.1",
+   "B": "interface FastEthernet0/0\nip helper-address 10.0.1.1\n!\naccess-list 100 permit udp host 10.0.1.1 eq bootps host 10.148.2.1",
+   "C": "interface FastEthernet0/0\nip helper-address 10.0.1.1\n!\naccess-list 100 permit host 10.0.1.1 host 10.148.2.1 eq bootps",
+   "D": "interface FastEthernet0/1\nip helper-address 10.0.1.1\n!\naccess-list 100 permit udp host 10.0.1.1 eq bootps host 10.148.2.1"
+  },
+  "cli": "service timestamps debug datetime msec\nservice timestamps log datetime msec\nservice password-encryption\n!\nhostname R4\n!\nboot-start-marker\nboot-end-marker\n!\nip cef\n!\ninterface FastEthernet0/0\n description WAN_INTERFACE\n ip address 10.0.1.2 255.255.255.252\n ip access-group 100 in\n!\ninterface FastEthernet0/1\n description LAN_INTERFACE\n ip address 10.148.2.1 255.255.255.0\n duplex auto\n speed auto\n!\nip forward-protocol nd\n!\naccess-list 100 permit eigrp any any\naccess-list 100 permit icmp any any\naccess-list 100 permit tcp 10.149.3.0 0.0.0.255 host 10.0.1.2 eq 22\naccess-list 100 permit tcp any any eq 80\naccess-list 100 permit tcp any any eq 443\naccess-list 100 deny ip any any log"
+ },
+ "703": {
+  "o": {
+   "A": "SW1(config)#enable secret ccnaTest123",
+   "B": "SW1(config)#username NEW secret R3mote123",
+   "C": "SW1(config)#line vty 0 15\nSW1(config-line)#transport input ssh",
+   "D": "SW1(config)# crypto key generate rsa",
+   "E": "SW1(config)# interface f0/1\nSW1(confif-if)# switchport mode trunk"
+  },
+  "cli": "SW1#show run\nBuilding configuration...\n!\nhostname SW1\n!\nip domain-name CCNA-test\n!\nusername CCNA privilege 1 password 0 cisco123\n!\ninterface FastEthernet0/1\n switchport access vlan 10\n!\ninterface Vlan10\n ip address 192.168.1.2 255.255.255.0\n!\nline vty 0 4\n login local\n transport input telnet\nline vty 5 15\n login local\n transport input telnet\n\nSW1#show crypto key mypubkey rsa\n% Key pair was generated at: 0:1:23 UTC Mar 1 2020\nKey name: SW1.CCNA-test"
+ },
+ "876": {
+  "o": {
+   "A": "#config t\nRouter A (config)#no cdp run\nRouter A (config)#interface gi0/0/1\nRouter A (config-if)#cdp enable",
+   "B": "#config t\nRouter A (config)#cdp run\nRouter A (config)#interface gi0/0/0\nRouter A (config-if)#no cdp enable",
+   "C": "#config t\nRouter A (config)#cdp run\nRouter A (config)#interface gi0/0/1\nRouter A (config-if)#cdp enable",
+   "D": "#config t\nRouter A (config)#cdp run\nRouter A (config)#interface gi0/0/0\nRouter A (config-if)#cdp enable"
+  }
+ },
+ "948": {
+  "o": {
+   "A": "ip nat pool CCNA 192.168.0.0 192.168.1.255 netmask 255.255.255.0\naccess-list 10 permit 192.168.0.0 0.0.0.255\nip nat inside source list 10 pool CCNA overload",
+   "B": "ip nat pool CCNA 209.165.202.129 209.165.202.129 netmask 255.255.255.255\naccess-list 10 permit 192.168.1.0 255.255.255.0\nip nat inside source list 10 pool CCNA overload",
+   "C": "ip nat pool CCNA 192.168.0.0 192.168.1.255 netmask 255.255.255.0\naccess-list 10 permit 192.168.0.0 255.255.255.0\nip nat inside source list 10 pool CCNA overload",
+   "D": "ip nat pool CCNA 209.165.202.129 209.165.202.129 netmask 255.255.255.255\naccess-list 10 permit 192.168.1.0 0.0.0.255\nip nat inside source list 10 pool CCNA overload"
+  }
+ },
+ "957": {
+  "o": {
+   "A": "interface FastEthernet0/1\nip helper-address 10.0.1.1\n!\naccess-list 100 permit tcp host 10.0.1.1 eq 67 host 10.148.2.1",
+   "B": "interface FastEthernet0/1\nip helper-address 10.0.1.1\n!\naccess-list 100 permit udp host 10.0.1.1 eq 67 host 10.148.2.1",
+   "C": "interface FastEthernet0/0\nip helper-address 10.0.1.1\n!\naccess-list 100 permit host 10.0.1.1 host 10.148.2.1 eq bootps",
+   "D": "interface FastEthernet0/1\nip helper-address 10.0.1.1\n!\naccess-list 100 permit udp host 10.0.1.1 eq bootps host 10.148.2.1"
+  },
+  "cli": "service timestamps debug datetime msec\nservice timestamps log datetime msec\nservice password-encryption\n!\nhostname R3\n!\nboot-start-marker\nboot-end-marker\n!\nip cef\n!\ninterface FastEthernet0/0\n description WAN_INTERFACE\n ip address 10.0.1.2 255.255.255.252\n ip access-group 100 in\n!\ninterface FastEthernet0/1\n description LAN_INTERFACE\n ip address 10.148.2.1 255.255.255.0\n duplex auto\n speed auto\n!\nip forward-protocol nd\n!\naccess-list 100 permit eigrp any any\naccess-list 100 permit icmp any any\naccess-list 100 permit tcp 10.149.3.0 0.0.0.255 host 10.0.1.2 eq 22\naccess-list 100 permit tcp any any eq 80\naccess-list 100 permit tcp any any eq 443\naccess-list 100 deny ip any any log"
+ },
+ "976": {
+  "o": {
+   "A": "ip access-list extended deny_outbound\n10 permit ip 192.168.240.0 255.255.240.0 10.0.0.0 255.0.0.0\n20 deny tcp 192.168.240.0 255.255.240.0 10.125.128.32 255.255.255.224 eq 443\n30 permit ip any any",
+   "B": "ip access-list extended deny_outbound\n10 deny tcp 192.168.240.0 0.0.15.255 10.125.128.32 0.0.0.31 eq 80\n20 permit ip 192.168.240.0 0.0.15.255 10.0.0.0 0.255.255.255\n30 deny ip any any log",
+   "C": "ip access-list extended deny_outbound\n10 deny tcp 10.125.128.32 255.255.255.224 192.168.240.0 255.255.240.0 eq 443\n20 deny tcp 192.168.240.0 255.255.240.0 10.125.128.32 255.255.255.224 eq 443\n30 permit ip 192.168.240.0 255.255.240.0 10.0.0.0 255.0.0.0",
+   "D": "ip access-list extended deny_outbound\n10 deny tcp 192.168.240.0 0.0.15.255 any eq 80\n20 deny tcp 192.168.240.0 0.0.15.255 10.125.128.32 0.0.0.31 eq 80\n30 permit ip 192.168.240.0 0.0.15.255 10.0.0.0 0.255.255.255"
+  }
+ },
+ "997": {
+  "o": {
+   "A": "no ip access-list extended Services\nip access-list extended Services\n30 permit tcp 10.0.0.0 0.255.255.255 host 198.51.100.11 eq domain",
+   "B": "ip access-list extended Services\n35 permit tcp 10.0.0.0 0.255.255.255 host 198.51.100.11 eq domain",
+   "C": "ip access-list extended Services permit tcp 10.0.0.0 0.255.255.255 host 198.51.100.11 eq domain",
+   "D": "no ip access-list extended Services\nip access-list extended Services\npermit udp 10.0.0.0 0.255.255.255 any eq 53\npermit tcp 10.0.0.0 0.255.255.255 host 198.51.100.11 eq domain\ndeny ip any any log"
+  },
+  "cli": "CPE# show ip access-list Services\nExtended IP access list Services\n    10 permit tcp 10.0.0.0 0.255.255.255 any eq www\n    20 permit tcp 10.0.0.0 0.255.255.255 any eq 443\n    30 permit udp 10.0.0.0 0.255.255.255 host 198.51.100.11 eq domain\n    40 deny ip any any log"
+ },
+ "1339": {
+  "o": {
+   "A": "SW2# configure terminal\nSW2(config)# interface port-channel 4\nSW2(config-if)# port-channel min-links 2",
+   "B": "SW2# configure terminal\nSW2(config)# interface port-channel 4\nSW2(config-if)# lacp port-priority 32000",
+   "C": "SW2# configure terminal\nSW2(config)# interface port-channel 4\nSW2(config-if)# lacp max-bundle 2",
+   "D": "SW2# configure terminal\nSW2(config)# lacp system-priority 32000"
+  }
+ },
+ "1": {
+  "cli": "R1#sh ip ro\nGateway of last resort is 10.10.10.18 to network 0.0.0.0\n\n     10.0.0.0/8 is variably subnetted, 4 subnets, 3 masks\nC       10.10.10.0/30 is directly connected, FastEthernet0/1\nO       10.10.13.0/25 [110/6576] via 10.10.10.1, 06:58:21, FastEthernet0/1\nC       10.10.10.16/30 is directly connected, FastEthernet0/24\nO       10.10.13.144/28 [110/110] via 10.10.10.1, 06:58:21, FastEthernet0/1\nB*   0.0.0.0/0 [20/0] via 10.10.10.18, 01:17:58"
+ },
+ "203": {
+  "cli": "SW1#show run int gig 0/1\ninterface GigabitEthernet0/1\n  switchport access vlan 11\n  switchport trunk allowed vlan 1-10\n  switchport trunk encapsulation dot1q\n  switchport trunk native vlan 5\n  switchport mode trunk\n  speed 1000\n  duplex full"
+ },
+ "309": {
+  "cli": "Switch A Configuration:\nvlan 500\n name sales\n!\nvlan 550\n name support\n!\ninterface GigabitEthernet0/0\n switchport mode trunk\n!\ninterface GigabitEthernet0/1\n switchport mode access\n spanning-tree portfast\n spanning-tree bpduguard enable\n\nSwitch B Configuration:\nvlan 500\n name sales\n!\nvlan 550\n name support\n!\ninterface GigabitEthernet0/0\n switchport mode trunk\n!\ninterface GigabitEthernet0/1\n switchport mode access\n spanning-tree portfast\n spanning-tree bpduguard enable"
+ },
+ "350": {
+  "cli": "IBGP route 10.0.0.0/30\nRIP route 10.0.0.0/30\nOSPF route 10.0.0.0/16\nOSPF route 10.0.0.0/30\nEIGRP route 10.0.0.1/32"
+ },
+ "387": {
+  "cli": "R1#show ip route\nCodes: C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route\n\nGateway of last resort is 192.168.14.4 to network 0.0.0.0\n\nC       192.168.12.0/24 is directly connected, FastEthernet0/0\nC       192.168.13.0/24 is directly connected, FastEthernet0/1\nC       192.168.14.0/24 is directly connected, FastEthernet1/0\n    192.168.10.0/24 is variably subnetted, 3 subnets, 3 masks\nO       192.168.10.0/24 [110/2] via 192.168.14.4, 00:02:01, FastEthernet1/0\nO       192.168.10.32/27 [110/11] via 192.168.13.3, 00:00:52, FastEthernet0/1\nO       192.168.10.0/16 [110/2] via 192.168.15.5, 00:05:01, FastEthernet1/1\nD       192.168.10.1/32 [90/52778] via 192.168.12.2, 00:03:44, FastEthernet0/0\nO*E2 0.0.0.0/0 [110/1] via 192.168.14.4, 00:00:10, FastEthernet1/0"
+ },
+ "415": {
+  "cli": "Switch A\nVlan 10,11,12,13\n\ninterface GigabitEthernet0/1\n  switchport mode trunk\n  switchport trunk allowed vlan 10-12\n!\ninterface GigabitEthernet0/4\n  switchport access vlan 13\n  switchport mode access\n\nSwitch B\nVlan 10,11,12,13\n\ninterface GigabitEthernet0/1\n  switchport mode trunk\n!\ninterface GigabitEthernet0/3\n  switchport access vlan 13\n  switchport mode access"
+ },
+ "444": {
+  "cli": "CPE# show ip route\n     192.168.1.0/24 is variably subnetted, 3 subnets, 3 masks\nB       192.168.1.0/24 [20/1] via 192.168.12.2, 00:00:06\nR       192.168.1.128/25 [120/5] via 192.168.13.3, 00:02:35, Ethernet0/1\nO       192.168.1.192/26 [110/11] via 192.168.14.4, 00:02:23, Ethernet0/2\nD       192.168.1.224/27 [90/1024640] via 192.168.15.5, 00:01:40, Ethernet0/3"
+ },
+ "481": {
+  "cli": "R1# show ip route | begin Gateway\nGateway of last resort is 0.0.0.0 to network 0.0.0.0\n\nS*   0.0.0.0/0 is directly connected, Serial0/0/1\n     172.16.0.0/16 is variably subnetted, 4 subnets, 2 masks\nC       172.16.2.0/24 is directly connected, GigabitEthernet0/0\nL       172.16.2.2/32 is directly connected, GigabitEthernet0/0\nC       172.16.4.0/21 is directly connected, Serial0/0/1\nL       172.16.8.2/24 is directly connected, Serial0/0/1"
+ },
+ "498": {
+  "cli": "Current Neighbor Relationship\n\nNeighbor ID    Pri  State     Dead Time  Address        Interface\n192.168.1.1    1    FULL/DR   00:00:33   192.168.1.1    GigabitEthernet0/0\n\nDesired Neighbor Relationship\n\nNeighbor ID    Pri  State     Dead Time  Address        Interface\n192.168.1.1    0    FULL/-    00:00:31   192.168.1.1    GigabitEthernet0/0"
+ },
+ "593": {
+  "cli": "C:\\>ipconfig /all\nEthernet adapter Ethernet:\n   Connection-specific DNS Suffix  . :\n   Physical Address. . . . . . . . . : F8-75-A4-3B-AB-4F\n   Link-local IPv6 Address . . . . . : fe80::644a:b01:3e5f:ae6%14(Preferred)\n   IPv4 Address. . . . . . . . . . . : 10.2.2.2(Preferred)\n   Subnet Mask . . . . . . . . . . . : 255.255.255.248\n   Default Gateway . . . . . . . . . : 10.2.2.1\n   DHCP Server . . . . . . . . . . . : 0.0.0.0\n   DNS Servers . . . . . . . . . . . : 0.0.0.0\n   NetBIOS over Tcpip. . . . . . . . : Enabled"
+ },
+ "790": {
+  "cli": "Device# configure terminal\nDevice(config)# netconf ssh acl 1\nDevice(config)# netconf lock-time 100\nDevice(config)# netconf max-sessions 1\nDevice(config)# netconf ma-message 10"
+ },
+ "981": {
+  "cli": "SW# conf t\nSW(config)#interface gigabitEthernet0/1\nSW(config-if)#switchport mode access\nSW(config-if)#switchport port-security\nSW(config-if)#"
+ },
+ "1055": {
+  "cli": "%AMDP2_FE-5-COLL: AMDP2/FE 0/0/[DEC], Excessive collisions, TDR=[DEC], TRO=[DEC]\n%DEC21140-5-COLL: [chars] excessive collisions\n%ILACC-5-COLL: Unit [DEC], excessive collisions. TDR=[DEC]\n%LANCE-5-COLL: Unit [DEC], excessive collisions. TDR=[DEC]\n%PQUICC-5-COLL: Unit [DEC], excessive collisions. Retry limit [DEC] exceeded\n%PQUICC_ETHER-5-COLL: Unit [DEC], excessive collisions. Retry limit [DEC] exceeded"
+ },
+ "1177": {
+  "cli": "Router# show interface FastEthernet0/0\nFastEthernet0/0 is up, line protocol is up\n  Hardware is Gt96k FE, address is 0017.59b2.7fb2 (bia 0017.59b2.7fb2)\n  Internet address is 10.0.0.2/30\n  MTU 1500 bytes, BW 100000 Kbit/sec, DLY 100 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  Keepalive set (10 sec)\n  Half-duplex, 100Mb/s, 100BaseTX/FX\n  ARP type: ARPA, ARP Timeout 04:00:00\n  Last input 00:00:04, output 00:00:04, output hang never\n  Last clearing of \"show interface\" counters never\n  Input queue: 0/75/0/0 (size/max/drops/flushes); Total output drops: 1\n  Queueing strategy: fifo\n  Output queue: 0/40 (size/max)\n  5 minute input rate 516000 bits/sec, 45 packets/sec\n  5 minute output rate 516000 bits/sec, 46 packets/sec\n     13282 packets input, 20075670 bytes\n     Received 25 broadcasts, 0 runts, 0 giants, 0 throttles\n     383 input errors, 383 CRC, 0 frame, 0 overrun, 0 ignored\n     0 watchdog\n     0 input packets with dribble condition detected\n     13438 packets output, 20084258 bytes, 0 underruns\n     0 output errors, 831 collisions, 5 interface resets\n     11 unknown protocol drops\n     0 babbles, 0 late collision, 0 deferred\n     0 lost carrier, 0 no carrier\n     0 output buffer failures, 0 output buffers swapped out"
+ },
+ "1223": {
+  "cli": "Gateway of last resort is 0.0.0.0 to network 0.0.0.0\n\n     10.0.0.0/8 is variably subnetted, 6 subnets, 5 masks\nS       10.0.0.0/8 is directly connected, GigabitEthernet0/0\nC       10.1.1.0/24 is directly connected, GigabitEthernet0/0\nL       10.1.1.1/32 is directly connected, GigabitEthernet0/0\nS       10.10.0.0/22 is directly connected, GigabitEthernet0/0\nS       10.10.10.0/28 is directly connected, GigabitEthernet0/0\nS       10.10.10.1/32 is directly connected, GigabitEthernet0/0\nS*   0.0.0.0/0 is directly connected, GigabitEthernet0/0"
+ },
+ "2": {
+  "cli": "Router1#show ip route\nGateway of last resort is 10.10.11.2 to network 0.0.0.0\n\n     209.165.200.0/27 is subnetted, 1 subnets\nB       209.165.200.224 [20/0] via 10.10.12.2, 03:22:14\n     209.165.201.0/27 is subnetted, 1 subnets\nB       209.165.201.0 [20/0] via 10.10.12.2, 02:26:33\n     209.165.202.0/27 is subnetted, 1 subnets\nB       209.165.202.128 [20/0] via 10.10.12.2, 02:26:03\n     10.0.0.0/8 is variably subnetted, 8 subnets, 4 masks\nC       10.10.10.0/28 is directly connected, GigabitEthernet0/0\nC       10.10.11.0/30 is directly connected, FastEthernet2/0\nC       10.10.12.0/30 is directly connected, GigabitEthernet0/1\nO       10.10.13.0/25 [110/2] via 10.10.10.1, 00:00:04, GigabitEthernet0/0\nO       10.10.13.144/28 [110/2] via 10.10.10.1, 00:00:04, GigabitEthernet0/0\nO       10.10.13.160/29 [110/2] via 10.10.10.1, 00:00:04, GigabitEthernet0/0\nO       10.10.13.208/29 [110/2] via 10.10.10.1, 00:00:04, GigabitEthernet0/0\nS*      0.0.0.0/0 [1/0] via 10.10.11.2"
+ },
+ "130": {
+  "cli": "R1#show run\nBuilding configuration...\n!\ninterface GigabitEthernet0/0.2\n encapsulation dot1Q 2\n ip address 10.10.10.10 255.255.255.0\n!\nend"
+ },
+ "209": {
+  "cli": "SW1\ninterface FastEthernet0/0\n switchport mode access\n switchport access vlan 5\ninterface FastEthernet0/1\n switchport mode trunk\n switchport trunk allow vlan 5-20\n switchport trunk native vlan 10\n\nSW2\ninterface FastEthernet0/0\n switchport mode access\n switchport access vlan 5\ninterface FastEthernet0/1\n switchport mode trunk\n switchport trunk allow vlan 5-20\n switchport trunk native vlan 10"
+ },
+ "275": {
+  "cli": "Cat9K-1# show lldp entry Cat9K-2\n\nLocal Intf: Gi1/0/21\nChassis id: 308b.b2b3.2880\nPort id: Gi1/0/21\nPort Description: GigabitEthernet1/0/21\nSystem Name: Cat9K-2\n\nManagement Addresses:\n    IP: 10.5.110.2"
+ },
+ "310": {
+  "cli": "SW1#show interface\ninterface FastEthernet0/0\n switchport access vlan 2\n switchport mode access"
+ },
+ "351": {
+  "cli": "Router1#show ip route\nGateway of last resort is 10.10.11.2 to network 0.0.0.0\n     209.165.200.0/27 is subnetted, 1 subnets\nB       209.165.200.224 [20/0] via 10.10.12.2, 03:22:14\n     209.165.201.0/27 is subnetted, 1 subnets\nB       209.165.201.0 [20/0] via 10.10.12.2, 02:26:33\n     209.165.202.0/27 is subnetted, 1 subnets\nB       209.165.202.128 [20/0] via 10.10.12.2, 02:26:03\n     10.0.0.0/8 is variably subnetted, 10 subnets, 4 masks\nO       10.10.13.0/25 [110/2] via 10.10.10.1, 00:00:04, GigabitEthernet0/0\nO       10.10.13.128/28 [110/2] via 10.10.10.5, 00:00:12, GigabitEthernet0/1\nO       10.10.13.144/28 [110/2] via 10.10.10.9, 00:01:57, GigabitEthernet0/2\nO       10.10.13.160/29 [110/2] via 10.10.10.5, 00:00:12, GigabitEthernet0/1\nO       10.10.13.208/29 [110/2] via 10.10.10.13, 00:01:57, GigabitEthernet0/3\nS*      0.0.0.0/0 [1/0] via 10.10.11.2"
+ },
+ "388": {
+  "cli": "R1\ninterface Loopback0\n  ip address 172.16.1.33 255.255.255.224\n\ninterface FastEthernet0/0\n  ip address 192.168.12.1 255.255.255.0\n\nrouter bgp 100\nneighbor 192.168.12.2 remote-as 100"
+ },
+ "418": {
+  "cli": "R2#sh run | b router ospf\nrouter ospf 1\n router-id 2.2.2.2\n log-adjacency-changes\n auto-cost reference-bandwidth 10000\n network 10.10.10.1 0.0.0.0 area 0\n network 10.10.13.1 0.0.0.0 area 0\n\nR2#show ip route\nGateway of last resort is not set\n     10.0.0.0/8 is variably subnetted, 3 subnets, 3 masks\nC       10.10.10.0/30 is directly connected\nC       10.10.13.0/25 is directly connected, Vlan20\nC       10.10.13.144/28 is directly connected, Vlan40\n\nR1#show ip route\nGateway of last resort is not set\n     10.0.0.0/8 is variably subnetted, 4 subnets, 3 masks\nC       10.10.10.0/30 is directly connected, FastEthernet0/1\nO       10.10.13.0/25 [110/6576] via 10.10.10.1, 01:37:03\nC       10.10.10.16/30 is directly connected, FastEthernet0/24\nO       10.10.13.144/28 [110/110] via 10.10.10.1, 01:37:03\n\nR1#sh run | b router ospf\nrouter ospf 1\n router-id 1.1.1.1\n log-adjacency-changes\n auto-cost reference-bandwidth 10000\n network 10.10.10.2 0.0.0.0 area 0\n default-information originate"
+ },
+ "445": {
+  "cli": "A#show ip ospf neighbor\nNeighbor ID     Pri   State           Dead Time   Address         Interface\n172.1.1.1       1     EXCHANGE/ -     00:00:36    172.16.32.1     Serial0.1"
+ },
+ "794": {
+  "cli": "MacOs$ ifconfig\n\nen0: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500\n    options=400<CHANNEL_IO>\n    ether f0:18:98:64:60:32\n    inet6 fe80::492:c09f:57cf:8c36%en0 prefixlen 64 secured scopeid 0x6\n    inet 10.8.138.14 netmask 0xffffe000 broadcast 10.8.159.255\n    nd6 options=201<PERFORMNUD,DAD>\n    media: autoselect\n    status: active"
+ },
+ "933": {
+  "cli": "Entry #\n1     192.168.10.0 255.255.254.0\n2     192.168.10.0 255.255.255.192\n3     192.168.10.0 255.255.0.0\n4     192.168.10.0 255.255.224.0"
+ },
+ "1056": {
+  "cli": "Name: Et0/0\nSwitchport: Enabled\nAdministrative Mode: static access\nOperational Mode: static access\nAdministrative Trunking Encapsulation: isl\nOperational Trunking Encapsulation: native\nNegotiation of Trunking: Off\nAccess Mode VLAN: 7 (VLAN0007)\nTrunking Native Mode VLAN: 1 (default)\nAdministrative Native VLAN tagging: enabled\nVoice VLAN: none\n--\nTrunking VLANs Enabled: 5,6\nPruning VLANs Enabled: 2-1001\nCapture Mode Disabled\nCapture VLANs Allowed: ALL"
+ },
+ "1227": {
+  "cli": "C:\\>ipconfig /all\nEthernet adapter Ethernet:\n    Connection-specific DNS Suffix  . :\n    Physical Address. . . . . . . . . : F8-75-A4-3B-AB-4F\n    Link-local IPv6 Address . . . . . : fe80::644a:b01:3e5f:ae6%14(Preferred)\n    IPv4 Address. . . . . . . . . . . : 10.2.2.2(Preferred)\n    Subnet Mask . . . . . . . . . . . : 255.255.255.192\n    Default Gateway . . . . . . . . . : 10.2.2.1\n    DHCP Server . . . . . . . . . . . : 192.168.1.15\n    DNS Servers . . . . . . . . . . . : 8.8.8.8\n    NetBIOS over Tcpip. . . . . . . . : Enabled"
+ },
+ "1313": {
+  "cli": "{\n  \"Interfaces\":[\"ethernet0/3\", \"ethernet0/4\", \"ethernet0/5\"]\n}"
+ },
+ "16": {
+  "cli": "Router(config)#interface GigabitEthernet 1/0/1\nRouter(config-if)#ip address 192.168.16.143 255.255.255.240\nBad mask /28 for address 192.168.16.143"
+ },
+ "135": {
+  "cli": "Router# show interface gi0/0/0\nGigabitEthernet0/0/0 is up, line protocol is up\n  Hardware is ISR4331-3x1GE, address is 5486.bc25.1f70 (bia 5486.bc25.1f70)\n  Description: << WAN Link >>\n  Internet address is 192.0.2.2/30\n  MTU 1500 bytes, BW 1000000 Kbit/sec, DLY 10 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  Keepalive not supported\n  Full Duplex, 1000Mbps, link type is auto, media type is RJ45\n  output flow-control is off, input flow-control is off\n  ARP type: ARPA, ARP Timeout 04:00:00\n  Last input 00:00:00, output 00:00:11, output hang never\n  Last clearing of \"show interface\" counters never\n  Input queue: 0/375/0/0 (size/max/drops/flushes); Total output drops: 0\n  Queueing strategy: fifo\n  Output queue: 0/40 (size/max)\n  5 minute input rate 7000 bits/sec, 4 packets/sec\n  5 minute output rate 4000 bits/sec, 4 packets/sec\n     22579370 packets input, 8825545968 bytes, 0 no buffer\n     Received 67 broadcasts (0 IP multicasts)\n     0 runts, 0 giants, 0 throttles\n     3612699 input errors, 3612699 CRC, 0 frame, 0 overrun, 0 ignored\n     0 watchdog, 10747057 multicast, 0 pause input\n     12072167 packets output, 1697953637 bytes, 0 underruns\n     0 output errors, 0 collisions, 1 interface resets\n     6 unknown protocol drops\n     0 babbles, 0 late collision, 0 deferred\n     5 lost carrier, 0 no carrier, 0 pause output\n     0 output buffer failures, 0 output buffers swapped out"
+ },
+ "213": {
+  "cli": "SW1\ninterface FastEthernet0/0\n switchport mode access\n switchport access vlan 5\ninterface FastEthernet0/1\n switchport mode trunk\n switchport trunk allow vlan 5-20\n switchport trunk native vlan 10\n\nSW2\ninterface FastEthernet0/0\n switchport mode access\n switchport access vlan 5\ninterface FastEthernet0/1\n switchport mode trunk\n switchport trunk allow vlan 5-20\n switchport trunk native vlan 100"
+ },
+ "276": {
+  "cli": "SW1#show run\nBuilding configuration..\n!\ninterface FastEthernet0/1\n switchport access vlan 2\n switchport mode access\n!\ninterface FastEthernet0/2\n switchport access vlan 2\n switchport trunk allowed vlan 3\n switchport mode trunk\n\nSW1#show mac-address-table\n          Mac Address Table\n-------------------------------------------\nVlan   Mac Address        Type       Ports\n----   -----------        -------    -----\n2      0007.ec53.4289     DYNAMIC    Fa0/1"
+ },
+ "354": {
+  "cli": "R1:\ninterface Ethernet0/0\n no ip address\n!\n\nSW1:\ninterface Ethernet0/0\n switchport trunk encapsulation dot1q\n switchport mode trunk\n!\ninterface Ethernet0/1\n switchport trunk allowed vlan 10\n switchport trunk encapsulation dot1q\n switchport mode trunk\n\nSW2:\ninterface Ethernet0/1\n switchport trunk encapsulation dot1q\n switchport mode trunk\n!\ninterface Ethernet0/2\n switchport access vlan 20\n switchport mode access"
+ },
+ "391": {
+  "cli": "RTR01 (config) #router eigrp 103\nRTR01 (config-router) #network 10.4.3.0\nRTR01 (config-router) #network 172.16.4.0\nRTR01 (config-router) #network 192.168.2.0\nRTR01 (config-router) #auto-summary"
+ },
+ "419": {
+  "cli": "R1# show ip route | begin gateway\nGateway of last resort is 209.165.200.246 to network 0.0.0.0\nS* 0.0.0.0/0 [1/0] via 209.165.200.246, Serial0/1/0\n     is directly connected, Serial0/1/0\n     172.16.0.0/16 is variably subnetted, 3 subnets, 3 masks\nS     172.16.0.0/24 [1/0] via 207.165.200.250, Serial0/0/0\nO     172.16.0.128/25 [110/38443] via 207.165.200.254, 00:00:23, Serial0/0/1\nD     172.16.0.192/29 [90/3184439] via 207.165.200.254, 00:00:25, Serial0/0/1\n     209.165.200.0/24 is variably subnetted, 4 subnets, 2 masks\nC     209.165.200.248/30 is directly connected, Serial0/0/0\nL     209.165.200.249/32 is directly connected, Serial0/0/0\nC     209.165.200.252/30 is directly connected, Serial0/0/1\nL     209.165.200.253/32 is directly connected, Serial0/0/1"
+ },
+ "446": {
+  "cli": "R1#show ip ospf neighbor\nNeighbor ID       Pri   State           Dead Time   Address         Interface\n192.168.100.2     1     FULL/BDR        00:00:32    192.168.100.2   FastEthernet0/0\n192.168.100.3     1     FULL/DR         00:00:31    192.168.100.3   FastEthernet0/0"
+ },
+ "483": {
+  "cli": "R1#show ip ospf interface g0/0/0\nGigabitEthernet0/0/0 is up, line protocol is up\n  Internet address is 192.168.1.2/24, Area 0\n  Process ID 1, Router ID 192.168.1.1, Network Type POINT-TO-POINT, Cost: 1\n  Transmit Delay is 1 sec, State POINT-TO-POINT,\n  Timer intervals configured, Hello 15, Dead 40, Wait 40, Retransmit 5\n    Hello due in 00:00:08\n  Index 1/1, flood queue length 0\n  Next 0x0(0)/0x0(0)\n  Last flood scan length is 1, maximum is 1\n  Last flood scan time is 0 msec, maximum is 0 msec\n  Suppress hello for 0 neighbor(s)\n\nR2#show ip ospf interface g0/0/0\nGigabitEthernet0/0/0 is up, line protocol is up\n  Internet address is 192.168.1.1/24, Area 0\n  Process ID 1, Router ID 10.1.1.1, Network Type POINT-TO-POINT, Cost: 1\n  Transmit Delay is 1 sec, State POINT-TO-POINT,\n  Timer intervals configured, Hello 15, Dead 45, Wait 40, Retransmit 5\n    Hello due in 00:00:11\n  Index 1/1, flood queue length 0\n  Next 0x0(0)/0x0(0)\n  Last flood scan length is 1, maximum is 1\n  Last flood scan time is 0 msec, maximum is 0 msec\n  Suppress hello for 0 neighbor(s)"
+ },
+ "510": {
+  "cli": "R1(config)#ip nat pool cisco 10.1.1.0 10.1.1.50 255.255.255.0"
+ },
+ "601": {
+  "cli": "Router1(config)#interface GigabitEthernet0/0\nRouter1(config-if)#ip address 209.165.200.225 255.255.255.224\nRouter1(config-if)#ip nat outside\nRouter1(config)# interface GigabitEthernet0/1\nRouter1(config-if)#ip nat inside\nRouter1(config)# interface GigabitEthernet0/1.100\nRouter1(config-if)#encapsulation dot1Q 100\nRouter1(config-if)#ip address 10.10.10.1 255.255.255.0\nRouter1(config)#interface GigabitEthernet0/1.200\nRouter1(config-if)#encapsulation dot1Q 200\nRouter1(config-if)#ip address 10.10.20.1 255.255.255.0\nRouter1(config)#ip access-list standard NAT_INSIDE_RANGES\nRouter1(config-std-nac)#permit 10.10.10.0 0.0.0.255\nRouter1(config)#ip nat inside source list NAT_INSIDE_RANGES interface GigabitEthernet0/0 overload"
+ },
+ "831": {
+  "cli": "Router1#show interface ethernet 1\nEthernet1 is up, line protocol is up\n  Hardware is Lance, address is 0010.7b36.1be8 (bia 0010.7b36.1be8)\n  Internet address is 10.100.48.240/24\n  MTU 1500 bytes, BW 10000 Kbit, DLY 1000 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  Keepalive set (10 sec)\n  ARP type: ARPA, ARP Timeout 04:00:00\n  Last input 00:00:00, output 00:00:06, output hang never\n  Last clearing of \"show interface\" counters never\n  Input queue: 0/75/1/0 (size/max/drops/flushes); Total output drops: 0\n  Queueing strategy: random early detection(RED)\n  Output queue :0/40 (size/max)\n  5 minute input rate 1000 bits/sec, 2 packets/sec\n  5 minute output rate 0 bits/sec, 0 packets/sec\n     7558065 packets input, 783768942 bytes, 1 no buffer\n     Received 8280963 broadcasts, 0 runts, 0 giants, 1 throttles\n     15 input errors, 14278 CRC, 0 frame, 0 overrun, 3 ignored\n     0 input packets with dribble condition detected\n     798092 packets output, 50280266 bytes, 0 underruns\n     0 output errors, 15000 collisions, 179 deferred\n     0 babbles, 0 late collision, 0 no carrier\n     0 output buffer failures, 0 output buffers swapped out"
+ },
+ "903": {
+  "cli": "R1# show ip route | begin gateway\nGateway of last resort is 209.165.200.246 to network 0.0.0.0\nS* 0.0.0.0/0 [1/0] via 209.165.200.246, Serial0/1/0\n     is directly connected, Serial0/1/0\n     172.16.0.0/16 is variably subnetted, 3 subnets, 3 masks\nS     172.16.0.0/24 [1/0] via 207.165.200.250, Serial0/0/0\nO     172.16.0.128/25 [110/32445] via 207.165.200.254, 00:00:23, Serial0/0/1\nD     172.16.0.192/29 [90/3184439] via 207.165.200.254, 00:00:25, Serial0/0/1\n     207.165.200.0/24 is variably subnetted, 4 subnets, 2 masks\nC     207.165.200.248/30 is directly connected, Serial0/0/0\nL     207.165.200.249/32 is directly connected, Serial0/0/0\nC     207.165.200.252/30 is directly connected, Serial0/0/1\nL     207.165.200.253/32 is directly connected, Serial0/0/1"
+ },
+ "934": {
+  "cli": "R1# show ip route\nCodes: C - connected, S - static, I - IGRP, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2, E - EGP\n       i - IS-IS, L1 - IS-IS level-1, L2 - IS-IS level-2, * - candidate default\n       U - per-user static route, o - ODR\nGateway of last resort is not set\nC     172.16.0.0/16 is directly connected, Loopback0\n      172.16.0.0/16 is variably subnetted, 4 subnets, 2 masks\nO     172.16.1.3/32 [110/100] via 10.0.1.100, 00:39:08, Serial10\nO     172.16.1.9/32 [110/5] via 172.16.1.50, 00:43:01, GigabitEthernet 0/0\nD     172.16.1.4/30 [90/7445] via 172.16.9.5, 00:39:08, GigabitEthernet 0/0\n                    [90/7445] via 172.16.4.4, 00:39:08, GigabitEthernet 0/4"
+ },
+ "1196": {
+  "cli": "Switch1#show run\nBuilding configuration...\n!\ninterface GigabitEthernet0/1\n channel-group 2 mode passive\n!\ninterface GigabitEthernet0/2\n channel-group 2 mode passive"
+ },
+ "1318": {
+  "cli": "R1#show ip ospf interface g0/0/0\nGigabitEthernet0/0/0 is up, line protocol is up\n  Internet address is 192.168.1.2/24, Area 0\n  Process ID 1, Router ID 192.168.1.2, Network Type POINT-TO-POINT, Cost: 1\n  Transmit Delay is 1 sec, State POINT-TO-POINT,\n  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5\n    Hello due in 00:00:08\n  Index 1/1, flood queue length 0\n  Next 0x0(0)/0x0(0)\n  Last flood scan length is 1, maximum is 1\n  Last flood scan time is 0 msec, maximum is 0 msec\n  Suppress hello for 0 neighbor(s)\n\nR2#show ip ospf interface g0/0/0\nGigabitEthernet0/0/0 is up, line protocol is up\n  Internet address is 192.168.1.1/24, Area 0\n  Process ID 1, Router ID 1.1.1.1, Network Type POINT-TO-POINT, Cost: 1\n  Transmit Delay is 1 sec, State POINT-TO-POINT,\n  Timer intervals configured, Hello 15, Dead 40, Wait 40, Retransmit 5\n    Hello due in 00:00:11\n  Index 1/1, flood queue length 0\n  Next 0x0(0)/0x0(0)\n  Last flood scan length is 1, maximum is 1\n  Last flood scan time is 0 msec, maximum is 0 msec\n  Suppress hello for 0 neighbor(s)"
+ },
+ "21": {
+  "cli": "SW1:\ninterface FastEthernet0/1\nswitchport trunk encapsulation dot1q\nswitchport trunk native vlan 999\nswitchport mode trunk\n\nSW2:\ninterface FastEthernet0/1\nswitchport trunk encapsulation dot1q\nswitchport trunk native vlan 99\nswitchport mode trunk"
+ },
+ "229": {
+  "cli": "SW1#show spanning-tree vlan 30\n\nVLAN0030\nSpanning tree enabled protocol rstp\nRoot ID    Priority    32798\n           Address     0025.63e9.c800\n           Cost        19\n           Port        1 (FastEthernet 2/1)\n           Hello Time  2 sec\n           Max Age     30 sec\n           Forward Delay  20 sec\n\n[Output suppressed]"
+ },
+ "317": {
+  "cli": "SW1#show mac-address-table\nMac Address Table\n-------------------------------------------------\nVlan    Mac Address       Type       Ports\n50      000c.8590.bb7d    DYNAMIC    Fa0/1\n50      010a.7a17.45bc    DYNAMIC    Fa0/3\n50      7aa7.4041.0525    DYNAMIC    Fa0/4\nSW1#"
+ },
+ "355": {
+  "cli": "R1#show ip interface brief\nInterface              IP-Address     OK?  Method  Status                  Protocol\nFastEthernet0/0        unassigned     YES  NVRAM   administratively down   down\nGigabitEthernet1/0      192.168.0.1    YES  NVRAM   up                      up\nGigabitEthernet2/0      10.10.1.10     YES  manual  up                      up\nGigabitEthernet3/0      10.10.10.20    YES  manual  up                      up\nGigabitEthernet4/0      unassigned     YES  NVRAM   administratively down   down\nLoopback0               172.16.15.10   YES  manual"
+ },
+ "394": {
+  "cli": "router#show ip route\nCodes: C - connected, S - static, I - IGRP, R - RIP, M - mobile, B - BGP, D - EIGRP\n       EX - EIGRP external, O - OSPF, IA - OSPF inter area, N1 - OSPF NSSA external type 1,\n       N2 - OSPF NSSA external type 2, E1 - OSPF external type 1, E2 - OSPF external type 2,\n       E - EGP, i - IS-IS, L1 - IS-IS level-1, L2 - IS-IS level-2, * - candidate default, U - per-user\n       static route, o - ODR\n\nGateway of last resort is 192.168.4.1 to network 0.0.0.0\n\n     10.0.0.0/24 is subnetted, 3 subnets\nC       10.0.2.0 is directly connected, Ethernet1\nD       10.0.3.0 [90/2195456] via 192.168.1.2, 00:03:01, Serial0\nD       10.0.4.0 [90/2195456] via 192.168.3.1, 00:03:01, Serial1\nC    192.168.1.0/24 is directly connected, Serial0\nD    192.168.2.0/24 [90/2681856] via 192.168.1.2, 00:03:01, Serial0\n                     [90/2681856] via 192.168.3.1, 00:03:01, Serial1\nC    192.168.3.0/24 is directly connected, Serial1\nC    192.168.4.0/24 is directly connected, Serial2"
+ },
+ "465": {
+  "cli": "EIGRP  10.10.10.0/24  [90/1441]   via F0/10\nEIGRP  10.10.10.0/24  [90/144]    via F0/11\nEIGRP  10.10.10.0/24  [90/1441]   via F0/12\nOSPF   10.10.10.0/24  [110/20]    via F0/13\nOSPF   10.10.10.0/24  [110/30]    via F0/14"
+ },
+ "513": {
+  "cli": "ip dhcp pool test\n network 192.168.10.0 /27\n domain-name cisco.com\n dns-server 172.16.1.1 172.16.2.1\n netbios-name-server 172.16.1.10 172.16.2.10"
+ },
+ "605": {
+  "cli": "Switch(config)#hostname R1\nR1(config)#interface FastEthernet0/1\nR1(config-if)#no switchport\nR1(config-if)#ip address 10.100.20.42 255.255.255.0\nR1(config-if)#line vty 0 4\nR1(config-line)#login"
+ },
+ "937": {
+  "cli": "Router1#show ip route\nGateway of last resort is not set\n\n     209.165.200.0/27 is subnetted, 1 subnets\nB       209.165.200.224 [20/0] via 10.10.12.2, 00:09:57\n     10.0.0.0/8 is variably subnetted, 4 subnets, 3 masks\nC       10.10.10.0/28 is directly connected, GigabitEthernet0/0\nC       10.10.11.0/30 is directly connected, FastEthernet2/0\nO       10.10.13.0/24 [110/2] via 10.10.10.1, 00:08:34, GigabitEthernet0/0\nC       10.10.12.0/30 is directly connected, GigabitEthernet0/1"
+ },
+ "1006": {
+  "cli": "{\n  \"myCar\": {\n    \"name\": \"thunder\",\n    \"wheels\": [\"good\", \"good\", \"pressureLow\", \"warning\"],\n    \"gasLight\": false\n  },\n  \"oldCar\": {\n    \"name\": \"sleepy\",\n    \"wheels\": [\"pressureLow\", \"pressureLow\", \"pressureLow\", \"pressureLow\"],\n    \"color\": \"rust\",\n    \"gasLight\": true\n  },\n  \"newCar\": {\n    \"name\": \"lightning\",\n    \"wheels\": [\"pressureLow\", \"good\", \"pressureLow\", \"good\"],\n    \"color\": \"blue\",\n    \"gasLight\": true\n  }\n}"
+ },
+ "1197": {
+  "cli": "Output from R1\n\nGigabitEthernet0/0/1 is up, line protocol is down\nHardware is SPA-10X1GE-V2, address is 0023.33ee.7c00 (bia 0023.33ee.7c00)\nMTU 1500 bytes, BW 1000000 Kbit/sec, DLY 10 usec,\nreliability 255/255, txload 1/255, rxload 1/255\nEncapsulation ARPA, loopback not set\nKeepalive not supported\nHalf Duplex, 1000Mbps, link type is auto, media type is LX\noutput flow-control is off, input flow-control is off\nARP type: ARPA, ARP Timeout 04:00:00\nLast input 00:00:01, output 00:02:31, output hang never\n\n10 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored\n0 watchdog, 314 multicast, 0 pause input\n1 packets output, 77 bytes, 0 underruns\n0 output errors, 50 collisions, 6 interface resets\n17 unknown protocol drops\n0 babbles, 0 late collision, 0 deferred"
+ },
+ "1367": {
+  "cli": "Router-WAN1#show interface g0/0\nGigabitEthernet0/0 is up, line protocol is up\n  Hardware is CSR NIC, address is 5000.0001.0000 (bia 5000.0001.0000)\n  Internet address is 192.168.0.0/31\n  MTU 1500 bytes, BW 1000000 Kbit/sec, DLY 10 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  Keepalive set (10 sec)\n  Full Duplex, 1000Mbps, link type is auto, media type is NIC\n  output flow-control is unsupported, input flow-control is unsupported\n  ARP type: ARPA, ARP Timeout 04:00:00\n  Last input never, output 00:00:03, output hang never\n  Last clearing of \"show interface\" counters never\n  Input queue: 0/375/0/0 (size/max/drops/flushes); Total output drops: 0\n  Queueing strategy: fifo\n  Output queue: 0/40 (size/max)\n  5 minute input rate 1000 bits/sec, 0 packets/sec\n  5 minute output rate 2000 bits/sec, 1 packets/sec\n     0 packets input, 0 bytes, 0 no buffer\n     Received 110 broadcasts (0 IP multicasts)\n     0 runts, 0 giants, 0 throttles\n     100 input errors, 100 CRC, 100 frame, 0 overrun, 0 ignored\n     0 watchdog, 0 multicast, 0 pause input\n     260 packets output, 89070 bytes, 0 underruns\n     Output 0 broadcasts (0 IP multicasts)\n     0 output errors, 100 collisions, 0 interface resets\n     0 unknown protocol drops\n     0 babbles, 0 late collision, 0 deferred\n     1 lost carrier, 0 no carrier, 0 pause output"
+ },
+ "156": {
+  "cli": "A.\nR7#\nconfigure terminal\ninterface Fa1/0\nip address 10.1.56.1 255.255.192.0\nno shutdown\nR8#\nconfigure terminal\ninterface Fa0/0\nip address 10.9.32.1 255.255.224.0\nno shutdown\nR9#\nconfigure terminal\ninterface Fa1/1\nip address 10.23.96.1 255.255.128.0\nno shutdown\n\nB.\nR7#\nconfigure terminal\ninterface Fa1/0\nip address 10.1.56.1 255.255.240.0\nno shutdown\nR8#\nconfigure terminal\ninterface Fa0/0\nip address 10.9.32.1 255.255.224.0\nno shutdown\nR9#\nconfigure terminal\ninterface Fa1/1\nip address 10.23.96.1 255.255.192.0\nno shutdown\n\nC.\nR7#\nconfigure terminal\ninterface Fa1/0\nip address 10.1.56.1 255.255.252.0\nno shutdown\nR8#\nconfigure terminal\ninterface Fa0/0\nip address 10.9.32.1 255.255.255.0\nno shutdown\nR9#\nconfigure terminal\ninterface Fa1/1\nip address 10.23.96.1 255.255.240.0\nno shutdown\n\nD.\nR7#\nconfigure terminal\ninterface Fa1/0\nip address 10.1.56.1 255.255.192.0\nno shutdown\nR8#\nconfigure terminal\ninterface Fa0/0\nip address 10.9.32.1 255.255.224.0\nno shutdown\nR9#\nconfigure terminal\ninterface Fa1/1\nip address 10.23.96.1 255.255.128.0\nno shutdown"
+ },
+ "237": {
+  "cli": "Atlanta#conf t\nEnter configuration commands, one per line. End with CNTL/Z.\nAtlanta(config)#aaa new-model\nAtlanta(config)#aaa authentication login default local\nAtlanta(config)#line vty 0 4\nAtlanta(config-line)#login authentication default\nAtlanta(config-line)#exit\nAtlanta(config)#username ciscoadmin password adminadmin123\nAtlanta(config)#username ciscoadmin privilege 15\nAtlanta(config)#enable password cisco123\nAtlanta(config)#enable secret testing1234\nAtlanta(config)#end"
+ },
+ "279": {
+  "cli": "interface g2/0/0\n  channel-group 1 mode active\ninterface g4/0/0\n  channel-group 1 mode active\ninterface Port-channell1\n  ip address 203.0.113.65 255.255.255.252\n\n%LINEPROTO-5-UPDOWN: Line protocol on Interface Port-channel1, changed state to down"
+ },
+ "319": {
+  "cli": "Interface Po1                          Interface Po1\nswitchport                             switchport\nswitchport mode access                 switchport mode access\nswitchport access vlan 2                switchport access vlan 2\n\nInterface E1/1-2                        Interface E1/1-2\nSwitchport                             Switchport\nSwitchport mode access                  Switchport mode access\nSwitchport access vlan 2                Switchport access vlan 2"
+ },
+ "396": {
+  "cli": "R1\nipv6 unicast-routing\n\ninterface FastEthernet0/0\n    no ip address\n    ipv6 enable\n    ipv6 address 3001:DBB:13::1/64\n    ipv6 ospf 1 area 0\nipv6 router ospf 1\nrouter-id 172.16.1.1\n\nR2\nipv6 unicast-routing\n\ninterface FastEthernet0/0\n    no ip address\n    ipv6 enable\n    ipv6 address 2001:DBB:12::12/64\n    ipv6 ospf 1 area 3\nipv6 router ospf 1\nrouter-id 172.16.3.3"
+ },
+ "425": {
+  "cli": "R1# show ip route\n\nD     192.168.16.0/26 [90/2679326] via 192.168.1.1\nR     192.168.16.0/24 [120/3] via 192.168.1.2\nO     192.168.16.0/21 [110/2] via 192.168.1.3\ni L1  192.168.16.0/27 [115/30] via 192.168.1.4"
+ },
+ "466": {
+  "cli": "Roter2#show ip route\nGateway of last resort is not set\n\n     10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nC       10.10.10.8/30 is directly connected, FastEthernet0/2\nC       10.10.10.12/30 is directly connected, FastEthernet0/1\nO       10.10.13.0/25 [110/11] via 10.10.10.9, 00:00:03, FastEthernet0/2\n                     [110/11] via 10.10.10.13, 00:00:03, FastEthernet0/1\nC       10.10.14.0/30 is directly connected, FastEthernet0/2"
+ },
+ "514": {
+  "cli": "Router# show ip dhcp conflict\nIP address       Detection method    Detection time\n172.16.1.32       Ping                Feb 16 1998 12:28 PM\n172.16.1.64       Gratuitous ARP      Feb 23 1198 08:12 AM"
+ },
+ "607": {
+  "cli": "Port Security : Enabled\nPort Status : Secure-up\nViolation Mode : Protect\nAging Time : 0 mins\nAging Type : Absolute\nSecureStatic Address Aging : Disabled\nMaximum MAC Addresses : 4\nTotal MAC Addresses : 3\nConfigured MAC Addresses: 1\nSticky MAC Addresses : 2\nLast Source Address:Vlan : 0001:0fAA.33BB:1\nSecurity Vioaltion Count : 0"
+ },
+ "836": {
+  "cli": "Sw1#show mac-address table\n          Mac Address Table\n-------------------------------------------------\nVlan    Mac Address       Type       Ports\n----    -----------       ----       -----\n2       000c.859c.bb7b    DYNAMIC    e0/1\n3       000c.859c.bb7b    DYNAMIC    e0/1\n2       0010.11dc.3e91    DYNAMIC    e0/2\n3       0010.11dc.3e91    DYNAMIC    e0/2\n2       0043.29d9.c045    DYNAMIC    e0/3\nSw1#"
+ },
+ "940": {
+  "cli": "CPE# show run | include ip route\nip route 0.0.0.0 0.0.0.0 203.0.113.1 21\n\nCPE# show ip route 203.0.113.1\nRouting entry for 203.0.113.0/30\n  Known via \"connected\", distance 0, metric 0 (connected, via interface)\n  Routing Descriptor Blocks:\n  * directly connected, via Ethernet0/1\n      Route metric is 0, traffic share count is 1\n\nCPE# ping 203.0.113.1\nType escape sequence to abort.\nSending 5, 100-byte ICMP Echos to 203.0.113.1, timeout is 2 seconds:\n!!!!!\nSuccess rate is 100 percent (5/5), round-trip min/avg/max = 1/1/1 ms\n\nCPE# show ip route\nGateway of last resort is 198.51.100.1 to network 0.0.0.0\n\nB*   0.0.0.0/0 [20/0] via 198.51.100.1, 00:02:07\n     198.51.100.0/24 is variably subnetted, 2 subnets, 2 masks\nC       198.51.100.0/30 is directly connected, Ethernet0/0\nL       198.51.100.2/32 is directly connected, Ethernet0/0\n     203.0.113.0/24 is variably subnetted, 2 subnets, 2 masks\nC       203.0.113.0/30 is directly connected, Ethernet0/1\nL       203.0.113.2/32 is directly connected, Ethernet0/1"
+ },
+ "1015": {
+  "cli": "{\n\"Cisco Devices\": [\n{\n\"name\": \"ASA - Security Device\",\n\"name\": \"Cisco 1100 ASR Router\",\n\"name\": \"Cisco 6800 Switch\"\n}\n]"
+ },
+ "1111": {
+  "cli": "Switch2(config)#interface fa0/1\nSwitch2(config-if)#switchport mode dynamic auto\nSwitch2(config-if)#switchport trunk allowed vlan 5,10"
+ },
+ "1241": {
+  "cli": "router# show ip route\n\n....\nD    172.18.32.0/26 [90/25789217] via 10.1.1.1\nR    172.18.32.0/24 [120/4] via 10.1.1.2\nO    172.18.32.0/19 [110/229840] via 10.1.1.3\nC    172.18.32.32/32 is directly connected, Loopback0\nC    172.18.32.36/30 is directly connected, GigabitEthernet0/0\nL    172.18.32.37/32 is directly connected, GigabitEthernet0/0"
+ },
+ "1370": {
+  "cli": "[\"red\", \"one\"]"
+ },
+ "320": {
+  "cli": "Switch(config)#hostname R1\nR1(config)#interface FastEthernet0/1\nR1(config-if)#no switchport\nR1(config-if)#ip address 10.100.20.42 255.255.255.0\nR1(config-if)#line vty 0 4\nR1(config-line)#login"
+ },
+ "357": {
+  "cli": "Router1(config)#interface GigabitEthernet1/1\nRouter1(config-if)#description ***Connection to Router2***\nRouter1(config-if)#ip address 10.10.10.1 255.255.255.252\nRouter1(config-if)#ip ospf hello-interval 5\nRouter1(config)#router ospf 1000\nRouter1(config-router)#router-id 1.1.1.1\nRouter1(config-router)#network 10.10.10.0 0.0.0.3 area 0\n\nRouter2(config)#interface GigabitEthernet1/1\nRouter2(config-if)#description ***Connection to Router1***\nRouter2(config-if)#ip address 10.10.10.2 255.255.255.252\nRouter2(config)#router ospf 1001\nRouter2(config-router)#router-id 2.2.2.2\nRouter2(config-router)#network 10.10.10.0 0.0.0.3 area 0\nRouter2(config-router)#passive-interface default\nRouter2(config-router)#no passive-interface GigabitEthernet1/1"
+ },
+ "426": {
+  "cli": "Gateway of last resort is 10.12.0.1 to network 0.0.0.0\n\nO*E2  0.0.0.0/0 [110/1] via 10.12.0.1, 00:00:01, GigabitEthernet0/0\n      10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\nC        10.0.0.0/24 is directly connected, GigabitEthernet0/0\nL        10.0.0.2/32 is directly connected, GigabitEthernet0/0\nC        10.13.0.0/24 is directly connected, GigabitEthernet0/1\nL        10.13.0.2/32 is directly connected, GigabitEthernet0/1"
+ },
+ "449": {
+  "cli": "Router1# show ip route\nGateway of last resort is 10.10.11.2 to network 0.0.0.0\n     209.165.200.0/27 is subnetted, 1 subnets\nB       209.165.200.224 [20/0] via 10.10.12.2, 03:22:14\n     209.165.201.0/27 is subnetted, 1 subnets\nB       209.165.201.0 [20/0] via 10.10.12.2, 02:26:33\n     209.165.202.0/27 is subnetted, 1 subnets\nB       209.165.202.128 [20/0] via 10.10.12.2, 02:26:03\n     10.0.0.0/8 is variably subnetted, 10 subnets, 4 masks\nO       10.10.13.0/25 [110/2] via 10.10.10.1, 00:00:04, GigabitEthernet0/0\nO       10.10.13.128/28 [110/2] via 10.10.10.5, 00:00:12, GigabitEthernet0/1\nO       10.10.13.144/28 [110/2] via 10.10.10.9, 00:01:57, GigabitEthernet0/2\nO       10.10.13.160/29 [110/2] via 10.10.10.5, 00:00:12, GigabitEthernet0/1\nO       10.10.13.208/29 [110/2] via 10.10.10.13, 00:01:57, GigabitEthernet0/3\nS*      0.0.0.0/0 [1/0] via 10.10.11.2"
+ },
+ "467": {
+  "cli": "R1#show run\n!\nrouter ospf 1\nauto-cost reference-bandwidth 100000\n!\ninterface GigabitEthernet0/0\nbandwidth 10000000\n!\ninterface GigabitEthernet0/1\nbandwidth 100000000\n!\ninterface GigabitEthernet0/2\nip ospf cost 100\n!\ninterface GigabitEthernet0/3\nip ospf cost 1000\nend"
+ },
+ "609": {
+  "cli": "Port Security : Enabled\nPort Status : Secure-up\nViolation Mode : Protect\nAging Time : 5 mins\nAging Type : Inactivity\nSecureStatic Addres Aging : Disabled\nMaximum MAC Addresses : 3\nTotal MAC Addreses : 3\nConfigured MAC Addresses : 1\nSticky MAC Addresses : 2\nLast Source Address : Vlan : 0001.0fAA.33BB:1\nSecurity Violation Count : 0"
+ },
+ "941": {
+  "cli": "R_1# show ip route\n....\nD    192.168.20.0/26 [90/24513456] via 10.10.10.1\nR    192.168.20.0/24 [120/5] via 10.10.10.2\nO    192.168.0.0/19 [110/219414] via 10.10.10.13\nB    192.168.0.0/16 is variably subnetted, 4 subnets, 4 masks\nD    192.168.20.0/27 [90/4123710] via 10.10.10.12\nD    192.168.20.0/25 [90/14464211] via 10.10.10.11\nS.   0.0.0.0/0 [1/0] via 10.10.10.14"
+ },
+ "1020": {
+  "cli": "{\"apple\": [\"red\", 1], \"ripe\": true}"
+ },
+ "282": {
+  "cli": "Cat9300# show cdp\nGlobal CDP information:\n    Sending CDP packets every 60 seconds\n    Sending a holdtime value of 180 seconds\n    Sending CDPv2 advertisements is enabled"
+ },
+ "321": {
+  "cli": "SW#show run\nBuilding configuration...\n!\ninterface FastEthernet0/1\n switchport access vlan 15\n!\nend"
+ },
+ "358": {
+  "cli": "R1#sh ip ro\nGateway of last resort is 10.10.10.18 to network 0.0.0.0\n\n     10.0.0.0/8 is variably subnetted, 4 subnets, 3 masks\nC       10.10.10.0/30 is directly connected, FastEthernet0/1\nO       10.10.13.0/25 [110/6576] via 10.10.10.1, 06:58:21, FastEthernet0/1\nC       10.10.10.16/30 is directly connected, FastEthernet0/24\nO       10.10.13.144/28 [110/110] via 10.10.10.1, 06:58:21, FastEthernet0/1\nB*   0.0.0.0/0 [20/0] via 10.10.10.18, 01:17:58"
+ },
+ "428": {
+  "cli": "Router#show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n\nGateway of last resort is 209.165.202.131 to network 0.0.0.0\n\nS*   0.0.0.0/0 [1/0] via 209.165.202.131\n     209.165.200.0/27 is subnetted, 1 subnets\nS       209.165.200.224 [254/0] via 209.165.202.129\n     209.165.201.0/27 is subnetted, 1 subnets\nS       209.165.201.0 [1/0] via 209.165.202.130"
+ },
+ "450": {
+  "cli": "RIP    10.1.1.16/28[120/5]   via  F0/0\nOSPF   10.1.1.0/24  [110/30]  via  F0/1\nOSPF   10.1.1.0/24  [110/40]  via  F0/2\nEIGRP  10.1.0.0/26  [90/20]   via  F0/3\nEIGRP  10.0.0.0/8   [90/133]  via  F0/4"
+ },
+ "468": {
+  "cli": "R1# show ip route | begin gateway\nGateway of last resort is 209.165.200.254 to network 0.0.0.0\n\nS*   0.0.0.0/0 [1/0] via 209.165.200.254, Serial0/0/1\n     172.16.0.0/16 is variably subnetted, 3 subnets, 2 masks\nC       172.16.1.0/24 is directly connected, FastEthernet0/0\nL       172.16.1.1/32 is directly connected, FastEthernet0/0\nR       172.16.2.0/24 [120/2] via 297.165.200.250, 00:00:25, Serial0/0/0\nO       192.168.1.0/24 [110/4437] via 207.165.200.254, 00:00:17, Serial0/0/1\nD       192.168.2.0/24 [90/84437] via 207.165.200.254, 00:00:15, Serial0/0/1\n     207.165.200.0/24 is variably subnetted, 5 subnets, 2 masks\nS       207.165.200.244/30 [1/1] via 207.165.200.254, Serial0/0/1\nC       207.165.200.248/30 is directly connected, Serial0/0/0\nL       207.165.200.249/32 is directly connected, Serial0/0/0\nC       207.165.200.252/30 is directly connected, Serial0/0/1\nL       207.165.200.253/32 is directly connected, Serial0/0/1"
+ },
+ "532": {
+  "cli": "R2#show ip nat translations\nPro  Inside global         Inside local          Outside local         Outside global\ntcp  172.23.104.3:43268   10.4.4.4:43268        172.23.103.10:23      172.23.103.10:23\ntcp  172.23.104.4:45507   10.4.4.5:45507        172.23.103.10:80      172.23.103.10:80"
+ },
+ "610": {
+  "cli": "Port Security              : Enabled\nPort Status                : Secure-up\nViolation Mode              : Shutdown\nAging Time                  : 0 mins\nAging Type                  : Absolute\nSecureStatic Address Aging  : Disabled\nMaximum MAC Addresses       : 5\nTotal MAC Addresses         : 1\nConfigured MAC Addresses    : 1\nSticky MAC Addresses        : 0\nLast Source Address : Vlan   : 0001.0fAA.33BB:1\nSecurity Violation Count    : 0"
+ },
+ "908": {
+  "cli": "R2# show ip route\n10.0.0.0/30 is subnetted, 2 subnets\nC   10.10.10.0 is directly connected, Serial0/0/0\nC   10.10.10.4 is directly connected, FastEthernet0/1\nD   192.168.10.0/24 [90/2172416] via 10.10.10.1, 01:05:11, Serial0/0/0\nC   192.168.20.0/24 is directly connected, FastEthernet0/0\nD   192.168.30.0/24 [90/30720] via 10.10.10.6, 01:12:53, FastEthernet0/1"
+ },
+ "943": {
+  "cli": "Router2#show ip route\nGateway of last resort is not set\n\n     10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nC       10.10.0.0/30 is directly connected, FastEthernet0/3\nC       10.10.0.8/30 is directly connected, FastEthernet0/2\nC       10.10.0.12/30 is directly connected, FastEthernet0/1\nS       172.16.0.0/12 [1/0] via 10.10.10.1\nO       10.10.13.0/25 [110/11] via 10.10.10.9,  00:00:03, FastEthernet0/2\n                      [110/11] via 10.10.10.13, 00:00:03, FastEthernet0/1"
+ },
+ "1027": {
+  "cli": "{\n    \"Test_Questions\" : [\n                    \"Automation\",\n                    \"Configuration\",\n    ],\n    \"Test_Exam_Level\" : [\n                    \"CCNA\",\n                    \"CCNP\",\n    ],\n    \"Test_Response\" : [\n                    \"Correct\",\n                    \"Incorrect\",\n    ]\n}"
+ },
+ "1203": {
+  "cli": "SW1\nconfigure terminal\ninterface range GigabitEthernet 0/1-2\n   switchport mode trunk\n   channel-group 1 mode active\n\nSW2\nconfigure terminal\ninterface range GigabitEthernet 0/1-2\n   switchport mode trunk\ninterface Port-channel1\n   switchport mode trunk"
+ },
+ "1245": {
+  "cli": "cat9k-acc-1# show interfaces gigabitethernet 1/0/1\n  gigabitethernet 1/0/1 is up, line protocol is up\n  Hardware is gigabitethernet, address is aa00.0400.0134 (via 0000.0c00.4369)\n  MTU 1500 bytes, BW 1000 Kbit, DLY 1000 usec, rely 255/255, load 1/255\n  Encapsulation ARPA, loopback not set, keepalive set (10 sec)\n  ARP type: ARPA, PROBE, ARP Timeout 4:00:00\n  Last input 0:00:00, output 0:00:00, output hang never\n  Output queue 0/1, 1 drops; input queue 0/0, 0 drops\n  Five minute input rate 61000 bits/sec, 200 packets/sec\n  Five minute output rate 1000 bits/sec, 200 packets/sec\n  2295197 packets input, 305539952 bytes, 0 no buffer\n  Received 1925500 broadcasts, 0 runts, 0 giants\n  0 input errors, 1790 CRC, 1790 frame, 0 overrun, 0 ignored, 0 abort\n  0 input packets with dribble condition detected\n  3594664 packets output, 436549843 bytes, 1 underruns\n  0 output errors, 1 collisions, 1 interface resets, 0 restarts"
+ },
+ "287": {
+  "cli": "SW1#show run interface fastEthernet 0/1\nswitchport trunk encapsulation dot1q\nswitchport mode trunk\nswitchport trunk allowed vlan 100, 200, 300\nchannel-group 1 mode on\n\nSW1#show run interface fastEthernet 0/2\nswitchport trunk encapsulation dot1q\nswitchport mode trunk\nswitchport trunk allowed vlan 100, 200, 300\nchannel-group 1 mode on\n\nSW2#show run interface fastEthernet 0/1\nswitchport trunk encapsulation dot1q\nswitchport mode trunk\nswitchport trunk allowed vlan 100, 200, 300\nchannel-group 1 mode active\n\nSW2#show run interface fastEthernet 0/2\nswitchport trunk encapsulation dot1q\nswitchport mode trunk\nswitchport trunk allowed vlan 100, 200, 300\nchannel-group 1 mode active"
+ },
+ "322": {
+  "cli": "SW1: VLAN10 - 32778 0018.1843.3cb0\nSW2: VLAN10 - 24586 004a.13e9.3912\nSW3: VLAN10 - 28682 0022.55cf.cc00\nSW4: VLAN10 - 64000 0022.66ed.a29f"
+ },
+ "359": {
+  "cli": "Router1#show ip route\nGateway of last resort is 10.10.11.2 to network 0.0.0.0\n     209.165.200.0/27 is subnetted, 1 subnets\nB       209.165.200.224 [20/0] via 10.10.12.2, 00:09:57\n     10.0.0.0/8 is variably subnetted, 4 subnets, 3 masks\nC       10.10.10.0/28 is directly connected, GigabitEthernet0/0\nC       10.10.11.0/30 is directly connected, FastEthernet2/0\nO       10.10.13.0/24 [110/2] via 10.10.10.1, 00:08:34, GigabitEthernet0/0\nC       10.10.12.0/30 is directly connected, GigabitEthernet0/1\nS*   0.0.0.0/0 [1/0] via 10.10.11.2\n\nSwitch1#show ip route\nGateway of last resort is not set\n     10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\nC       10.10.10.0/28 is directly connected, FastEthernet0/1\nC       10.10.13.0/24 is directly connected, VLAN20"
+ },
+ "400": {
+  "cli": "Gateway of last resort is not set\n\n     192.168.25.0/30 is subnetted, 4 subnets\nD       192.168.25.20 [90/2681856] via 192.168.15.5, 00:00:10, Serial0/1\nD       192.168.25.16 [90/1823638] via 192.168.15.5, 00:00:50, Serial0/1\nD       192.168.25.24 [90/3837233] via 192.168.15.5, 00:05:23, Serial0/1\nD       192.168.25.28 [90/8127323] via 192.168.15.5, 00:06:45, Serial0/1\nC    192.168.15.4/30 is directly connected, Serial0/1\nC    192.168.2.0/24 is directly connected, FastEthernet0/0"
+ },
+ "451": {
+  "cli": "During outage\n\nR1#show ip route 10.1.1.10\n%Network not in table\n\nNormal operation\n\nR1#show ip route 10.1.1.10\nRouting entry for 10.1.1.0/24\n  Known via \"ospf 1\", distance 110, metric 2, type intra area\n  Last update from 172.16.2.2 on GigabitEthernet0/0, 00:00:18 ago\n  Routing Descriptor Blocks:\n  * 172.16.2.2, from 10.1.1.10, 00:00:18 ago, via GigabitEthernet0/0\n      Route metric is 2, traffic share count is 1"
+ },
+ "469": {
+  "cli": "RouterA(config) #ip route 0.0.0.0 0.0.0.0 192.168.2.2"
+ },
+ "489": {
+  "cli": "Router1#show ip route\nGateway of last resort is 10.10.11.2 to network 0.0.0.0\n\n     209.165.200.0/27 is subnetted, 1 subnets\nB    209.165.200.224 [20/0] via 10.10.12.2, 03:22:14\n     209.165.201.0/27 is subnetted, 1 subnets\nB    209.165.201.0 [20/0] via 10.10.12.2, 02:26:33\n     209.165.202.0/27 is subnetted, 1 subnets\nB    209.165.202.128 [20/0] via 10.10.12.2, 02:26:03\n     10.0.0.0/8 is variably subnetted, 8 subnets, 4 masks\nC    10.10.10.0/28 is directly connected, GigabitEthernet0/0\nC    10.10.11.0/30 is directly connected, GigabitEthernet0/1\nC    10.10.12.0/30 is directly connected, GigabitEthernet0/1\nO    10.10.13.0/25 [110/2] via 10.10.10.1, 00:00:04, GigabitEthernet0/0\nO    10.10.13.128/28 [110/2] via 10.10.10.1, 00:00:04, GigabitEthernet0/0\nO    10.10.13.144/28 [110/2] via 10.10.10.1, 00:00:04, GigabitEthernet0/0\nO    10.10.13.160/29 [110/2] via 10.10.10.1, 00:00:04, GigabitEthernet0/0\nO    10.10.13.208/29 [110/2] via 10.10.10.1, 00:00:04, GigabitEthernet0/0\nS*   0.0.0.0/0 [1/0] via 10.10.11.2"
+ },
+ "611": {
+  "cli": "ip arp inspection vlan 2\ninterface fastethernet 0/1\n  switchport mode access\n  switchport access vlan 2"
+ },
+ "889": {
+  "cli": "SW2\nvtp domain cisco\nvtp mode transparent\nvtp password ciscotest\ninterface fastethernet0/1\n  description connection to sw1\n  switchport mode trunk\n  switchport trunk encapsulation dot1q"
+ },
+ "944": {
+  "cli": "R1#show ip route\n     1.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\nO IA    1.1.1.0/24 [110/3] via 12.1.1.2, 00:00:25, FastEthernet0/0\nC       24.1.1.0/30 is directly connected, FastEthernet2/0\nC       34.1.1.0/30 is directly connected, FastEthernet3/0\nS       1.1.1.3/32 [1/0] via 14.1.1.2"
+ },
+ "1124": {
+  "cli": "C:\\>ipconfig /all\nEthernet adapter Ethernet:\n   Connection-specific DNS Suffix  . :\n   Physical Address. . . . . . . . . : F8-75-A4-3B-AB-4F\n   Link-local IPv6 Address . . . . . : fe80::644a:b01:3e5f:ae6%14(Preferred)\n   IPv4 Address. . . . . . . . . . . : 10.2.2.2(Preferred)\n   Subnet Mask . . . . . . . . . . . : 255.255.255.248\n   Default Gateway . . . . . . . . . : 10.2.2.10\n   DHCP Server . . . . . . . . . . . : 0.0.0.0\n   DNS Servers . . . . . . . . . . . : 8.8.8.8\n   NetBIOS over Tcpip. . . . . . . . : Enabled"
+ },
+ "1204": {
+  "cli": "Name: Et0/2\nSwitchport: Enabled\nAdministrative Mode: dynamic auto\nOperational Mode: trunk\nAdministrative Trunking Encapsulation: negotiate\nOperational Trunking Encapsulation: dot1q\nNegotiation of Trunking: On\nAccess Mode VLAN: 1 (default)\nTrunking Native Mode VLAN: 1 (default)\nAdministrative Native VLAN tagging: enabled\nVoice VLAN: none\n\nOperational private-vlan: none\nTrunking VLANs Enabled: 5\nPruning VLANs Enabled: 2-1001\nCapture Mode Disabled"
+ },
+ "75": {
+  "cli": "SiteA#show interface TenGigabitEthernet0/1/0\nTenGigabitEthernet0/1/0 is up, line protocol is up\n  Hardware is BUILT-IN-EPA-8x10G, address is 780c.f02a.db91 (bia 780a.f02b.db91)\n  Description: Connection to SiteB\n  Internet address is 10.10.10.1/30\n  MTU 8146 bytes, BW 10000000 Kbit/sec, DLY 10 usec,\n     reliability 166/255, txload 1/255, rxload 1/255\n  Full Duplex, 10000Mbps, link type is force-up, media type is SFP-LR\n  5 minute input rate 264797000 bits/sec, 26672 packets/sec\n  5 minute output rate 122464000 bits/sec, 15724 packets/sec\n\nSiteB#show interface TenGigabitEthernet0/1/0\nTenGigabitEthernet0/1/0 is up, line protocol is up\n  Hardware is BUILT-IN-EPA-8x10G, address is 780c.f02c.db26 (bia 780c.f02c.db26)\n  Description: Connection to SiteA\n  Internet address is 10.10.10.2/30\n  MTU 8146 bytes, BW 10000000 Kbit/sec, DLY 10 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Full Duplex, 10000Mbps, link type is force-up, media type is SFP-LR\n  5 minute input rate 122464000 bits/sec, 15724 packets/sec\n  5 minute output rate 264797000 bits/sec, 26672 packets/sec"
+ },
+ "323": {
+  "cli": "SwitchA#show mac-address-table\nMac Address Table\nVlan  Mac Address       Type      Ports\n2     000c.859c.bb7b    DYNAMIC   Fa0/1\n2     0010.11dc.3e91    DYNAMIC   Fa0/2\n2     0041.39d1.c469    DYNAMIC   Fa0/3\nSwitchA#"
+ },
+ "362": {
+  "cli": "Designated Router (ID) 10.11.11.11, Interface address 10.10.10.1\nBackup Designated router (ID) 10.3.3.3, Interface address 10.10.10.3\nTimer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5\noob-resync timeout 40\nHello due in 00:00:08\nSupports Link-local Signaling (LLS)\nCisco NSF helper support enabled\nIETF NSF helper support enabled\nIndex 1/1/1, flood queue length 0\nNext 0x0(0)/0x0(0)/0x0(0)\nLast flood scan length is 1, maximum is 6\nLast flood scan time is 0 msec, maximum is 1 msec\nNeighbor Count is 3, Adjacent neighbor count is 3\n  Adjacent with neighbor 10.1.1.4\n  Adjacent with neighbor 10.2.2.2\n  Adjacent with neighbor 10.3.3.3  (Backup Designated Router)\nSuppress hello for 0 neighbor(s)"
+ },
+ "401": {
+  "cli": "RouterD#show ip interface brief\nInterface              IP-Address      OK?  Method  Status  Protocol\nFastEthernet0/0         192.168.5.3     Yes  manual  up      up\nFastEthernet0/1         10.1.1.2        Yes  manual  up      up\nLoopback0               172.16.5.1      Yes  NVRAM   up      up\nLoopback1               10.154.154.1    Yes  NVRAM   up      up"
+ },
+ "431": {
+  "cli": "R1#show ip route\nCodes: C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route\n\nGateway of last resort is 192.168.30.10 to network 0.0.0.0\n\n     192.168.30.0/29 is subnetted, 2 subnets\nC       192.168.30.0 is directly connected, FastEthernet0/0\nC       192.168.30.8 is directly connected, Serial0/0.1\n     192.168.10.0/24 is variably subnetted, 2 subnets, 2 masks\nO IA    192.168.10.32/28 [110/193] via 192.168.30.10, 00:18:49, Serial0/0.1\nO IA    192.168.10.0/27 [110/192] via 192.168.30.10, 00:18:49, Serial0/0.1\n     192.168.20.0/30 is subnetted, 1 subnets\nO       192.168.20.0 [110/128] via 192.168.30.10, 00:18:49, Serial0/0.1\n     192.168.50.0/32 is subnetted, 1 subnets\nC       192.168.50.1 is directly connected, Loopback0\nO*IA 0.0.0.0/0 [110/84] via 192.168.30.10, 00:10:36, Serial0/0.1"
+ },
+ "452": {
+  "cli": "R1# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, L1 - IS-IS level-1, L2 - IS-IS level-2, ia - IS-IS inter area\n       * - candidate default, U - per-user static route\n       p - periodic downloaded static route\n\nGateway of last resort is not set\n\n     10.0.0.0/24 is subnetted, 5 subnets\nD       10.1.2.0/24 [90/2170112] via 10.165.20.226, 00:01:30, Serial0/0\nD       10.1.3.0/24 [90/2170112] via 10.165.20.226, 00:01:30, Serial0/0\nD       10.1.2.0/25 [90/2170112] via 10.165.20.146, 00:01:30, Serial0/0\nD       10.1.3.0/25 [90/2170112] via 10.165.20.146, 00:01:30, Serial0/0\nD       10.1.4.0/25 [90/2170112] via 10.165.20.156, 00:01:30, Serial0/0\n     192.168.1.0/24 is variably subnetted, 2 subnets, 2 masks\nC       192.18.10.0/24 is directly connected, GigabitEthernet0/0\nC       192.18.11.0/24 is directly connected, GigabitEthernet0/1\n     10.165.20.0/24 is variably subnetted, 2 subnets, 2 masks\nC       10.165.20.0/24 is directly connected, Serial0/0\nS       10.1.12.119/28 [1/0] via 10.165.20.166"
+ },
+ "621": {
+  "cli": "R2# config t\nR2(config)#access-list 101 deny tcp 10.0.20.0 0.0.0.63 10.0.10.0 0.0.0.63 eq smtp\nR2(config)#access-list 101 deny tcp 10.0.20.0 0.0.0.63 10.0.10.0 0.0.0.63 eq www\nR2(config)#int gi0/2\nR2(config-if)# ip access-group 101 in"
+ },
+ "738": {
+  "cli": "cisco_ospf_vrf {\"R1 default\":\n    ensure => 'present',\n    auto_cost => '100',\n}"
+ },
+ "843": {
+  "cli": "SW1#\n!\nvlan 10\n name Voice\n!\nvlan 11\n name Data\n!\ncdp run\n!\ninterface GigabitEthernet1/0/1\n switchport access vlan 11\n switchport mode access\n switchport voice vlan 10\n spanning-tree portfast\n no shut\n!\nend\n!\ncopy run start"
+ },
+ "891": {
+  "cli": "R1\ninterface GigabitEthernet0/1\n ip address 192.168.12.1 255.255.255.128\n no shutdown\nrouter ospf 1\n network 192.168.12.1 0.0.0.0 area 1\n\nR2\ninterface GigabitEthernet0/1\n ip address 192.168.12.2 255.255.255.128\n no shutdown"
+ },
+ "1033": {
+  "cli": "Switch1# show etherchannel summary\nNumber of channel-groups in use: 1\nNumber of aggregators:           1\n\nGroup  Port-channel  Protocol    Ports\n------+-------------+-----------+-----------------------------------------------\n1      Po1(SU)         LACP      Fa0/0(P) Fa0/1(P)"
+ },
+ "1133": {
+  "cli": "Router#show run\nBuilding configuration...\n!\ninterface GigabitEthernet0/0\n ip address 10.10.10.1 255.255.255.0\n duplex auto\n speed auto\n!\ninterface GigabitEthernet0/1\n ip address 172.16.2.1 255.255.255.0\n duplex auto\n speed auto\n!"
+ },
+ "186": {
+  "cli": "Switch 1:\nName: Gi0/1\nSwitchport: Enabled\nAdministrative Mode: trunk\nOperational Mode: trunk\nAdministrative Trunking Encapsulation: dot1q\nOperational Trunking Encapsulation: dot1q\nNegotiation of Trunking: Off\nAccess Mode VLAN: 1 (default)\nTrunking Native Mode VLAN: 1 (default)\nAdministrative Native VLAN tagging: enabled\nVoice VLAN: none\n[output omitted]\nTrunking VLANs Enabled: 50-100\nPruning VLANs Enabled: 2-1001\nCapture Mode Disabled\nCapture VLANs Allowed: ALL\n\nSwitch 2:\nName: Gi0/1\nSwitchport: Enabled\nAdministrative Mode: trunk\nOperational Mode: trunk\nAdministrative Trunking Encapsulation: dot1q\nOperational Trunking Encapsulation: dot1q\nNegotiation of Trunking: off\nAccess Mode VLAN: 1 (default)\nTrunking Native Mode VLAN: 99 (VLAN0099)\nAdministrative Native VLAN tagging: enabled\nVoice VLAN: none\n[output omitted]\nTrunking VLANs Enabled: 50-100\nPruning VLANs Enabled: 2-1001\nCapture Mode Disabled\nCapture VLANs Allowed: ALL"
+ },
+ "292": {
+  "cli": "Switch1#show etherchannel summary\nFlags:  D - down        P - in port-channel\n        I - stand-alone s - suspended\n        H - Hot-standby (LACP only)\n        R - Layer3      S - Layer2\n        U - in use      f - failed to allocate aggregator\n\n        u - unsuitable for bundling\n        w - waiting to be aggregated\n        d - default port\n\nNumber of channel-groups in use: 1\nNumber of aggregators:           1\n\nGroup  Port-channel  Protocol    Ports\n------+-------------+-----------+-----------------------------------------------\n1      Po1 (SD)        LACP      Fa0/2 (I)  Fa0/1 (I)\n\nSwitch1#show run\nBuilding configuration...\ninterface Port-channel1\n!\ninterface FastEthernet0/1\n  channel-group 1 mode passive\n!\ninterface FastEthernet0/2\n  channel-group 1 mode passive\n\nSwitch2#show run\nBuilding configuration...\ninterface Port-channel1\n!\ninterface FastEthernet0/1\n  channel-group 1 mode passive\n!\ninterface FastEthernet0/2\n  channel-group 1 mode passive"
+ },
+ "366": {
+  "cli": "Router1#show ip route\nGateway of last resort is 10.10.11.2 to network 0.0.0.0\n     10.0.0.0/8 is variably subnetted, 8 subnets, 4 masks\nC        10.10.10.0/28 is directly connected, GigabitEthernet0/0\nC        10.10.11.0/30 is directly connected, FastEthernet2/0\nO        10.10.13.0/25 [110/2] via 10.10.10.1, 00:00:17, GigabitEthernet0/0\nO        10.10.13.128/28 [110/2] via 10.10.10.1, 00:33:38, GigabitEthernet0/0\nO        10.10.13.144/28 [110/2] via 10.10.10.1, 00:33:38, GigabitEthernet0/0\nO        10.10.13.160/29 [110/2] via 10.10.10.1, 00:33:38, GigabitEthernet0/0\nO        10.10.13.208/29 [110/2] via 10.10.10.1, 00:33:39, GigabitEthernet0/0\nO        10.10.13.252/30 [110/2] via 10.10.10.1, 00:33:39, GigabitEthernet0/0\nS*       0.0.0.0/0 via 10.10.11.2"
+ },
+ "432": {
+  "cli": "R1#show ip route\nCodes: C - connected, S - static, I - IGRP, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2, E - EGP\n       i - IS-IS, L1 - IS-IS level-1, L2 - IS-IS level-2, * - candidate default\n       U - per-user static route, o - ODR\n\nGateway of last resort is not set\n\nC    192.168.3.5 is directly connected, Loopback0\n     10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nO       10.0.1.3/32 [110/100] via 192.168.0.40, 00:39:08, Serial0\nC       10.0.1.0/24 is directly connected, Serial0\nO       10.0.1.190/32 [110/5] via 192.168.0.35, 00:39:08, Serial0\nO       10.0.1.0/24 [110/10] via 192.168.0.4, 00:39:08, GigabitEthernet 0/0\nD       10.0.1.0/28 [110/10] via 192.168.0.7, 00:39:08, GigabitEthernet 0/0"
+ },
+ "453": {
+  "cli": "R1# show ip route | begin gateway\nGateway of last resort is not set\n     172.16.0.0/16 is variably subnetted, 3 subnets, 2 masks\nC        172.16.1.0/24 is directly connected, FastEthernet0/0\nL        172.16.1.1/32 is directly connected, FastEthernet0/0\nEX       172.16.2.0/24 [170/2] via 207.165.200.250, 00:00:25, Serial0/0/0\nO        192.168.1.0/24 [110/84437] via 207.165.200.254, 00:00:15, Serial0/0/1\nD        192.168.2.0/24 [90/184437] via 207.165.200.254, 00:00:15, Serial0/0/1\nE1       192.168.3.0/24 [110/1851437] via 207.165.200.254, 00:00:19, Serial0/0/1\n     207.165.200.0/24 is variably subnetted, 4 subnets, 2 masks\nC        207.165.200.248/30 is directly connected, Serial0/0/0\nL        207.165.200.249/32 is directly connected, Serial0/0/0\nC        207.165.200.252/30 is directly connected, Serial0/0/1\nL        207.165.200.253/32 is directly connected, Serial0/0/1"
+ },
+ "491": {
+  "cli": "R1#show ip route 10.10.2.1\nRouting entry for 10.10.2.0/24\nKnown via \"ospf 1\", distance 110, metric 2, type intra area\nLast update from 192.168.1.2 on GigabitEthernet0/0, 01:23:15 ago\nRouting Descriptor Blocks:\n  * 192.168.1.2, from 192.168.1.2, 01:23:15 ago, via GigabitEthernet0/0\n      Route metric is 2, traffic share count is 1"
+ },
+ "566": {
+  "cli": "R1#show run\nBuilding configuration...\n!\nhostname R1\n!\nusername CNAC password 0 cona123\n!\nip domain-name CNAC.com\n!\ninterface GigabitEthernet0/0/0\n ip address 192.168.1.10 255.255.255.0\n duplex auto\n speed auto\n!\nline vty 0 15\n login local\n\nR1#show crypto key mypubkey rsa\n\nR1#show ssh\n%No SSHv2 server connections running.\n%No SSHv1 server connections running."
+ },
+ "624": {
+  "cli": "RTR-1\ninterface Loopback1\nip address 192.168.1.1 255.255.255.0\n!\ninterface Loopback2\nip address 192.168.2.1 255.255.255.0\n!\ninterface Loopback3\nip address 192.168.3.1 255.255.255.0\n!\ninterface GigabitEthernet0/0\nip address 172.16.1.62 255.255.255.224"
+ },
+ "754": {
+  "cli": "[\n  { \"switch\": \"3750\", \"port\": e2 },\n  { \"router\": \"2951\", \"port\": e20 },\n  { \"switch\": \"3750\", \"port\": e23 }\n]"
+ },
+ "892": {
+  "cli": "R1#show ip route\nCodes: C - connected, S - static, I - IGRP, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2, E - EGP\n       i - IS-IS, L1 - IS-IS level-1, L2 - IS-IS level-2, * - candidate default\n       U - per-user static route, o - ODR\n\nGateway of last resort is not set\n\nC    10.0.0.0/8 is directly connected, Loopback0\n     10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nO       10.0.1.3/32 [110/100] via 10.0.1.100, 00:39:08, Serial0\nC       10.0.1.0/24 is directly connected, Serial0\nO       10.0.1.5/32 [110/5] via 10.0.1.50, 00:39:08, Gigabit Ethernet 0/0\nD       10.0.1.4/32 [110/10] via 10.0.1.4, 00:39:08, Gigabit Ethernet 0/0"
+ },
+ "914": {
+  "cli": "Router Y#show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default route, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       + - replicated route, % - next hop override, p - overrides from PfR\n\nGateway of last resort is not set\n\n     10.0.0.0/8 is variably subnetted\nS        10.0.0.0/8 [1/0] via 10.224.1.2\nS        10.27.150.224/27 [20/0] via 10.224.1.3, 1w4d\nS        10.128.0.0/9 [1/0] via 10.224.1.3\nS        10.224.0.0/11 [20/0] via 10.224.1.5, 5d16h\nC        10.224.0.0/15 is directly connected, GigabitEthernet0/1\nC        10.224.0.0/15 is directly connected, GigabitEthernet0/0\nS        10.224.34.0/24 [20/0] via 10.224.1.5, 5d16h"
+ },
+ "1037": {
+  "cli": "TenGigabitEthernet0/0/0 is up, line protocol is up\n  Hardware is BUILT-IN-2T+6X1GE, address is 74a0.2f7a.0123 (bia 74a0.2f7a.0123)\n  Description: Uplink\n  Internet address is 10.1.1.1/24\n  MTU 1500 bytes, BW 10000000 Kbit/sec, DLY 10 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  Keepalive not supported\n  Full Duplex, 10000Mbps, link type is force-up, media type is unknown media type\n  output flow-control is on, input flow-control is on\n  ARP type: ARPA, ARP Timeout 04:00:00\n  Last input 00:00:00, output 00:05:40, output hang never\n  Last clearing of \"show interface\" counters never\n  Input queue: 0/375/0/0 (size/max/drops/flushes); Total output drops: 0\n  Queueing strategy: fifo\n  Output queue: 0/40 (size/max)\n  5 minute input rate 6160000 bits/sec, 1113 packets/sec\n  5 minute output rate 11123000 bits/sec, 1553 packets/sec\n     12662416065 packets input, 12607032232894 bytes, 0 no buffer\n     Received 14117163 broadcasts (0 IP multicasts)\n     0 runts, 0 giants, 0 throttles\n     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored\n     0 watchdog, 26271385 multicast, 0 pause input\n     7907779058 packets output, 5073750426832 bytes, 0 underruns\n     0 output errors, 8662416065 collisions, 1 interface resets\n     0 unknown protocol drops\n     0 babbles, 0 late collision, 0 deferred\n     0 lost carrier, 0 no carrier, 0 pause output\n     0 output buffer failures, 0 output buffers swapped out\n     1 carrier transitions"
+ },
+ "1209": {
+  "cli": "Gateway of last resort is 172.16.2.2 to network 0.0.0.0\n\n     10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\nC        10.10.10.0/24 is directly connected, GigabitEthernet0/0/0\nL        10.10.10.3/32 is directly connected, GigabitEthernet0/0/0\n     172.16.0.0/16 is variably subnetted, 3 subnets, 2 masks\nS        172.16.1.33/32 is directly connected, GigabitEthernet0/0/1\nC        172.16.2.0/23 is directly connected, GigabitEthernet0/0/1\nL        172.16.2.1/32 is directly connected, GigabitEthernet0/0/1\nS*   0.0.0.0/0 [1/0] via 172.16.2.2"
+ },
+ "1381": {
+  "cli": "R19#sh int fa0/0\nFastEthernet0/0 is up, line protocol is up\n  Hardware is DEC21140, address is ca02.7788.0000 (bia ca02.7788.0000)\n  Description: SALES_SUBNET\n  Internet address is 10.32.102.2/30\n  MTU 1500 bytes, BW 100000 Kbit/sec, DLY 100 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  Keepalive set (60 sec)\n  Full-duplex, 100Mb/s, 100BaseTX/FX\n  ARP type: ARPA, ARP Timeout 04:00:00\n  Last input 00:00:01, output 00:00:00, output hang never\n  Last clearing of \"show interface\" counters never\n  Input queue: 0/300/0/0 (size/max/drops/flushes); Total output drops: 135298429\n  Queueing strategy: fifo\n  Output queue: 0/300 (size/max)\n  30 second input rate 0 bits/sec, 0 packets/sec\n  30 second output rate 0 bits/sec, 0 packets/sec\n     73310 packets input, 7101162 bytes\n     Received 73115 broadcasts (0 IP multicasts)\n     0 runts, 0 giants, 0 throttles\n     0 input errors, 4 CRC, 0 frame, 0 overrun, 0 ignored\n     0 watchdog\n     0 input packets with dribble condition detected\n     3927513096455 packets output, 14404034810952 bytes, 0 underruns\n     0 output errors, 11 collisions, 0 interface resets\n     0 unknown protocol drops\n     0 babbles, 0 late collision, 0 deferred\n     0 lost carrier, 0 no carrier\n     0 output buffer failures, 0 output buffers swapped out"
+ },
+ "90": {
+  "cli": "{\n  \"response\": {\n    \"taskId\": {},\n    \"url\": \"string\"\n  },\n  \"version\": \"string\"\n}"
+ },
+ "189": {
+  "cli": "Router#\nCapability Codes: R - Router, T - Trans Bridge, B - Source Route Bridge\n               S -Switch, H - Host, I - IGMP, r - Repeater, P - Phone,\n               D - Remote, C - CVTA, M - Two-port Mac Relay\n\nDevice ID       Local Interface   Holdtime   Capability   Platform   Port ID\n10.1.1.2        Gig 37/3          176        R I          CPT 600    Gig 36/41\n10.1.1.2        Gig 37/1          174        R I          CPT 600    Gig 36/43\n10.1.1.2        Gig 36/41         134        R I          CPT 600    Gig 37/3\n10.1.1.2        Gig 36/43         134        R I          CPT 600    Gig 37/1\n10.1.1.2        Ten 3/2           132        R I          CPT 600    Ten 4/2\n10.1.1.2        Ten 4/2           174        R I          CPT 600    Ten 3/2"
+ },
+ "263": {
+  "cli": "Switch A\nVlan 10, 11, 12, 13\n\ninterface GigabitEthernet0/1\n switchport mode trunk\n switchport trunk allowed vlan 10-12\n!\ninterface GigabitEthernet0/4\n switchport access vlan 13\n switchport mode access\n\nSwitch B\nVlan 10, 11, 12, 13\n\ninterface GigabitEthernet0/1\n switchport mode trunk\n!\ninterface GigabitEthernet0/3\n switchport access vlan 13\n switchport mode access"
+ },
+ "293": {
+  "cli": "Workstation   Mac address\nPC 1          00:50:7278:66:80\nPC 2          28:39:26:34:82:51\nPC 3          00:50:7278:66:78\nPC 4          00:50:7278:66:44"
+ },
+ "326": {
+  "cli": "SW1 = 24596 0018.184e.3c00\nSW2 = 28692 004a.13e9.6900\nSW3 = 32788 0022.55cf.dd00\nSW4 = 64000 0041.396d.690f"
+ },
+ "368": {
+  "cli": "Roter2#show ip route\nGateway of last resort is not set\n\n     10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nC       10.10.10.8/30 is directly connected, FastEthernet0/2\nC       10.10.10.12/30 is directly connected, FastEthernet0/1\nO       10.10.13.0/25 [110/11] via 10.10.10.9, 00:00:03, FastEthernet0/2\n                      [110/11] via 10.10.10.13, 00:00:03, FastEthernet0/1\nC       10.10.14.0/30 is directly connected, FastEthernet0/2"
+ },
+ "435": {
+  "cli": "R2#show ip route\nC       192.168.1.0/26 is directly connected, FastEthernet0/1"
+ },
+ "454": {
+  "cli": "R3# show ip ospf neighbor\n\nNeighbor ID   Pri   State           Dead Time   Address       Interface\n1.1.1.1       1     2WAY/DROTHER    00:00:32    172.16.10.1   GigabitEthernet0/0\n2.2.2.2       1     2WAY/DROTHER    00:00:33    172.16.10.2   GigabitEthernet0/0\n4.4.4.4       1     FULL/BDR        00:00:31    172.16.10.4   GigabitEthernet0/0\n5.5.5.5       1     FULL/DR         00:00:30    172.16.10.5   GigabitEthernet0/0"
+ },
+ "472": {
+  "cli": "R1#show ip route\nGateway of last resort is 10.10.10.2 to network 0.0.0.0\nS*    0.0.0.0/0 [1/0] via 10.10.10.2\n\nR2#show ip route\nGateway of last resort is 10.10.10.1 to network 0.0.0.0\nS*    0.0.0.0/0 [1/0] via 10.10.10.1"
+ },
+ "492": {
+  "cli": "R1#show ip route\nGateway of last resort is 10.10.10.2 to network 0.0.0.0\nS*    0.0.0.0/0 [1/0] via 10.10.10.2\n\nR2#show ip route\nGateway of last resort is 10.10.10.1 to network 0.0.0.0\nS*    0.0.0.0/0 [1/0] via 10.10.10.1"
+ },
+ "573": {
+  "cli": "Switch#show ip dhcp snooping\nSwitch DHCP snooping is enabled\nSwitch DHCP gleaning is disabled\nDHCP snooping is configured on following VLANs:\n1\nDHCP snooping is operational on following VLANs:\n1\nDHCP snooping is configured on the following L3 Interfaces:\n\nInsertion of option 82 is disabled\ncircuit-id default format: vlan-mod-port\nremote-id: aabb.cc00.6500 (MAC)\nOption 82 on untrusted port is not allowed\nVerification of hwaddr field is enabled\nVerification of giaddr field is enabled\nDHCP snooping trust/rate is configured on the following Interfaces:\nInterface   Trusted   Allow option   Rate limit (pps)\n\nSwitch#show ip dhcp snooping statistics detail\nPackets Processed by DHCP Snooping = 34\nPackets Dropped Because\nIDB not known = 0\nQueue full = 0\nInterface is in errdisabled = 0\nReceived on untrusted ports = 32\nNonzero giaddr = 0\nSource mac not equal to chaddr = 0\nNo binding entry = 0\nInsertion of opt82 fail = 0\nUnknown packet = 0\nInterface Down = 0\nUnknown output interface = 0\nMisdirected Packets = 0\nPackets with Invalid Size = 0\nPackets with Invalid Option = 0"
+ },
+ "628": {
+  "cli": "ip arp inspection vlan 2-10\ninterface fastethernet 0/1\n   ip arp inspection trust"
+ },
+ "769": {
+  "cli": "{\n    \"SW1\" : [\"Ten-GigabitEthernet0/0\", \"Ten-GigabitEthernet0/1\"],\n    \"SW2\" : [\"Ten-GigabitEthernet0/0\", \"Ten-GigabitEthernet0/1\"],\n    \"SW3\" : [\"Ten-GigabitEthernet0/0\", \"Ten-GigabitEthernet0/1\"],\n    \"SW4\" : [\"Ten-GigabitEthernet0/0\", \"Ten-GigabitEthernet0/1\"]\n}"
+ },
+ "846": {
+  "cli": "Cat9300-1# show interface g1/0/1 switchport\nName: Gi1/0/1\nSwitchport: Enabled\nAdministrative Mode: trunk\nOperational Mode: trunk\nAdministrative Trunking Encapsulation: dot1q\nOperational Trunking Encapsulation: dot1q\nNegotiation of Trunking: On\nAccess Mode VLAN: 1 (default)\nTrunking Native Mode VLAN: 321 (VLAN0321)\nAdministrative Native VLAN tagging: enabled\nTrunking VLANs Enabled: 100,200,300\nPruning VLANs Enabled: 2-1001"
+ },
+ "915": {
+  "cli": "Gateway of last resort is 172.16.2.2 to network 0.0.0.0\n\n     10.0.0.0/8 is variably subnetted, 3 subnets, 3 masks\n        10.10.100.0/26 is directly connected, GigabitEthernet0/0/6\nC       10.10.10.0/24 is directly connected, GigabitEthernet0/0/0\nL       10.10.10.3/32 is directly connected, GigabitEthernet0/0/0\n     172.16.0.0/16 is variably subnetted, 3 subnets, 2 masks\nS       172.16.1.33/32 is directly connected, GigabitEthernet0/0/1\nC       172.16.2.0/23 is directly connected, GigabitEthernet0/0/1\nL       172.16.2.1/32 is directly connected, GigabitEthernet0/0/1\nS*   0.0.0.0/0 [1/0] via 172.16.2.2"
+ },
+ "962": {
+  "cli": "DHCPServer(dhcp-config)#ip dhcp pool Net20\nDHCPServer(dhcp-config)#default-router 192.168.20.2\nDHCPServer(dhcp-config)#domain-name cisco.local\nDHCPServer(dhcp-config)#dns-server 192.168.20.5\nDHCPServer(dhcp-config)#exit\nDHCPServer(config)#\nDHCPServer(config)#ip dhcp pool Net20\nDHCPServer(dhcp-config)#default-router 192.168.20.2\nDHCPServer(dhcp-config)#domain-name cisco.local\nDHCPServer(dhcp-config)#dns-server 192.168.20.5\nDHCPServer(dhcp-config)#exit\nDHCPServer(config)#\nDHCPServer(config)#ip dhcp excluded-address 192.168.10.1 192.168.10.10\nDHCPServer(config)#ip dhcp excluded-address 192.168.20.1 192.168.20.10\nDHCPServer(config)#\nDHCPServer(config)#int g0/0\nDHCPServer(config-if)#no shutdn\nDHCPServer(config-if)#ip addr 192.168.20.2 255.255.255.0\nDHCPServer(config-if)#exit\nDHCPServer(config)#exit\nDHCPServer#\n\nSW1(config)#vlan 10\nSW1(config-vlan)#name vlan10\nSW1(config-vlan)#exit\nSW1(config)#vlan 20\nSW1(config-vlan)#name vlan20\nSW1(config-vlan)#exit\nSW1(config)#interface vlan 10\nSW1(config-if)#ip address 192.168.10.1 255.255.255.0\nSW1(config-if)#exit\nSW1(config)#interface fa0/1\nSW1(config-if)#switchport mode access\nSW1(config-if)#switchport access vlan 10\nSW1(config-if)#exit\nSW1(config)#interface fa0/2\nSW1(config-if)#switchport mode access\nSW1(config-if)#switchport access vlan 20\nSW1(config-if)#exit\nSW1(config)#exit"
+ },
+ "1149": {
+  "cli": "AccSw1#sho vlan\n\nVLAN Name                 Status    Ports\n---- -------------------- --------- -------\n1    default               active    Fa0/3, Fa0/4, Fa0/5, Fa0/6\n                                      Fa0/7, Fa0/8, Fa0/9, Fa0/10\n                                      Fa0/11, Fa0/12, Fa0/13, Fa0/14\n                                      Fa0/15, Fa0/16, Fa0/17, Fa0/18\n                                      Fa0/19, Fa0/20, Fa0/21, Fa0/22\n2    IT-Support            active    Fa0/1 Fa0/23, Fa0/24\n10   Servers               active    Gig1/3, Gig1/4\n11   Staff                 active    Gig1/1\n12   Guests                active    Gig1/2\n----\noutput suppressed"
+ },
+ "1274": {
+  "cli": "router-Y#show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route\n       + - replicated route, % - next hop override, p - overrides from PfR\n\nGateway of last resort is not set\n\n      10.0.0.0/8 is variably subnetted\nS        10.0.0.0/8 [1/0] via 10.224.1.2\nR        10.27.150.224/27 [20/0] via 10.224.1.3, 1w6d\nR        10.128.0.0/9 [1/0] via 10.224.1.3\nD        10.224.0.0/11 [20/0] via 10.224.1.5, 5d18h\nD        10.224.0.0/14 [20/0] via 10.224.1.4, 5d18h\nC        10.223.0.0/24 is directly connected, GigabitEthernet0/1\nC        10.223.0.0/24 is directly connected, GigabitEthernet0/0\nD        10.224.1.5/20 [20/0] via 10.224.1.5, 5d18h"
+ },
+ "1353": {
+  "cli": "R1#show ip route\nCodes: C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route\n\nGateway of last resort is 192.168.30.10 to network 0.0.0.0\n\n      192.168.30.0/29 is subnetted, 2 subnets\nC        192.168.30.0 is directly connected, FastEthernet0/0\nC        192.168.30.8 is directly connected, Serial0/0.1\n      192.168.10.0/24 is variably subnetted, 2 subnets, 2 masks\nO IA     192.168.10.32/28 [110/193] via 192.168.30.10, 00:18:49, Serial0/0.1\nO IA     192.168.10.0/27 [110/192] via 192.168.30.10, 00:18:49, Serial0/0.1\n      192.168.20.0/30 is subnetted, 1 subnets\nO IA     192.168.20.0 [110/128] via 192.168.30.10, 00:18:49, Serial0/0.1\n      192.168.50.0/32 is subnetted, 1 subnets\nC        192.168.50.1 is directly connected, Loopback0\nO*IA 0.0.0.0/0 [110/84] via 192.168.30.10, 00:10:36, Serial0/0.1"
+ },
+ "93": {
+  "cli": "Switch#show interfaces status\nPort     Name     Status      Vlan   Duplex   Speed   Type\nFa0/1             connected   1      auto     auto    10/100BaseTX"
+ },
+ "194": {
+  "cli": "SW2\nvtp domain cisco\nvtp mode transparent\nvtp password ciscotest\ninterface fastethernet0/1\n  description connection to sw1\n  switchport mode trunk\n  switchport trunk encapsulation dot1q"
+ },
+ "264": {
+  "cli": "switch(config)#interface gigabitEthernet 1/11\nswitch(config-if)#switchport mode access\nswitch(config-if)#spanning-tree portfast\nswitch(config-if)#spanning-tree bpduguard enable"
+ },
+ "296": {
+  "cli": "SW1#show spanning-tree vlan 30\n\nVLAN0030\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    32798\n             Address     0025.63e9.c800\n             Cost        19\n             Port        1 (FastEthernet 2/1)\n             Hello Time   2 sec  Max Age  30 sec  Forward Delay  20 sec\n\n[Output suppressed]"
+ },
+ "409": {
+  "cli": "10.0.0.0/24 is subsetted, 1 subnets\nC        10.0.0.0 is directly connected, FastEthernet0/1\nC        172.160.0/16 is directly connected, FastEthernet0/0\nD        192.168.0.0/24 [90/30720] via 172.16.0.2, 00:00:03, FastEthernet0/0"
+ },
+ "438": {
+  "cli": "R1#show running-config\nBuilding configuration...\n!\ninterface GigabitEthernet1/0\n mtu 1600\n ip address 192.168.0.1 255.255.255.252\n negotiation auto\n!\nrouter ospf 1\n router-id 1.1.1.1\n passive-interface default\n no passive-interface GigabitEthernet1/0\n network 192.168.0.1 0.0.0.0 area 0\n!\nR2#show running-config\nBuilding configuration...\n!\ninterface GigabitEthernet2/0\n ip address 192.168.0.2 255.255.255.252\n negotiation auto\n!\nrouter ospf 1\n router-id 2.2.2.2\n passive-interface default\n no passive-interface GigabitEthernet2/0\n network 192.168.0.2 0.0.0.0 area 0"
+ },
+ "455": {
+  "cli": "R1# show ip route\n  Codes: C - connected, S - static, I - IGRP, R - RIP, M - mobile, B - BGP, D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area, N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2, E1 - OSPF external type 1, E2 - OSPF external type 2, E - EGP\n  i - IS-IS, L1 - IS-IS level-1, L2 - IS-IS level-2, * - candidate default, U - per-user static route, o - ODR\n\nGateway of last resort is not set\n\nC    10.0.0.0/8 is directly connected, Loopback0\n     10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nO    10.0.1.3/32 [110/100] via 10.0.1.100, 00:39:08, Serial0\nC    10.0.1.0/24 is directly connected, Serial0\nO    10.0.1.5/32 [110/5] via 10.0.1.50, 00:39:08, Serial0\nO    10.0.10.0/24 [110/10] via 10.0.1.4, 00:39:08, GigabitEthernet0/0\nD    10.0.10.0/24 [90/10] via 10.0.1.5, 00:39:08, GigabitEthernet0/1"
+ },
+ "493": {
+  "cli": "Gateway of last resort is not set\n\n     10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\nC       10.1.1.0/30 is directly connected, GigabitEthernet0/0\nL       10.1.1.2/32 is directly connected, GigabitEthernet0/0\nS    192.168.0.0/20 [1/0] via 10.1.1.1\n     192.168.1.0/30 is subnetted, 1 subnets\nS       192.168.1.0/30 [1/0] via 10.1.1.1\n     192.168.2.0/24 is variably subnetted, 2 subnets, 2 masks\nS       192.168.2.0/28 [1/0] via 10.1.1.1\nS       192.168.2.0/29 [1/0] via 10.1.1.1"
+ },
+ "575": {
+  "cli": "R1#show ip route\nCodes: C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route\n\nGateway of last resort is 192.168.30.10 to network 0.0.0.0\n\n     192.168.30.0/29 is subnetted, 2 subnets\nC       192.168.30.0 is directly connected, FastEthernet0/0\nC       192.168.30.8 is directly connected, Serial0/0.1\n     192.168.10.0/24 is variably subnetted, 2 subnets, 2 masks\nO IA    192.168.10.32/28 [110/193] via 192.168.30.10, 00:18:49, Serial0/0.1\nO IA    192.168.10.0/27 [110/192] via 192.168.30.10, 00:18:49, Serial0/0.1\n     192.168.20.0/30 is subnetted, 1 subnets\nO IA    192.168.20.0 [110/128] via 192.168.30.10, 00:18:49, Serial0/0.1\n     192.168.50.0/32 is subnetted, 1 subnets\nC       192.168.50.1 is directly connected, Loopback0\nO*IA 0.0.0.0/0 [110/84] via 192.168.30.10, 00:10:36, Serial0/0.1"
+ },
+ "629": {
+  "cli": "SW1(config-line)#line vty 0 15\nSW1(config-line)#no login local\nSW1(config-line)#password cisco\n\nSW2(config)#username admin1 password abcd1234\nSW2(config)#username admin2 password abcd1234\nSW2(config-line)#line vty 0 15\nSW2(config-line)#login local\n\nSW3(config)#username admin1 secret abcd1234\nSW3(config)#username admin2 secret abcd1234\nSW3(config-line)#line vty 0 15\nSW3(config-line)#login local\n\nSW4(config)#username admin1 secret abcd1234\nSW4(config)#username admin2 secret abcd1234\nSW4(config-line)#line console 0\nSW4(config-line)#login local"
+ },
+ "771": {
+  "cli": "1 [\n2   { \"switch\": \"3750\", \"port\": e2 },\n3   { \"router\": \"2951\", \"port\": e20 },\n4   { \"switch\": \"3750\", \"port\": e23 }\n5 ]"
+ },
+ "894": {
+  "cli": "R1# show ip route\nC    1.0.0.0/8 is directly connected, Loopback0\n     10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nO       10.10.10.3/32 [110/100] via 10.10.10.3, 00:39:08, GigabitEthernet0/3\nC       10.10.10.0/24 is directly connected, GigabitEthernet0/0\nO       10.10.10.2/32 [110/5] via 10.10.10.2, 00:39:08, GigabitEthernet0/2\nR       10.10.10.4/32 [120/10] via 10.10.10.4, 00:39:08, GigabitEthernet0/4"
+ },
+ "916": {
+  "cli": "GigabitEthernet1 is up, line protocol is up\n  Hardware is CSR vNIC, address is 5000.0004.0000 (bia 5000.0004.0000)\n  Internet address is 192.168.1.1/24\n  MTU 1500 bytes, BW 1000000 Kbit/sec, DLY 10 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  Keepalive set (10 sec)\n  Full Duplex, 1000Mbps, link type is auto, media type is RJ45"
+ },
+ "964": {
+  "cli": "A.Router(config)#hostname R15\nR15(config)#ip domain-name cisco.com\nR15(config)#crypto key generate rsa general-keys modulus 1024\n\nR15(config)#ip ssh version 2\n\nR15(config-line)#line vty 0 15\nR15(config-line)#transport input ssh\n\nB.Router(config)#crypto key generate rsa general-keys modulus 1024\n\nRouter(config)#ip ssh version 2\nRouter(config-line)#line vty 0 15\nRouter(config-line)#transport input ssh\nRouter(config)#ip ssh logging events\nR15(config)#ip ssh stricthostkeycheck\n\nC.Router(config)#hostname R15\nR15(config)#crypto key generate rsa general-keys modulus 1024\n\nR15(config-line)#line vty 0 15\nR15(config-line)#transport input ssh\nR15(config)#ip ssh source-interface Fa0/0\nR15(config)#ip ssh stricthostkeycheck\n\nD.Router(config)#ip domain-name cisco.com\nRouter(config)#crypto key generate rsa general-keys modulus 1024\n\nRouter(config)#ip ssh version 2\nRouter(config-line)#line vty 0 15\nRouter(config-line)#transport input all\nRouter(config)#ip ssh logging events"
+ },
+ "1151": {
+  "cli": "Wireless LAN adapter Wi-Fi:\n\n   Connection-specific DNS Suffix  . :\n   Description . . . . . . . . . . . : Intel(R) Dual Band Wireless-AC 7265\n   Physical Address. . . . . . . . . : C8-21-58-B4-D3-E0\n   DHCP Enabled. . . . . . . . . . . : Yes\n   Autoconfiguration Enabled . . . . : Yes\n   Link-local IPv6 Address . . . . . : fe80::45a1:b3fa:2f37:bf37%2(Preferred)\n   IPv4 Address. . . . . . . . . . . : 192.168.25.103(Preferred)\n   Subnet Mask . . . . . . . . . . . : 255.255.255.0\n   Lease Obtained. . . . . . . . . . : June 11, 2019 10:21:31 AM\n   Lease Expires . . . . . . . . . . : June 12, 2019 10:21:36 AM\n   Default Gateway . . . . . . . . . : 192.168.25.1\n   DHCP Server . . . . . . . . . . . : 192.168.25.100\n   DHCPv6 IAID . . . . . . . . . . . : 46670168\n   DHCPv6 Client DUID. . . . . . . . : 00-01-00-01-20-FF-05-55-3C-52-82-33-D3-84\n   DNS Servers . . . . . . . . . . . : 192.168.25.254\n                                       192.168.25.254"
+ },
+ "1211": {
+  "cli": "Connection-specific DNS Suffix  . :\n   Description . . . . . . . . . . . : Intel(R) Ethernet Connection (2) I218-V\n   Physical Address. . . . . . . . . : D0-50-99-47-A9-7F\n   DHCP Enabled. . . . . . . . . . . : Yes\n   Autoconfiguration Enabled . . . . : Yes\n   Link-local IPv6 Address . . . . . : fe80::8809:9772:c583:6b18%15(Preferred)\n   IPv4 Address. . . . . . . . . . . : 192.168.69.132(Preferred)\n   Subnet Mask . . . . . . . . . . . : 255.255.255.0\n   Lease Obtained. . . . . . . . . . : Thursday, January 21, 2021 11:10:46 PM\n   Lease Expires . . . . . . . . . . : Wednesday, February 3, 2021 11:27:29 AM\n   Default Gateway . . . . . . . . . : 192.168.69.1\n   DHCP Server . . . . . . . . . . . : 192.168.69.1\n   DHCPv6 IAID . . . . . . . . . . . : 231755929\n   DHCPv6 Client DUID. . . . . . . . : 00-01-00-01-26-D7-BB-3F-D0-50-99-47-A9-7F\n   DNS Servers . . . . . . . . . . . : 192.168.69.1\n   NetBIOS over Tcpip. . . . . . . . : Enabled"
+ },
+ "1279": {
+  "cli": "SW1#show ip interface brief\nInterface        IP-Address    OK? Method Status    Protocol\nFastEthernet0/1   unassigned   YES manual down      down\n\nSW1#show interface fa0/1 status\nPort   Name   Status       Vlan   Duplex   Speed   Type\nFa0/1         notconnect   1      a-full   a-100   10/100BaseTX"
+ },
+ "195": {
+  "cli": "SW1#sh lacp neighbor\nFlags: S - Device is requesting Slow LACPDUs\n       F - Device is requesting Fast LACPDUs\n       A - Device is in Active mode      P - Device is in Passive mode\n\nChannel group 35 neighbors\n\nPartner's information:\n\n              LACP port                    Admin Oper  Port    Port\nPort   Flags  Priority  Dev ID          Age  key   Key   Number  State\nEt1/0  SP     32768     aabb.cc80.7000  8s   0x0   0x23  0x101   0x3C\nEt1/1  SP     32768     aabb.cc80.7000  8s   0x0   0x23  0x102   0x3C"
+ },
+ "342": {
+  "cli": "R1# show ip route\n...\nD    172.16.32.0/27  [90/2888597172] via 20.1.1.1\nO    172.16.32.0/19  [110/292094] via 20.1.1.10\nR    172.16.32.0/24  [120/2] via 20.1.1.3"
+ },
+ "372": {
+  "cli": "R1# sh ip ospf int gig0/0\nGig0/0 is up, line protocol is up\n  Internet Address 10.201.24.8/28, Area 1, Attached via Network Statement\n  Process ID 100, Router ID 192.168.1.1, Network Type BROADCAST, Cost: 1\n  Topology-MTID    Cost    Disabled     Shutdown      Topology Name\n        0            1        no           no             Base\n  Transmit Delay is 1 sec, State DR, Priority 1\n  Designated Router (ID) 192.168.1.1, Interface address 10.201.24.8\n  No backup designated router on this network\n  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5\n    oob-resync timeout 40\n    Hello due in 00:00:07\n\nR2#sh ip ospf int gig0/0\nGig0/0 is up, line protocol is up\n  Internet Address 10.201.24.1/28, Area 1\n  Process ID 100, Router ID 172.16.1.1, Network Type BROADCAST, Cost: 1\n  Transmit Delay is 1 sec, State DR, Priority 1\n  Designated Router (ID) 172.16.1.1, Interface address 10.201.24.1\n  No backup designated router on this network\n  Timer intervals configured, Hello 20, Dead 80, Wait 80, Retransmit 5"
+ },
+ "411": {
+  "cli": "R1# show ip route | begin gateway\nGateway of last resort is 209.165.200.246 to network 0.0.0.0\nS*   0.0.0.0/0 [1/0] via 209.165.200.246, Serial0/1/0\n     is directly connected, Serial0/1/0\n     172.16.0.0/16 is variably subnetted, 2 subnets, 2 masks\nS       172.16.3.0/24 [1/0] via 209.165.200.250, Serial0/0/0\nO       172.16.3.0/28 [110/1] via 209.165.200.254, 00:00:28, Serial0/0/1\n     209.165.200.0/24 is variably subnetted, 6 subnets, 2 masks\nC       209.165.200.244/30 is directly connected, Serial0/1/0\nL       209.165.200.245/32 is directly connected, Serial0/1/0\nC       209.165.200.248/30 is directly connected, Serial0/0/0\nL       209.165.200.249/32 is directly connected, Serial0/0/0\nC       209.165.200.252/30 is directly connected, Serial0/0/1\nL       209.165.200.253/32 is directly connected, Serial0/0/1"
+ },
+ "439": {
+  "cli": "R1# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       + - replicated route, % - next hop override\n\nGateway of last resort is 10.56.0.1 to network 0.0.0.0\n\nS*   0.0.0.0/0 [1/0] via 10.56.0.1\n     10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\nC       10.56.0.0/17 is directly connected, Vlan56\nL       10.56.0.19/32 is directly connected, Vlan56\nC       10.56.128.0/18 is directly connected, Vlan57\nL       10.56.128.19/32 is directly connected, Vlan57"
+ },
+ "456": {
+  "cli": "Gateway of last resort is 172.16.2.2 to network 0.0.0.0\n\n     10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\nC       10.10.8.0/28 is directly connected, GigabitEthernet0/0/2\nC       10.10.10.0/24 is directly connected, GigabitEthernet0/0/0\nL       10.10.10.3/32 is directly connected, GigabitEthernet0/0/0\n\n     172.16.0.0/16 is variably subnetted, 3 subnets, 2 masks\nS       172.16.1.33/32 is directly connected, GigabitEthernet0/0/1\nC       172.16.2.0/23 is directly connected, GigabitEthernet0/0/1\nL       172.16.2.1/32 is directly connected, GigabitEthernet0/0/1\nS*      0.0.0.0/0 [1/0] via 172.16.2.2"
+ },
+ "474": {
+  "cli": "R1#show ip ospf neighbor\n\nNeighbor ID     Pri   State           Dead Time   Address        Interface\n10.10.10.2      1     FULL/BDR        00:00:37    10.10.10.2     FastEthernet0/0\n10.10.10.3      1     FULL/DR         00:00:35    10.10.10.3     FastEthernet0/0"
+ },
+ "580": {
+  "cli": "interface GigabitEthernet0/0\n ip address 172.16.0.5 255.255.255.0\n duplex auto\n speed auto\n!\ninterface GigabitEthernet0/1\n ip address 209.165.202.130 255.255.255.224\n duplex auto\n speed auto\n!\nip nat inside source list 1 interface GigabitEthernet0/1 overload\n!\naccess-list 1 permit 172.16.0.1\naccess-list 1 permit 172.16.0.2"
+ },
+ "630": {
+  "cli": "ip arp inspection vlan 5-10\ninterface fastethernet 0/1\n   switchport mode access\n   switchport access vlan 5"
+ },
+ "772": {
+  "cli": "{\"Employee's name\": \"Arthur\"}"
+ },
+ "859": {
+  "cli": "SW1#show run interface fastEthernet 0/1\nswitchport trunk encapsulation dot1q\nswitchport mode trunk\nswitchport trunk allowed vlan 100,200,300\nchannel-group 1 mode active\n\nSW1#show run interface fastEthernet 0/2\nswitchport trunk encapsulation dot1q\nswitchport mode trunk\nswitchport trunk allowed vlan 100,200\nchannel-group 1 mode active\n\nSW2#show run interface fastEthernet 0/1\nswitchport trunk encapsulation dot1q\nswitchport mode trunk\nswitchport trunk allowed vlan 100,200,300\nchannel-group 1 mode active\n\nSW2#show run interface fastEthernet 0/2\nswitchport trunk encapsulation dot1q\nswitchport mode trunk\nswitchport trunk allowed vlan 100,200,300\nchannel-group 1 mode active"
+ },
+ "965": {
+  "cli": "hostname CPE\nservice password-encryption\n\nip domain name ccna.cisco.com\nip name-server 198.51.100.210\n\ncrypto key generate rsa modulus 1024\n\nusername admin privilege 15 secret s0m3s3cr3t\n\nline vty 0 4\ntransport input ssh\nlogin local"
+ },
+ "1046": {
+  "cli": "SW1#show etherchannel\n            Channel-group listing:\n            ----------------------\n\nGroup: 2\n----------\nGroup state = L2\nPorts: 1 Maxports = 8\nPort-channels: 1 Max Portchannels = 1\nProtocol: PAGP"
+ },
+ "103": {
+  "cli": "C:\\Users\\ciscoadmin>ipconfig /all\n\nWindows IP Configuration\n   Host Name.......................: DESKTOP-480J88T\n   Primary Dns Suffix.............. :\n   Node Type.......................: Hybrid\n   IP Routing Enabled..............: No\n   WINS Proxy Enabled..............: No\n   DNS Suffix Search List..........: arcep.se\n\nEthernet adapter Ethernet:\n   Media State.....................: Media disconnected\n   Connection-specific DNS Suffix  :\n   Description......................: Realtek PCIe GBE Family\nController\n   Physical Address.................: 3C-52-82-33-F3-BF\n   DHCP Enabled......................: No\n   Autoconfiguration Enabled.........: Yes\n\nWireless LAN adapter Wi-Fi\n   Connection-specific DNS Suffix   : arcep.se\n   Description.......................: Intel (R) Dual Band\nWireless-AC 7265\n   Physical Address...................: C8-21-58-B4-F3-EF\n   DHCP Enabled........................: Yes\n   Autoconfiguration Enabled...........: Yes\n   Link-local IPv6 Address.............: fe80::45a1:b3fa:2f37:bf37%2 (Preferred)\n   IPv4 Address.........................: 192.168.1.226 (Preferred)\n   Subnet Mask...........................: 255.255.255.0\n   Lease Obtained.........................: October 3, 2019 12:28:08 PM\n   Lease Expires...........................: October 3, 2019 7:18:37 PM\n   Default Gateway..........................: 192.168.1.254\n   DHCP Server...............................: 192.168.1.253\n   DHCPv6 IAID.................................: 46670168\n   DHCPv6 Client DUID............................: 00-01-00-01-20-FF-05-55-3C-52-82-33-D3-84\n   DNS Servers.....................................: 192.168.1.253\n   NetBIOS over Tcpip.................................: Enabled\n   Connection-specific DNS Suffix Search List............:\n                                        arcep.se"
+ },
+ "306": {
+  "cli": "AccSw1#sho vlan\n\nVLAN Name                             Status    Ports\n----  --------------------------------  --------  ----------------------------\n1     default                            active    Fa0/3, Fa0/4, Fa0/5, Fa0/6\n                                                     Fa0/7, Fa0/8, Fa0/9, Fa0/10\n                                                     Fa0/11, Fa0/12, Fa0/13, Fa0/14\n                                                     Fa0/15, Fa0/16, Fa0/17, Fa0/18\n                                                     Fa0/19, Fa0/20, Fa0/21, Fa0/22\n                                                     Fa0/23, Fa0/24,\n2     IT-Support                         active    Fa0/2\n3     Servers                            active\n11    Staff                              active    Gigi1/1\n12    Guests                             active    Gigi1/2\n---\noutput suppressed"
+ },
+ "343": {
+  "cli": "R1#show ip route\nCodes: C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route\n\nGateway of last resort is not set\n\n     10.0.0.0/24 is subnetted, 1 subnets\nC       10.0.10.0/24 is directly connected, FastEthernet0/0\n\nR2#show ip route\nCodes: C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route\n\nGateway of last resort is not set\n\nC       20.20.20.0/24 is directly connected, FastEthernet0/1\nC       10.0.10.0/24 is directly connected, FastEthernet0/0\n\nR3#show ip route\nCodes: C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route\n\nGateway of last resort is not set\n\nC       20.20.20.0/24 is directly connected, FastEthernet0/1\nS       10.10.10.0 (1/0) via 20.20.20.1"
+ },
+ "412": {
+  "cli": "R1# show ip route | begin gateway\nGateway of last resort is 209.165.200.246 to network 0.0.0.0\n\nS*   0.0.0.0/0 [1/0] via 209.165.200.246, Serial0/1/0\n     is directly connected, Serial0/1/0\n     172.16.0.0/16 is variably subnetted, 2 subnets, 2 masks\nS       172.16.3.0/24 [1/0] via 207.165.200.250, Serial0/0/0\nO       172.16.3.0/28 [110/84437] via 207.165.200.254, 00:00:28, Serial0/0/1\n     207.165.200.0/24 is variably subnetted, 6 subnets, 2 masks\nC       207.165.200.244/30 is directly connected, Serial0/1/0\nL       207.165.200.245/32 is directly connected, Serial0/1/0\nC       207.165.200.248/30 is directly connected, Serial0/0/0\nL       207.165.200.249/32 is directly connected, Serial0/0/0\nC       207.165.200.252/30 is directly connected, Serial0/0/1\nL       207.165.200.253/32 is directly connected, Serial0/0/1"
+ },
+ "440": {
+  "cli": "R1# show ip route\nCodes: C - connected, S - static, I - IGRP, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2, E - EGP\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route\n\nGateway of last resort is not set\n\nC    172.16.0.0/16 is directly connected, Loopback0\n     172.16.0.0/16 is variably subnetted, 4 subnets, 2 masks\nO       172.16.1.3/32 [110/100] via 192.168.7.40, 00:39:08, Serial0\nC       172.16.1.0/24 is directly connected, Serial0\nO       172.16.1.184/29 [110/5] via 192.168.7.35, 00:39:08, Serial0\nO       172.16.3.0/24 [110/10] via 192.168.7.4, 00:39:08, Gigabit Ethernet 0/0\nD       172.16.1.0/28 [90/10] via 192.168.7.4, 00:39:08, Gigabit Ethernet 0/0"
+ },
+ "457": {
+  "cli": "Router R1 Configuration:\ninterface GigabitEthernet0/0\n ip ospf priority 99\n!\nrouter ospf 100\n network 10.0.0.0 0.0.0.31 area 0\n network 10.0.1.0 0.0.0.255 area 0"
+ },
+ "477": {
+  "cli": "Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       a - application route\n       + - replicated route, % - next hop override, p - overrides from PfR\n\nGateway of last resort is 0.0.0.0 to network 0.0.0.0\n\nS*   0.0.0.0/0 is directly connected, Null0\n     10.0.0.0/8 is variably subnetted, 6 subnets, 2 masks\nC       10.0.12.0/24 is directly connected, GigabitEthernet0/1\nL       10.0.12.1/32 is directly connected, GigabitEthernet0/1\nC       10.0.13.0/24 is directly connected, GigabitEthernet0/2\nL       10.0.13.1/32 is directly connected, GigabitEthernet0/2\nC       10.0.14.0/24 is directly connected, GigabitEthernet0/3\nL       10.0.14.1/32 is directly connected, GigabitEthernet0/3\nD       192.168.0.0/16 [90/130816] via 10.0.13.3, 00:10:09, GigabitEthernet0/2\nO       192.168.0.0/23 [110/2] via 10.0.14.4, 00:00:46, GigabitEthernet0/3\nS       192.168.0.0/24 [100/0] via 10.0.12.2"
+ },
+ "495": {
+  "cli": "Router1#show ip route\nGateway of last resort is 10.10.11.2 to network 0.0.0.0\n\n     209.165.200.0/27 is subnetted, 1 subnets\nB       209.165.200.224 [20/0] via 10.10.12.2, 03:22:14\n     209.165.201.0/27 is subnetted, 1 subnets\nB       209.165.201.0 [20/0] via 10.10.12.2, 02:26:33\n     209.165.202.0/27 is subnetted, 1 subnets\nB       209.165.202.128 [20/0] via 10.10.12.2, 02:26:03\n     10.0.0.0/8 is variably subnetted, 8 subnets, 4 masks\nC       10.10.10.0/28 is directly connected, GigabitEthernet0/0\nC       10.10.11.0/30 is directly connected, FastEthernet2/0\nC       10.10.12.0/30 is directly connected, GigabitEthernet0/1\nO       10.10.13.0/25 [110/2] via 10.10.10.1, 00:00:04, GigabitEthernet0/0\nO       10.10.13.128/28 [110/2] via 10.10.10.1, 00:00:04, GigabitEthernet0/0\nO       10.10.13.144/28 [110/2] via 10.10.10.1, 00:00:04, GigabitEthernet0/0\nO       10.10.13.160/28 [110/2] via 10.10.10.1, 00:00:04, GigabitEthernet0/0\nO       10.10.13.208/29 [110/2] via 10.10.10.1, 00:00:04, GigabitEthernet0/0\nS*   0.0.0.0/0 [1/0] via 10.10.11.2"
+ },
+ "635": {
+  "cli": "Int VLAN 10 - ip address 10.10.0.0/24\nInt VLAN 20 - ip address 10.20.0.0/24\nInt VLAN 30 - ip address 10.30.0.0/24\n\nA.\nconfig t\nip access-list extended wwwblock\npermit ip any any\ndeny tcp any host 10.30.0.100 eq 80\nint vlan 20\nip access-group wwwblock in\n\nB.\nconfig t\nip access-list extended wwwblock\npermit ip any any\ndeny tcp any host 10.30.0.100 eq 80\nint vlan 30\nip access-group wwwblock in\n\nC.\nconfig t\nip access-list extended wwwblock\ndeny tcp any host 10.30.0.100 eq 80\nint vlan 10\nip access-group wwwblock in\n\nD.\nconfig t\nip access-list extended wwwblock\ndeny tcp any host 10.30.0.100 eq 80\npermit ip any any\nint vlan 20\nip access-group wwwblock in"
+ },
+ "780": {
+  "cli": "{\n    \"Test_Questions\" : [\n                \"Automation\",\n                \"Configuration\",\n    ],\n    \"Test_Exam_Level\" : [\n                \"CCNA\",\n                \"CCNP\",\n    ],\n    \"Test_Response\" : [\n                \"Correct\",\n                \"Incorrect\",\n    ],\n}"
+ },
+ "860": {
+  "cli": "SW1#\nName: Et0/0\nSwitchport: Enabled\nAdministrative Mode: trunk\nOperational Mode: trunk\nAdministrative Trunking Encapsulation: dot1q\nOperational Trunking Encapsulation: dot1q\nNegotiation of Trunking: On\nAccess Mode VLAN: 1 (default)\nTrunking Native Mode VLAN: 1 (default)\nAdministrative Native VLAN tagging: enabled\nVoice VLAN: none\nAdministrative private-vlan host-association: none\nAdministrative private-vlan mapping: none\nAdministrative private-vlan trunk native VLAN: none\nAdministrative private-vlan trunk encapsulation: dot1q\nAdministrative private-vlan trunk normal VLANs: none\nAdministrative private-vlan trunk association: none\nAdministrative private-vlan trunk mappings: none\nOperational private-vlan: none\nTrunking VLANs Enabled: 1,22\nPruning VLANs Enabled: 2-1001\nCapture Mode Disabled\nCapture VLANs Allowed: ALL"
+ },
+ "896": {
+  "cli": "Router OSPF 200\nNetwork 172.16.0.0 0.0.0.3\nNetwork 172.16.1.0 0.0.3\n\nRouter OSPF 200\nNetwork 172.16.0.0 0.0.0.3\nNetwork 172.16.2.0 0.0.31"
+ },
+ "922": {
+  "cli": "Gateway of last resort is 172.16.2.2 to network 0.0.0.0\n\n     10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\nC       10.10.10.0/24 is directly connected, GigabitEthernet0/0/0\nL       10.10.10.3/32 is directly connected, GigabitEthernet0/0/0\n     172.16.0.0/16 is variably subnetted, 3 subnets, 2 masks\nS       172.16.1.33/32 is directly connected, GigabitEthernet0/0/1\nC       172.16.2.0/23 is directly connected, GigabitEthernet0/0/1\nL       172.16.2.1/32 is directly connected, GigabitEthernet0/0/1\nS*   0.0.0.0/0 [1/0] via 172.16.2.2"
+ },
+ "972": {
+  "cli": "Switch(config)#hostname R1\nR1(config)#interface FastEthernet0/1\nR1(config-if)#no switchport\nR1(config-if)#ip address 10.100.20.42 255.255.255.0\nR1(config-if)#line vty 0 4\nR1(config-line)#login"
+ },
+ "201": {
+  "cli": "Switch#show etherchannel summary\n[output omitted]\n\nGroup  Port-channel  Protocol  Ports\n-----+--------------+---------+-----------------\n10     Po10(SU)      LACP      Gi0/0(P)  Gi0/1(P)\n20     Po20(SU)      LACP      Gi0/2(P)  Gi0/3(P)"
+ },
+ "307": {
+  "cli": "Switch2# show lldp\nGlobal LLDP Information\n    Status: ACTIVE\n    LLDP advertisements are sent every 30 seconds\n    LLDP hold time advertised is 120 seconds\n    LLDP interface reinitialization delay is 2 seconds"
+ },
+ "347": {
+  "cli": "EIGRP: 192.168.12.0/24\nRIP: 192.168.12.0/27\nOSPF: 192.168.12.0/28"
+ },
+ "413": {
+  "cli": "R1#config t\nR1(config)# interface gi1/1\nR1(config-if)# ip address 192.168.0.1 255.255.255.0\n\nR1(config)# router bgp 65000\nR1(config-router)# neighbor 192.168.0.2 remote-as 65001\nR1(config-router)# network 10.1.1.0 mask 255.255.255.0\n\nR1(config)# router ospf 1\nR1(config)# router-id 1.1.1.1\nR1(config)# network 192.168.0.1 0.0.0.0 area 0\nR1(config)# network 10.1.1.0 0.0.0.255 area 0\n\nR1(config)# router eigrp 1\nR1(config)# eigrp router-id 1.1.1.1\nR1(config)# network 10.1.1.0 0.0.0.255\nR1(config)# network 192.168.0.1 0.0.0.0\n\nR2#config t\nR2(config)# interface gi1/1\nR2(config-if)# ip address 192.168.0.2 255.255.255.0\n\nR2#config t\nR2(config)# router bgp 65001\nR2(config-router)# neighbor 192.168.0.1 remote-as 65000\n\nR2(config)# router ospf 1\nR2(config)# router-id 2.2.2.2\nR2(config)# network 192.168.1.2 0.0.0.0 area 0\n\nR2(config)# router eigrp 1\nR2(config)# eigrp router-id 1.1.1.1\nR2(config)# network 192.168.0.1 0.0.0.0\n\nR2(config)# ip route 10.1.1.0 255.255.255.0 192.168.0.1"
+ },
+ "478": {
+  "cli": "CPE# show ipv6 route\nIPv6 Routing Table - default - 6 entries\nCodes: C - Connected, L - Local, S - Static, U - Per-user Static route\n       B - BGP, R - RIP, H - NHRP, I1 - ISIS L1\n       I2 - ISIS L2, IA - ISIS interarea, IS - ISIS summary, D - EIGRP\n       EX - EIGRP external, ND - ND Default, NDp - ND Prefix, DCE - Destination\n       NDr - Redirect, O - OSPF Intra, OI - OSPF Inter, OE1 - OSPF ext 1\n       OE2 - OSPF ext 2, ON1 - OSPF NSSA ext 1, ON2 - OSPF NSSA ext 2\n       la - LISP alt, lr - LISP site-registrations, ld - LISP dyn-eid\n       lA - LISP away, le - LISP extranet-policy, lp - LISP publications\n\nND   ::/0 [2/0]\n     via FE80::A8BB:CCFF:FE00:200, Ethernet0/0\nNDp  2001:DB8:1234:1::/64 [2/0]\n     via Ethernet0/0, directly connected\nL    2001:DB8:1234:1:A8BB:CCFF:FE00:100/128 [0/0]\n     via Ethernet0/0, receive\nC    2001:DB8:1234:2::/64 [0/0]\n     via Ethernet0/1, directly connected\nL    2001:DB8:1234:2:A8BB:CCFF:FE00:110/128 [0/0]\n     via Ethernet0/1, receive\nL    FF00::/8 [0/0]\n     via Null0, receive"
+ },
+ "496": {
+  "cli": "R1(config)#ip route 0.0.0.0 .0.0.0.0 172.16.20.2\nR1(config)#ip route 0.0.0.0 0.0.0.0 10.0.0.2 20"
+ },
+ "589": {
+  "cli": "R1#show run | include ntp\nntp master 7\nntp server 209.165.200.225\n\nR2#show run | include ntp\nntp server 172.16.0.1\n\nR3#show run | include ntp\nntp master 6\nntp server 172.16.0.1\n\nR4#show run | include ntp\nntp master 7"
+ },
+ "641": {
+  "cli": "interface GigabitEthernet0/1\n ip address 192.168.1.2 255.255.255.0\n ip access-group 2699 in\n!\naccess-list 2699 deny icmp any 10.10.1.0 0.0.0.255 echo\naccess-list 2699 deny ip any 10.20.1.0 0.0.0.255\naccess-list 2699 permit ip any 10.10.1.0 0.0.0.255\naccess-list 2699 permit tcp any 10.20.1.0 0.0.0.127 eq 22"
+ },
+ "783": {
+  "cli": "{\n  \"Routers\": [\"R1\", \"R2\", \"R3\"],\n  \"Switches\": [\"SW1\", \"SW2\", \"SW3\"]\n}"
+ },
+ "898": {
+  "cli": "R1#show ip route\n     1.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\nO IA    1.1.1.0/24 [110/3] via 12.1.1.2, 00:00:25, FastEthernet0/0\nC       24.1.1.0/30 is directly connected, FastEthernet2/0\nC       34.1.1.0/30 is directly connected, FastEthernet3/0\nS       1.1.1.3/32 [1/0] via 14.1.1.2"
+ },
+ "974": {
+  "cli": "access-list 10 permit 10.0.0.0  0.0.0.255\n\ninterface Serial0\n\nip access-list 10 in"
+ },
+ "1051": {
+  "cli": "OldSwitch(config)#interface fastEthernet 0/1\nOldSwitch(config-if)#switchport mode trunk\nOldSwitch(config-if)#switchport trunk allowed vlan 5,10\nOldSwitch(config-if)#switchport trunk native vlan 15\n**output suppressed**\n\nNewSwitch(config)#interface fastEthernet 0/1\nNewSwitch(config-if)#switchport mode trunk\nNewSwitch(config-if)#switchport trunk encapsulation isl\nNewSwitch(config-if)#switchport trunk allowed vlan 5,10\nNewSwitch(config-if)#switchport trunk native vlan 15"
+ },
+ "1174": {
+  "cli": "router# show ip route\n....\nD    172.16.32.0/26 [90/25789217] via 10.0.0.1\nR    172.16.32.0/24 [120/4] via 10.0.0.2\nO    172.16.32.0/19 [110/229840] via 10.0.0.3\nC    172.16.32.32/32 is directly connected, Loopback0\nC    172.16.32.4/30 is directly connected, GigabitEthernet0/0"
+ },
+ "1221": {
+  "cli": "Router-Y#show ip route\nCodes: L - local, C - connected, S - static, R - RIP, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1\n       N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       a - application route\n       + - replicated route, % - next hop override, p - overrides from PfR\n\nGateway of last resort is not set\n\n     10.0.0.0/8 is variably subnetted\nS       10.0.0.0/8 [1/0] via 10.224.4.2\nB       10.127.151.192/27 [20/0] via 10.224.4.3, 1w6d\nS       10.128.0.0/9 [1/0] via 10.224.4.3\nB       10.224.0.0/11 [20/0] via 10.224.4.4, 5d18h\nB       10.224.0.0/15 [20/0] via 10.224.4.4, 5d18h\nC       10.223.4.0/24 is directly connected, GigabitEthernet0/1\nC       10.224.4.0/24 is directly connected, GigabitEthernet0/0\nB       10.226.34.0/24 [20/0] via 10.224.4.5, 5d18h"
+ },
+ "1359": {
+  "cli": "Type  Name    ID\nData  PC_LAN  400\nVoIP  V_LAN   4041"
+ },
+ "123": {
+  "cli": "SiteA#show interface TenGigabitEthernet0/1/0\nTenGigabitEthernet0/1/0 is up, line protocol is up\n  Hardware is BUILT-IN-EPA-8x10G, address is 780c.f02a.db91 (bia 780a.f02b.db91)\n  Description: Connection to SiteB\n  Internet address is 10.10.10.1/30\n  MTU 8146 bytes, BW 10000000 Kbit/sec, DLY 10 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Full Duplex, 10000Mbps, link type is force-up, media type is SFP-SR\n  5 minute input rate 264797000 bits/sec, 26672 packets/sec\n  5 minute output rate 122464000 bits/sec, 15724 packets/sec\n\nSiteB#show interface TenGigabitEthernet0/1/0\nTenGigabitEthernet0/1/0 is up, line protocol is up\n  Hardware is BUILT-IN-EPA-8x10G, address is 780c.f02c.db26 (bia 780c.f02c.db26)\n  Description: Connection to SiteA\n  Internet address is 10.10.10.2/30\n  MTU 8146 bytes, BW 10000000 Kbit/sec, DLY 10 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Full Duplex, 10000Mbps, link type is force-up, media type is SFP-LR\n  5 minute input rate 122464000 bits/sec, 15724 packets/sec\n  5 minute output rate 264797000 bits/sec, 26672 packets/sec"
+ },
+ "202": {
+  "cli": "interface GigabitEthernet3/1/4\n switchport voice vlan 50\n!"
+ },
+ "349": {
+  "cli": "R1# show ip route\n\nD    192.168.10.0/24    [90/2679326] via 192.168.1.1\nR    192.168.10.0/27    [120/3] via 192.168.1.2\nO    192.168.10.0/23    [110/2] via 192.168.1.3\ni L1 192.168.10.0/13    [115/30] via 192.168.1.4"
+ },
+ "386": {
+  "cli": "R1#show ip route\n#output suppressed\n\nGateway of last resort is 192.168.14.4 to network 0.0.0.0\n\nC    172.16.1.128/25 is directly connected, GigabitEthernet1/1/0\nC    192.168.12.0/24 is directly connected, FastEthernet0/0\nC    192.168.13.0/24 is directly connected, FastEthernet0/1\nC    192.168.14.0/24 is directly connected, FastEthernet1/0\nC    172.16.16.1 is directly connected, Loopback1\n     192.168.10.0/24 is variably subnetted, 3 subnets, 3 masks\nO    192.168.10.0/24 [110/2] via 192.168.14.4, 00:02:01, FastEthernet1/0\nO    192.168.10.32/27 [110/11] via 192.168.13.3, 00:00:52, FastEthernet0/1\nO    192.168.0.0/16 [110/2] via 192.168.15.5, 00:05:01, FastEthernet1/1\nD    192.168.10.1/32 [90/52778] via 192.168.12.2, 00:03:44, FastEthernet0/0\nO*E2 0.0.0.0/0 [110/1] via 192.168.14.4, 00:00:10, FastEthernet1/0"
+ },
+ "414": {
+  "cli": "R1# show ip route\nCodes:  C - connected, S - static, I - IGRP, R - RIP, M - mobile, B - BGP\n        D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n        N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n        E1 - OSPF external type 1, E2 - OSPF external type 2, E - EGP\n        i - IS-IS, L1 - IS-IS level-1, L2 - IS-IS level-2, * - candidate default\n        U - per-user static route, o - ODR\nGateway of last resort is not set\nC    1.0.0.0/8 is directly connected, Loopback0\n     10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nO       10.0.1.3/32 [110/100] via 10.0.1.3, 00:39:08, Serial0\nC       10.0.1.0/24 is directly connected, Serial0\nO       10.0.1.5/32 [110/50] via 10.0.1.50, 00:39:08, Serial0\nO       10.0.1.10/32 [110/10] via 10.0.1.4, 00:39:08, Serial0"
+ },
+ "479": {
+  "cli": "OldR#show ip ospf interface\nGigabitEthernet0/0/0 is up, line protocol is up\n  Internet address is 192.168.1.2/24, Area 0\n  Process ID 1, Router ID 192.168.1.1, Network Type BROADCAST, Cost: 1\n  Transmit Delay is 1 sec, State DROTHER, Priority 1\n  Designated Router (ID) 192.168.1.1, Interface address 192.168.1.1\n  Backup Designated Router (ID) 192.168.1.1, Interface address 192.168.1.1\n  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5\n    Hello due in 00:00:01\n  Index 1/1, flood queue length 0\n  Neighbor Count is 1, Adjacent neighbor count is 2\n\nR2#show ip ospf interface\nGigabitEthernet0/0/0 is up, line protocol is up\n  Internet address is 192.168.1.1/24, Area 0\n  Process ID 1, Router ID 192.168.1.1, Network Type BROADCAST, Cost: 1\n  Transmit Delay is 1 sec, State DROTHER, Priority 1\n  Designated Router (ID) 192.168.1.1, Interface address 192.168.1.1\n  Backup Designated Router (ID) 192.168.1.1, Interface address 192.168.1.2\n  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5\n    Hello due in 00:00:02\n  Index 2/2, flood queue length 0\n  Neighbor Count is 1, Adjacent neighbor count is 2"
+ },
+ "497": {
+  "cli": "R1#\n\nGateway of last resort is 10.56.0.1 to network 0.0.0.0\n\nS*   0.0.0.0/0 [1/0] via 10.56.0.1\n     10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\nC       10.56.0.0/16 is directly connected, Null0\nC       10.56.0.0/26 is directly connected, Vlan58\nC       10.56.0.0/17 is directly connected, Vlan59\nC       10.56.0.0/24 is directly connected, Vlan60"
+ },
+ "590": {
+  "cli": "CPE1# show protocols e0/1\nEthernet0/1 is up, line protocol is up\n  Internet address is 10.0.12.2/24\n\nCPE1# show ip access-list LAN\nStandard IP access list LAN\n    10 permit 10.0.12.0, wildcard bits 0.0.0.255\n\nCPE1# show ip nat translations\n\nCPE1# show ip nat statistics\nTotal active translations: 0 (0 static, 0 dynamic; 0 extended)\nPeak translations: 0\nOutside interfaces:\nInside interfaces:\n  Ethernet0/1\nHits: 0 Misses: 0\nCEF Translated packets: 0, CEF Punted packets: 0\nExpired translations: 0\nDynamic mappings:\n-- Inside Source\n[Id: 1] access-list LAN pool NATPOOL refcount 0\n  pool NATPOOL: netmask 255.255.255.0\n    start 198.51.100.11 end 198.51.100.20\n    type generic, total addresses 10, allocated 0 (0%), misses 0\n\nTotal doors: 0\nAppl doors: 0\nNormal doors: 0\nQueued Packets: 0"
+ },
+ "647": {
+  "cli": "access-list 101 permit ospf any any\naccess-list 101 permit tcp any any eq 179\naccess-list 101 permit tcp any eq 179 any\naccess-list 101 permit gre any any\naccess-list 101 permit esp any any\n\naccess-list 101 deny ospf any any\naccess-list 101 permit tcp 10.1.1.0 0.0.0.255 172.16.1.0 0.0.0.255 eq telnet\naccess-list 101 permit udp 10.1.1.0 0.0.0.255 172.16.1.0 0.0.0.255 eq 500\naccess-list 101 permit udp 10.1.1.0 0.0.0.255 172.16.1.0 0.0.0.255 eq 4500\naccess-list 101 deny ip any any log\n\ninterface Ethernet0/0\n ip address 10.1.1.25 255.255.255.0\n ip access-group 101 in"
+ },
+ "787": {
+  "cli": "{\n    \"aaaUser\": {\n        \"attributes\": {\n            \"pwd\": \"password1\",\n            \"firstName\": \"Abraham\",\n            \"lastName\": \"Lincoln\",\n            \"phone\": \"5555551212\",\n            \"email\": \"test@cisco.com\"\n        },\n        \"children\": [{\n            \"aaaUserDomain\": {\n                \"attributes\": {\n                    \"name\": \"ExampleCisco\"\n                },\n                \"children\": [{\n                    \"aaaUserRole\": {\n                        \"attributes\": {\n                            \"name\": \"admin\"\n                        }\n                    }\n                }]\n            }\n        }]\n    }\n}"
+ },
+ "924": {
+  "cli": "R7#\n172.22.0.0/24 is subnetted, 1 subnets\nD    172.22.49.0 [90/284160] via 10.81.22.2, 04:55:53, FastEthernet0/0\n10.0.0.0/8 is variably subnetted, 26 subnets, 5 masks\nD EX 10.10.10.10/32 [170/35840] via 10.3.5.1, 04:55:55, FastEthernet0/1\nD    10.9.1.0/30 [90/33280] via 10.3.5.1, 04:55:56, FastEthernet0/1\nB    10.111.99.0/24 [20/0] via 10.6.25.2, 03:58:52\nD    10.14.3.0/30 [90/30720] via 10.3.5.1, 04:55:58, FastEthernet0/1\nC    10.9.4.0/30 is directly connected, FastEthernet1/0\nB    10.100.100.0/24 [20/0] via 10.6.25.2, 03:58:53\nD    10.0.1.0/30 [90/30720] via 10.3.5.1, 04:55:58, FastEthernet0/1\nD EX 10.10.10.70/32 [170/161280] via 10.3.5.1, 04:55:57, FastEthernet0/1\nB    10.90.0.0/16 [200/0] via 0.0.0.0, 03:57:59, Null0\nD EX 10.90.1.0/24 [170/158720] via 10.3.5.1, 04:55:57, FastEthernet0/1\nD EX 10.90.2.0/24 [170/158720] via 10.3.5.1, 04:55:57, FastEthernet0/1\nD    10.90.3.0/29 [90/161280] via 10.3.5.1, 02:46:03, FastEthernet0/1\nD EX 10.90.3.0/24 [170/158720] via 10.3.5.1, 04:55:57, FastEthernet0/1\nD EX 10.90.4.0/24 [170/158720] via 10.3.5.1, 04:55:59, FastEthernet0/1\nD EX 10.90.5.0/24 [170/158720] via 10.3.5.1, 04:55:59, FastEthernet0/1\nB*   0.0.0.0/0 [20/0] via 10.6.25.2, 02:22:38"
+ },
+ "980": {
+  "cli": "Router#conf t\nEnter configuration commands, one per line.  End with CNTL/Z.\nRouter(config)#hostname R1\nR1(config)#ip domain-name CC-Net.com\nR1(config)#enable secret Passfornewuser\nR1(config)#line vty 0 15\nR1(config-line)#transport input ssh\nR1(config-line)#login local"
+ },
+ "1053": {
+  "cli": "SW1# show etherchannel summary\nFlags:  D - down        P - bundled in port-channel\n        I - stand-alone s - suspended\n        H - Hot-standby (LACP only)\n        R - Layer3      S - Layer2\n        U - in use      f - failed to allocate aggregator\n        M - not in use, minimum links not met\n        u - unsuitable for bundling\n        w - waiting to be aggregated\n        d - default port\n        A - formed by Auto LAG\n\nNumber of channel-groups in use: 1\nNumber of aggregators:           1\n\nGroup  Port-channel  Protocol    Ports\n------+-------------+-----------+-----------------------------------------------\n1      Po1(RU)       LACP        Et0/0(P)   Et0/1(P)"
+ },
+ "1222": {
+  "cli": "SW_1#show vlan\n\nVLAN Name                             Status    Ports\n1    default                          active    Et0/2, Et1/0, Et1/0, Et1/3\n5    MGMT Vlan                        active    Et1/1\n6    Server Vlan                      active\n72   Data vian                        active    Et0/0\n1002 fddi-default                     act/unsup\n1003 token-ring-default               act/unsup\n1004 fddinet-default                  act/unsup\n1005 trnet-default                    act/unsup"
+ },
+ "1360": {
+  "cli": "100.0.0.0/8 is variably subnetted, 4 subnets, 4 masks\nR    100.0.0.0/8 [120/2] via 192.168.3.1, 00:00:13, Ethernet0/3\nS    100.100.0.0/16 [1/0] via 192.168.4.1\nD    100.100.100.0/24 [90/435200] via 192.168.2.1, 00:00:13, Ethernet0/2\nO    100.100.100.100/32 [110/21] via 192.168.1.1, 00:05:57, Ethernet0/1"
+ },
+ "664": {
+  "t": "An access list is created to deny Telnet access from host PC-1 to RTR-1 and allow access from all other hosts. A Telnet attempt from PC-2 gives this message: \"% Connection refused by remote host.\" Without allowing Telnet access from PC-1, which action must be taken to permit the traffic?"
+ },
+ "494": {
+  "t": "An OSPF neighbor relationship must be configured using these guidelines: R1 is only permitted to establish a neighbor with R2. R1 will never participate in DR elections. R1 will use a router-id of 10.1.1.1. Which configuration must be used?"
+ }
+}

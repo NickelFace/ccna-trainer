@@ -1,0 +1,23 @@
+{
+  "545": {
+    "items": ["MIB", "SNMP agent", "SNMP manager", "SNMP trap"],
+    "buckets": [
+      {"label": "collection of variables that can be monitored", "correct": ["MIB"]},
+      {"label": "unsolicited message", "correct": ["SNMP trap"]},
+      {"label": "responds to status requests and requests for information about a device", "correct": ["SNMP agent"]},
+      {"label": "resides on an NMS", "correct": ["SNMP manager"]}
+    ]
+  },
+  "1289": {
+    "items": [
+      "serves as the next-hop addresses in IGP",
+      "has a unicast source sent to a group",
+      "never used as a source address",
+      "confined to a single link"
+    ],
+    "buckets": [
+      {"label": "Link-Local Address", "correct": ["serves as the next-hop addresses in IGP", "confined to a single link"]},
+      {"label": "Multicast", "correct": ["has a unicast source sent to a group", "never used as a source address"]}
+    ]
+  }
+}

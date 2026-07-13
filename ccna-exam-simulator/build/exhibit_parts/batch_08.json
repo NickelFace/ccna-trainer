@@ -1,0 +1,211 @@
+{
+  "75": {"category":"cli_output","cli":"SiteA#show interface TenGigabitEthernet0/1/0\nTenGigabitEthernet0/1/0 is up, line protocol is up\n  Hardware is BUILT-IN-EPA-8x10G, address is 780c.f02a.db91 (bia 780a.f02b.db91)\n  Description: Connection to SiteB\n  Internet address is 10.10.10.1/30\n  MTU 8146 bytes, BW 10000000 Kbit/sec, DLY 10 usec,\n     reliability 166/255, txload 1/255, rxload 1/255\n  Full Duplex, 10000Mbps, link type is force-up, media type is SFP-LR\n  5 minute input rate 264797000 bits/sec, 26672 packets/sec\n  5 minute output rate 122464000 bits/sec, 15724 packets/sec\n\nSiteB#show interface TenGigabitEthernet0/1/0\nTenGigabitEthernet0/1/0 is up, line protocol is up\n  Hardware is BUILT-IN-EPA-8x10G, address is 780c.f02c.db26 (bia 780c.f02c.db26)\n  Description: Connection to SiteA\n  Internet address is 10.10.10.2/30\n  MTU 8146 bytes, BW 10000000 Kbit/sec, DLY 10 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Full Duplex, 10000Mbps, link type is force-up, media type is SFP-LR\n  5 minute input rate 122464000 bits/sec, 15724 packets/sec\n  5 minute output rate 264797000 bits/sec, 26672 packets/sec"},
+  "184": {"category":"topology","topology":{"devices":[
+    {"id":"S1","type":"sw2","label":"S1","note":"Bridge Priority: 32768, Mac: AA:AA:AA:AA:AA:AA"},
+    {"id":"S2","type":"sw2","label":"S2","note":"Bridge Priority: 30000, Mac: BB:BB:BB:BB:BB:BB"},
+    {"id":"S3","type":"sw2","label":"S3","note":"Bridge Priority: 30000, Mac: CC:CC:CC:CC:CC:CC"},
+    {"id":"S4","type":"sw2","label":"S4","note":"Bridge Priority: 32768, Mac: DD:DD:DD:DD:DD:DD"}
+  ],"links":[
+    {"from":"S1","to":"S4"},
+    {"from":"S4","to":"S3"},
+    {"from":"S1","to":"S2"},
+    {"from":"S2","to":"S3"}
+  ]}},
+  "249": {"category":"topology","topology":{"devices":[
+    {"id":"SW10","type":"sw2","label":"SW10"},
+    {"id":"PHONE","type":"pc","label":"IP Phone","note":"drawn as an IP phone icon; using pc type as closest match"},
+    {"id":"PC","type":"pc","label":"PC"}
+  ],"links":[
+    {"from":"SW10","to":"PHONE","label":"Gi1/1","note":"VLAN 300 - Data, VLAN 400 - Voice"},
+    {"from":"PHONE","to":"PC"}
+  ]}},
+  "288": {"category":"topology","topology":{"devices":[
+    {"id":"INTERNET","type":"internet","label":"Internet"},
+    {"id":"R5","type":"router","label":"R5"},
+    {"id":"R6","type":"router","label":"R6"}
+  ],"links":[
+    {"from":"INTERNET","to":"R5","label2":"Gi0/1"},
+    {"from":"R5","to":"R6","label":"Gi0/2","label2":"Gi0/2"}
+  ]}},
+  "323": {"category":"mixed","topology":{"devices":[
+    {"id":"SWA","type":"sw2","label":"(unlabeled switch)","note":"switch icon at top, referenced as SwitchA in the CLI"},
+    {"id":"A","type":"pc","label":"A"},
+    {"id":"B","type":"pc","label":"B"},
+    {"id":"C","type":"pc","label":"C"},
+    {"id":"D","type":"pc","label":"D"}
+  ],"links":[
+    {"from":"SWA","to":"A","label":"Fa0/1"},
+    {"from":"SWA","to":"B","label":"Fa0/2"},
+    {"from":"SWA","to":"C","label":"Fa0/3"},
+    {"from":"SWA","to":"D","label":"Fa0/4"}
+  ]},"cli":"SwitchA#show mac-address-table\nMac Address Table\nVlan  Mac Address       Type      Ports\n2     000c.859c.bb7b    DYNAMIC   Fa0/1\n2     0010.11dc.3e91    DYNAMIC   Fa0/2\n2     0041.39d1.c469    DYNAMIC   Fa0/3\nSwitchA#"},
+  "362": {"category":"cli_output","cli":"Designated Router (ID) 10.11.11.11, Interface address 10.10.10.1\nBackup Designated router (ID) 10.3.3.3, Interface address 10.10.10.3\nTimer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5\noob-resync timeout 40\nHello due in 00:00:08\nSupports Link-local Signaling (LLS)\nCisco NSF helper support enabled\nIETF NSF helper support enabled\nIndex 1/1/1, flood queue length 0\nNext 0x0(0)/0x0(0)/0x0(0)\nLast flood scan length is 1, maximum is 6\nLast flood scan time is 0 msec, maximum is 1 msec\nNeighbor Count is 3, Adjacent neighbor count is 3\n  Adjacent with neighbor 10.1.1.4\n  Adjacent with neighbor 10.2.2.2\n  Adjacent with neighbor 10.3.3.3  (Backup Designated Router)\nSuppress hello for 0 neighbor(s)"},
+  "401": {"category":"cli_output","cli":"RouterD#show ip interface brief\nInterface              IP-Address      OK?  Method  Status  Protocol\nFastEthernet0/0         192.168.5.3     Yes  manual  up      up\nFastEthernet0/1         10.1.1.2        Yes  manual  up      up\nLoopback0               172.16.5.1      Yes  NVRAM   up      up\nLoopback1               10.154.154.1    Yes  NVRAM   up      up"},
+  "431": {"category":"cli_output","cli":"R1#show ip route\nCodes: C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route\n\nGateway of last resort is 192.168.30.10 to network 0.0.0.0\n\n     192.168.30.0/29 is subnetted, 2 subnets\nC       192.168.30.0 is directly connected, FastEthernet0/0\nC       192.168.30.8 is directly connected, Serial0/0.1\n     192.168.10.0/24 is variably subnetted, 2 subnets, 2 masks\nO IA    192.168.10.32/28 [110/193] via 192.168.30.10, 00:18:49, Serial0/0.1\nO IA    192.168.10.0/27 [110/192] via 192.168.30.10, 00:18:49, Serial0/0.1\n     192.168.20.0/30 is subnetted, 1 subnets\nO       192.168.20.0 [110/128] via 192.168.30.10, 00:18:49, Serial0/0.1\n     192.168.50.0/32 is subnetted, 1 subnets\nC       192.168.50.1 is directly connected, Loopback0\nO*IA 0.0.0.0/0 [110/84] via 192.168.30.10, 00:10:36, Serial0/0.1"},
+  "452": {"category":"cli_output","cli":"R1# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, L1 - IS-IS level-1, L2 - IS-IS level-2, ia - IS-IS inter area\n       * - candidate default, U - per-user static route\n       p - periodic downloaded static route\n\nGateway of last resort is not set\n\n     10.0.0.0/24 is subnetted, 5 subnets\nD       10.1.2.0/24 [90/2170112] via 10.165.20.226, 00:01:30, Serial0/0\nD       10.1.3.0/24 [90/2170112] via 10.165.20.226, 00:01:30, Serial0/0\nD       10.1.2.0/25 [90/2170112] via 10.165.20.146, 00:01:30, Serial0/0\nD       10.1.3.0/25 [90/2170112] via 10.165.20.146, 00:01:30, Serial0/0\nD       10.1.4.0/25 [90/2170112] via 10.165.20.156, 00:01:30, Serial0/0\n     192.168.1.0/24 is variably subnetted, 2 subnets, 2 masks\nC       192.18.10.0/24 is directly connected, GigabitEthernet0/0\nC       192.18.11.0/24 is directly connected, GigabitEthernet0/1\n     10.165.20.0/24 is variably subnetted, 2 subnets, 2 masks\nC       10.165.20.0/24 is directly connected, Serial0/0\nS       10.1.12.119/28 [1/0] via 10.165.20.166"},
+  "470": {"category":"topology","topology":{"devices":[
+    {"id":"R14","type":"router","label":"R14","note":"Loopback0: 10.10.1.14/32"},
+    {"id":"R86","type":"router","label":"R86","note":"Loopback0: 10.10.1.86/32"}
+  ],"links":[
+    {"from":"R14","to":"R86","label":"Fa0/0","label2":"Fa0/0","note":"10.73.65.64/30"}
+  ]}},
+  "490": {"category":"topology","topology":{"devices":[
+    {"id":"R1","type":"router","label":"R1"},
+    {"id":"R2","type":"router","label":"R2"},
+    {"id":"R3","type":"router","label":"R3"},
+    {"id":"PC1","type":"pc","label":"PC"},
+    {"id":"PC2","type":"pc","label":"PC"},
+    {"id":"PC3","type":"pc","label":"PC"},
+    {"id":"PC4","type":"pc","label":"PC"}
+  ],"links":[
+    {"from":"R1","to":"R2","note":"fd00:12::1/64 (R1) - fd00:12::2/64 (R2)"},
+    {"from":"R1","to":"R3","note":"fd00:13::1/64 (R1) - fd00:13::3/64 (R3)"},
+    {"from":"R2","to":"PC1","note":"2001:db8:23::/64"},
+    {"from":"R2","to":"PC2","note":"2001:db8:23::/64"},
+    {"from":"R3","to":"PC3","note":"2001:db8:23::/64"},
+    {"from":"R3","to":"PC4","note":"2001:db8:23::/64, one host at 2001:db8:23::14/64"}
+  ]}},
+  "565": {"category":"topology","topology":{"devices":[
+    {"id":"R1","type":"router","label":"Router1"},
+    {"id":"INTERNET","type":"internet","label":"Internet"},
+    {"id":"SW1","type":"sw3","label":"(unlabeled multilayer switch)"},
+    {"id":"PC1","type":"pc","label":"PC (VLAN 100)"},
+    {"id":"PC2","type":"pc","label":"PC (VLAN 100)"},
+    {"id":"PC3","type":"pc","label":"PC (VLAN 100)"},
+    {"id":"PC4","type":"pc","label":"PC (VLAN 200)"},
+    {"id":"PC5","type":"pc","label":"PC (VLAN 200)"},
+    {"id":"PC6","type":"pc","label":"PC (VLAN 200)"}
+  ],"links":[
+    {"from":"R1","to":"INTERNET","label":"g1/0/0","note":"IP: 209.165.201.2/27"},
+    {"from":"R1","to":"SW1","label":"g2/0/1.100","note":"IP: 192.168.100.1/27, VLAN 100"},
+    {"from":"R1","to":"SW1","label":"g2/0/1.200","note":"IP: 192.168.100.33/27, VLAN 200"},
+    {"from":"SW1","to":"PC1"},
+    {"from":"SW1","to":"PC2"},
+    {"from":"SW1","to":"PC3"},
+    {"from":"SW1","to":"PC4"},
+    {"from":"SW1","to":"PC5"},
+    {"from":"SW1","to":"PC6"}
+  ]}},
+  "621": {"category":"mixed","topology":{"devices":[
+    {"id":"INTERNET","type":"internet","label":"Internet"},
+    {"id":"R1","type":"router","label":"R1"},
+    {"id":"R2","type":"router","label":"R2"},
+    {"id":"SW1","type":"sw2","label":"(unlabeled switch under R1)"},
+    {"id":"SW2","type":"sw2","label":"(unlabeled switch under R2)"},
+    {"id":"PC1","type":"pc","label":"(unlabeled PC)","note":"10.0.20.0/26 subnet"},
+    {"id":"PC2","type":"pc","label":"(unlabeled PC)","note":"10.0.10.0/26 subnet"}
+  ],"links":[
+    {"from":"INTERNET","to":"R1","label":"Gi0/1"},
+    {"from":"R1","to":"R2","label":"Gi0/2","label2":"Gi0/1"},
+    {"from":"R1","to":"SW1","label":"Gi0/3"},
+    {"from":"R2","to":"SW2","label":"Gi0/2"},
+    {"from":"SW1","to":"PC1","note":"10.0.20.0/26"},
+    {"from":"SW2","to":"PC2","note":"10.0.10.0/26"}
+  ]},"cli":"R2# config t\nR2(config)#access-list 101 deny tcp 10.0.20.0 0.0.0.63 10.0.10.0 0.0.0.63 eq smtp\nR2(config)#access-list 101 deny tcp 10.0.20.0 0.0.0.63 10.0.10.0 0.0.0.63 eq www\nR2(config)#int gi0/2\nR2(config-if)# ip access-group 101 in"},
+  "738": {"category":"cli_output","cli":"cisco_ospf_vrf {\"R1 default\":\n    ensure => 'present',\n    auto_cost => '100',\n}"},
+  "843": {"category":"mixed","topology":{"devices":[
+    {"id":"SW1","type":"sw2","label":"SW1","note":"Cisco Switch"},
+    {"id":"PHONE","type":"pc","label":"Non-Cisco IP Phone","note":"drawn as IP phone icon; using pc type as closest match"},
+    {"id":"PC1","type":"pc","label":"(unlabeled PC)"}
+  ],"links":[
+    {"from":"SW1","to":"PHONE","label":"GigabitEthernet1/0/1"},
+    {"from":"PHONE","to":"PC1"}
+  ]},"cli":"SW1#\n!\nvlan 10\n name Voice\n!\nvlan 11\n name Data\n!\ncdp run\n!\ninterface GigabitEthernet1/0/1\n switchport access vlan 11\n switchport mode access\n switchport voice vlan 10\n spanning-tree portfast\n no shut\n!\nend\n!\ncopy run start"},
+  "891": {"category":"cli_output","cli":"R1\ninterface GigabitEthernet0/1\n ip address 192.168.12.1 255.255.255.128\n no shutdown\nrouter ospf 1\n network 192.168.12.1 0.0.0.0 area 1\n\nR2\ninterface GigabitEthernet0/1\n ip address 192.168.12.2 255.255.255.128\n no shutdown"},
+  "911": {"category":"topology","topology":{"devices":[
+    {"id":"PC1","type":"pc","label":"(unlabeled PC)","note":"192.168.25.0/24 network"},
+    {"id":"R1","type":"router","label":"R1"},
+    {"id":"R2","type":"router","label":"R2"},
+    {"id":"PC2","type":"pc","label":"(unlabeled PC)","note":"New Office, 172.25.25.0/24 network"}
+  ],"links":[
+    {"from":"PC1","to":"R1","note":"192.168.25.0/24, R1 side .1"},
+    {"from":"R1","to":"R2","label":"Gig0/1","label2":"Gig0/2","note":"192.168.2.0/30, R1 .1 / R2 .2"},
+    {"from":"R2","to":"PC2","note":"172.25.25.0/24, PC side .1"}
+  ]}},
+  "948": {"category":"topology","topology":{"devices":[
+    {"id":"ROUTER1","type":"router","label":"ROUTER-1"},
+    {"id":"INTERNET","type":"internet","label":"Internet"},
+    {"id":"SWITCH1","type":"sw2","label":"SWITCH-1"},
+    {"id":"SWITCH2","type":"sw2","label":"SWITCH-2"},
+    {"id":"USERS1","type":"pc","label":"Users","note":"Subnet 192.168.1.0/24, multiple PCs grouped"},
+    {"id":"USERS2","type":"pc","label":"Users","note":"Subnet 192.168.1.0/24, multiple PCs grouped"}
+  ],"links":[
+    {"from":"ROUTER1","to":"INTERNET"},
+    {"from":"ROUTER1","to":"SWITCH1","label":".2"},
+    {"from":"ROUTER1","to":"SWITCH2","label":".1"},
+    {"from":"SWITCH1","to":"USERS1","note":"Subnet 192.168.1.0/24"},
+    {"from":"SWITCH2","to":"USERS2","note":"Subnet 192.168.1.0/24"}
+  ]}},
+  "1033": {"category":"mixed","topology":{"devices":[
+    {"id":"SW1","type":"sw2","label":"Switch 1"},
+    {"id":"SW2","type":"sw2","label":"Switch 2"}
+  ],"links":[
+    {"from":"SW1","to":"SW2","label":"Fa0/0","label2":"Fa1/0","note":"Po1 (Port-channel1) shown as bundle; second physical pair Fa0/1-Fa1/1"},
+    {"from":"SW1","to":"SW2","label":"Fa0/1","label2":"Fa1/1","note":"part of Po1 bundle"}
+  ]},"cli":"Switch1# show etherchannel summary\nNumber of channel-groups in use: 1\nNumber of aggregators:           1\n\nGroup  Port-channel  Protocol    Ports\n------+-------------+-----------+-----------------------------------------------\n1      Po1(SU)         LACP      Fa0/0(P) Fa0/1(P)"},
+  "1133": {"category":"mixed","topology":{"devices":[
+    {"id":"CLIENT","type":"pc","label":"DHCP Client","note":"10.10.10.0/24"},
+    {"id":"ROUTER","type":"router","label":"(unlabeled router)"},
+    {"id":"SERVER","type":"server","label":"DHCP Server","note":"172.16.2.0/24, address 172.16.2.2"}
+  ],"links":[
+    {"from":"CLIENT","to":"ROUTER","label":"g0/0"},
+    {"from":"ROUTER","to":"SERVER","label":"g0/1"}
+  ]},"cli":"Router#show run\nBuilding configuration...\n!\ninterface GigabitEthernet0/0\n ip address 10.10.10.1 255.255.255.0\n duplex auto\n speed auto\n!\ninterface GigabitEthernet0/1\n ip address 172.16.2.1 255.255.255.0\n duplex auto\n speed auto\n!"},
+  "1205": {"category":"topology","topology":{"devices":[
+    {"id":"R1","type":"router","label":"R1"},
+    {"id":"AF31_IN","type":"pc","label":"AF31","note":"not an actual device; a labeled packet box entering R1 on Gi0/0 — included as a node to preserve the diagram structure"},
+    {"id":"AF21_IN","type":"pc","label":"AF21","note":"packet box entering R1 on Gi0/0"},
+    {"id":"AF11_IN","type":"pc","label":"AF11","note":"packet box entering R1 on Gi0/0"},
+    {"id":"AF31_OUT","type":"pc","label":"AF31","note":"packet box leaving R1 on Gi0/1"},
+    {"id":"AF21_OUT","type":"pc","label":"AF21","note":"packet box leaving R1 on Gi0/1"},
+    {"id":"AF11_OUT","type":"pc","label":"AF11","note":"packet box leaving R1 on Gi0/1"}
+  ],"links":[
+    {"from":"AF31_IN","to":"R1","label2":"Gi0/0"},
+    {"from":"AF21_IN","to":"R1","label2":"Gi0/0"},
+    {"from":"AF11_IN","to":"R1","label2":"Gi0/0"},
+    {"from":"R1","to":"AF31_OUT","label":"Gi0/1"},
+    {"from":"R1","to":"AF21_OUT","label":"Gi0/1"},
+    {"from":"R1","to":"AF11_OUT","label":"Gi0/1"}
+  ],"zones":[]},"note":"Diagram shows numbered packet-marking boxes (AF31/AF21/AF11) flowing into and out of R1, illustrating QoS PHB reordering rather than a physical topology. Modeled devices as pseudo-nodes to preserve the visual; may need custom rendering rather than standard topology treatment."},
+  "1269": {"category":"topology","topology":{"devices":[
+    {"id":"ISP","type":"internet","label":"ISP"},
+    {"id":"R1","type":"router","label":"R1","note":"Charlotte"},
+    {"id":"R2","type":"router","label":"R2","note":"San Jose"},
+    {"id":"SW1","type":"sw2","label":"(unlabeled switch under R1)"},
+    {"id":"SW2","type":"sw2","label":"(unlabeled switch under R2)"},
+    {"id":"EU1","type":"pc","label":"End User 1"},
+    {"id":"EU2","type":"pc","label":"End User 2"},
+    {"id":"DNS1","type":"server","label":"DNS Server 1"},
+    {"id":"DNS2","type":"server","label":"DNS Server 2"}
+  ],"links":[
+    {"from":"R1","to":"ISP","label":"S0/1","note":".1, 2001:db8:1696:1008::/64"},
+    {"from":"ISP","to":"R2","label2":"S0/1","note":".2, 2001:db8:1696:1008::/64"},
+    {"from":"R1","to":"SW1","label":"E0/1","note":"13-ba-be-e7-00-01"},
+    {"from":"R2","to":"SW2","label":"E0/1","note":"13-be-bf-b9-00-01"},
+    {"from":"SW1","to":"EU1","note":"2001:db8:db69:1469::/64, .2"},
+    {"from":"SW1","to":"EU2","note":"2001:db8:db69:1469::/64, .3"},
+    {"from":"SW2","to":"DNS1","note":"2001:db8:bd69:1469::/64, .2"},
+    {"from":"SW2","to":"DNS2","note":"2001:db8:bd69:1469::/64, .3"}
+  ]}},
+  "1346": {"category":"topology","topology":{"devices":[
+    {"id":"ISP","type":"internet","label":"ISP"},
+    {"id":"R1","type":"router","label":"R1","note":"Atlanta"},
+    {"id":"R2","type":"router","label":"R2","note":"Boston"},
+    {"id":"SW1","type":"sw2","label":"(unlabeled switch under R1)"},
+    {"id":"SW2","type":"sw2","label":"(unlabeled switch under R2)"},
+    {"id":"FS1","type":"server","label":"File Server 1"},
+    {"id":"FS2","type":"server","label":"File Server 2"},
+    {"id":"EU1","type":"pc","label":"End User 1"},
+    {"id":"EU2","type":"pc","label":"End User 2"}
+  ],"links":[
+    {"from":"R1","to":"ISP","label":"S0/1","note":".1, 2001:db8:8bb8:981b::/64"},
+    {"from":"ISP","to":"R2","label2":"S0/1","note":".2, 2001:db8:8bb8:981b::/64"},
+    {"from":"R1","to":"SW1","label":"E0/1","note":"ca-01-8b-8b-00-01"},
+    {"from":"R2","to":"SW2","label":"E0/1","note":"ca-01-b8-b8-00-01"},
+    {"from":"SW1","to":"FS1","note":"2001:db8:8bb8:8161::/64, .2"},
+    {"from":"SW1","to":"FS2","note":"2001:db8:8bb8:8161::/64, .3"},
+    {"from":"SW2","to":"EU1","note":"2001:db8:8bb8:8bb1::/64, .2"},
+    {"from":"SW2","to":"EU2","note":"2001:db8:8bb8:8bb1::/64, .3"}
+  ]}},
+  "1378": {"category":"gui_screenshot","crop_box":{"x":5,"y":4,"w":90,"h":68}}
+}

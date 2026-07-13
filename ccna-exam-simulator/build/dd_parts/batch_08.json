@@ -1,0 +1,108 @@
+{
+  "153": {
+    "items": ["192.168.1.1", "192.168.1.20", "192.168.1.254", "192.168.1.255", "B8-76-3F-7C-57-DF"],
+    "buckets": [
+      {"label": "broadcast address", "correct": ["192.168.1.255"]},
+      {"label": "default gateway", "correct": ["192.168.1.1"]},
+      {"label": "host IP address", "correct": ["192.168.1.20"]},
+      {"label": "last assignable IP address in the subnet", "correct": ["192.168.1.254"]},
+      {"label": "MAC address", "correct": ["B8-76-3F-7C-57-DF"]}
+    ]
+  },
+  "330": {
+    "items": [
+      "configured and managed by a WLC",
+      "managed from a Web-based dashboard",
+      "accessible for management via Telnet, SSH, or a Web GUI",
+      "supports different operational modes",
+      "supports automatic deployment"
+    ],
+    "buckets": [
+      {"label": "Cloud-Based Access Point", "correct": ["managed from a Web-based dashboard", "supports automatic deployment"]},
+      {"label": "Lightweight Access Point", "correct": ["configured and managed by a WLC", "supports different operational modes"]}
+    ]
+  },
+  "617": {
+    "items": ["web policy", "Passthrough", "WPA+WPA2", "802.1X"],
+    "buckets": [
+      {"label": "Layer 2 Security Mechanisms", "correct": ["WPA+WPA2", "802.1X"]},
+      {"label": "Layer 3 Security Mechanisms (for WLAN)", "correct": ["web policy", "Passthrough"]}
+    ]
+  },
+  "753": {
+    "items": [
+      "This type allows better control over how networks work and how networks are configured.",
+      "This type enables networks to integrate with applications through APIs.",
+      "New devices are configured using the physical infrastructure.",
+      "This type provisions resources from a centralized location.",
+      "This type requires a distributed control plane."
+    ],
+    "buckets": [
+      {"label": "Controller-Based Networking", "correct": ["This type allows better control over how networks work and how networks are configured.", "This type enables networks to integrate with applications through APIs.", "This type provisions resources from a centralized location."]},
+      {"label": "Traditional Networking", "correct": ["New devices are configured using the physical infrastructure.", "This type requires a distributed control plane."]}
+    ]
+  },
+  "868": {
+    "items": [
+      "Appropriate for a small-business environment.",
+      "Work is divided between the access point and the controller.",
+      "The access points transmit beacon frames.",
+      "Supports per device configuration and management.",
+      "Uses the CAPWAP tunneling protocol."
+    ],
+    "buckets": [
+      {"label": "Split-MAC", "correct": ["Work is divided between the access point and the controller.", "Uses the CAPWAP tunneling protocol.", "The access points transmit beacon frames."]},
+      {"label": "Autonomous", "correct": ["Appropriate for a small-business environment.", "Supports per device configuration and management."]}
+    ]
+  },
+  "871": {
+    "items": ["access point", "virtual interface", "dynamic interface", "service port", "wireless LAN controller"],
+    "buckets": [
+      {"label": "manages access points", "correct": ["wireless LAN controller"]},
+      {"label": "provides Wi-Fi devices with a connection to a wired network", "correct": ["access point"]},
+      {"label": "used for out-of-band management", "correct": ["service port"]},
+      {"label": "used for guest authentication", "correct": ["dynamic interface"]},
+      {"label": "applied to the WLAN for wireless client communication", "correct": ["virtual interface"]}
+    ]
+  },
+  "975": {
+    "items": [
+      "It grants access to network assets, such as FTP servers.",
+      "It restricts the CLI commands that a user is able to perform.",
+      "It performs user validation via TACACS+.",
+      "It records the duration of each connection.",
+      "It supports User Access Reporting.",
+      "It verifies “who you are”."
+    ],
+    "buckets": [
+      {"label": "Authentication", "correct": ["It performs user validation via TACACS+.", "It verifies “who you are”."]},
+      {"label": "Authorization", "correct": ["It grants access to network assets, such as FTP servers.", "It restricts the CLI commands that a user is able to perform."]}
+    ]
+  },
+  "1060": {"skip": "simulation"},
+  "1103": {
+    "items": [
+      "may be used by multiple organizations at the same time",
+      "attached to a single subnet",
+      "required on all IPv6 devices",
+      "is a counterpart of private IPv4 address"
+    ],
+    "buckets": [
+      {"label": "Unique Local", "correct": ["may be used by multiple organizations at the same time", "is a counterpart of private IPv4 address"]},
+      {"label": "Link-Local Address", "correct": ["attached to a single subnet", "required on all IPv6 devices"]}
+    ]
+  },
+  "1155": {
+    "items": ["DELETE", "GET", "PATCH", "POST", "PUT"],
+    "buckets": [
+      {"label": "creates a subordinate resource under the specified URI", "correct": ["POST"]},
+      {"label": "erases a specific resource", "correct": ["DELETE"]},
+      {"label": "fully replaces the current version of a specific resource with new content from the payload", "correct": ["PUT"]},
+      {"label": "partially modifies a specific resource", "correct": ["PATCH"]},
+      {"label": "requests specific information about a resource", "correct": ["GET"]}
+    ]
+  },
+  "1266": {"skip": "simulation"},
+  "1310": {"skip": "simulation"},
+  "1361": {"skip": "simulation"}
+}

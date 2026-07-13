@@ -1,0 +1,204 @@
+[
+ {
+  "n": 398,
+  "t": "Refer to the exhibit. A network associate has configured OSPF with the command: City(config-router)# network 192.168.12.64 0.0.0.63 area 0 After completing the configuration, the associate discovers that not all the interfaces are participating in OSPF. Which three of the interfaces shown in the exhibit will participate in OSPF according to this configuration statement? (Choose three.)",
+  "o": {
+   "A": "FastEthernet0 /0",
+   "B": "FastEthernet0 /1",
+   "C": "Serial0/0",
+   "D": "Serial0/1.102",
+   "E": "Serial0/1.103",
+   "F": "Serial0/1.104"
+  },
+  "img": "q398.jpg"
+ },
+ {
+  "n": 399,
+  "t": "Refer to the exhibit. C-router is to be used as a \"router-on-a-stick\" to route between the VLANs. All the interfaces have been properly configured and IP routing is operational. The hosts in the VLANs have been configured with the appropriate default gateway. What is true about this configuration?",
+  "o": {
+   "A": "These commands need to be added to the configuration: C-router(config)# router eigrp 123 C-router(config- router)# network 172.19.0.0",
+   "B": "These commands need to be added to the configuration: C-router(config)# router ospf 1 C-router(config- router)# network 172.19.0.0 0.0.3.255 area 0",
+   "C": "These commands need to be added to the configuration: C-router(config)# router rip C-router(config-router)# network 172.19.0.0",
+   "D": "No further routing configuration is required."
+  },
+  "img": "q399.jpg"
+ },
+ {
+  "n": 530,
+  "t": "Refer to the exhibit. An engineer deploys a topology in which R1 obtains its IP configuration from DHCP. If the switch and DHCP server configurations are complete and correct, which two sets of commands must be configured on R1 and R2 to complete the task? (Choose two.)",
+  "o": {
+   "A": "R1(config)# interface fa0/0 R1(config-if)# ip helper-address 198.51.100.100",
+   "B": "R2(config)# interface gi0/0 R2(config-if)# ip helper-address 198.51.100.100",
+   "C": "R1(config)# interface fa0/0 R1(config-if)# ip address dhcp R1(config-if)# no shutdown",
+   "D": "R2(config)# interface gi0/0 R2(config-if)# ip address dhcp",
+   "E": "R1(config)# interface fa0/0 R1(config-if)# ip helper-address 192.0.2.2"
+  },
+  "img": "q530.jpg"
+ },
+ {
+  "n": 537,
+  "t": "An engineer is configuring NAT to translate the source subnet of 10.10.0.0/24 to any one of three addresses: 192.168.3.1, 192.168.3.2, or 192.168.3.3. Which configuration should be used?",
+  "o": {
+   "A": "enable configure terminal ip nat pool mypool 192.168.3.1 192.168.3.3 prefix-length 30 access-list 1 permit 10.10.0.0 0.0.0.255 ip nat outside destination list 1 pool mypool interface g1/1 ip nat inside interface g1/2 ip nat outside",
+   "B": "enable configure terminal ip nat pool mypool 192.168.3.1 192.168.3.3 prefix-length 30 access-list 1 permit 10.10.0.0 0.0.0.254 ip nat inside source list 1 pool mypool interface g1/1 ip nat inside interface g1/2 ip nat outside",
+   "C": "enable configure terminal ip nat pool mypool 192.168.3.1 192.168.3.3 prefix-length 30 route map permit 10.10.0.0 255.255.255.0 ip nat outside destination list 1 pool mypool interface g1/1 ip nat inside interface g1/2 ip nat outside",
+   "D": "enable configure terminal ip nat pool mypool 192.168.3.1 192.168.3.3 prefix-length 30 access-list 1 permit 10.10.0.0 0.0.0.255 ip nat inside source list 1 pool mypool interface g1/1 ip nat inside interface g1/2 ip nat outside"
+  },
+  "img": null
+ },
+ {
+  "n": 565,
+  "t": "Refer to the exhibit. Which configuration must be applied to the router that configures PAT to translate all addresses in VLAN 200 while allowing devices on VLAN 100 to use their own IP addresses?",
+  "o": {
+   "A": "Router1(config)#access-list 99 permit 192.168.100.32 0.0.0.31 Router1(config)#ip nat inside source list 99 interface gi1/0/0 overload Router1(config)#interface gi2/0/1.200 Router1(config)#ip nat inside Router1(config)#interface gi1/0/0 Router1(config)#ip nat outside",
+   "B": "Router1(config)#access-list 99 permit 192.168.100.0 0.0.0.255 Router1(config)#ip nat inside source list 99 interface gi1/0/0 overload Router1(config)#interface gi2/0/1.200 Router1(config)#ip nat inside Router1(config)#interface gi1/0/0 Router1(config)#ip nat outside",
+   "C": "Router1(config)#access-list 99 permit 209.165.201.2 255.255.255.255 Router1(config)#ip nat inside source list 99 interface gi1/0/0 overload Router1(config)#interface gi2/0/1.200 Router1(config)#ip nat inside Router1(config)#interface gi1/0/0 Router1(config)#ip nat outside",
+   "D": "Router1(config)#access- list 99 permit 209.165.201.2 0.0.0.0 Router1(config)#ip nat inside source list 99 interface gi1/0/0 overload Router1(config)#interface gi2/0/1.200 Router1(config)#ip nat inside Router1(config)#interface gi1/0/0 Router1(config)#ip nat outside"
+  },
+  "img": "q565.jpg"
+ },
+ {
+  "n": 568,
+  "t": "R1 as an NTP server must have: ✑ NTP authentication enabled ✑ NTP packets sourced from Interface loopback 0 ✑ NTP stratum 2 ✑ NTP packets only permitted to client IP 209.165.200.225 How should R1 be configured?",
+  "o": {
+   "A": "ntp authenticate ntp authentication-key 2 sha1 CISCO123 ntp source Loopback0 ntp access-group server- only 10 ntp master 2 ! access-list 10 permit udp host 209.165.200.225 any eq 123",
+   "B": "ntp authenticate ntp authentication-key 2 md5 CISCO123 ntp interface Loopback0 ntp access-group server- only 10 ntp stratum 2 ! access-list 10 permit 209.165.200.225",
+   "C": "ntp authenticate ntp authentication-key 2 md5 CISCO123 ntp source Loopback0 ntp access-group server- only 10 ntp master 2 ! access-list 10 permit 209.165.200.225",
+   "D": "ntp authenticate ntp authentication-key 2 md5 CISCO123 ntp source Loopback0 ntp access-group server- only 10 ntp stratum 2 ! access-list 10 permit udp host 209.165.200.225 any eq 123"
+  },
+  "img": null
+ },
+ {
+  "n": 582,
+  "t": "Refer to the exhibit. Which configuration enables DHCP addressing for hosts connected to interface FastEthernet0/1 on router R4?",
+  "o": {
+   "A": "interface FastEthernet0/1 ip helper-address 10.0.1.1 ! access-list 100 permit tcp host 10.0.1.1 eq 67 host 10.148.2.1",
+   "B": "interface FastEthernet0/0 ip helper-address 10.0.1.1 ! access-list 100 permit udp host 10.0.1.1 eq bootps host 10.148.2.1",
+   "C": "interface FastEthernet0/0 ip helper-address 10.0.1.1 ! access-list 100 permit host 10.0.1.1 host 10.148.2.1 eq bootps",
+   "D": "interface FastEthernet0/1 ip helper-address 10.0.1.1 ! access-list 100 permit udp host 10.0.1.1 eq bootps host 10.148.2.1"
+  },
+  "img": "q582.jpg"
+ },
+ {
+  "n": 641,
+  "t": "Refer to the exhibit. A network administrator must permit SSH access to remotely manage routers in a network. The operations team resides on the 10.20.1.0/25 network. Which command will accomplish this task?",
+  "o": {
+   "A": "access-list 2699 permit udp 10.20.1.0 0.0.0.255",
+   "B": "no access-list 2699 deny tcp any 10.20.1.0 0.0.0.127 eq 22",
+   "C": "access-list 2699 permit tcp any 10.20.1.0 0.0.0.255 eq 22",
+   "D": "no access-list 2699 deny ip any 10.20.1.0 0.0.0.255"
+  },
+  "img": "q641.jpg"
+ },
+ {
+  "n": 647,
+  "t": "Refer to the exhibit. A network administrator has been tasked with securing VTY access to a router. Which access- list entry accomplishes this task?",
+  "o": {
+   "A": "access-list 101 permit tcp 10.1.1.0 0.0.0.255 172.16.1.0 0.0.0.255 eq telnet",
+   "B": "access-list 101 permit tcp 10.1.1.0 0.0.0.255 172.16.1.0 0.0.0.255 eq scp",
+   "C": "access-list 101 permit tcp 10.1.1.0 0.0.0.255 172.16.1.0 0.0.0.255 eq https",
+   "D": "access-list 101 permit tcp 10.1.1.0 0.0.0.255 172.16.1.0 0.0.0.255 eq ssh"
+  },
+  "img": "q647.jpg"
+ },
+ {
+  "n": 658,
+  "t": "Refer to the exhibit. An access-list is required to permit traffic from any host on interface Gi0/0 and deny traffic from interface Gi0/1. Which access list must be applied?",
+  "o": {
+   "A": "ip access-list standard 99 permit 10.100.100.0 0.0.0.255 deny 192.168.0.0 0.0.255.255",
+   "B": "ip access-list standard 99 permit 10.100.100.0 0.0.0.255 deny 192.168.0.0 0.255.255.255",
+   "C": "ip access-list standard 199 permit 10.100.100.0 0.0.0.255 deny 192.168.0.0 0.255.255.255",
+   "D": "ip access-list standard 199 permit 10.100.100.0 0.0.0.255 deny 192.168.0.0 0.0.255.255"
+  },
+  "img": "q658.jpg"
+ },
+ {
+  "n": 664,
+  "t": "Refer to the exhibit. An access list is created to deny Telnet access from host PC-1 to RTR-1 and allow access from all other hosts. A Telnet attempt from PC-2 gives this message: \"% Connection refused by remote host.\" Without allowing Telnet access from PC-1, which action must be taken to permit the traffic?",
+  "o": {
+   "A": "Add the access-list 10 permit any command to the configuration.",
+   "B": "Remove the access-class 10 in command from line vty 0 4",
+   "C": "Add the ip access-group 10 out command to interface g0/0.",
+   "D": "Remove the password command from line vty 0 4."
+  },
+  "img": "q664.jpg"
+ },
+ {
+  "n": 703,
+  "t": "Refer to the exhibit. An engineer is updating the management access configuration of switch SW1 to allow secured, encrypted remote configuration. Which two commands or command sequences must the engineer apply to the switch? (Choose two.)",
+  "o": {
+   "A": "SW1(config)#enable secret ccnaTest123",
+   "B": "SW1(config)#username NEW secret R3mote123",
+   "C": "SW1(config)#line vty 0 15 SW1(config-line)#transport input ssh",
+   "D": "SW1(config)# crypto key generate rsa",
+   "E": "SW1(config)# interface f0/1 SW1(confif-if)# switchport mode trunk"
+  },
+  "img": "q703.jpg"
+ },
+ {
+  "n": 876,
+  "t": "Refer to the exhibit. How must router A be configured so that it only sends Cisco Discovery Protocol information to router C?",
+  "o": {
+   "A": "#config t Router A (config)#no cdp run - Router A (config)#interface gi0/0/1 Router A (config-if)#cdp enable -",
+   "B": "#config t Router A (config)#cdp run - Router A (config)#interface gi0/0/0 Router A (config-if)#no cdp enable",
+   "C": "#config t - Router A (config)#cdp run - Router A (config)#interface gi0/0/1 Router A (config-if)#cdp enable -",
+   "D": "#config t Router A (config)#cdp run - Router A (config)#interface gi0/0/0 Router A (config-if)#cdp enable"
+  },
+  "img": "q876.jpg"
+ },
+ {
+  "n": 948,
+  "t": "Refer to the exhibit. Which command set configures ROUTER-1 to allow Internet access for users on the 192.168.1.0/24 subnet while using 209.165.202.129 for Port Address Translation?",
+  "o": {
+   "A": "ip nat pool CCNA 192.168.0.0 192.168.1.255 netmask 255.255.255.0 access-list 10 permit 192.168.0.0 0.0.0.255 ip nat inside source list 10 pool CCNA overload",
+   "B": "ip nat pool CCNA 209.165.202.129 209.165.202.129 netmask 255.255.255.255 access-list 10 permit 192.168.1.0 255.255.255.0 ip nat inside source list 10 pool CCNA overload",
+   "C": "ip nat pool CCNA 192.168.0.0 192.168.1.255 netmask 255.255.255.0 access-list 10 permit 192.168.0.0 255.255.255.0 ip nat inside source list 10 pool CCNA overload",
+   "D": "ip nat pool CCNA 209.165.202.129 209.165.202.129 netmask 255.255.255.255 access-list 10 permit 192.168.1.0 0.0.0.255 ip nat inside source list 10 pool CCNA overload"
+  },
+  "img": "q948.jpg"
+ },
+ {
+  "n": 957,
+  "t": "Refer to the exhibit. Which configuration enables DHCP addressing for hosts connected to interface FastEthernet0/1 on router R3?",
+  "o": {
+   "A": "interface FastEthernet0/1 ip helper-address 10.0.1.1 ! access-list 100 permit tcp host 10.0.1.1 eq 67 host 10.148.2.1",
+   "B": "interface FastEthernet0/1 ip helper-address 10.0.1.1 ! access-list 100 permit udp host 10.0.1.1 eq 67 host 10.148.2.1",
+   "C": "interface FastEthernet0/0 ip helper-address 10.0.1.1 ! access-list 100 permit host 10.0.1.1 host 10.148.2.1 eq bootps",
+   "D": "interface FastEthernet0/1 ip helper-address 10.0.1.1 ! access-list 100 permit udp host 10.0.1.1 eq bootps host 10.148.2.1"
+  },
+  "img": "q957.jpg"
+ },
+ {
+  "n": 976,
+  "t": "A network engineer must configure an access list on a new Cisco IOS router. The access list must deny HTTP traffic to network 10.125.128.32/27 from the 192.168.240.0/20 network, but it must allow the 192.168.240.0/20 network to reach the rest of the 10.0.0.0/8 network. Which configuration must the engineer apply?",
+  "o": {
+   "A": "ip access-list extended deny_outbound 10 permit ip 192.168.240.0 255.255.240.0 10.0.0.0 255.0.0.0 20 deny tcp 192.168.240.0 255.255.240.0 10.125.128.32 255.255.255.224 eq 443 30 permit ip any any",
+   "B": "ip access-list extended deny_outbound 10 deny tcp 192.168.240.0 0.0.15.255 10.125.128.32 0.0.0.31 eq 80 20 permit ip 192.168.240.0 0.0.15.255 10.0.0.0 0.255.255.255 30 deny ip any any log",
+   "C": "ip access-list extended deny_outbound 10 deny tcp 10.125.128.32 255.255.255.224 192.168.240.0 255.255.240.0 eq 443 20 deny tcp 192.168.240.0 255.255.240.0 10.125.128.32 255.255.255.224 eq 443 30 permit ip 192.168.240.0 255.255.240.0 10.0.0.0 255.0.0.0",
+   "D": "ip access-list extended deny_outbound 10 deny tcp 192.168.240.0 0.0.15.255 any eq 80 20 deny tcp 192.168.240.0 0.0.15.255 10.125.128.32 0.0.0.31 eq 80 30 permit ip 192.168.240.0 0.0.15.255 10.0.0.0 0.255.255.255"
+  },
+  "img": null
+ },
+ {
+  "n": 997,
+  "t": "Refer to the exhibit. This ACL is configured to allow client access only to HTTP, HTTPS, and DNS services via UDP. The new administrator wants to add TCP access to the ONS service. Which configuration updates the ACL efficiently?",
+  "o": {
+   "A": "no ip access-list extended Services ip access-list extended Services 30 permit tcp 10.0.0.0 0.255.255.255 host 198.51.100.11 eq domain",
+   "B": "ip access-list extended Services 35 permit tcp 10.0.0.0 0.255.255.255 host 198.51.100.11 eq domain",
+   "C": "ip access-list extended Services permit tcp 10.0.0.0 0.255.255.255 host 198.51.100.11 eq domain",
+   "D": "no ip access-list extended Services ip access-list extended Services permit udp 10.0.0.0 0.255.255.255 any eq 53 permit tcp 10.0.0.0 0.255.255.255 host 198.51.100.11 eq domain deny ip any any log"
+  },
+  "img": "q997.jpg"
+ },
+ {
+  "n": 1339,
+  "t": "Refer to the exhibit. PC1 regularly sends 1800 Mbps of traffic to the server. A network engineer needs to configure the EtherChannel to disable Port Channel 1 between SW1 and SW2 when the Ge0/0 and Ge0/1 ports on SW2 go down. Which configuration must the engineer apply to the switch?",
+  "o": {
+   "A": "SW2# configure terminal - SW2(config)# interface port-channel 4 SW2(config-if)# port-channel min-links 2",
+   "B": "SW2# configure terminal - SW2(config)# interface port-channel 4 SW2(config-if)# lacp port-priority 32000",
+   "C": "SW2# configure terminal - SW2(config)# interface port-channel 4 SW2(config-if)# lacp max-bundle 2",
+   "D": "SW2# configure terminal - SW2(config)# lacp system-priority 32000"
+  },
+  "img": "q1339.jpg"
+ }
+]

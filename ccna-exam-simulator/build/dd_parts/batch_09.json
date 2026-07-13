@@ -1,0 +1,165 @@
+{
+  "154": {
+    "items": ["domain", "cache", "name resolver", "DNS", "no ip domain-lookup"],
+    "buckets": [
+      {"label": "service that maps hostname to IP addresses", "correct": ["DNS"]},
+      {"label": "local database of address mappings that improves name resolution performance", "correct": ["cache"]},
+      {"label": "in response to client requests, queries a name server for IP address information", "correct": ["name resolver"]},
+      {"label": "component of a URL that indicates the location or organization type", "correct": ["domain"]},
+      {"label": "disables DNS services on a Cisco device", "correct": ["no ip domain-lookup"]}
+    ]
+  },
+  "336": {
+    "items": [
+      "It supports real-time Wi-Fi client troubleshooting when network engineers are offsite.",
+      "It captures and forwards packets on a specific wireless channel.",
+      "It enables enhanced RFID-tag location tracking.",
+      "It provides air-quality data and interference detection across all enabled channels.",
+      "It supports analytics for wireless performance testing.",
+      "It supports software that analyzes wireless frames on a remote device."
+    ],
+    "buckets": [
+      {"label": "Monitor", "correct": [
+        "It enables enhanced RFID-tag location tracking.",
+        "It provides air-quality data and interference detection across all enabled channels."
+      ]},
+      {"label": "Sensor", "correct": [
+        "It supports real-time Wi-Fi client troubleshooting when network engineers are offsite.",
+        "It supports analytics for wireless performance testing."
+      ]},
+      {"label": "Sniffer", "correct": [
+        "It captures and forwards packets on a specific wireless channel.",
+        "It supports software that analyzes wireless frames on a remote device."
+      ]}
+    ]
+  },
+  "623": {
+    "items": [
+      "configure 802.1x authenticate",
+      "configure DHCP snooping",
+      "configure the native VLAN with a nondefault VLAN ID",
+      "disable DTP"
+    ],
+    "buckets": [
+      {"label": "802.1q double-tagging VLAN-hopping attack", "correct": ["configure the native VLAN with a nondefault VLAN ID"]},
+      {"label": "MAC flooding attack", "correct": ["configure 802.1x authenticate"]},
+      {"label": "man-in-the-middle spoofing attack", "correct": ["configure DHCP snooping"]},
+      {"label": "switch-spoofing VLAN-hopping attack", "correct": ["disable DTP"]}
+    ]
+  },
+  "757": {
+    "items": [
+      "This type deploys a consistent configuration across multiple devices.",
+      "A distributed control plane is needed.",
+      "This type requires a distributed management plane.",
+      "Southbound APIs are used to apply configurations.",
+      "Northbound APIs interact with end devices."
+    ],
+    "buckets": [
+      {"label": "Controller-Based Networking", "correct": [
+        "This type deploys a consistent configuration across multiple devices.",
+        "Southbound APIs are used to apply configurations."
+      ]},
+      {"label": "Traditional Networking", "correct": [
+        "A distributed control plane is needed.",
+        "This type requires a distributed management plane."
+      ]}
+    ]
+  },
+  "871": {
+    "items": ["access point", "virtual interface", "dynamic interface", "service port", "wireless LAN controller"],
+    "buckets": [
+      {"label": "manages access points", "correct": ["wireless LAN controller"]},
+      {"label": "provides Wi-Fi devices with a connection to a wired network", "correct": ["access point"]},
+      {"label": "used for out-of-band management", "correct": ["service port"]},
+      {"label": "used for guest authentication", "correct": ["dynamic interface"]},
+      {"label": "applied to the WLAN for wireless client communication", "correct": ["virtual interface"]}
+    ]
+  },
+  "989": {
+    "items": [
+      "It assigns per-user attributes.",
+      "It reaches the CLI commands that a user is able to perform.",
+      "It permits and derives login attempts.",
+      "It records the amount of network resources consumed by the user.",
+      "It supports local, PPP, RADIUS, and TACACS+ options.",
+      "It tracks the services that a user is using."
+    ],
+    "buckets": [
+      {"label": "Authentication", "correct": [
+        "It permits and derives login attempts.",
+        "It supports local, PPP, RADIUS, and TACACS+ options."
+      ]},
+      {"label": "Authorization", "correct": [
+        "It assigns per-user attributes.",
+        "It reaches the CLI commands that a user is able to perform."
+      ]}
+    ]
+  },
+  "1061": {"skip": "simulation"},
+  "1112": {
+    "items": ["DHCP server", "snooping binding database", "spurious DHCP server", "trusted", "untrusted"],
+    "buckets": [
+      {"label": "list of hosts on the network that are unknown to the administrative domain", "correct": ["snooping binding database"]},
+      {"label": "network component that propagates IP addresses to hosts on the network", "correct": ["DHCP server"]},
+      {"label": "internal device under the control of the network administrator", "correct": ["trusted"]},
+      {"label": "unknown DHCP server within an adminictrative domain", "correct": ["spurious DHCP server"]},
+      {"label": "default state of all interfaces", "correct": ["untrusted"]}
+    ]
+  },
+  "1165": {
+    "items": [
+      "is easy to tap into and obtain secure information",
+      "transmits data of up to 40Gbit/s over long distances",
+      "is affected by electrical and magnetic interference",
+      "has minimal light reflection as it travels down the core"
+    ],
+    "buckets": [
+      {"label": "copper", "correct": [
+        "is easy to tap into and obtain secure information",
+        "is affected by electrical and magnetic interference"
+      ]},
+      {"label": "single-mode fiber", "correct": [
+        "transmits data of up to 40Gbit/s over long distances",
+        "has minimal light reflection as it travels down the core"
+      ]}
+    ]
+  },
+  "1267": {
+    "items": [
+      "is easy to tap into and obtain secure information",
+      "transmits signals using pulses of light",
+      "transmits data in the form of electronic signals",
+      "contains a core, cladding, and coating"
+    ],
+    "buckets": [
+      {"label": "copper", "correct": [
+        "is easy to tap into and obtain secure information",
+        "transmits data in the form of electronic signals"
+      ]},
+      {"label": "multi-mode fiber", "correct": [
+        "transmits signals using pulses of light",
+        "contains a core, cladding, and coating"
+      ]}
+    ]
+  },
+  "1323": {
+    "items": [
+      "contains a conductor, bedding, and sheathing",
+      "contains a core, cladding, and coating",
+      "affected by electrical and magnetic interference",
+      "comprised of insulated glass strands"
+    ],
+    "buckets": [
+      {"label": "cooper", "correct": [
+        "contains a conductor, bedding, and sheathing",
+        "affected by electrical and magnetic interference"
+      ]},
+      {"label": "single-mode fiber", "correct": [
+        "contains a core, cladding, and coating",
+        "comprised of insulated glass strands"
+      ]}
+    ]
+  },
+  "1362": {"skip": "simulation"}
+}

@@ -1,0 +1,159 @@
+{
+  "182": {
+    "items": ["192.168.1.1", "192.168.1.20", "192.168.1.254", "192.168.1.255", "B8-76-3F-7C-57-DF", "1A-76-3F-7C-57-DF", "192.168.1.0"],
+    "buckets": [
+      {"label": "broadcast address", "correct": ["192.168.1.255"]},
+      {"label": "default gateway", "correct": ["192.168.1.1"]},
+      {"label": "host IP address", "correct": ["192.168.1.20"]},
+      {"label": "last assignable IP address in the subnet", "correct": ["192.168.1.254"]},
+      {"label": "MAC address", "correct": ["B8-76-3F-7C-57-DF"]},
+      {"label": "Network address", "correct": ["192.168.1.0"]}
+    ]
+  },
+  "480": {
+    "items": ["255.255.255.128", "255.255.255.224", "255.255.255.240", "255.255.255.248", "255.255.255.252"],
+    "buckets": [
+      {"label": "10.10.13.0", "correct": ["255.255.255.128"]},
+      {"label": "10.10.13.144", "correct": ["255.255.255.240"]},
+      {"label": "10.10.13.160", "correct": ["255.255.255.248"]},
+      {"label": "209.165.202.128", "correct": ["255.255.255.224"]}
+    ]
+  },
+  "667": {
+    "items": [
+      "It enables the device to allow user- or group-based access.",
+      "It leverages a RADIUS server to grant user access to a reverse Telnet session.",
+      "It records the amount of time for which a user accesses the network on a remote server.",
+      "It restricts the CLI commands that a user can perform.",
+      "It uses TACACS+ to log the configuration commands entered by a network administrator.",
+      "It verifies the user and password before granting access to the device."
+    ],
+    "buckets": [
+      {"label": "Accounting", "correct": [
+        "It records the amount of time for which a user accesses the network on a remote server.",
+        "It uses TACACS+ to log the configuration commands entered by a network administrator."
+      ]},
+      {"label": "Authorization", "correct": [
+        "It leverages a RADIUS server to grant user access to a reverse Telnet session.",
+        "It restricts the CLI commands that a user can perform."
+      ]}
+    ]
+  },
+  "776": {
+    "items": [
+      "fundamental configuration elements are stored in a manifest",
+      "uses TCP port 10002 for configuration push jobs",
+      "uses Ruby for fundamental configuration elements",
+      "uses SSH for remote device communication",
+      "uses TCP 8140 for communication",
+      "uses YAML for fundamental configuration elements"
+    ],
+    "buckets": [
+      {"label": "Ansible", "correct": [
+        "uses SSH for remote device communication",
+        "uses YAML for fundamental configuration elements"
+      ]},
+      {"label": "Chef", "correct": [
+        "uses TCP port 10002 for configuration push jobs",
+        "uses Ruby for fundamental configuration elements"
+      ]},
+      {"label": "Puppet", "correct": [
+        "fundamental configuration elements are stored in a manifest",
+        "uses TCP 8140 for communication"
+      ]}
+    ]
+  },
+  "909": {
+    "items": [
+      "ip route 10.10.13.0 255.255.255.128 10.10.10.1",
+      "ip route 10.10.13.0 255.255.255.128 10.10.10.5",
+      "ip route 10.10.13.10 255.255.255.255 10.10.10.1",
+      "ip route 10.10.14.0 255.255.255.0 10.10.10.2",
+      "ip route 10.10.14.0 255.255.255.0 10.10.10.6",
+      "ip route 10.10.14.10 255.255.255.255 10.10.10.6"
+    ],
+    "buckets": [
+      {"label": "R1", "correct": ["ip route 10.10.13.0 255.255.255.128 10.10.10.1"]},
+      {"label": "R2", "correct": [
+        "ip route 10.10.13.0 255.255.255.128 10.10.10.5",
+        "ip route 10.10.14.0 255.255.255.0 10.10.10.2"
+      ]},
+      {"label": "R3", "correct": ["ip route 10.10.14.0 255.255.255.0 10.10.10.6"]}
+    ]
+  },
+  "1018": {
+    "items": [
+      "executes modules via SSH by default",
+      "uses the YAML language",
+      "uses agents to manage hosts",
+      "pushes configurations to the client",
+      "requires clients to pull configurations from the server",
+      "operates without agents"
+    ],
+    "buckets": [
+      {"label": "feature", "correct": [
+        "executes modules via SSH by default",
+        "uses the YAML language",
+        "pushes configurations to the client",
+        "operates without agents"
+      ]}
+    ]
+  },
+  "1086": {
+    "items": [
+      "contains a single solid conductor",
+      "is typically used for DWDM optical systems spanning long distances",
+      "uses a single wavelength of light",
+      "transmits data in the form of electronic signals"
+    ],
+    "buckets": [
+      {"label": "copper", "correct": [
+        "contains a single solid conductor",
+        "transmits data in the form of electronic signals"
+      ]},
+      {"label": "single-mode fiber", "correct": [
+        "is typically used for DWDM optical systems spanning long distances",
+        "uses a single wavelength of light"
+      ]}
+    ]
+  },
+  "1125": {
+    "items": [
+      "uses multiple wavelengths of light",
+      "has a core diameter of 9 microns",
+      "has increased attenuation over long distances",
+      "uses a single wavelength of light"
+    ],
+    "buckets": [
+      {"label": "multimode fiber", "correct": [
+        "uses multiple wavelengths of light",
+        "has increased attenuation over long distances"
+      ]},
+      {"label": "single-mode fiber", "correct": [
+        "has a core diameter of 9 microns",
+        "uses a single wavelength of light"
+      ]}
+    ]
+  },
+  "1178": {"skip": "simulation"},
+  "1277": {
+    "items": [
+      "supplies conduit for PoE implementations",
+      "used for DWDM optical systems spanning long distances",
+      "easy to tap into and obtain secure information",
+      "has a core diameter of 9 microns"
+    ],
+    "buckets": [
+      {"label": "copper", "correct": [
+        "supplies conduit for PoE implementations",
+        "easy to tap into and obtain secure information"
+      ]},
+      {"label": "single-mode fiber", "correct": [
+        "used for DWDM optical systems spanning long distances",
+        "has a core diameter of 9 microns"
+      ]}
+    ]
+  },
+  "1334": {"skip": "simulation"},
+  "1377": {"skip": "simulation"}
+}

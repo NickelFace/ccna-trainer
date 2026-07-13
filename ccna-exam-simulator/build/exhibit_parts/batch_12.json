@@ -1,0 +1,276 @@
+{
+  "101": {
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {"id": "Server", "type": "server", "label": "Server"},
+        {"id": "HO", "type": "router", "label": "HO"},
+        {"id": "IPS_Cloud", "type": "internet", "label": "IPS Cloud"},
+        {"id": "B", "type": "router", "label": "B"},
+        {"id": "S2", "type": "sw2", "label": "S2"},
+        {"id": "HostA", "type": "pc", "label": "Host A"}
+      ],
+      "links": [
+        {"from": "Server", "to": "HO", "note": "fa0/1 MAC:C601.420F.0007"},
+        {"from": "HO", "to": "IPS_Cloud"},
+        {"from": "IPS_Cloud", "to": "B", "note": "2001:DB8:0:1::/64"},
+        {"from": "B", "to": "S2"},
+        {"from": "S2", "to": "HostA"}
+      ]
+    }
+  },
+  "195": {
+    "category": "cli_output",
+    "cli": "SW1#sh lacp neighbor\nFlags: S - Device is requesting Slow LACPDUs\n       F - Device is requesting Fast LACPDUs\n       A - Device is in Active mode      P - Device is in Passive mode\n\nChannel group 35 neighbors\n\nPartner's information:\n\n              LACP port                    Admin Oper  Port    Port\nPort   Flags  Priority  Dev ID          Age  key   Key   Number  State\nEt1/0  SP     32768     aabb.cc80.7000  8s   0x0   0x23  0x101   0x3C\nEt1/1  SP     32768     aabb.cc80.7000  8s   0x0   0x23  0x102   0x3C"
+  },
+  "266": {
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {"id": "SW1", "type": "sw2", "label": "SW1"},
+        {"id": "SW2", "type": "sw2", "label": "SW2"}
+      ],
+      "links": [
+        {"from": "SW1", "to": "SW2", "label": "Fa0/1", "label2": "Fa0/1", "note": "802.1Q"}
+      ]
+    },
+    "cli": "SW1:\ninterface FastEthernet0/1\nswitchport trunk encapsulation dot1q\nswitchport trunk native vlan 999\nswitchport mode trunk\n\nSW2:\ninterface FastEthernet0/1\nswitchport trunk encapsulation dot1q\nswitchport trunk native vlan 99\nswitchport mode trunk"
+  },
+  "299": {
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {"id": "SwitchA", "type": "sw2", "label": "Switch A"},
+        {"id": "SwitchB", "type": "sw2", "label": "Switch B"},
+        {"id": "hostsA", "type": "pc", "label": "hosts"},
+        {"id": "hostsB", "type": "pc", "label": "hosts"}
+      ],
+      "links": [
+        {"from": "SwitchA", "to": "SwitchB", "label": "Ge0/0/0 to Ge0/0/15", "label2": "Ge0/0/0 to Ge0/0/15"},
+        {"from": "SwitchA", "to": "hostsA"},
+        {"from": "SwitchB", "to": "hostsB"}
+      ]
+    }
+  },
+  "342": {
+    "category": "cli_output",
+    "cli": "R1# show ip route\n...\nD    172.16.32.0/27  [90/2888597172] via 20.1.1.1\nO    172.16.32.0/19  [110/292094] via 20.1.1.10\nR    172.16.32.0/24  [120/2] via 20.1.1.3"
+  },
+  "372": {
+    "category": "cli_output",
+    "cli": "R1# sh ip ospf int gig0/0\nGig0/0 is up, line protocol is up\n  Internet Address 10.201.24.8/28, Area 1, Attached via Network Statement\n  Process ID 100, Router ID 192.168.1.1, Network Type BROADCAST, Cost: 1\n  Topology-MTID    Cost    Disabled     Shutdown      Topology Name\n        0            1        no           no             Base\n  Transmit Delay is 1 sec, State DR, Priority 1\n  Designated Router (ID) 192.168.1.1, Interface address 10.201.24.8\n  No backup designated router on this network\n  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5\n    oob-resync timeout 40\n    Hello due in 00:00:07\n\nR2#sh ip ospf int gig0/0\nGig0/0 is up, line protocol is up\n  Internet Address 10.201.24.1/28, Area 1\n  Process ID 100, Router ID 172.16.1.1, Network Type BROADCAST, Cost: 1\n  Transmit Delay is 1 sec, State DR, Priority 1\n  Designated Router (ID) 172.16.1.1, Interface address 10.201.24.1\n  No backup designated router on this network\n  Timer intervals configured, Hello 20, Dead 80, Wait 80, Retransmit 5"
+  },
+  "411": {
+    "category": "cli_output",
+    "cli": "R1# show ip route | begin gateway\nGateway of last resort is 209.165.200.246 to network 0.0.0.0\nS*   0.0.0.0/0 [1/0] via 209.165.200.246, Serial0/1/0\n     is directly connected, Serial0/1/0\n     172.16.0.0/16 is variably subnetted, 2 subnets, 2 masks\nS       172.16.3.0/24 [1/0] via 209.165.200.250, Serial0/0/0\nO       172.16.3.0/28 [110/1] via 209.165.200.254, 00:00:28, Serial0/0/1\n     209.165.200.0/24 is variably subnetted, 6 subnets, 2 masks\nC       209.165.200.244/30 is directly connected, Serial0/1/0\nL       209.165.200.245/32 is directly connected, Serial0/1/0\nC       209.165.200.248/30 is directly connected, Serial0/0/0\nL       209.165.200.249/32 is directly connected, Serial0/0/0\nC       209.165.200.252/30 is directly connected, Serial0/0/1\nL       209.165.200.253/32 is directly connected, Serial0/0/1"
+  },
+  "439": {
+    "category": "cli_output",
+    "cli": "R1# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP\n       + - replicated route, % - next hop override\n\nGateway of last resort is 10.56.0.1 to network 0.0.0.0\n\nS*   0.0.0.0/0 [1/0] via 10.56.0.1\n     10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\nC       10.56.0.0/17 is directly connected, Vlan56\nL       10.56.0.19/32 is directly connected, Vlan56\nC       10.56.128.0/18 is directly connected, Vlan57\nL       10.56.128.19/32 is directly connected, Vlan57"
+  },
+  "456": {
+    "category": "cli_output",
+    "cli": "Gateway of last resort is 172.16.2.2 to network 0.0.0.0\n\n     10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\nC       10.10.8.0/28 is directly connected, GigabitEthernet0/0/2\nC       10.10.10.0/24 is directly connected, GigabitEthernet0/0/0\nL       10.10.10.3/32 is directly connected, GigabitEthernet0/0/0\n\n     172.16.0.0/16 is variably subnetted, 3 subnets, 2 masks\nS       172.16.1.33/32 is directly connected, GigabitEthernet0/0/1\nC       172.16.2.0/23 is directly connected, GigabitEthernet0/0/1\nL       172.16.2.1/32 is directly connected, GigabitEthernet0/0/1\nS*      0.0.0.0/0 [1/0] via 172.16.2.2"
+  },
+  "474": {
+    "category": "mixed",
+    "topology": {
+      "devices": [
+        {"id": "R1", "type": "router", "label": "R1"},
+        {"id": "SW", "type": "sw3", "label": "SW"},
+        {"id": "R2", "type": "router", "label": "R2"},
+        {"id": "R3", "type": "router", "label": "R3"}
+      ],
+      "links": [
+        {"from": "R1", "to": "SW", "label": "Fa0/0", "label2": "Fa0/0", "note": "10.10.10.1"},
+        {"from": "SW", "to": "R2", "label": "Fa0/2", "label2": "Fa0/2", "note": "10.10.10.2"},
+        {"from": "SW", "to": "R3", "label": "Fa0/1", "label2": "Fa0/1", "note": "10.10.10.3"}
+      ],
+      "zones": [{"label": "OSPF Area 0", "members": ["R1", "SW", "R2", "R3"]}]
+    },
+    "cli": "R1#show ip ospf neighbor\n\nNeighbor ID     Pri   State           Dead Time   Address        Interface\n10.10.10.2      1     FULL/BDR        00:00:37    10.10.10.2     FastEthernet0/0\n10.10.10.3      1     FULL/DR         00:00:35    10.10.10.3     FastEthernet0/0"
+  },
+  "494": {
+    "category": "other",
+    "note": "No separate exhibit image; the four blocks shown ARE the question's own answer options (A-D), each a full router config listing. There is no distinct exhibit to extract beyond the answer choices themselves, which are already captured as question text/options elsewhere."
+  },
+  "580": {
+    "category": "mixed",
+    "topology": {
+      "devices": [
+        {"id": "PC1", "type": "pc", "label": "PC1"},
+        {"id": "PC2", "type": "pc", "label": "PC2"},
+        {"id": "NATRouter", "type": "router", "label": "NAT Router"},
+        {"id": "Internet", "type": "internet", "label": "Internet"}
+      ],
+      "links": [
+        {"from": "PC1", "to": "NATRouter", "note": "172.16.0.1"},
+        {"from": "PC2", "to": "NATRouter", "note": "172.16.0.2"},
+        {"from": "NATRouter", "to": "Internet", "label": "g0/0", "label2": "g0/1"}
+      ]
+    },
+    "cli": "interface GigabitEthernet0/0\n ip address 172.16.0.5 255.255.255.0\n duplex auto\n speed auto\n!\ninterface GigabitEthernet0/1\n ip address 209.165.202.130 255.255.255.224\n duplex auto\n speed auto\n!\nip nat inside source list 1 interface GigabitEthernet0/1 overload\n!\naccess-list 1 permit 172.16.0.1\naccess-list 1 permit 172.16.0.2"
+  },
+  "630": {
+    "category": "cli_output",
+    "cli": "ip arp inspection vlan 5-10\ninterface fastethernet 0/1\n   switchport mode access\n   switchport access vlan 5"
+  },
+  "772": {
+    "category": "cli_output",
+    "cli": "{\"Employee's name\": \"Arthur\"}"
+  },
+  "859": {
+    "category": "mixed",
+    "topology": {
+      "devices": [
+        {"id": "SW1", "type": "sw2", "label": "SW1"},
+        {"id": "SW2", "type": "sw2", "label": "SW2"}
+      ],
+      "links": [
+        {"from": "SW1", "to": "SW2", "label": "FastEthernet0/1", "label2": "FastEthernet0/1"},
+        {"from": "SW1", "to": "SW2", "label": "FastEthernet0/2", "label2": "FastEthernet0/2"}
+      ]
+    },
+    "cli": "SW1#show run interface fastEthernet 0/1\nswitchport trunk encapsulation dot1q\nswitchport mode trunk\nswitchport trunk allowed vlan 100,200,300\nchannel-group 1 mode active\n\nSW1#show run interface fastEthernet 0/2\nswitchport trunk encapsulation dot1q\nswitchport mode trunk\nswitchport trunk allowed vlan 100,200\nchannel-group 1 mode active\n\nSW2#show run interface fastEthernet 0/1\nswitchport trunk encapsulation dot1q\nswitchport mode trunk\nswitchport trunk allowed vlan 100,200,300\nchannel-group 1 mode active\n\nSW2#show run interface fastEthernet 0/2\nswitchport trunk encapsulation dot1q\nswitchport mode trunk\nswitchport trunk allowed vlan 100,200,300\nchannel-group 1 mode active"
+  },
+  "895": {
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {"id": "Atlanta", "type": "router", "label": "Atlanta Lo1"},
+        {"id": "Washington", "type": "router", "label": "Washington Lo3"},
+        {"id": "NewYork", "type": "router", "label": "New-York Lo2"}
+      ],
+      "links": [
+        {"from": "Atlanta", "to": "Washington", "label": "Se0/0/1", "label2": "Se0/0/1", "note": "2013::/126"},
+        {"from": "Atlanta", "to": "NewYork", "label": "Se0/0/0", "note": "2012::/126"},
+        {"from": "NewYork", "to": "Washington", "label": "Se0/0/1", "label2": "Se0/0/0", "note": "2023::/128"}
+      ],
+      "zones": []
+    },
+    "note": "Side panel text: Atlanta default route ::0 via Se0/0/1; Washington static route to Lo1 on Atlanta via Se0/0/1. Configured router IPv6 addresses: Atlanta Serial0/0:2012:1/126, Serial0/0/1:2013:1/126, Loopback1:2000:1/128; New-York Serial0/0/0:2012:2/126, Serial0/0/1:2023:2/126, Loopback2:2000:2/128; Washington Serial0/0/0:2023:3/126, Serial0/0/1:2013:3/126, Loopback3:2000:3/128."
+  },
+  "919": {
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {"id": "RouterA", "type": "router", "label": "Router A"},
+        {"id": "RouterB", "type": "router", "label": "Router B"},
+        {"id": "RouterC", "type": "router", "label": "Router C"},
+        {"id": "RouterD", "type": "router", "label": "Router D"},
+        {"id": "hosts", "type": "pc", "label": "hosts"}
+      ],
+      "links": [
+        {"from": "hosts", "to": "RouterA", "note": "Subnet 192.168.1.0/24"},
+        {"from": "RouterA", "to": "RouterB", "note": "EIGRP100 Metric 128256"},
+        {"from": "RouterB", "to": "RouterC", "label": ".1", "label2": ".2", "note": "OSPF AREA 1 Metric 10000, Subnet 10.0.1.0/30"},
+        {"from": "RouterB", "to": "RouterD", "label": ".1", "label2": ".2", "note": "EIGRP100 Metric 128256, Subnet 10.0.0.0/30"},
+        {"from": "RouterC", "to": "RouterD", "label": ".1", "label2": ".2", "note": "OSPF AREA 1 Metric 10000, Subnet 10.0.2.0/30"}
+      ],
+      "zones": [{"label": "Redistribution between EIGRP and OSPF", "members": ["RouterB"]}]
+    }
+  },
+  "965": {
+    "category": "cli_output",
+    "cli": "hostname CPE\nservice password-encryption\n\nip domain name ccna.cisco.com\nip name-server 198.51.100.210\n\ncrypto key generate rsa modulus 1024\n\nusername admin privilege 15 secret s0m3s3cr3t\n\nline vty 0 4\ntransport input ssh\nlogin local"
+  },
+  "1046": {
+    "category": "cli_output",
+    "cli": "SW1#show etherchannel\n            Channel-group listing:\n            ----------------------\n\nGroup: 2\n----------\nGroup state = L2\nPorts: 1 Maxports = 8\nPort-channels: 1 Max Portchannels = 1\nProtocol: PAGP"
+  },
+  "1152": {
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {"id": "SW1", "type": "sw2", "label": "SW1"},
+        {"id": "SW2", "type": "sw2", "label": "SW2"},
+        {"id": "SW3", "type": "sw2", "label": "SW3"},
+        {"id": "SW4", "type": "sw2", "label": "SW4"}
+      ],
+      "links": [
+        {"from": "SW1", "to": "SW2", "label": "Gi1/0/1", "label2": "Gi1/0/1"},
+        {"from": "SW1", "to": "SW3", "label": "Gi1/0/2", "label2": "Gi1/0/3"},
+        {"from": "SW1", "to": "SW4", "label": "Gi1/0/3", "label2": "Gi1/0/1"},
+        {"from": "SW2", "to": "SW3", "label": "Gi1/0/2", "label2": "Gi1/0/1"},
+        {"from": "SW4", "to": "SW3", "label": "Gi1/0/2", "label2": "Gi1/0/2"}
+      ]
+    }
+  },
+  "1212": {
+    "category": "other",
+    "note": "Exhibit combines a network topology diagram AND a Windows 'Internet Protocol Version 4 (TCP/IPv4) Properties' GUI dialog overlaid on it - a combination not covered by the defined categories (topology+cli only for 'mixed'). Topology: Router A (192.168.1.254/24, interfaces G0/0/0 and S0/0/0 to Internet at 200.100.100.1/32) connects via cloud 'Internet' to Router B, and to a Domain Name Server (196.1.38.132); Router A's LAN switch/hub connects Host A (192.168.1.1), Host B (192.168.1.2), Host C (192.168.1.3). GUI dialog shows manually configured IPv4 settings: IP address 192.168.1.1, Subnet mask 255.255.255.0, Default gateway 192.168.1.254, Preferred DNS server 192.168.1.254, Alternate DNS server 196.1.38.254."
+  },
+  "1281": {
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {"id": "ISP", "type": "internet", "label": "ISP"},
+        {"id": "R2", "type": "router", "label": "R2 (Atlanta)"},
+        {"id": "R1", "type": "router", "label": "R1 (Boston)"},
+        {"id": "AtlantaSwitch", "type": "sw2", "label": "Atlanta switch"},
+        {"id": "BostonSwitch", "type": "sw2", "label": "Boston switch"},
+        {"id": "FileServer1", "type": "server", "label": "File Server 1"},
+        {"id": "FileServer2", "type": "server", "label": "File Server 2"},
+        {"id": "EndUser1", "type": "pc", "label": "End User 1"},
+        {"id": "EndUser2", "type": "pc", "label": "End User 2"}
+      ],
+      "links": [
+        {"from": "R2", "to": "ISP", "label": "S0/1", "note": ".1"},
+        {"from": "ISP", "to": "R1", "label": "S0/1", "note": ".2", "note2": "2001:db8:3bb8:931b::/64"},
+        {"from": "R2", "to": "AtlantaSwitch", "label": "E0/1", "note": "ca-01-3b-8b-00-01, .1"},
+        {"from": "R1", "to": "BostonSwitch", "label": "E0/1", "note": "ca-01-b3-b8-00-01, .1"},
+        {"from": "AtlantaSwitch", "to": "FileServer1", "note": ".2, 2001:db8:3bb8:3181::/64"},
+        {"from": "AtlantaSwitch", "to": "FileServer2", "note": ".3"},
+        {"from": "BostonSwitch", "to": "EndUser1", "note": ".2, 2001:db8:3bb8:3bb1::/64"},
+        {"from": "BostonSwitch", "to": "EndUser2", "note": ".3"}
+      ]
+    },
+    "note": "Devices labeled Atlanta=R2 and Boston=R1 per diagram text (R2 is on the Atlanta side, R1 is on the Boston side)."
+  },
+  "1355": {
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {"id": "R1", "type": "router", "label": "R1"},
+        {"id": "R2", "type": "router", "label": "R2"},
+        {"id": "SW1", "type": "sw2", "label": "SW1"},
+        {"id": "SW2", "type": "sw2", "label": "SW2"},
+        {"id": "FileServer", "type": "server", "label": "File Server"},
+        {"id": "NetworkManagementServer", "type": "server", "label": "Network Management Server"},
+        {"id": "Workstations", "type": "pc", "label": "Workstations"}
+      ],
+      "links": [
+        {"from": "R1", "to": "R2", "label": "Int G0/0", "label2": "Int G0/0", "note": "10.0.0.0/30, Primary, .1 / .2"},
+        {"from": "R1", "to": "R2", "label": "Int G0/1", "label2": "Int G0/1", "note": "10.0.0.4/30, .5 / .6"},
+        {"from": "R1", "to": "SW1", "note": ".2"},
+        {"from": "R2", "to": "SW2", "note": ".2"},
+        {"from": "SW1", "to": "FileServer", "note": ".3, 10.0.1.0/24"},
+        {"from": "SW1", "to": "NetworkManagementServer", "note": ".4"},
+        {"from": "SW2", "to": "Workstations", "note": "10.0.2.0/29"}
+      ]
+    },
+    "note": "Side text: Router R1 EIGRP 100 Network 10.0.1.0 0.0.0.255, Network 10.0.0.0 0.0.0.3; Router R2 EIGRP 100 Network 10.0.2.0 0.0.0.7, Network 10.0.0.0 0.0.0.3."
+  },
+  "1387": {
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {"id": "SW1", "type": "sw2", "label": "SW1"},
+        {"id": "SW2", "type": "sw2", "label": "SW2"},
+        {"id": "SW3", "type": "sw2", "label": "SW3"},
+        {"id": "SW4", "type": "sw2", "label": "SW4"},
+        {"id": "User1", "type": "pc", "label": "User1.lab"},
+        {"id": "DNS1", "type": "server", "label": "DNS1.lab"}
+      ],
+      "links": [
+        {"from": "SW1", "to": "SW2", "note": "STP Priority 32768 / 4096"},
+        {"from": "SW1", "to": "SW3", "note": "STP Priority 8192"},
+        {"from": "SW2", "to": "SW4", "note": "STP Priority 12288"},
+        {"from": "SW3", "to": "SW4"},
+        {"from": "SW3", "to": "User1"},
+        {"from": "SW4", "to": "DNS1"}
+      ]
+    },
+    "note": "Diagram shows STP priority values labeled next to each switch (SW1=32768, SW2=4096, SW3=8192, SW4=12288) rather than on links; MAC addresses for each switch are given in the question text (not repeated here per instructions to ignore prose)."
+  }
+}

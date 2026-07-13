@@ -1,0 +1,152 @@
+{
+  "134": {
+    "items": [
+      "2001:DB8::bced:1234:456d:aacc",
+      "FD00:0000:0000:1a2d:a153:3992:a19d:ccca",
+      "FE80::abcdf:ffff:12de:3992",
+      "FF05::23:becf:22:1111"
+    ],
+    "buckets": [
+      {"label": "multicast address used only locally within the site", "correct": ["FF05::23:becf:22:1111"]},
+      {"label": "address that is automatically created on a link when IPv6 is enabled on an interface", "correct": ["FE80::abcdf:ffff:12de:3992"]},
+      {"label": "address that is prohibited from routing to the Internet", "correct": ["FD00:0000:0000:1a2d:a153:3992:a19d:ccca"]},
+      {"label": "address that is unique and reserved for documentation purposes", "correct": ["2001:DB8::bced:1234:456d:aacc"]}
+    ]
+  },
+  "193": {
+    "items": [
+      "configured and managed by a WLC",
+      "managed from a web-based dashboard",
+      "accessible for management via Telnet, SSH, or a web GUI",
+      "requires a management IP address",
+      "supports automatic deployment"
+    ],
+    "buckets": [
+      {"label": "Autonomous Access Point", "correct": ["accessible for management via Telnet, SSH, or a web GUI", "requires a management IP address"]},
+      {"label": "Cloud-Based Access Point", "correct": ["managed from a web-based dashboard", "supports automatic deployment"]}
+    ]
+  },
+  "534": {
+    "items": [
+      "resolves web URLs to IP addresses",
+      "assigns a default gateway to a client",
+      "holds the TCP/IP settings to be distributed to the clients",
+      "stores a list of IP addresses mapped to names",
+      "assigns IP addresses to enabled clients"
+    ],
+    "buckets": [
+      {"label": "DHCP Server", "correct": ["assigns a default gateway to a client", "holds the TCP/IP settings to be distributed to the clients", "assigns IP addresses to enabled clients"]},
+      {"label": "DNS Server", "correct": ["resolves web URLs to IP addresses", "stores a list of IP addresses mapped to names"]}
+    ]
+  },
+  "688": {
+    "items": [
+      "It supports local, PPP, RADIUS, and TACACS+ options",
+      "It tracks the services that a user is using.",
+      "It records the amount of network resources consumed by the user.",
+      "It assigns per-user attributes.",
+      "It permits and denies login attempts."
+    ],
+    "buckets": [
+      {"label": "Accounting", "correct": ["It records the amount of network resources consumed by the user.", "It tracks the services that a user is using."]},
+      {"label": "Authentication", "correct": ["It permits and denies login attempts.", "It supports local, PPP, RADIUS, and TACACS+ options"]}
+    ]
+  },
+  "778": {
+    "items": [
+      "cacheable",
+      "client-server",
+      "layered system",
+      "stateless",
+      "uniform interface"
+    ],
+    "buckets": [
+      {"label": "divides architecture components into the consumers and producers of a service", "correct": ["client-server"]},
+      {"label": "divides the architecture into a hierarchy of levels", "correct": ["layered system"]},
+      {"label": "enables the client to reuse a previous response for subsequent equivalent requests", "correct": ["cacheable"]},
+      {"label": "operates without any stored session information on the server", "correct": ["stateless"]},
+      {"label": "simplifies the communication between components, regardless of the architecture supporting them", "correct": ["uniform interface"]}
+    ]
+  },
+  "936": {
+    "items": [
+      "172.16.3.128",
+      "172.16.3.64",
+      "172.16.2.128",
+      "172.16.3.192",
+      "172.16.4.0"
+    ],
+    "buckets": [
+      {"label": "255.255.254.0", "correct": ["172.16.4.0"]},
+      {"label": "255.255.255.128", "correct": ["172.16.2.128"]},
+      {"label": "255.255.255.224", "correct": ["172.16.3.64"]},
+      {"label": "255.255.255.240", "correct": ["172.16.3.128"]},
+      {"label": "255.255.255.248", "correct": ["172.16.3.192"]}
+    ]
+  },
+  "1024": {
+    "items": [
+      "It uses multiple tools and applications to analyze and troubleshoot different types of data.",
+      "It manages device configurations on a per-device basis.",
+      "It provides a single interface for network security and analytics.",
+      "Security is managed near the perimeter of the network with firewalls, VPNs, and IPS.",
+      "It supports CLI templates to apply a consistent configuration to multiple devices.",
+      "It uses NetFlow to analyze potential security threats and take appropriate action on that traffic."
+    ],
+    "buckets": [
+      {"label": "Cisco DNA Center Device Management", "correct": ["It provides a single interface for network security and analytics.", "It supports CLI templates to apply a consistent configuration to multiple devices.", "It uses NetFlow to analyze potential security threats and take appropriate action on that traffic."]},
+      {"label": "Traditional Device Management", "correct": ["It manages device configurations on a per-device basis.", "Security is managed near the perimeter of the network with firewalls, VPNs, and IPS.", "It uses multiple tools and applications to analyze and troubleshoot different types of data."]}
+    ]
+  },
+  "1088": {
+    "items": [
+      "is ideal longer distances with little loss of integrity",
+      "is not easily broken",
+      "contains a single solid conductor",
+      "has minimal light reflection as it travels down the core"
+    ],
+    "buckets": [
+      {"label": "single-mode fiber", "correct": ["is ideal longer distances with little loss of integrity", "has minimal light reflection as it travels down the core"]},
+      {"label": "copper", "correct": ["is not easily broken", "contains a single solid conductor"]}
+    ]
+  },
+  "1130": {
+    "items": [
+      "It grants access to network assets, such as FTP servers.",
+      "It restricts the CLI commands that a user is able to perform.",
+      "It performs user validation via TACACS+.",
+      "It records the duration of each connection.",
+      "It supports User Access Reporting.",
+      "It verifies \"who you are\"."
+    ],
+    "buckets": [
+      {"label": "Accounting", "correct": ["It records the duration of each connection.", "It supports User Access Reporting."]},
+      {"label": "Authorization", "correct": ["It grants access to network assets, such as FTP servers.", "It restricts the CLI commands that a user is able to perform."]}
+    ]
+  },
+  "1186": {
+    "items": [
+      "is typically used in small office applications",
+      "transmits data of up to 40Gbit/s over long distances",
+      "is not easily broken",
+      "eliminates distortion from overlapping light pulses"
+    ],
+    "buckets": [
+      {"label": "copper", "correct": ["is typically used in small office applications", "is not easily broken"]},
+      {"label": "single-mode fiber", "correct": ["transmits data of up to 40Gbit/s over long distances", "eliminates distortion from overlapping light pulses"]}
+    ]
+  },
+  "1284": {
+    "items": [
+      "affected by electrical and magnetic interference",
+      "increased refraction between cladding and core as it travels",
+      "easy to tap into and obtain secure information",
+      "transmits signals using pulses of light"
+    ],
+    "buckets": [
+      {"label": "copper", "correct": ["affected by electrical and magnetic interference", "easy to tap into and obtain secure information"]},
+      {"label": "multi-mode fiber", "correct": ["increased refraction between cladding and core as it travels", "transmits signals using pulses of light"]}
+    ]
+  },
+  "1337": {"skip": "simulation"}
+}

@@ -1,0 +1,125 @@
+{
+  "146": {
+    "items": [
+      "used to reliably share files between devices",
+      "appropriate for streaming operations with minimal latency",
+      "provides best-effort service",
+      "supports reliable data transmission"
+    ],
+    "buckets": [
+      {"label": "TCP", "correct": ["used to reliably share files between devices", "supports reliable data transmission"]},
+      {"label": "UDP", "correct": ["appropriate for streaming operations with minimal latency", "provides best-effort service"]}
+    ]
+  },
+  "278": {
+    "items": [
+      "configured and managed by a WLC",
+      "accessible for management via Telnet, SSH, or a Web GUI",
+      "supports different operational modes",
+      "requires a management IP address",
+      "supports automatic deployment"
+    ],
+    "buckets": [
+      {"label": "Autonomous Access Point", "correct": ["accessible for management via Telnet, SSH, or a Web GUI", "requires a management IP address"]},
+      {"label": "Lightweight Access Point", "correct": ["configured and managed by a WLC", "supports different operational modes"]}
+    ]
+  },
+  "588": {
+    "items": [
+      "event correlation and aggregation",
+      "fault detection",
+      "fault diagnosis and isolation",
+      "problem resolution",
+      "restoration of service"
+    ],
+    "buckets": [
+      {"label": "The administrator can manually intervene at the source of the fault.", "correct": ["problem resolution"]},
+      {"label": "The network management system launches a preconfigured script to restore functionality.", "correct": ["restoration of service"]},
+      {"label": "The system groups alarms from related issues.", "correct": ["event correlation and aggregation"]},
+      {"label": "The system identifies performance degradation or service interruption.", "correct": ["fault detection"]},
+      {"label": "The system reports on the source of the issue.", "correct": ["fault diagnosis and isolation"]}
+    ]
+  },
+  "725": {
+    "items": [
+      "implements changes via an SSH terminal",
+      "manages device configurations on a per-device basis",
+      "monitors the cloud for software updates",
+      "security is managed near the perimeter of the network with firewalls, VPNs, and IPS",
+      "uses CLI templates to apply a consistent configuration to multiple devices at an individual location",
+      "uses NetFlow to analyze potential security threats throughout the network and take appropriate action on that traffic"
+    ],
+    "buckets": [
+      {"label": "Cisco DNA Center Device Management", "correct": ["monitors the cloud for software updates", "uses CLI templates to apply a consistent configuration to multiple devices at an individual location", "uses NetFlow to analyze potential security threats throughout the network and take appropriate action on that traffic"]},
+      {"label": "Traditional Device Management", "correct": ["implements changes via an SSH terminal", "manages device configurations on a per-device basis", "security is managed near the perimeter of the network with firewalls, VPNs, and IPS"]}
+    ]
+  },
+  "811": {
+    "items": [
+      "802.11a",
+      "802.11b",
+      "802.11g",
+      "802.11n 2.4 GHz",
+      "802.11n 5 Ghz"
+    ],
+    "buckets": [
+      {"label": "J Non-Overlapping Channels", "correct": ["802.11a", "802.11b", "802.11n 2.4 GHz"]},
+      {"label": "2J Non-Overlapping Channels", "correct": ["802.11g", "802.11n 5 Ghz"]}
+    ]
+  },
+  "960": {
+    "items": [
+      "ip domain-lookup",
+      "ip domain-name",
+      "ip host switch_1 192.168.0.1",
+      "ip name-server",
+      "show hosts"
+    ],
+    "buckets": [
+      {"label": "adds an entry to the host table", "correct": ["ip host switch_1 192.168.0.1"]},
+      {"label": "completes the FQDN of the DNS server", "correct": ["ip domain-name"]},
+      {"label": "displays address-mapping information", "correct": ["show hosts"]},
+      {"label": "enables host-to-IP-address translation", "correct": ["ip domain-lookup"]},
+      {"label": "specifies the IP address of the DNS server", "correct": ["ip name-server"]}
+    ]
+  },
+  "1054": {"skip": "simulation"},
+  "1093": {
+    "items": [
+      "is ideal over longer distances with little loss of integrity",
+      "uses a single wavelength on light",
+      "has a core diameter of either 62.5 or 50 microns",
+      "is typically used for DWDM optical systems spanning long distances"
+    ],
+    "buckets": [
+      {"label": "single-mode fiber", "correct": ["is ideal over longer distances with little loss of integrity", "uses a single wavelength on light"]},
+      {"label": "multimode fiber", "correct": ["is typically used for DWDM optical systems spanning long distances", "has a core diameter of either 62.5 or 50 microns"]}
+    ]
+  },
+  "1144": {
+    "items": [
+      "has a unicast source sent to a group",
+      "is unable to route on the internet",
+      "allows sites to be combined without address conflicts",
+      "sends packets to a group address rather than a single address"
+    ],
+    "buckets": [
+      {"label": "Unique Local", "correct": ["is unable to route on the internet", "allows sites to be combined without address conflicts"]},
+      {"label": "Multicast", "correct": ["has a unicast source sent to a group", "sends packets to a group address rather than a single address"]}
+    ]
+  },
+  "1258": {"skip": "simulation"},
+  "1298": {
+    "items": [
+      "transmits signals using pulses of light",
+      "has minimal light reflection as the signal travels down the core",
+      "contains a conductor, bedding, and sheathing",
+      "comprised of shielded or unshielded twisted pairs"
+    ],
+    "buckets": [
+      {"label": "copper", "correct": ["comprised of shielded or unshielded twisted pairs", "contains a conductor, bedding, and sheathing"]},
+      {"label": "single-mode fiber", "correct": ["transmits signals using pulses of light", "has minimal light reflection as the signal travels down the core"]}
+    ]
+  },
+  "1351": {"skip": "simulation"}
+}

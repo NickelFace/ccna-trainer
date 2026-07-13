@@ -1,0 +1,132 @@
+{
+  "139": {
+    "items": [
+      "configured only once per interface",
+      "addressing for exclusive use internally without Internet routing",
+      "addresses with prefix FC00::/7",
+      "attached to a single subnet"
+    ],
+    "buckets": [
+      {"label": "Link-Local Address", "correct": ["attached to a single subnet", "configured only once per interface"]},
+      {"label": "Unique Local Address", "correct": ["addresses with prefix FC00::/7", "addressing for exclusive use internally without Internet routing"]}
+    ]
+  },
+  "261": {
+    "items": [
+      "BPDUs received are forwarded to the system module",
+      "BPDUs received from the system module are processed and transmitted",
+      "Frames received from the attached segment are discarded",
+      "Frames received from the attached segment are processed",
+      "Switched frames received from other ports are advanced",
+      "The port in the forwarding state responds to network management messages"
+    ],
+    "buckets": [
+      {"label": "action", "correct": ["BPDUs received are forwarded to the system module"]},
+      {"label": "action", "correct": ["BPDUs received from the system module are processed and transmitted"]},
+      {"label": "action", "correct": ["Switched frames received from other ports are advanced"]},
+      {"label": "action", "correct": ["The port in the forwarding state responds to network management messages"]}
+    ]
+  },
+  "583": {
+    "items": [
+      "show snmp chassis",
+      "show snmp community",
+      "show snmp engineID",
+      "show snmp group",
+      "show snmp host"
+    ],
+    "buckets": [
+      {"label": "displays information about the SNMP recipient", "correct": ["show snmp host"]},
+      {"label": "displays the IP address of the remote SNMP device", "correct": ["show snmp engineID"]},
+      {"label": "displays the SNMP security model in use", "correct": ["show snmp group"]},
+      {"label": "displays the SNMP access string", "correct": ["show snmp community"]},
+      {"label": "displays the SNMP server serial number", "correct": ["show snmp chassis"]}
+    ]
+  },
+  "715": {
+    "items": [
+      "focused on network",
+      "focused on devices",
+      "user input is a configuration",
+      "user input is a policy",
+      "uses allow list security model",
+      "uses block list security model"
+    ],
+    "buckets": [
+      {"label": "Controller-Based Networking", "correct": ["focused on network", "user input is a policy", "uses allow list security model"]},
+      {"label": "Traditional Networking", "correct": ["focused on devices", "user input is a configuration", "uses block list security model"]}
+    ]
+  },
+  "799": {
+    "items": [
+      "absorption",
+      "noise floor",
+      "reflection",
+      "receiver sensitivity",
+      "signal-to-noise ratio"
+    ],
+    "buckets": [
+      {"label": "measure of the minimum power required to decode a radio signal without excessive errors", "correct": ["receiver sensitivity"]},
+      {"label": "measure of the total unwanted signals at the receiver", "correct": ["noise floor"]},
+      {"label": "deviation from the propagation path that occurs when a signal encounters an obstacle", "correct": ["reflection"]},
+      {"label": "reduction of energy in a signal as it travels away from the access point and encounters free space or obstacles", "correct": ["absorption"]},
+      {"label": "relative power of the desired radio signal to unwanted signals at the receiver", "correct": ["signal-to-noise ratio"]}
+    ]
+  },
+  "956": {
+    "items": [
+      "classification",
+      "marking",
+      "policing",
+      "queuing"
+    ],
+    "buckets": [
+      {"label": "applies a specific action to packets whenever the maximum rate of packets is exceeded", "correct": ["policing"]},
+      {"label": "set the ToS value to associate a packet with a QoS group", "correct": ["marking"]},
+      {"label": "reduces traffic congestion by holding packets and distributing them when the available bandwidth allows", "correct": ["queuing"]},
+      {"label": "the overall process of using specific criteria to differentiate traffic into categories", "correct": ["classification"]}
+    ]
+  },
+  "1043": {"skip": "simulation"},
+  "1091": {
+    "items": [
+      "uses a single wavelength of light",
+      "is comprised of shielded and unshielded twisted pairs",
+      "contains a conductor, bedding, and sheathing",
+      "has a core diameter of 9 microns"
+    ],
+    "buckets": [
+      {"label": "single-mode fiber", "correct": ["uses a single wavelength of light", "has a core diameter of 9 microns"]},
+      {"label": "copper", "correct": ["is comprised of shielded and unshielded twisted pairs", "contains a conductor, bedding, and sheathing"]}
+    ]
+  },
+  "1135": {
+    "items": [
+      "is assigned to more than one interface",
+      "cannot be used as a source address",
+      "is used exclusively by a non-host device",
+      "provides one-to-many communications"
+    ],
+    "buckets": [
+      {"label": "Anycast", "correct": ["is assigned to more than one interface", "is used exclusively by a non-host device"]},
+      {"label": "Multicast", "correct": ["provides one-to-many communications", "cannot be used as a source address"]}
+    ]
+  },
+  "1216": {"skip": "simulation"},
+  "1292": {
+    "items": [
+      "172.16.2.0/24",
+      "192.168.1.0/24",
+      "192.168.2.0/24",
+      "207.165.200.244/30",
+      "207.165.200.248/30"
+    ],
+    "buckets": [
+      {"label": "static", "correct": ["207.165.200.244/30"]},
+      {"label": "EIGRP", "correct": ["192.168.2.0/24"]},
+      {"label": "OSPF", "correct": ["192.168.1.0/24"]},
+      {"label": "RIP", "correct": ["172.16.2.0/24"]}
+    ]
+  },
+  "1348": {"skip": "simulation"}
+}

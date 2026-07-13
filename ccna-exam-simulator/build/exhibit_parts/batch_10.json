@@ -1,0 +1,297 @@
+{
+  "90": {"category":"cli_output","cli":"{\n  \"response\": {\n    \"taskId\": {},\n    \"url\": \"string\"\n  },\n  \"version\": \"string\"\n}"},
+  "189": {"category":"cli_output","cli":"Router#\nCapability Codes: R - Router, T - Trans Bridge, B - Source Route Bridge\n               S -Switch, H - Host, I - IGMP, r - Repeater, P - Phone,\n               D - Remote, C - CVTA, M - Two-port Mac Relay\n\nDevice ID       Local Interface   Holdtime   Capability   Platform   Port ID\n10.1.1.2        Gig 37/3          176        R I          CPT 600    Gig 36/41\n10.1.1.2        Gig 37/1          174        R I          CPT 600    Gig 36/43\n10.1.1.2        Gig 36/41         134        R I          CPT 600    Gig 37/3\n10.1.1.2        Gig 36/43         134        R I          CPT 600    Gig 37/1\n10.1.1.2        Ten 3/2           132        R I          CPT 600    Ten 4/2\n10.1.1.2        Ten 4/2           174        R I          CPT 600    Ten 3/2"},
+  "263": {"category":"mixed",
+    "topology":{
+      "devices":[
+        {"id":"PCA","type":"pc","label":"PC A","note":"depicted as server-tower icon but labeled PC A"},
+        {"id":"FileServer","type":"server","label":"File Server"},
+        {"id":"SwitchA","type":"sw2","label":"Switch A"},
+        {"id":"SwitchB","type":"sw2","label":"Switch B"}
+      ],
+      "links":[
+        {"from":"PCA","to":"SwitchA","label":"Gi0/4","note":"192.168.0.10/23"},
+        {"from":"FileServer","to":"SwitchB","label":"Gi0/3","note":"192.168.1.20/23"},
+        {"from":"SwitchA","to":"SwitchB","label":"Gi0/1","label2":"Gi0/1"}
+      ]
+    },
+    "cli":"Switch A\nVlan 10, 11, 12, 13\n\ninterface GigabitEthernet0/1\n switchport mode trunk\n switchport trunk allowed vlan 10-12\n!\ninterface GigabitEthernet0/4\n switchport access vlan 13\n switchport mode access\n\nSwitch B\nVlan 10, 11, 12, 13\n\ninterface GigabitEthernet0/1\n switchport mode trunk\n!\ninterface GigabitEthernet0/3\n switchport access vlan 13\n switchport mode access"
+  },
+  "293": {"category":"mixed",
+    "topology":{
+      "devices":[
+        {"id":"R1","type":"router","label":"R1"},
+        {"id":"R2","type":"router","label":"R2"},
+        {"id":"SW1","type":"sw2","label":"SW1"},
+        {"id":"SW2","type":"sw2","label":"SW2"},
+        {"id":"PC1","type":"pc","label":"PC 1"},
+        {"id":"PC2","type":"pc","label":"PC 2"},
+        {"id":"PC3","type":"pc","label":"PC 3"},
+        {"id":"PC4","type":"pc","label":"PC 4"}
+      ],
+      "links":[
+        {"from":"R1","to":"R2","label":"Int G0/0","label2":"Int G0/0","note":"10.0.0.0/30, .1 on R1, .2 on R2"},
+        {"from":"R1","to":"SW1","label":"Int G0/1","note":".2 on R1 side"},
+        {"from":"R2","to":"SW2","label":"Int G0/1","note":".2 on R2 side"},
+        {"from":"SW1","to":"PC1","label":"Int G0/2"},
+        {"from":"SW1","to":"PC2","label":"Int G0/3"},
+        {"from":"SW2","to":"PC3","label":"Int G0/2"},
+        {"from":"SW2","to":"PC4","label":"Int G0/3"}
+      ],
+      "zones":[{"label":"10.0.1.0/24","members":["SW1","PC1","PC2"]},{"label":"10.0.2.0/24","members":["SW2","PC3","PC4"]}]
+    },
+    "cli":"Workstation   Mac address\nPC 1          00:50:7278:66:80\nPC 2          28:39:26:34:82:51\nPC 3          00:50:7278:66:78\nPC 4          00:50:7278:66:44"
+  },
+  "326": {"category":"mixed",
+    "topology":{
+      "devices":[
+        {"id":"R1","type":"router","label":"Router (Company A left)"},
+        {"id":"R2","type":"router","label":"Router (Company A right)"},
+        {"id":"FW1","type":"firewall","label":"Firewall (left)"},
+        {"id":"FW2","type":"firewall","label":"Firewall (right)"},
+        {"id":"SW1","type":"sw2","label":"SW1"},
+        {"id":"SW2","type":"sw2","label":"SW2"},
+        {"id":"SW3","type":"sw2","label":"SW3"},
+        {"id":"SW4","type":"sw2","label":"SW4"}
+      ],
+      "links":[
+        {"from":"R1","to":"R2","note":"Company A link between routers"},
+        {"from":"R1","to":"FW1"},
+        {"from":"R2","to":"FW2"},
+        {"from":"FW1","to":"FW2","note":"dashed line between firewalls"},
+        {"from":"FW1","to":"SW1"},
+        {"from":"FW1","to":"SW2","note":"crossed link"},
+        {"from":"FW2","to":"SW1","note":"crossed link"},
+        {"from":"FW2","to":"SW2"},
+        {"from":"SW1","to":"SW2"},
+        {"from":"SW1","to":"SW3","note":"VLAN 20"},
+        {"from":"SW2","to":"SW4","note":"VLAN 20"},
+        {"from":"SW3","to":"SW4"}
+      ],
+      "zones":[{"label":"DMZ","members":["FW1","FW2","SW1","SW2","SW3","SW4"]}]
+    },
+    "cli":"SW1 = 24596 0018.184e.3c00\nSW2 = 28692 004a.13e9.6900\nSW3 = 32788 0022.55cf.dd00\nSW4 = 64000 0041.396d.690f"
+  },
+  "368": {"category":"mixed",
+    "topology":{
+      "devices":[
+        {"id":"SiteA","type":"internet","label":"Site A"},
+        {"id":"Router1","type":"router","label":"Router1"},
+        {"id":"Router2","type":"router","label":"Router2"},
+        {"id":"SiteB","type":"internet","label":"Site B"}
+      ],
+      "links":[
+        {"from":"SiteA","to":"Router1"},
+        {"from":"Router1","to":"Router2"},
+        {"from":"Router2","to":"SiteB"}
+      ]
+    },
+    "cli":"Roter2#show ip route\nGateway of last resort is not set\n\n     10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nC       10.10.10.8/30 is directly connected, FastEthernet0/2\nC       10.10.10.12/30 is directly connected, FastEthernet0/1\nO       10.10.13.0/25 [110/11] via 10.10.10.9, 00:00:03, FastEthernet0/2\n                      [110/11] via 10.10.10.13, 00:00:03, FastEthernet0/1\nC       10.10.14.0/30 is directly connected, FastEthernet0/2"
+  },
+  "404": {"category":"topology",
+    "topology":{
+      "devices":[
+        {"id":"RouterA","type":"router","label":"RouterA"},
+        {"id":"RouterB","type":"router","label":"RouterB"},
+        {"id":"RouterC","type":"router","label":"RouterC"},
+        {"id":"RouterD","type":"router","label":"RouterD"},
+        {"id":"Switch1","type":"sw2","label":"Switch1"}
+      ],
+      "links":[
+        {"from":"RouterA","to":"Switch1","label":"Fa0/0","note":"192.168.1.1, Lo0 10.0.1.1"},
+        {"from":"RouterB","to":"Switch1","label":"Fa0/0","note":"192.168.1.2, Lo0 10.0.0.1"},
+        {"from":"RouterC","to":"Switch1","label":"Fa0/0","note":"192.168.1.3, Lo0 10.0.2.1"},
+        {"from":"RouterD","to":"Switch1","label":"Fa0/0","note":"192.168.1.4, Lo0 10.0.3.1"}
+      ],
+      "zones":[{"label":"OSPF Area 0","members":["RouterA","RouterB","RouterC","RouterD","Switch1"]}]
+    }
+  },
+  "435": {"category":"cli_output","cli":"R2#show ip route\nC       192.168.1.0/26 is directly connected, FastEthernet0/1"},
+  "454": {"category":"mixed",
+    "topology":{
+      "devices":[
+        {"id":"R1","type":"router","label":"R1"},
+        {"id":"R2","type":"router","label":"R2"},
+        {"id":"R3","type":"router","label":"R3"},
+        {"id":"R4","type":"router","label":"R4"},
+        {"id":"R5","type":"router","label":"R5"},
+        {"id":"SW","type":"sw2","label":"SW"}
+      ],
+      "links":[
+        {"from":"R1","to":"SW","label":"Gi0/0","note":"172.16.10.0/24, R1=1.1.1.1"},
+        {"from":"R2","to":"SW","label":"Gi0/0","note":"R2=2.2.2.2"},
+        {"from":"R3","to":"SW","label":"Gi0/0","note":"R3=3.3.3.3"},
+        {"from":"R4","to":"SW","label":"Gi0/0","note":"R4=4.4.4.4"},
+        {"from":"R5","to":"SW","label":"Gi0/0","note":"R5=5.5.5.5"}
+      ],
+      "zones":[{"label":"OSPF Area 0","members":["R1","R2","R3","R4","R5","SW"]}]
+    },
+    "cli":"R3# show ip ospf neighbor\n\nNeighbor ID   Pri   State           Dead Time   Address       Interface\n1.1.1.1       1     2WAY/DROTHER    00:00:32    172.16.10.1   GigabitEthernet0/0\n2.2.2.2       1     2WAY/DROTHER    00:00:33    172.16.10.2   GigabitEthernet0/0\n4.4.4.4       1     FULL/BDR        00:00:31    172.16.10.4   GigabitEthernet0/0\n5.5.5.5       1     FULL/DR         00:00:30    172.16.10.5   GigabitEthernet0/0"
+  },
+  "472": {"category":"mixed",
+    "topology":{
+      "devices":[
+        {"id":"R1","type":"router","label":"R1"},
+        {"id":"R2","type":"router","label":"R2"},
+        {"id":"ClientA","type":"pc","label":"Client A"},
+        {"id":"ImageServer","type":"server","label":"Image Server"}
+      ],
+      "links":[
+        {"from":"R1","to":"R2","label":".1","label2":".2","note":"Primary Circuit"},
+        {"from":"R1","to":"R2","label":".1","label2":".2","note":"Secondary Circuit"},
+        {"from":"R1","to":"ClientA","label":".5","note":"192.168.0.0/24"},
+        {"from":"R2","to":"ImageServer","label":".6","note":"10.10.13.10/25"}
+      ]
+    },
+    "cli":"R1#show ip route\nGateway of last resort is 10.10.10.2 to network 0.0.0.0\nS*    0.0.0.0/0 [1/0] via 10.10.10.2\n\nR2#show ip route\nGateway of last resort is 10.10.10.1 to network 0.0.0.0\nS*    0.0.0.0/0 [1/0] via 10.10.10.1"
+  },
+  "492": {"category":"mixed",
+    "topology":{
+      "devices":[
+        {"id":"R1","type":"router","label":"R1"},
+        {"id":"R2","type":"router","label":"R2"},
+        {"id":"ClientA","type":"pc","label":"Client A"},
+        {"id":"ImageServer","type":"server","label":"Image Server"}
+      ],
+      "links":[
+        {"from":"R1","to":"R2","label":".1","label2":".2","note":"10.10.10.0/30"},
+        {"from":"R1","to":"R2","label":".1","label2":".2","note":"10.10.10.4/30"},
+        {"from":"R1","to":"ClientA","label":".5","note":"192.168.0.0/24"},
+        {"from":"R2","to":"ImageServer","label":".6","note":"10.10.13.10/25"}
+      ]
+    },
+    "cli":"R1#show ip route\nGateway of last resort is 10.10.10.2 to network 0.0.0.0\nS*    0.0.0.0/0 [1/0] via 10.10.10.2\n\nR2#show ip route\nGateway of last resort is 10.10.10.1 to network 0.0.0.0\nS*    0.0.0.0/0 [1/0] via 10.10.10.1"
+  },
+  "573": {"category":"cli_output","cli":"Switch#show ip dhcp snooping\nSwitch DHCP snooping is enabled\nSwitch DHCP gleaning is disabled\nDHCP snooping is configured on following VLANs:\n1\nDHCP snooping is operational on following VLANs:\n1\nDHCP snooping is configured on the following L3 Interfaces:\n\nInsertion of option 82 is disabled\ncircuit-id default format: vlan-mod-port\nremote-id: aabb.cc00.6500 (MAC)\nOption 82 on untrusted port is not allowed\nVerification of hwaddr field is enabled\nVerification of giaddr field is enabled\nDHCP snooping trust/rate is configured on the following Interfaces:\nInterface   Trusted   Allow option   Rate limit (pps)\n\nSwitch#show ip dhcp snooping statistics detail\nPackets Processed by DHCP Snooping = 34\nPackets Dropped Because\nIDB not known = 0\nQueue full = 0\nInterface is in errdisabled = 0\nReceived on untrusted ports = 32\nNonzero giaddr = 0\nSource mac not equal to chaddr = 0\nNo binding entry = 0\nInsertion of opt82 fail = 0\nUnknown packet = 0\nInterface Down = 0\nUnknown output interface = 0\nMisdirected Packets = 0\nPackets with Invalid Size = 0\nPackets with Invalid Option = 0"
+  },
+  "628": {"category":"cli_output","cli":"ip arp inspection vlan 2-10\ninterface fastethernet 0/1\n   ip arp inspection trust"},
+  "769": {"category":"cli_output","cli":"{\n    \"SW1\" : [\"Ten-GigabitEthernet0/0\", \"Ten-GigabitEthernet0/1\"],\n    \"SW2\" : [\"Ten-GigabitEthernet0/0\", \"Ten-GigabitEthernet0/1\"],\n    \"SW3\" : [\"Ten-GigabitEthernet0/0\", \"Ten-GigabitEthernet0/1\"],\n    \"SW4\" : [\"Ten-GigabitEthernet0/0\", \"Ten-GigabitEthernet0/1\"]\n}"},
+  "846": {"category":"cli_output","cli":"Cat9300-1# show interface g1/0/1 switchport\nName: Gi1/0/1\nSwitchport: Enabled\nAdministrative Mode: trunk\nOperational Mode: trunk\nAdministrative Trunking Encapsulation: dot1q\nOperational Trunking Encapsulation: dot1q\nNegotiation of Trunking: On\nAccess Mode VLAN: 1 (default)\nTrunking Native Mode VLAN: 321 (VLAN0321)\nAdministrative Native VLAN tagging: enabled\nTrunking VLANs Enabled: 100,200,300\nPruning VLANs Enabled: 2-1001"},
+  "893": {"category":"topology",
+    "topology":{
+      "devices":[
+        {"id":"R14","type":"router","label":"R14","note":"Loopback0: 10.10.1.14/32"},
+        {"id":"R86","type":"router","label":"R86","note":"Loopback0: 10.10.1.86/32"},
+        {"id":"PC10","type":"pc","label":"PC 10"}
+      ],
+      "links":[
+        {"from":"R14","to":"R86","label":"Fa0/0","label2":"Fa0/0","note":"10.73.65.64/30, .65 on R14, .66 on R86"},
+        {"from":"R86","to":"PC10","label":"Fa0/1","note":"10.80.65.0/28, .10 on PC10"}
+      ]
+    }
+  },
+  "915": {"category":"cli_output","cli":"Gateway of last resort is 172.16.2.2 to network 0.0.0.0\n\n     10.0.0.0/8 is variably subnetted, 3 subnets, 3 masks\n        10.10.100.0/26 is directly connected, GigabitEthernet0/0/6\nC       10.10.10.0/24 is directly connected, GigabitEthernet0/0/0\nL       10.10.10.3/32 is directly connected, GigabitEthernet0/0/0\n     172.16.0.0/16 is variably subnetted, 3 subnets, 2 masks\nS       172.16.1.33/32 is directly connected, GigabitEthernet0/0/1\nC       172.16.2.0/23 is directly connected, GigabitEthernet0/0/1\nL       172.16.2.1/32 is directly connected, GigabitEthernet0/0/1\nS*   0.0.0.0/0 [1/0] via 172.16.2.2"
+  },
+  "962": {"category":"mixed",
+    "topology":{
+      "devices":[
+        {"id":"R1","type":"router","label":"R1"},
+        {"id":"SW1","type":"sw2","label":"SW1"},
+        {"id":"DHCPServer","type":"server","label":"DHCP Server"},
+        {"id":"DHCPClient","type":"pc","label":"DHCP Client"},
+        {"id":"PC","type":"pc","label":"PC"}
+      ],
+      "links":[
+        {"from":"DHCPServer","to":"R1","note":"Vlan 20, 192.168.20.2"},
+        {"from":"R1","to":"SW1","label":"Fa0/2"},
+        {"from":"SW1","to":"DHCPClient","label":"Fa0/1","note":"Vlan 10, 192.168.10.0/24"},
+        {"from":"SW1","to":"PC"}
+      ]
+    },
+    "cli":"DHCPServer(dhcp-config)#ip dhcp pool Net20\nDHCPServer(dhcp-config)#default-router 192.168.20.2\nDHCPServer(dhcp-config)#domain-name cisco.local\nDHCPServer(dhcp-config)#dns-server 192.168.20.5\nDHCPServer(dhcp-config)#exit\nDHCPServer(config)#\nDHCPServer(config)#ip dhcp pool Net20\nDHCPServer(dhcp-config)#default-router 192.168.20.2\nDHCPServer(dhcp-config)#domain-name cisco.local\nDHCPServer(dhcp-config)#dns-server 192.168.20.5\nDHCPServer(dhcp-config)#exit\nDHCPServer(config)#\nDHCPServer(config)#ip dhcp excluded-address 192.168.10.1 192.168.10.10\nDHCPServer(config)#ip dhcp excluded-address 192.168.20.1 192.168.20.10\nDHCPServer(config)#\nDHCPServer(config)#int g0/0\nDHCPServer(config-if)#no shutdn\nDHCPServer(config-if)#ip addr 192.168.20.2 255.255.255.0\nDHCPServer(config-if)#exit\nDHCPServer(config)#exit\nDHCPServer#\n\nSW1(config)#vlan 10\nSW1(config-vlan)#name vlan10\nSW1(config-vlan)#exit\nSW1(config)#vlan 20\nSW1(config-vlan)#name vlan20\nSW1(config-vlan)#exit\nSW1(config)#interface vlan 10\nSW1(config-if)#ip address 192.168.10.1 255.255.255.0\nSW1(config-if)#exit\nSW1(config)#interface fa0/1\nSW1(config-if)#switchport mode access\nSW1(config-if)#switchport access vlan 10\nSW1(config-if)#exit\nSW1(config)#interface fa0/2\nSW1(config-if)#switchport mode access\nSW1(config-if)#switchport access vlan 20\nSW1(config-if)#exit\nSW1(config)#exit"
+  },
+  "1039": {"category":"topology",
+    "topology":{
+      "devices":[
+        {"id":"R1","type":"router","label":"R1","note":"MAC 12-a0-ab-dd-00-02"},
+        {"id":"R2","type":"router","label":"R2","note":"MAC 12-a0-ab-cc-00-01"},
+        {"id":"SW1","type":"sw2","label":"SW1"},
+        {"id":"SW2","type":"sw2","label":"SW2"},
+        {"id":"FileServer","type":"server","label":"File Server"},
+        {"id":"MgmtServer","type":"server","label":"Network Management Server"},
+        {"id":"Workstations","type":"pc","label":"Workstations"}
+      ],
+      "links":[
+        {"from":"R1","to":"R2","label":"Int G0/0","label2":"Int G0/0","note":"2001:DB8:44:90::1/64 on R1, 2001:DB8:44:90::2/64 on R2"},
+        {"from":"R1","to":"SW1"},
+        {"from":"R2","to":"SW2"},
+        {"from":"SW1","to":"FileServer","label":".3","note":"2001:DB8:D8D2:1008::/64"},
+        {"from":"SW1","to":"MgmtServer","label":".4"},
+        {"from":"SW2","to":"Workstations","note":"2001:DB8:D8D2:1009::/64"}
+      ]
+    }
+  },
+  "1149": {"category":"mixed",
+    "topology":{
+      "devices":[
+        {"id":"AccSw1","type":"sw2","label":"AccSw1"},
+        {"id":"AccSw2","type":"sw2","label":"AccSw2"},
+        {"id":"PC1","type":"pc","label":"PC1","note":"10.0.1.11/24"},
+        {"id":"Server1","type":"server","label":"Server1","note":"10.0.2.22/24"}
+      ],
+      "links":[
+        {"from":"AccSw1","to":"AccSw2","label":"gi1/24"},
+        {"from":"AccSw1","to":"PC1","label":"gi1/1"},
+        {"from":"AccSw2","to":"Server1","label":"gi1/3"}
+      ]
+    },
+    "cli":"AccSw1#sho vlan\n\nVLAN Name                 Status    Ports\n---- -------------------- --------- -------\n1    default               active    Fa0/3, Fa0/4, Fa0/5, Fa0/6\n                                      Fa0/7, Fa0/8, Fa0/9, Fa0/10\n                                      Fa0/11, Fa0/12, Fa0/13, Fa0/14\n                                      Fa0/15, Fa0/16, Fa0/17, Fa0/18\n                                      Fa0/19, Fa0/20, Fa0/21, Fa0/22\n2    IT-Support            active    Fa0/1 Fa0/23, Fa0/24\n10   Servers               active    Gig1/3, Gig1/4\n11   Staff                 active    Gig1/1\n12   Guests                active    Gig1/2\n----\noutput suppressed"
+  },
+  "1210": {"category":"topology",
+    "topology":{
+      "devices":[
+        {"id":"ISP","type":"internet","label":"ISP"},
+        {"id":"R1","type":"router","label":"R1"},
+        {"id":"SW","type":"sw2","label":"switch (unlabeled)"},
+        {"id":"PC","type":"pc","label":"PC (unlabeled)"}
+      ],
+      "links":[
+        {"from":"ISP","to":"R1","label":"Gi0/1","note":"IPv6 WAN 2001:db8:0F1B:FCCB:ACCE:FCED:ACBD:FA0::/127"},
+        {"from":"R1","to":"SW","label":"Gi0/0","note":"IPv6 LAN 2001:db8:0000:AFFF:0000:0000:0000::/64"},
+        {"from":"SW","to":"PC"}
+      ]
+    }
+  },
+  "1274": {"category":"mixed",
+    "topology":{
+      "devices":[
+        {"id":"PCA","type":"pc","label":"PC A","note":"10.223.2.2"},
+        {"id":"RouterY","type":"router","label":"Router Y"},
+        {"id":"RouterA","type":"router","label":"Router A"},
+        {"id":"RouterB","type":"router","label":"Router B"},
+        {"id":"RouterC","type":"router","label":"Router C"},
+        {"id":"RouterD","type":"router","label":"Router D"}
+      ],
+      "links":[
+        {"from":"PCA","to":"RouterY","note":"10.223.2.1"},
+        {"from":"RouterY","to":"RouterA","label":"G0/1","label2":"G0/5","note":"10.223.2.1 / 10.224.1.1, trunk continues to Router A/B/C/D"},
+        {"from":"RouterY","to":"RouterB","note":"10.224.1.2 to Router A tap"},
+        {"from":"RouterY","to":"RouterC","note":"10.224.1.3 to Router B tap"},
+        {"from":"RouterY","to":"RouterD","note":"10.224.1.4 to Router C tap, 10.224.1.5 to Router D tap"}
+      ]
+    },
+    "cli":"router-Y#show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route\n       + - replicated route, % - next hop override, p - overrides from PfR\n\nGateway of last resort is not set\n\n      10.0.0.0/8 is variably subnetted\nS        10.0.0.0/8 [1/0] via 10.224.1.2\nR        10.27.150.224/27 [20/0] via 10.224.1.3, 1w6d\nR        10.128.0.0/9 [1/0] via 10.224.1.3\nD        10.224.0.0/11 [20/0] via 10.224.1.5, 5d18h\nD        10.224.0.0/14 [20/0] via 10.224.1.4, 5d18h\nC        10.223.0.0/24 is directly connected, GigabitEthernet0/1\nC        10.223.0.0/24 is directly connected, GigabitEthernet0/0\nD        10.224.1.5/20 [20/0] via 10.224.1.5, 5d18h"
+  },
+  "1353": {"category":"cli_output","cli":"R1#show ip route\nCodes: C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route\n\nGateway of last resort is 192.168.30.10 to network 0.0.0.0\n\n      192.168.30.0/29 is subnetted, 2 subnets\nC        192.168.30.0 is directly connected, FastEthernet0/0\nC        192.168.30.8 is directly connected, Serial0/0.1\n      192.168.10.0/24 is variably subnetted, 2 subnets, 2 masks\nO IA     192.168.10.32/28 [110/193] via 192.168.30.10, 00:18:49, Serial0/0.1\nO IA     192.168.10.0/27 [110/192] via 192.168.30.10, 00:18:49, Serial0/0.1\n      192.168.20.0/30 is subnetted, 1 subnets\nO IA     192.168.20.0 [110/128] via 192.168.30.10, 00:18:49, Serial0/0.1\n      192.168.50.0/32 is subnetted, 1 subnets\nC        192.168.50.1 is directly connected, Loopback0\nO*IA 0.0.0.0/0 [110/84] via 192.168.30.10, 00:10:36, Serial0/0.1"
+  },
+  "1383": {"category":"topology",
+    "topology":{
+      "devices":[
+        {"id":"SW1","type":"sw2","label":"SW1"},
+        {"id":"SW2","type":"sw2","label":"SW2"},
+        {"id":"SW3","type":"sw2","label":"SW3"},
+        {"id":"SW4","type":"sw2","label":"SW4"},
+        {"id":"User1","type":"pc","label":"User1.lab"},
+        {"id":"DNS1","type":"server","label":"DNS1.lab"}
+      ],
+      "links":[
+        {"from":"SW4","to":"SW3","note":"STP Priority 32768 (SW4 side), 8192 (SW3 side)"},
+        {"from":"SW1","to":"SW2","note":"STP Priority 32768 (SW1 side), 8192 (SW2 side)"},
+        {"from":"SW4","to":"SW1"},
+        {"from":"SW3","to":"SW2"},
+        {"from":"SW1","to":"User1"},
+        {"from":"SW2","to":"DNS1"}
+      ]
+    }
+  }
+}

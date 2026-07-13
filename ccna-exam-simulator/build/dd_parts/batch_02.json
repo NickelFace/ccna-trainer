@@ -1,0 +1,130 @@
+{
+  "137": {
+    "items": [
+      "2001:db8:600d:cafe::123",
+      "fcba:926a:e8e:7a25:b1:c6d2:1a76:8fdc",
+      "fe80::a00:27ff:feeb:89aa",
+      "ff05:1:3"
+    ],
+    "buckets": [
+      {"label": "Global Unicast", "correct": ["2001:db8:600d:cafe::123"]},
+      {"label": "Link-Local Unicast", "correct": ["fe80::a00:27ff:feeb:89aa"]},
+      {"label": "Multicast", "correct": ["ff05:1:3"]},
+      {"label": "Unique Local", "correct": ["fcba:926a:e8e:7a25:b1:c6d2:1a76:8fdc"]}
+    ]
+  },
+  "258": {
+    "items": [
+      "encrypts only the password when it sends an access request",
+      "encrypts the entire body of the access-request packet",
+      "separates all three AAA operations",
+      "combines authentication and authorization",
+      "uses TCP",
+      "uses UDP"
+    ],
+    "buckets": [
+      {"label": "RADIUS", "correct": ["encrypts only the password when it sends an access request", "uses UDP", "combines authentication and authorization"]},
+      {"label": "TACACS+", "correct": ["encrypts the entire body of the access-request packet", "separates all three AAA operations", "uses TCP"]}
+    ]
+  },
+  "552": {
+    "items": [
+      "ip address 172.16.1.1 255.255.255.0",
+      "ip address 45.83.2.214 255.255.255.240",
+      "ip nat inside",
+      "ip nat inside source list 1 interface s0 overload",
+      "ip nat inside source static tcp 172.16.1.2 80 45.83.2.214 80 extendable",
+      "ip nat outside"
+    ],
+    "buckets": [
+      {"label": "position A", "correct": ["ip address 172.16.1.1 255.255.255.0"]},
+      {"label": "position B", "correct": ["ip nat inside"]},
+      {"label": "position C", "correct": ["ip address 45.83.2.214 255.255.255.240"]},
+      {"label": "position D", "correct": ["ip nat outside"]},
+      {"label": "position E", "correct": ["ip nat inside source static tcp 172.16.1.2 80 45.83.2.214 80 extendable"]},
+      {"label": "position F", "correct": ["ip nat inside source list 1 interface s0 overload"]}
+    ]
+  },
+  "701": {
+    "items": [
+      "DHCP snooping",
+      "Dynamic ARP Inspection",
+      "IP Source Guard",
+      "storm control"
+    ],
+    "buckets": [
+      {"label": "rogue server that spoofs IP configuration", "correct": ["DHCP snooping"]},
+      {"label": "cache poisoning", "correct": ["Dynamic ARP Inspection"]},
+      {"label": "flood attacks", "correct": ["storm control"]},
+      {"label": "rogue clients on the network", "correct": ["IP Source Guard"]}
+    ]
+  },
+  "784": {
+    "items": [
+      "Maintenance costs are higher than with other networking options.",
+      "This type provides a centralized view of the network.",
+      "This type implements changes individually at each device.",
+      "This type leverages controllers to handle network management."
+    ],
+    "buckets": [
+      {"label": "Traditional Networking", "correct": ["This type implements changes individually at each device.", "Maintenance costs are higher than with other networking options."]},
+      {"label": "Controller-Based Networking", "correct": ["This type leverages controllers to handle network management.", "This type provides a centralized view of the network."]}
+    ]
+  },
+  "950": {
+    "items": [
+      "agent",
+      "managed device",
+      "MIB",
+      "NMS"
+    ],
+    "buckets": [
+      {"label": "collection of uniquely identifiable objects whose state can be interrogated over SNMP", "correct": ["MIB"]},
+      {"label": "network node-controlled by SNMP", "correct": ["managed device"]},
+      {"label": "system that runs monitoring applications and controls network nodes", "correct": ["NMS"]},
+      {"label": "SNMP component that captures and translates device and network data", "correct": ["agent"]}
+    ]
+  },
+  "956": {
+    "items": [
+      "classification",
+      "marking",
+      "policing",
+      "queuing"
+    ],
+    "buckets": [
+      {"label": "applies a specific action to packets whenever the maximum rate of packets is exceeded", "correct": ["policing"]},
+      {"label": "set the ToS value to associate a packet with a QoS group", "correct": ["marking"]},
+      {"label": "reduces traffic congestion by holding packets and distributing them when the available bandwidth allows", "correct": ["queuing"]},
+      {"label": "the overall process of using specific criteria to differentiate traffic into categories", "correct": ["classification"]}
+    ]
+  },
+  "1041": {"skip": "simulation"},
+  "1090": {
+    "items": [
+      "ff00:c279:edd5:99c4:b0de:fc11:4b12:12",
+      "fe80:e6ab:b5f9:c358:ea58:0029:b4db:7",
+      "fc00:1664:bc95:3c7a:c300:c468:3969:3",
+      "2000:2eb8:3e5f:376c:da66:bf1d:d36a:1"
+    ],
+    "buckets": [
+      {"label": "Global Unicast", "correct": ["2000:2eb8:3e5f:376c:da66:bf1d:d36a:1"]},
+      {"label": "Unique Local", "correct": ["fc00:1664:bc95:3c7a:c300:c468:3969:3"]},
+      {"label": "Link-Local Unicast", "correct": ["fe80:e6ab:b5f9:c358:ea58:0029:b4db:7"]},
+      {"label": "Multicast", "correct": ["ff00:c279:edd5:99c4:b0de:fc11:4b12:12"]}
+    ]
+  },
+  "1134": {"skip": "simulation"},
+  "1190": {
+    "items": [
+      "may be used by multiple organizations at the same time",
+      "cannot be used as a source address",
+      "allows sites to be combined without address conflicts",
+      "has a unicast source sent to a group"
+    ],
+    "buckets": [
+      {"label": "Unique Local", "correct": ["may be used by multiple organizations at the same time", "allows sites to be combined without address conflicts"]},
+      {"label": "Multicast", "correct": ["cannot be used as a source address", "has a unicast source sent to a group"]}
+    ]
+  }
+}

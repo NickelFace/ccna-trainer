@@ -1,0 +1,88 @@
+{
+  "148": {
+    "items": ["AAAA", "CNAME", "NS", "PTR", "SOA"],
+    "buckets": [
+      {"label": "aliases one name to another", "correct": ["CNAME"]},
+      {"label": "associates the domain serial number with its owner", "correct": ["SOA"]},
+      {"label": "correlates a domain with its authoritative name servers", "correct": ["NS"]},
+      {"label": "correlates a host name with an IP address", "correct": ["AAAA"]},
+      {"label": "supports reverse name lookups", "correct": ["PTR"]}
+    ]
+  },
+  "284": {
+    "items": ["configure the BPDU guard feature", "configure the dynamic ARP inspection feature", "configure the root guard feature", "configure a VLAN access control list"],
+    "buckets": [
+      {"label": "802.1q double tagging", "correct": ["configure a VLAN access control list"]},
+      {"label": "ARP spoofing", "correct": ["configure the dynamic ARP inspection feature"]},
+      {"label": "unwanted superior BPDUs", "correct": ["configure the root guard feature"]},
+      {"label": "unwanted BPDUs on Port-Fast enabled interfaces", "correct": ["configure the BPDU guard feature"]}
+    ]
+  },
+  "592": {
+    "items": ["provides local control for network segments using a client-server scheme", "uses authoritative servers for record keeping", "maintains an address pool", "associates hostnames to IP address", "offers domain name server configuration", "reduces the administrative burden for onboarding end users", "assigns IP addresses to local hosts for a configurable lease time"],
+    "buckets": [
+      {"label": "function", "correct": ["maintains an address pool"]},
+      {"label": "function", "correct": ["offers domain name server configuration"]},
+      {"label": "function", "correct": ["reduces the administrative burden for onboarding end users"]},
+      {"label": "function", "correct": ["assigns IP addresses to local hosts for a configurable lease time"]}
+    ]
+  },
+  "729": {
+    "items": ["accounting", "authentication", "authorization", "CoA"],
+    "buckets": [
+      {"label": "tracks activity", "correct": ["accounting"]},
+      {"label": "updates session attributes", "correct": ["CoA"]},
+      {"label": "verifies access rights", "correct": ["authorization"]},
+      {"label": "verifies identity", "correct": ["authentication"]}
+    ]
+  },
+  "832": {
+    "items": ["broad network access", "measured service", "on-demand self-service", "rapid elasticity", "resource pooling"],
+    "buckets": [
+      {"label": "The consumer can choose when to start or stop using the service.", "correct": ["on-demand self-service"]},
+      {"label": "The provider can bill the consumer in accordance with the level of usage.", "correct": ["measured service"]},
+      {"label": "The provider allocates CPU, memory, and disk from its shared compute resources to multiple customers.", "correct": ["resource pooling"]},
+      {"label": "The resource pool can expand quickly to meet demand.", "correct": ["rapid elasticity"]},
+      {"label": "The service is available from many types of devices and networks.", "correct": ["broad network access"]}
+    ]
+  },
+  "963": {
+    "items": ["ip dns server", "ip domain list", "ip domain lookup source-interface", "ip domain name", "ip host", "ip name-server"],
+    "buckets": [
+      {"label": "enables DNS lookup on an individual interface", "correct": ["ip domain lookup source-interface"]},
+      {"label": "enables the DNS server on the device", "correct": ["ip dns server"]},
+      {"label": "identifies a DNS server to provide lookup services", "correct": ["ip name-server"]},
+      {"label": "specifies a sequence of domain names", "correct": ["ip domain list"]},
+      {"label": "specifies the default domain to append to unqualified host names", "correct": ["ip domain name"]},
+      {"label": "statically maps an IP address to a hostname", "correct": ["ip host"]}
+    ]
+  },
+  "1058": {"skip": "simulation"},
+  "1101": {
+    "items": ["ff00:0a7c:cf36:cd7c:6dad:44fa:c11c:12", "fe80:27bb:1ef9:6b3d:b347:686f:f3b7:7", "fc00:9e81:2346:4929:7fec:34e9:7b8c:3", "2000:0962:6dee:8c78:93b8:c429:c78d:1"],
+    "buckets": [
+      {"label": "Global Unicast", "correct": ["2000:0962:6dee:8c78:93b8:c429:c78d:1"]},
+      {"label": "Unique Local", "correct": ["fc00:9e81:2346:4929:7fec:34e9:7b8c:3"]},
+      {"label": "Link-Local Unicast", "correct": ["fe80:27bb:1ef9:6b3d:b347:686f:f3b7:7"]},
+      {"label": "Multicast", "correct": ["ff00:0a7c:cf36:cd7c:6dad:44fa:c11c:12"]}
+    ]
+  },
+  "1147": {
+    "items": ["database synchronization traffic", "standard Web browsing traffic", "video traffic", "VoIP traffic"],
+    "buckets": [
+      {"label": "best effort", "correct": ["standard Web browsing traffic"]},
+      {"label": "policing", "correct": ["video traffic"]},
+      {"label": "priority queue", "correct": ["VoIP traffic"]},
+      {"label": "shaping", "correct": ["database synchronization traffic"]}
+    ]
+  },
+  "1260": {"skip": "simulation"},
+  "1301": {
+    "items": ["sends packets to a group address rather than a single address", "confined to a single link", "provides one-to-many communications", "serves as the next-hop addresses in IGP"],
+    "buckets": [
+      {"label": "Multicast", "correct": ["sends packets to a group address rather than a single address", "provides one-to-many communications"]},
+      {"label": "Link-Local Address", "correct": ["confined to a single link", "serves as the next-hop addresses in IGP"]}
+    ]
+  },
+  "1357": {"skip": "simulation"}
+}

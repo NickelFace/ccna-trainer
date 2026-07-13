@@ -1,0 +1,136 @@
+{
+  "176": {
+    "items": [
+      "Wi-Fi option in which cells from different access points are linked together",
+      "Wi-Fi option that enables two or more clients to communicate directly without a central access point",
+      "Wi-Fi option based around one or more access points",
+      "alphanumeric text string that identifies a wireless network",
+      "entire wireless cell of an access point and the linkage to the wired network"
+    ],
+    "buckets": [
+      {"label": "extended service set", "correct": ["Wi-Fi option in which cells from different access points are linked together"]},
+      {"label": "independent basic service set", "correct": ["Wi-Fi option that enables two or more clients to communicate directly without a central access point"]},
+      {"label": "infrastructure mode", "correct": ["Wi-Fi option based around one or more access points"]},
+      {"label": "SSID", "correct": ["alphanumeric text string that identifies a wireless network"]},
+      {"label": "distribution system", "correct": ["entire wireless cell of an access point and the linkage to the wired network"]}
+    ]
+  },
+  "416": {
+    "items": ["area ID", "IP address", "netmask", "OSPF process ID", "router ID", "timers"],
+    "buckets": [
+      {"label": "must match", "correct": ["area ID", "netmask", "timers"]},
+      {"label": "must be unique", "correct": ["IP address", "router ID"]}
+    ]
+  },
+  "665": {
+    "items": [
+      "switchport mode access",
+      "switchport port-security",
+      "switchport port-security mac-address 0060.3EDD.77AB",
+      "switchport port-security mac-address 00D0.D3ED.622A",
+      "switchport port-security mac-address sticky",
+      "switchport port-security maximum 2",
+      "switchport port-security violation shutdown"
+    ],
+    "buckets": [
+      {"label": "1", "correct": ["switchport mode access"]},
+      {"label": "2", "correct": ["switchport port-security"]},
+      {"label": "3", "correct": ["switchport port-security maximum 2"]},
+      {"label": "4", "correct": ["switchport port-security mac-address sticky"]}
+    ]
+  },
+  "773": {
+    "items": [
+      "This type of technology provides automation across multiple technologies and domains.",
+      "This type of technology enables consistent configuration of infrastructure resources.",
+      "Puppet is used for this type of technology.",
+      "Ansible is used for this type of technology."
+    ],
+    "buckets": [
+      {"label": "Configuration Management", "correct": ["Puppet is used for this type of technology.", "This type of technology enables consistent configuration of infrastructure resources."]},
+      {"label": "Orchestration", "correct": ["This type of technology provides automation across multiple technologies and domains.", "Ansible is used for this type of technology."]}
+    ]
+  },
+  "905": {
+    "items": [
+      "has heard from the neighbor device and is receiving hello packets",
+      "is forwarding packets",
+      "is ready to forward packets if the device that is currently forwarding packets fails",
+      "is transmitting and receiving hello packets",
+      "is waiting to hear from the neighbor device"
+    ],
+    "buckets": [
+      {"label": "Active", "correct": ["is forwarding packets"]},
+      {"label": "Learn", "correct": ["is waiting to hear from the neighbor device"]},
+      {"label": "Listen", "correct": ["is transmitting and receiving hello packets"]},
+      {"label": "Speak", "correct": ["has heard from the neighbor device and is receiving hello packets"]},
+      {"label": "Standby", "correct": ["is ready to forward packets if the device that is currently forwarding packets fails"]}
+    ]
+  },
+  "1008": {
+    "items": [
+      "leverages Cisco Prime Infrastructure",
+      "reduces the workload for enterprise customers",
+      "requires manual configuration of complex protocols",
+      "lacks support for SDA",
+      "uses algorithms to detect security threats",
+      "uses northbound APIs"
+    ],
+    "buckets": [
+      {"label": "Traditional Campus Device Management", "correct": ["leverages Cisco Prime Infrastructure", "reduces the workload for enterprise customers", "requires manual configuration of complex protocols"]},
+      {"label": "Cisco DNA Center", "correct": ["lacks support for SDA", "uses algorithms to detect security threats", "uses northbound APIs"]}
+    ]
+  },
+  "1081": {
+    "items": [
+      "contains a single solid conductor",
+      "is typically used for DWDM optical systems spanning long distances",
+      "eliminates distortion from overlapping light pulses",
+      "is affected by electrical and magnetic interference"
+    ],
+    "buckets": [
+      {"label": "copper", "correct": ["contains a single solid conductor", "is affected by electrical and magnetic interference"]},
+      {"label": "single-mode fiber", "correct": ["is typically used for DWDM optical systems spanning long distances", "eliminates distortion from overlapping light pulses"]}
+    ]
+  },
+  "1119": {
+    "items": [
+      "2000:87aa:84ab:fdd9:5ac3:41a5:ef72:1",
+      "fc00:c51f:922d:0c12:9c54:7644:28f5:3",
+      "fe80:ccc7:17f1:5d15:f611:5cea:ef92:7",
+      "ff00:520a:3e47:de13:fe6f:476e:5325:12"
+    ],
+    "buckets": [
+      {"label": "Global Unicast", "correct": ["2000:87aa:84ab:fdd9:5ac3:41a5:ef72:1"]},
+      {"label": "Link-Local Unicast", "correct": ["fe80:ccc7:17f1:5d15:f611:5cea:ef92:7"]},
+      {"label": "Multicast", "correct": ["ff00:520a:3e47:de13:fe6f:476e:5325:12"]},
+      {"label": "Unique Local", "correct": ["fc00:c51f:922d:0c12:9c54:7644:28f5:3"]}
+    ]
+  },
+  "1175": {"skip": "simulation"},
+  "1275": {
+    "items": [
+      "provides centralized management and security",
+      "formats an Ethernet frame and forwards to a destination",
+      "makes forwarding decisions when in LWAP mode",
+      "used on-premise and/or cloud-based",
+      "supports both IEEE 802.11 and Ethernet standards"
+    ],
+    "buckets": [
+      {"label": "Access Point", "correct": ["supports both IEEE 802.11 and Ethernet standards", "formats an Ethernet frame and forwards to a destination"]},
+      {"label": "Wireless LAN Controller", "correct": ["used on-premise and/or cloud-based", "provides centralized management and security"]}
+    ]
+  },
+  "1329": {
+    "items": [
+      "is affected by electrical and magnetic interference",
+      "is ideal over longer distances with little loss of integrity",
+      "is comprised of shielded and unshielded twisted pairs",
+      "transmits signals using pulses of light"
+    ],
+    "buckets": [
+      {"label": "copper", "correct": ["is affected by electrical and magnetic interference", "is comprised of shielded and unshielded twisted pairs"]},
+      {"label": "single-mode fiber", "correct": ["transmits signals using pulses of light", "is ideal over longer distances with little loss of integrity"]}
+    ]
+  }
+}

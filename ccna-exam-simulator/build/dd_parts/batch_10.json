@@ -1,0 +1,342 @@
+{
+  "155": {
+    "items": [
+      "transmitted based on data contained in the packet without the need for a data channel",
+      "requires the client and the server to establish a connect on before sending the packet",
+      "used to reliably share files between devices",
+      "appropriate for streaming operations with minimal latency"
+    ],
+    "buckets": [
+      {
+        "label": "TCP",
+        "correct": [
+          "used to reliably share files between devices",
+          "requires the client and the server to establish a connect on before sending the packet"
+        ]
+      },
+      {
+        "label": "UDP",
+        "correct": [
+          "appropriate for streaming operations with minimal latency",
+          "transmitted based on data contained in the packet without the need for a data channel"
+        ]
+      }
+    ]
+  },
+  "338": {
+    "items": [
+      "MIB",
+      "SNMP agent",
+      "SNMP manager",
+      "SNMP trap"
+    ],
+    "buckets": [
+      {
+        "label": "collection of variables that can be monitored",
+        "correct": [
+          "MIB"
+        ]
+      },
+      {
+        "label": "unsolicited message",
+        "correct": [
+          "SNMP trap"
+        ]
+      },
+      {
+        "label": "responds to status requests and requests for information about a device",
+        "correct": [
+          "SNMP agent"
+        ]
+      },
+      {
+        "label": "resides on an NMS",
+        "correct": [
+          "SNMP manager"
+        ]
+      }
+    ]
+  },
+  "633": {
+    "items": [
+      "Configure BPDU guard.",
+      "Configure dynamic ARP inspection.",
+      "Configure root guard.",
+      "Configure VACL."
+    ],
+    "buckets": [
+      {
+        "label": "802.1q double tagging",
+        "correct": [
+          "Configure VACL."
+        ]
+      },
+      {
+        "label": "ARP spoofing",
+        "correct": [
+          "Configure dynamic ARP inspection."
+        ]
+      },
+      {
+        "label": "unwanted superior BPDUs",
+        "correct": [
+          "Configure root guard."
+        ]
+      },
+      {
+        "label": "unwanted BPDUs on PortFast-enabled interfaces",
+        "correct": [
+          "Configure BPDU guard."
+        ]
+      }
+    ]
+  },
+  "761": {
+    "items": [
+      "DELETE",
+      "GET",
+      "POST",
+      "PATCH",
+      "PUT"
+    ],
+    "buckets": [
+      {
+        "label": "creates a resource and returns its URI in the response header",
+        "correct": [
+          "POST"
+        ]
+      },
+      {
+        "label": "creates or replaces a previously modified resource using information in the request body",
+        "correct": [
+          "PUT"
+        ]
+      },
+      {
+        "label": "removes a resource",
+        "correct": [
+          "DELETE"
+        ]
+      },
+      {
+        "label": "retrieves a list of a resource's URIs",
+        "correct": [
+          "GET"
+        ]
+      },
+      {
+        "label": "updates a resource using instructions included in the request body",
+        "correct": [
+          "PATCH"
+        ]
+      }
+    ]
+  },
+  "897": {
+    "items": [
+      "1.1.1.1",
+      "10.10.13.126",
+      "10.10.13.129",
+      "10.10.13.150",
+      "10.10.13.209",
+      "209.165.200.30"
+    ],
+    "buckets": [
+      {
+        "label": "Router2",
+        "correct": [
+          "10.10.13.126"
+        ]
+      },
+      {
+        "label": "Router3",
+        "correct": [
+          "10.10.13.129"
+        ]
+      },
+      {
+        "label": "Router5",
+        "correct": [
+          "10.10.13.209"
+        ]
+      },
+      {
+        "label": "Internet cloud",
+        "correct": [
+          "1.1.1.1"
+        ]
+      },
+      {
+        "label": "Router4",
+        "correct": [
+          "10.10.13.150"
+        ]
+      },
+      {
+        "label": "MPLS cloud",
+        "correct": [
+          "209.165.200.30"
+        ]
+      }
+    ]
+  },
+  "992": {
+    "items": [
+      "It grants access to network assets, such as FTP servers.",
+      "It limits the services available to a user.",
+      "It performs user validation via TACACS+.",
+      "It records the duration of each connection.",
+      "It supports User Access Reporting.",
+      "It verifies “who you are”."
+    ],
+    "buckets": [
+      {
+        "label": "Accounting",
+        "correct": [
+          "It records the duration of each connection.",
+          "It supports User Access Reporting."
+        ]
+      },
+      {
+        "label": "Authorization",
+        "correct": [
+          "It limits the services available to a user.",
+          "It grants access to network assets, such as FTP servers."
+        ]
+      }
+    ]
+  },
+  "1068": {
+    "items": [
+      "ff00:af60:767d:9258:e688:c478:ec75:12",
+      "fe80:b680:8af8:7cc1:6df1:71e1:b8f3:7",
+      "fc00:a4d3:af37:cbc6:cdbd:b73d:5561:3",
+      "2000:6794:5699:e122:42e0:4236:085d:1"
+    ],
+    "buckets": [
+      {
+        "label": "Global Unicast",
+        "correct": [
+          "2000:6794:5699:e122:42e0:4236:085d:1"
+        ]
+      },
+      {
+        "label": "Unique Local",
+        "correct": [
+          "fc00:a4d3:af37:cbc6:cdbd:b73d:5561:3"
+        ]
+      },
+      {
+        "label": "Link-Local Unicast",
+        "correct": [
+          "fe80:b680:8af8:7cc1:6df1:71e1:b8f3:7"
+        ]
+      },
+      {
+        "label": "Multicast",
+        "correct": [
+          "ff00:af60:767d:9258:e688:c478:ec75:12"
+        ]
+      }
+    ]
+  },
+  "1114": {
+    "items": [
+      "is a counterpart of private IPv4 addresses",
+      "sends packets to a group address rather than a single address",
+      "has a unicast source sent to a group",
+      "allows sites to be combined without address conflicts"
+    ],
+    "buckets": [
+      {
+        "label": "Unique Local",
+        "correct": [
+          "is a counterpart of private IPv4 addresses",
+          "allows sites to be combined without address conflicts"
+        ]
+      },
+      {
+        "label": "Multicast",
+        "correct": [
+          "sends packets to a group address rather than a single address",
+          "has a unicast source sent to a group"
+        ]
+      }
+    ]
+  },
+  "1170": {
+    "items": [
+      "allows sites to be combined without address conflicts",
+      "sends packets to a group address rather than a single address",
+      "is unable to route on the internet",
+      "provides one-to-many communications"
+    ],
+    "buckets": [
+      {
+        "label": "Unique Local",
+        "correct": [
+          "is unable to route on the internet",
+          "allows sites to be combined without address conflicts"
+        ]
+      },
+      {
+        "label": "Multicast",
+        "correct": [
+          "provides one-to-many communications",
+          "sends packets to a group address rather than a single address"
+        ]
+      }
+    ]
+  },
+  "1271": {
+    "items": [
+      "is easy to tap into and obtain secure information",
+      "attenuation increases over long distances",
+      "is comprised of shielded and unshielded twisted pairs",
+      "vulnerable to damage when handled"
+    ],
+    "buckets": [
+      {
+        "label": "copper",
+        "correct": [
+          "is easy to tap into and obtain secure information",
+          "is comprised of shielded and unshielded twisted pairs"
+        ]
+      },
+      {
+        "label": "multi-mode fiber",
+        "correct": [
+          "attenuation increases over long distances",
+          "vulnerable to damage when handled"
+        ]
+      }
+    ]
+  },
+  "1325": {
+    "items": [
+      "counterpart of private IPv4 addresses",
+      "never used as a source address",
+      "provides one-to-many communications",
+      "may be used by multiple organizations at the same time"
+    ],
+    "buckets": [
+      {
+        "label": "Unique Local",
+        "correct": [
+          "counterpart of private IPv4 addresses",
+          "may be used by multiple organizations at the same time"
+        ]
+      },
+      {
+        "label": "Multicast",
+        "correct": [
+          "never used as a source address",
+          "provides one-to-many communications"
+        ]
+      }
+    ]
+  },
+  "1369": {
+    "skip": "simulation"
+  }
+}

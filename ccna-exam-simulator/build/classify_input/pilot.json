@@ -1,0 +1,369 @@
+[
+ {
+  "n": 469,
+  "t": "Refer to the exhibit. Which command must be issued to enable a floating static default route on router A?",
+  "dom_current": "IPC",
+  "tp": "Routing",
+  "o": {
+   "A": "ip route 0.0.0.0 0.0.0.0 192.168.1.2 10",
+   "B": "ip route 0.0.0.0 0.0.0.0 192.168.1.2",
+   "C": "ip default-gateway 192.168.2.1",
+   "D": "ip route 0.0.0.0 0.0.0.0 192.168.2.1 10"
+  }
+ },
+ {
+  "n": 189,
+  "t": "Refer to the exhibit. Which command provides this output?",
+  "dom_current": "IPC",
+  "tp": "Routing",
+  "o": {
+   "A": "show ip route",
+   "B": "show cdp neighbor",
+   "C": "show ip interface",
+   "D": "show interface"
+  }
+ },
+ {
+  "n": 800,
+  "t": "Which cable type must be used to interconnect one switch using 1000 BASE-SX GBIC modules and another switch using 1000 BASE-SX SFP modules?",
+  "dom_current": "NA",
+  "tp": "General",
+  "o": {
+   "A": "LC to SC",
+   "B": "SC to SC",
+   "C": "LC to LC",
+   "D": "SC to ST"
+  }
+ },
+ {
+  "n": 1300,
+  "t": "What is a characteristic of private IPv4 addressing?",
+  "dom_current": "SEC",
+  "tp": "General",
+  "o": {
+   "A": "used on the external interface of a firewall",
+   "B": "used by ISP's when only one IP is needed to connect to the internet",
+   "C": "reduces the forwarding table on network routers",
+   "D": "address space which is isolated from the internet"
+  }
+ },
+ {
+  "n": 34,
+  "t": "A corporate office uses four floors in a building. ✑ Floor 1 has 24 users. ✑ Floor 2 has 29 users. Floor 3 has 28 users. ✑ Floor 4 has 22 users. Which subnet summarizes and gives the most efficient distribution of IP addresses for the router configuration?",
+  "dom_current": "NF",
+  "tp": "Subnetting",
+  "o": {
+   "A": "192.168.0.0/24 as summary and 192.168.0.0/28 for each floor",
+   "B": "192.168.0.0/23 as summary and 192.168.0.0/25 for each floor",
+   "C": "192.168.0.0/25 as summary and 192.168.0.0/27 for each floor",
+   "D": "192.168.0.0/26 as summary and 192.168.0.0/29 for each floor"
+  }
+ },
+ {
+  "n": 37,
+  "t": "An office has 8 floors with approximately 30-40 users per floor. One subnet must be used. Which command must be configured on the router Switched Virtual Interface to use address space efficiently?",
+  "dom_current": "NF",
+  "tp": "Subnetting",
+  "o": {
+   "A": "ip address 192.168.0.0 255.255.0.0",
+   "B": "ip address 192.168.0.0 255.255.254.0",
+   "C": "ip address 192.168.0.0 255.255.255.128",
+   "D": "ip address 192.168.0.0 255.255.255.224"
+  }
+ },
+ {
+  "n": 978,
+  "t": "What does WPA3 provide in wireless networking?",
+  "dom_current": "NA",
+  "tp": "Wireless",
+  "o": {
+   "A": "backward compatibility with WPA and WPA2",
+   "B": "safeguards against brute force attacks with SAE",
+   "C": "increased security and requirement of a complex configuration",
+   "D": "optional Protected Management Frame negotiation"
+  }
+ },
+ {
+  "n": 191,
+  "t": "Which mode allows access points to be managed by Cisco Wireless LAN Controllers?",
+  "dom_current": "NA",
+  "tp": "Wireless",
+  "o": {
+   "A": "bridge",
+   "B": "lightweight",
+   "C": "mobility express",
+   "D": "autonomous"
+  }
+ },
+ {
+  "n": 935,
+  "t": "Which two IPv6 addresses are used to provide connectivity between two routers on a shared link? (Choose two.)",
+  "dom_current": "NF",
+  "tp": "IPv6",
+  "o": {
+   "A": "FF02::0001:FF00:0000/104",
+   "B": "ff06:bb43:cc13:dd16:1bb:ff14:7545:234d",
+   "C": "2002::512:1204b:1111::1/64",
+   "D": "2001:701:104b:1111::1/64",
+   "E": "::ffff:10.14.101.1/96"
+  }
+ },
+ {
+  "n": 1269,
+  "t": "Refer to the exhibit The IPv6 address for the LAN segment on router R2 must be configured using the EUI-64 format. When configured which ipv6 address is produced by the router?",
+  "dom_current": "NF",
+  "tp": "IPv6",
+  "o": {
+   "A": "2001:db8:bd69:1469:12D8:BAFE:FF01:1",
+   "B": "2001:db8:bd69:1469:1130:ABFF:FECC:1",
+   "C": "2001:db8:bd69:1469:4628:255F:FE32:1",
+   "D": "2001:db8:bd69:1469:11BE:BFFF:FEB9:1"
+  }
+ },
+ {
+  "n": 179,
+  "t": "What occurs when PortFast is enabled on an interface that is connected to another switch?",
+  "dom_current": "NA",
+  "tp": "Switching/VLAN",
+  "o": {
+   "A": "Root port choice and spanning-tree recalculation are accelerated when a switch link goes down.",
+   "B": "After spanning-tree converges, PortFast shuts down any port that receives BPDUs.",
+   "C": "VTP is allowed to propagate VLAN configuration information from switch to switch automatically.",
+   "D": "Spanning-tree fails to detect a switching loop increasing the likelihood of broadcast storms."
+  }
+ },
+ {
+  "n": 962,
+  "t": "Refer to the exhibit. The DHCP server is configured with a DHCP pool for each of the subnets represented. Which command must be configured on switch SW1 to allow DHCP clients on VLAN 10 to receive dynamic IP addresses from the DHCP server?",
+  "dom_current": "NA",
+  "tp": "Switching/VLAN",
+  "o": {
+   "A": "SW1(config-if)#ip helper-address 192.168.10.1",
+   "B": "SW1(config-if)#ip helper-address 192.168.20.1",
+   "C": "SW1(config-if)#ip helper-address 192.168.20.2",
+   "D": "SW1(config-if)#ip helper-address 192.168.10.2"
+  }
+ },
+ {
+  "n": 305,
+  "t": "What is a function of store-and forward switching?",
+  "dom_current": "IPS",
+  "tp": "NAT",
+  "o": {
+   "A": "It reduces latency by eliminating error checking within the frame",
+   "B": "It produces an effective level of error-free network traffic using CRCs.",
+   "C": "It buffers frames and forwards regardless of errors within the frames.",
+   "D": "It forwards a frame by checking only the destination MAC address"
+  }
+ },
+ {
+  "n": 45,
+  "t": "What is the destination MAC address of a broadcast frame?",
+  "dom_current": "IPS",
+  "tp": "NAT",
+  "o": {
+   "A": "00:00:0c:07:ac:01",
+   "B": "ff:ff:ff:ff:ff:ff",
+   "C": "43:2e:08:00:00:0c",
+   "D": "00:00:0c:43:2e:08",
+   "E": "00:00:0c:ff:ff:ff"
+  }
+ },
+ {
+  "n": 514,
+  "t": "Refer to the exhibit. Which rule does the DHCP server use when there is an IP address conflict?",
+  "dom_current": "IPS",
+  "tp": "DHCP",
+  "o": {
+   "A": "The address is removed from the pool until the conflict is resolved.",
+   "B": "The address remains in the pool until the conflict is resolved.",
+   "C": "Only the IP detected by Gratuitous ARP is removed from the pool.",
+   "D": "Only the IP detected by Ping is removed from the pool.",
+   "E": "The IP will be shown, even after the conflict is resolved."
+  }
+ },
+ {
+  "n": 572,
+  "t": "Which command must be entered to configure a DHCP relay?",
+  "dom_current": "IPS",
+  "tp": "DHCP",
+  "o": {
+   "A": "ip dhcp relay",
+   "B": "ip dhcp pool",
+   "C": "ip address dhcp",
+   "D": "ip helper-address"
+  }
+ },
+ {
+  "n": 819,
+  "t": "Which is a reason to implement IPv4 private addressing?",
+  "dom_current": "SEC",
+  "tp": "Security",
+  "o": {
+   "A": "Comply with PCI regulations.",
+   "B": "Reduce the size of the forwarding table on network routers.",
+   "C": "Reduce the risk of a network security breach.",
+   "D": "Comply with local law."
+  }
+ },
+ {
+  "n": 335,
+  "t": "Which two protocols are used by an administrator for authentication and configuration on access points? (Choose two.)",
+  "dom_current": "SEC",
+  "tp": "Security",
+  "o": {
+   "A": "802.1Q",
+   "B": "RADIUS",
+   "C": "Kerberos",
+   "D": "TACACS+",
+   "E": "802.1x"
+  }
+ },
+ {
+  "n": 413,
+  "t": "Refer to the exhibit. Router R2 is configured with multiple routes to reach network 10.1.1.0/24 from router R1. Which path is chosen by router R2 to reach the destination network 10.1.1.0/24?",
+  "dom_current": "IPC",
+  "tp": "OSPF",
+  "o": {
+   "A": "static",
+   "B": "EIGRP",
+   "C": "eBGP",
+   "D": "OSPF"
+  }
+ },
+ {
+  "n": 365,
+  "t": "Router A learns the same route from two different neighbors; one of the neighbor routers is an OSPF neighbor, and the other is an EIGRP neighbor. What is the administrative distance of the route that will be installed in the routing table?",
+  "dom_current": "IPC",
+  "tp": "OSPF",
+  "o": {
+   "A": "20",
+   "B": "90",
+   "C": "110",
+   "D": "115"
+  }
+ },
+ {
+  "n": 1073,
+  "t": "What describes the functionality of southbound APIs?",
+  "dom_current": "AUT",
+  "tp": "Automation",
+  "o": {
+   "A": "They enable communication between the controller and the network device.",
+   "B": "They communicate with the management plane.",
+   "C": "They use HTTP messages to communicate.",
+   "D": "They convey information from the controller to the SDN applications."
+  }
+ },
+ {
+  "n": 1007,
+  "t": "What is the purpose of a southbound API in a controller-based networking architecture?",
+  "dom_current": "AUT",
+  "tp": "Automation",
+  "o": {
+   "A": "facilitates communication between the controller and the applications",
+   "B": "allows application developers to interact with the network",
+   "C": "integrates a controller with other automation and orchestration tools",
+   "D": "facilitates communication between the controller and the networking hardware"
+  }
+ },
+ {
+  "n": 106,
+  "t": "What is a characteristic of private IPv4 addressing?",
+  "dom_current": "SEC",
+  "tp": "ACL",
+  "o": {
+   "A": "composed of up to 65,536 available addresses",
+   "B": "issued by IANA in conjunction with an autonomous system number",
+   "C": "used without tracking or registration",
+   "D": "traverse the Internet when an outbound ACL is applied"
+  }
+ },
+ {
+  "n": 790,
+  "t": "Refer to the exhibit. A network engineer must configure NETCONF. After creating the configuration, the engineer gets output from the command show line but not from show running-config. Which command completes the configuration?",
+  "dom_current": "SEC",
+  "tp": "ACL",
+  "o": {
+   "A": "Device(config)# netconf lock-time 500",
+   "B": "Device(config)# netconf max-message 1000",
+   "C": "Device(config)# no netconf ssh acl 1",
+   "D": "Device(config)# netconf max-sessions 100"
+  }
+ },
+ {
+  "n": 524,
+  "t": "A network engineer must back up 20 network router configurations globally within a customer environment. Which protocol allows the engineer to perform this function using the Cisco IOS MIB?",
+  "dom_current": "IPS",
+  "tp": "Ops/Mgmt",
+  "o": {
+   "A": "ARP",
+   "B": "SNMP",
+   "C": "SMTP",
+   "D": "CDP"
+  }
+ },
+ {
+  "n": 557,
+  "t": "Refer to the exhibit. The ntp server 192.168.0.3 command has been configured on router 1 to make it an NTP client of router 2. Which command must be configured on router 2 so that it operates in server-only mode and relies only on its internal clock?",
+  "dom_current": "IPS",
+  "tp": "Ops/Mgmt",
+  "o": {
+   "A": "Router2(config)#ntp server 172.17.0.1",
+   "B": "Router2(config)#ntp server 192.168.0.2",
+   "C": "Router2(config)#ntp passive",
+   "D": "Router2(config)#ntp master 4"
+  }
+ },
+ {
+  "n": 367,
+  "t": "Which two actions influence the EIGRP route selection process? (Choose two.)",
+  "dom_current": "IPC",
+  "tp": "EIGRP",
+  "o": {
+   "A": "The advertised distance is calculated by a downstream neighbor to inform the local router of the bandwidth on the link.",
+   "B": "The router calculates the feasible distance of all paths to the destination route.",
+   "C": "The router must use the advertised distance as the metric for any given route.",
+   "D": "The router calculates the best backup path to the destination route and assigns it as the feasible successor.",
+   "E": "The router calculates the reported distance by multiplying the delay on the exiting interface by 256."
+  }
+ },
+ {
+  "n": 453,
+  "t": "Refer to the exhibit. Which prefix did router R1 learn from internal EIGRP?",
+  "dom_current": "IPC",
+  "tp": "EIGRP",
+  "o": {
+   "A": "192.168.3.0/24",
+   "B": "192.168.1.0/24",
+   "C": "172.16.1.0/24",
+   "D": "192.168.2.0/24"
+  }
+ },
+ {
+  "n": 366,
+  "t": "Refer to the exhibit. An engineer is bringing up a new circuit to the MPLS provider on the Gi0/1 interface of Router 1. The new circuit uses eBGP and learns the route to VLAN25 from the BGP path. What is the expected behavior for the traffic flow for route 10.10.13.0/25?",
+  "dom_current": "IPC",
+  "tp": "BGP",
+  "o": {
+   "A": "Traffic to 10.10.13.0/25 is load balanced out of multiple interfaces.",
+   "B": "Traffic to 10.10.13.0/25 is asymmetrical.",
+   "C": "Route 10.10.13.0/25 is updated in the routing table as being learned from interface Gi0/1.",
+   "D": "Route 10.10.13.0/25 learned via the Gi0/0 interface remains in the routing table."
+  }
+ },
+ {
+  "n": 388,
+  "t": "Refer to the exhibit. Which Command do you enter so that R1 advertises the loopback0 interface to the BGP Peers?",
+  "dom_current": "IPC",
+  "tp": "BGP",
+  "o": {
+   "A": "Network 172.16.1.32 mask 255.255.255.224",
+   "B": "Network 172.16.1.0 0.0.0.255",
+   "C": "Network 172.16.1.32 255.255.255.224",
+   "D": "Network 172.16.1.33 mask 255.255.255.224",
+   "E": "Network 172.16.1.32 mask 0.0.0.31",
+   "F": "Network 172.16.1.32 0.0.0.31"
+  }
+ }
+]

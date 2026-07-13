@@ -1,0 +1,280 @@
+{
+  "53": {
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {"id": "ISP", "type": "internet", "label": "ISP"},
+        {"id": "Router1", "type": "router", "label": "Router1"},
+        {"id": "Server", "type": "server", "label": "Server"},
+        {"id": "Switch1", "type": "sw2", "label": "Switch1"},
+        {"id": "Switch2", "type": "sw2", "label": "Switch2"},
+        {"id": "Host1", "type": "pc", "label": "Host 1"},
+        {"id": "Host2", "type": "pc", "label": "Host 2"},
+        {"id": "Host3", "type": "pc", "label": "Host 3"},
+        {"id": "Host4", "type": "pc", "label": "Host 4"},
+        {"id": "Host5", "type": "pc", "label": "Host 5"},
+        {"id": "Host6", "type": "pc", "label": "Host 6"}
+      ],
+      "links": [
+        {"from": "ISP", "to": "Router1", "note": ""},
+        {"from": "Router1", "to": "Switch1", "note": "192.168.1.1 /24"},
+        {"from": "Router1", "to": "Switch2", "note": "192.168.1.2 /24"},
+        {"from": "Server", "to": "Switch1"},
+        {"from": "Switch1", "to": "Switch2"},
+        {"from": "Switch1", "to": "Host1"},
+        {"from": "Switch1", "to": "Host2"},
+        {"from": "Switch1", "to": "Host3"},
+        {"from": "Switch2", "to": "Host4"},
+        {"from": "Switch2", "to": "Host5"},
+        {"from": "Switch2", "to": "Host6"}
+      ]
+    }
+  },
+  "173": {
+    "category": "other",
+    "note": "Wireless coverage-cell diagram showing 8 overlapping AP zones (Zone 1-8) with three channel legends (Channel 1, 6, 11), not a router/switch/PC topology and no CLI text. Does not fit the defined categories; would need a custom Venn-style coverage-cell diagram rather than a device/link topology."
+  },
+  "247": {
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {"id": "SW1", "type": "sw2", "label": "SW1"},
+        {"id": "SW2", "type": "sw2", "label": "SW2"}
+      ],
+      "links": [
+        {"from": "SW1", "to": "SW2", "label": "Gi1/1", "label2": "Gi1/1", "note": "Trunk VLANS 2-20"}
+      ]
+    }
+  },
+  "282": {
+    "category": "cli_output",
+    "cli": "Cat9300# show cdp\nGlobal CDP information:\n    Sending CDP packets every 60 seconds\n    Sending a holdtime value of 180 seconds\n    Sending CDPv2 advertisements is enabled"
+  },
+  "321": {
+    "category": "mixed",
+    "topology": {
+      "devices": [
+        {"id": "PC", "type": "pc", "label": "Data Vlan 15"},
+        {"id": "IPPhone", "type": "pc", "label": "IP", "note": "IP phone icon, guessed type pc (closest available type)"},
+        {"id": "SW", "type": "sw2", "label": "SW"}
+      ],
+      "links": [
+        {"from": "PC", "to": "IPPhone", "note": "Data Vlan 15 / Voice Vlan 10"},
+        {"from": "IPPhone", "to": "SW", "label2": "f0/1"}
+      ]
+    },
+    "cli": "SW#show run\nBuilding configuration...\n!\ninterface FastEthernet0/1\n switchport access vlan 15\n!\nend"
+  },
+  "358": {
+    "category": "mixed",
+    "topology": {
+      "devices": [
+        {"id": "R1", "type": "router", "label": "R1"},
+        {"id": "Internet", "type": "internet", "label": "Internet"},
+        {"id": "MLS1", "type": "sw3", "label": "MLS1"},
+        {"id": "S1", "type": "sw2", "label": "S1"},
+        {"id": "Firewall", "type": "firewall", "label": "Firewall"},
+        {"id": "PC", "type": "pc", "label": "10.10.13.10/25"}
+      ],
+      "links": [
+        {"from": "R1", "to": "Internet", "label": "17", "label2": "18", "note": "10.10.10.16/30"},
+        {"from": "R1", "to": "MLS1", "label": "2", "label2": "1", "note": "10.10.10.0/30"},
+        {"from": "MLS1", "to": "S1"},
+        {"from": "MLS1", "to": "Firewall"},
+        {"from": "Firewall", "to": "PC", "note": "10.10.13.10/25"}
+      ]
+    },
+    "cli": "R1#sh ip ro\nGateway of last resort is 10.10.10.18 to network 0.0.0.0\n\n     10.0.0.0/8 is variably subnetted, 4 subnets, 3 masks\nC       10.10.10.0/30 is directly connected, FastEthernet0/1\nO       10.10.13.0/25 [110/6576] via 10.10.10.1, 06:58:21, FastEthernet0/1\nC       10.10.10.16/30 is directly connected, FastEthernet0/24\nO       10.10.13.144/28 [110/110] via 10.10.10.1, 06:58:21, FastEthernet0/1\nB*   0.0.0.0/0 [20/0] via 10.10.10.18, 01:17:58"
+  },
+  "399": {
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {"id": "DSwitch", "type": "sw3", "label": "D-Switch"},
+        {"id": "Crouter", "type": "router", "label": "C-router"}
+      ],
+      "links": [
+        {"from": "DSwitch", "to": "Crouter", "note": "Fa0/0.1 - 172.19.1.254 /24 VLAN 1; Fa0/0.2 - 172.19.2.254 /24 VLAN 2; Fa0/0.3 - 172.19.3.254 /24 VLAN 3"}
+      ],
+      "zones": [
+        {"label": "VLAN 1", "members": ["DSwitch"]},
+        {"label": "VLAN 2", "members": ["DSwitch"]},
+        {"label": "VLAN 3", "members": ["DSwitch"]}
+      ]
+    }
+  },
+  "428": {
+    "category": "cli_output",
+    "cli": "Router#show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n\nGateway of last resort is 209.165.202.131 to network 0.0.0.0\n\nS*   0.0.0.0/0 [1/0] via 209.165.202.131\n     209.165.200.0/27 is subnetted, 1 subnets\nS       209.165.200.224 [254/0] via 209.165.202.129\n     209.165.201.0/27 is subnetted, 1 subnets\nS       209.165.201.0 [1/0] via 209.165.202.130"
+  },
+  "450": {
+    "category": "cli_output",
+    "cli": "RIP    10.1.1.16/28[120/5]   via  F0/0\nOSPF   10.1.1.0/24  [110/30]  via  F0/1\nOSPF   10.1.1.0/24  [110/40]  via  F0/2\nEIGRP  10.1.0.0/26  [90/20]   via  F0/3\nEIGRP  10.0.0.0/8   [90/133]  via  F0/4"
+  },
+  "468": {
+    "category": "cli_output",
+    "cli": "R1# show ip route | begin gateway\nGateway of last resort is 209.165.200.254 to network 0.0.0.0\n\nS*   0.0.0.0/0 [1/0] via 209.165.200.254, Serial0/0/1\n     172.16.0.0/16 is variably subnetted, 3 subnets, 2 masks\nC       172.16.1.0/24 is directly connected, FastEthernet0/0\nL       172.16.1.1/32 is directly connected, FastEthernet0/0\nR       172.16.2.0/24 [120/2] via 297.165.200.250, 00:00:25, Serial0/0/0\nO       192.168.1.0/24 [110/4437] via 207.165.200.254, 00:00:17, Serial0/0/1\nD       192.168.2.0/24 [90/84437] via 207.165.200.254, 00:00:15, Serial0/0/1\n     207.165.200.0/24 is variably subnetted, 5 subnets, 2 masks\nS       207.165.200.244/30 [1/1] via 207.165.200.254, Serial0/0/1\nC       207.165.200.248/30 is directly connected, Serial0/0/0\nL       207.165.200.249/32 is directly connected, Serial0/0/0\nC       207.165.200.252/30 is directly connected, Serial0/0/1\nL       207.165.200.253/32 is directly connected, Serial0/0/1"
+  },
+  "488": {
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {"id": "PC1", "type": "pc", "label": "PC1"},
+        {"id": "R1", "type": "router", "label": "R1"},
+        {"id": "SW", "type": "sw2", "label": "SW", "note": "unlabeled switch icon between R1/R2/R3"},
+        {"id": "R2", "type": "router", "label": "R2"},
+        {"id": "R3", "type": "router", "label": "R3"},
+        {"id": "SW2", "type": "sw2", "label": "SW2", "note": "unlabeled switch icon connecting PC2/PC3/PC4/PC6"},
+        {"id": "PC2", "type": "pc", "label": "PC2"},
+        {"id": "PC3", "type": "pc", "label": "PC3"},
+        {"id": "PC4", "type": "pc", "label": "PC4"},
+        {"id": "PC5", "type": "pc", "label": "PC5"},
+        {"id": "PC6", "type": "pc", "label": "PC6"}
+      ],
+      "links": [
+        {"from": "PC1", "to": "R1", "label": "g0/0", "note": "172.16.5.0/24, PC1 .1, R1 .2"},
+        {"from": "R1", "to": "SW", "label": "g0/1", "note": "192.168.2.0/24, R1 .1"},
+        {"from": "SW", "to": "R2", "label2": "g0/1", "note": "192.168.2.0/24, R2 .3"},
+        {"from": "SW", "to": "R3", "label2": "g0/1", "note": "192.168.2.0/24, R3 .2"},
+        {"from": "R2", "to": "SW2", "label": "g0/0", "note": "10.10.10.0/24, R2 .1"},
+        {"from": "SW2", "to": "PC2", "label2": ".2"},
+        {"from": "SW2", "to": "PC3", "label2": ".3"},
+        {"from": "SW2", "to": "PC4", "label2": ".4"},
+        {"from": "R3", "to": "PC5", "label": "g0/0", "note": "10.10.10.0/24, R3 .5, PC5 .10"}
+      ]
+    }
+  },
+  "532": {
+    "category": "cli_output",
+    "cli": "R2#show ip nat translations\nPro  Inside global         Inside local          Outside local         Outside global\ntcp  172.23.104.3:43268   10.4.4.4:43268        172.23.103.10:23      172.23.103.10:23\ntcp  172.23.104.4:45507   10.4.4.5:45507        172.23.103.10:80      172.23.103.10:80"
+  },
+  "610": {
+    "category": "cli_output",
+    "cli": "Port Security              : Enabled\nPort Status                : Secure-up\nViolation Mode              : Shutdown\nAging Time                  : 0 mins\nAging Type                  : Absolute\nSecureStatic Address Aging  : Disabled\nMaximum MAC Addresses       : 5\nTotal MAC Addresses         : 1\nConfigured MAC Addresses    : 1\nSticky MAC Addresses        : 0\nLast Source Address : Vlan   : 0001.0fAA.33BB:1\nSecurity Violation Count    : 0"
+  },
+  "703": {
+    "category": "cli_output",
+    "cli": "SW1#show run\nBuilding configuration...\n!\nhostname SW1\n!\nip domain-name CCNA-test\n!\nusername CCNA privilege 1 password 0 cisco123\n!\ninterface FastEthernet0/1\n switchport access vlan 10\n!\ninterface Vlan10\n ip address 192.168.1.2 255.255.255.0\n!\nline vty 0 4\n login local\n transport input telnet\nline vty 5 15\n login local\n transport input telnet\n\nSW1#show crypto key mypubkey rsa\n% Key pair was generated at: 0:1:23 UTC Mar 1 2020\nKey name: SW1.CCNA-test"
+  },
+  "840": {
+    "category": "gui_screenshot",
+    "crop_box": {"x": 5, "y": 4, "w": 92, "h": 55}
+  },
+  "884": {
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {"id": "MDF-DC-1", "type": "sw2", "label": "MDF-DC-1"},
+        {"id": "MDF-DC-2", "type": "sw2", "label": "MDF-DC-2"},
+        {"id": "MDF-DC-3", "type": "sw2", "label": "MDF-DC-3"},
+        {"id": "MDF-DC-4", "type": "sw2", "label": "MDF-DC-4"}
+      ],
+      "links": [
+        {"from": "MDF-DC-1", "to": "MDF-DC-2"},
+        {"from": "MDF-DC-1", "to": "MDF-DC-3"},
+        {"from": "MDF-DC-2", "to": "MDF-DC-4"},
+        {"from": "MDF-DC-3", "to": "MDF-DC-4"}
+      ]
+    }
+  },
+  "908": {
+    "category": "mixed",
+    "topology": {
+      "devices": [
+        {"id": "R1", "type": "router", "label": "R1"},
+        {"id": "R2", "type": "router", "label": "R2"},
+        {"id": "R3", "type": "router", "label": "R3"},
+        {"id": "SW1", "type": "sw2", "label": "SW1"},
+        {"id": "SW2", "type": "sw2", "label": "SW2"},
+        {"id": "SW3", "type": "sw2", "label": "SW3"},
+        {"id": "PC1", "type": "pc", "label": "PC1"},
+        {"id": "PC2", "type": "pc", "label": "PC2"},
+        {"id": "Server", "type": "server", "label": "Server"}
+      ],
+      "links": [
+        {"from": "R1", "to": "R2", "label": "1", "label2": "2", "note": "10.10.10.0/30"},
+        {"from": "R2", "to": "R3", "label": "5", "label2": "6", "note": "10.10.10.4/30"},
+        {"from": "R1", "to": "SW1", "note": "192.168.10.0/24"},
+        {"from": "R2", "to": "SW2", "note": "192.168.20.0/24"},
+        {"from": "R3", "to": "SW3", "note": "192.168.30.0/24"},
+        {"from": "SW1", "to": "PC1", "note": "192.168.10.10"},
+        {"from": "SW2", "to": "PC2", "note": "192.168.20.20"},
+        {"from": "SW3", "to": "Server", "note": "192.168.30.30"}
+      ]
+    },
+    "cli": "R2# show ip route\n10.0.0.0/30 is subnetted, 2 subnets\nC   10.10.10.0 is directly connected, Serial0/0/0\nC   10.10.10.4 is directly connected, FastEthernet0/1\nD   192.168.10.0/24 [90/2172416] via 10.10.10.1, 01:05:11, Serial0/0/0\nC   192.168.20.0/24 is directly connected, FastEthernet0/0\nD   192.168.30.0/24 [90/30720] via 10.10.10.6, 01:12:53, FastEthernet0/1"
+  },
+  "943": {
+    "category": "mixed",
+    "topology": {
+      "devices": [
+        {"id": "SiteA", "type": "internet", "label": "Site A"},
+        {"id": "Router1", "type": "router", "label": "Router1"},
+        {"id": "Router2", "type": "router", "label": "Router2"},
+        {"id": "SiteB", "type": "internet", "label": "Site B"}
+      ],
+      "links": [
+        {"from": "SiteA", "to": "Router1"},
+        {"from": "Router1", "to": "Router2"},
+        {"from": "Router2", "to": "SiteB"}
+      ]
+    },
+    "cli": "Router2#show ip route\nGateway of last resort is not set\n\n     10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nC       10.10.0.0/30 is directly connected, FastEthernet0/3\nC       10.10.0.8/30 is directly connected, FastEthernet0/2\nC       10.10.0.12/30 is directly connected, FastEthernet0/1\nS       172.16.0.0/12 [1/0] via 10.10.10.1\nO       10.10.13.0/25 [110/11] via 10.10.10.9,  00:00:03, FastEthernet0/2\n                      [110/11] via 10.10.10.13, 00:00:03, FastEthernet0/1"
+  },
+  "1027": {
+    "category": "cli_output",
+    "cli": "{\n    \"Test_Questions\" : [\n                    \"Automation\",\n                    \"Configuration\",\n    ],\n    \"Test_Exam_Level\" : [\n                    \"CCNA\",\n                    \"CCNP\",\n    ],\n    \"Test_Response\" : [\n                    \"Correct\",\n                    \"Incorrect\",\n    ]\n}"
+  },
+  "1123": {
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {"id": "SW1", "type": "sw2", "label": "SW1"},
+        {"id": "SW2", "type": "sw2", "label": "SW2"},
+        {"id": "SW3", "type": "sw2", "label": "SW3"},
+        {"id": "SW4", "type": "sw2", "label": "SW4"}
+      ],
+      "links": [
+        {"from": "SW1", "to": "SW2", "label": "Gi1/0/1", "label2": "Gi1/0/1"},
+        {"from": "SW1", "to": "SW3", "label": "Gi1/0/2", "label2": "Gi1/0/3"},
+        {"from": "SW1", "to": "SW4", "label": "Gi1/0/3", "label2": "Gi1/0/1"},
+        {"from": "SW2", "to": "SW3", "label": "Gi1/0/2", "label2": "Gi1/0/1"},
+        {"from": "SW4", "to": "SW3", "label": "Gi1/0/2", "label2": "Gi1/0/2"}
+      ]
+    }
+  },
+  "1203": {
+    "category": "cli_output",
+    "cli": "SW1\nconfigure terminal\ninterface range GigabitEthernet 0/1-2\n   switchport mode trunk\n   channel-group 1 mode active\n\nSW2\nconfigure terminal\ninterface range GigabitEthernet 0/1-2\n   switchport mode trunk\ninterface Port-channel1\n   switchport mode trunk"
+  },
+  "1245": {
+    "category": "cli_output",
+    "cli": "cat9k-acc-1# show interfaces gigabitethernet 1/0/1\n  gigabitethernet 1/0/1 is up, line protocol is up\n  Hardware is gigabitethernet, address is aa00.0400.0134 (via 0000.0c00.4369)\n  MTU 1500 bytes, BW 1000 Kbit, DLY 1000 usec, rely 255/255, load 1/255\n  Encapsulation ARPA, loopback not set, keepalive set (10 sec)\n  ARP type: ARPA, PROBE, ARP Timeout 4:00:00\n  Last input 0:00:00, output 0:00:00, output hang never\n  Output queue 0/1, 1 drops; input queue 0/0, 0 drops\n  Five minute input rate 61000 bits/sec, 200 packets/sec\n  Five minute output rate 1000 bits/sec, 200 packets/sec\n  2295197 packets input, 305539952 bytes, 0 no buffer\n  Received 1925500 broadcasts, 0 runts, 0 giants\n  0 input errors, 1790 CRC, 1790 frame, 0 overrun, 0 ignored, 0 abort\n  0 input packets with dribble condition detected\n  3594664 packets output, 436549843 bytes, 1 underruns\n  0 output errors, 1 collisions, 1 interface resets, 0 restarts"
+  },
+  "1341": {
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {"id": "Router", "type": "router", "label": "Router", "note": "unlabeled router icon at top"},
+        {"id": "S1", "type": "sw2", "label": "S1"},
+        {"id": "S2", "type": "sw2", "label": "S2"},
+        {"id": "PC1", "type": "pc", "label": "PC1"},
+        {"id": "PC2", "type": "pc", "label": "PC2"},
+        {"id": "PC3", "type": "pc", "label": "PC3"},
+        {"id": "PC4", "type": "pc", "label": "PC4"}
+      ],
+      "links": [
+        {"from": "Router", "to": "S1", "label2": "G0/3"},
+        {"from": "S1", "to": "S2", "label": "G0/2"},
+        {"from": "S1", "to": "PC1", "label": "G0/0"},
+        {"from": "S1", "to": "PC2", "label": "G0/1"},
+        {"from": "S2", "to": "PC3"},
+        {"from": "S2", "to": "PC4"}
+      ]
+    }
+  },
+  "1374": {
+    "category": "other",
+    "note": "Exhibit contains BOTH a network topology (Router A with Host A/B/C on 192.168.1.0/24, a Domain Name Server 8.8.8.8, an Internet cloud, and Router B) AND a Windows 'Internet Protocol Version 4 (TCP/IPv4) Properties' GUI dialog showing static IP 192.168.1.3/255.255.255.0, gateway 192.168.1.1, DNS 8.8.8.8 / 192.1.38.132. This is a topology+GUI-screenshot combination, not a topology+CLI combination, so it does not fit the 'mixed' schema (which expects 'cli' text) or any single category cleanly. Recommend manual handling: redraw the topology as SVG and crop the GUI dialog separately."
+  }
+}

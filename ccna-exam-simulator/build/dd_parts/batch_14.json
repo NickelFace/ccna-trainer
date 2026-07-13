@@ -1,0 +1,81 @@
+{
+  "187": {
+    "items": ["access point", "virtual interface", "dynamic interface", "service port", "wireless LAN controller"],
+    "buckets": [
+      {"label": "device that manages access points", "correct": ["wireless LAN controller"]},
+      {"label": "device that provides Wi-Fi devices with a connection to a wired network", "correct": ["access point"]},
+      {"label": "used for out of band management of a WLC", "correct": ["service port"]},
+      {"label": "used to support mobility management of the WLC", "correct": ["virtual interface"]},
+      {"label": "applied to the WLAN for wireless client communication", "correct": ["dynamic interface"]}
+    ]
+  },
+  "523": {
+    "items": ["FTP", "SMTP", "SNMP", "SSH", "TFTP", "VoIP"],
+    "buckets": [
+      {"label": "Connection Oriented", "correct": ["FTP", "SMTP", "SSH"]},
+      {"label": "Connectionless", "correct": ["SNMP", "TFTP", "VoIP"]}
+    ]
+  },
+  "676": {
+    "items": ["allows the user to change to enable mode", "limits the user’s access permissions", "log session statistics", "records user commands", "secures access to routers", "validates user credentials"],
+    "buckets": [
+      {"label": "Accounting", "correct": ["log session statistics", "records user commands"]},
+      {"label": "Authentication", "correct": ["validates user credentials", "secures access to routers"]},
+      {"label": "Authorization", "correct": ["limits the user’s access permissions", "allows the user to change to enable mode"]}
+    ]
+  },
+  "777": {
+    "items": ["DELETE", "GET", "POST", "PUT", "PATCH"],
+    "buckets": [
+      {"label": "creates a resource on the server", "correct": ["POST"]},
+      {"label": "reads data from the server", "correct": ["GET"]},
+      {"label": "removes a resource from the server", "correct": ["DELETE"]},
+      {"label": "updates an entry in the database", "correct": ["PUT"]}
+    ]
+  },
+  "928": {
+    "items": ["10.10.10.16", "10.10.13.1", "10.10.13.129", "10.10.13.150", "10.10.100.128"],
+    "buckets": [
+      {"label": "Internet", "correct": ["10.10.10.16", "10.10.13.129", "10.10.100.128"]},
+      {"label": "Router1", "correct": ["10.10.13.1", "10.10.13.150"]}
+    ]
+  },
+  "1021": {
+    "items": ["overlay and underlay configuration", "routed access deployment", "STP deployment", "VLAN and HSRP configuration", "VXLAN and LISP configuration", "configuration via console"],
+    "buckets": [
+      {"label": "Cisco DNA Center", "correct": ["overlay and underlay configuration", "routed access deployment", "VXLAN and LISP configuration"]},
+      {"label": "Traditional", "correct": ["STP deployment", "VLAN and HSRP configuration", "configuration via console"]}
+    ]
+  },
+  "1087": {
+    "items": ["is typically used in small office applications", "is typically used for internal datacenter connectivity", "has increased attenuation over long distances", "is comprised of shielded and unshielded twisted pairs"],
+    "buckets": [
+      {"label": "copper", "correct": ["is typically used in small office applications", "is comprised of shielded and unshielded twisted pairs"]},
+      {"label": "multimode fiber", "correct": ["is typically used for internal datacenter connectivity", "has increased attenuation over long distances"]}
+    ]
+  },
+  "1127": {
+    "items": ["is assigned to multiple devices on the same network simultaneously", "cannot be used as a source address", "is routed to the nearest interface that has the address", "provides one-to-many communications"],
+    "buckets": [
+      {"label": "Anycast", "correct": ["is assigned to multiple devices on the same network simultaneously", "is routed to the nearest interface that has the address"]},
+      {"label": "Multicast", "correct": ["cannot be used as a source address", "provides one-to-many communications"]}
+    ]
+  },
+  "1182": {"skip": "simulation"},
+  "1282": {
+    "items": ["fe80:efae:0b2a:56fe:4a87:147f:dc21:7", "ff00:3b64:fbca:171a:6140:6a35:1ea6:12", "fc00:733d:b542:a948:d7fa:eeea:989a:3", "2000:e2a1:a1ee:03ed:39a0:4f8e:9f02:1"],
+    "buckets": [
+      {"label": "Global Unicast", "correct": ["2000:e2a1:a1ee:03ed:39a0:4f8e:9f02:1"]},
+      {"label": "Link-Local Unicast", "correct": ["fe80:efae:0b2a:56fe:4a87:147f:dc21:7"]},
+      {"label": "Unique Local", "correct": ["fc00:733d:b542:a948:d7fa:eeea:989a:3"]},
+      {"label": "Multicast", "correct": ["ff00:3b64:fbca:171a:6140:6a35:1ea6:12"]}
+    ]
+  },
+  "1336": {
+    "items": ["publicly routable in the same way as IPv4 addresses", "provides one-to-many communications", "has a unicast source sent to a group", "routable and reachable via the Internet"],
+    "buckets": [
+      {"label": "Global Unicast Address", "correct": ["publicly routable in the same way as IPv4 addresses", "routable and reachable via the Internet"]},
+      {"label": "Multicast", "correct": ["provides one-to-many communications", "has a unicast source sent to a group"]}
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+# Heavy source archive (298 MB incl. 82 MB PDF dump) — not needed to run the app,
+# and exceeds GitHub's 100 MB file limit. Built data/ and images/ are committed.
+ccna-project-archive/
+
+# Python build-pipeline caches / intermediates
+__pycache__/
+*.pyc
+
+# Session working artifact
+preview-изменений.html
+
+# OS cruft
+.DS_Store
