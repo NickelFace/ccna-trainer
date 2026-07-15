@@ -58,5 +58,375 @@
     "B": "SW2(config)#interface gigabitEthernet0/1\nSW2(config-if)#channel-group 2 mode desirable\nSW2(config-if)#interface gigabitEthernet0/2\nSW2(config-if)#channel-group 2 mode desirable",
     "C": "SW2(config)#interface gigabitEthernet0/1\nSW2(config-if)#channel-group 1 mode on\nSW2(config-if)#interface gigabitEthernet0/2\nSW2(config-if)#channel-group 1 mode on",
     "D": "SW2(config)#interface gigabitEthernet0/1\nSW2(config-if)#channel-group 2 mode auto\nSW2(config-if)#interface gigabitEthernet0/2\nSW2(config-if)#channel-group 2 mode auto"
+  },
+  "14": {
+    "A": "interface e0/0\ndescription to XX-AXXX:XXXXX\nip address 10.2.1.3 255.255.255.252",
+    "B": "interface e0/0\ndescription to XX-AXXX:XXXXX\nip address 192.168.1.1 255.255.255.248",
+    "C": "interface e0/0\ndescription to XX-AXXX:XXXXX\nip address 172.16.1.4 255.255.255.248",
+    "D": "interface e0/0\ndescription to XX-AXXX:XXXXX\nip address 209.165.201.2 225.255.255.252"
+  },
+  "109": {
+    "A": "R7#\ninterface FastEthernet1/0\nip address 10.88.31.127 255.255.255.192\nR8#\ninterface FastEthernet0/0\nip address 10.19.63.95 255.255.255.240\nR9#\ninterface FastEthernet1/1\nip address 10.23.98.159 255.255.255.224",
+    "B": "R7#\ninterface FastEthernet1/0\nip address 10.88.31.126 255.255.255.240\nR8#\ninterface FastEthernet0/0\nip address 10.19.63.94 255.255.255.192\nR9#\ninterface FastEthernet1/1\nip address 10.23.98.158 255.255.255.248",
+    "C": "R7#\ninterface FastEthernet1/0\nip address 10.88.31.127 255.255.255.240\nR8#\ninterface FastEthernet0/0\nip address 10.19.63.95 255.255.255.192\nR9#\ninterface FastEthernet1/1\nip address 10.23.98.159 255.255.255.248",
+    "D": "R7#\ninterface FastEthernet1/0\nip address 10.88.31.126 255.255.255.192\nR8#\ninterface FastEthernet0/0\nip address 10.19.63.94 255.255.255.240\nR9#\ninterface FastEthernet1/1\nip address 10.23.98.158 255.255.255.224"
+  },
+  "130": {
+    "A": "interface GigabitEthernet0/0\nip address 10.10.2.10 255.255.252.0",
+    "B": "interface GigabitEthernet0/0.10\nencapsulation dot1Q 3\nip address 10.10.2.10 255.255.254.0",
+    "C": "interface GigabitEthernet0/0.3\nencapsulation dot1Q 3 native\nip address 10.10.2.10 255.255.252.0",
+    "D": "interface GigabitEthernet0/0.3\nencapsulation dot1Q 10\nip address 10.10.2.10 255.255.255.252"
+  },
+  "145": {
+    "A": "no switchport mode trunk\nip address 192.168.32.97 255.255.255.224",
+    "B": "switchport\nip address 192.168.32.65 255.255.255.240",
+    "C": "no switchport\nip address 192.168.32.30 255.255.255.224",
+    "D": "no switchport mode access\nip address 192.168.32.62 255.255.255.240"
+  },
+  "166": {
+    "A": "Switch(config)#interface vlan 10\nSwitch(config-if)#ip address 192.168.0.1 265 255.255.252",
+    "B": "Switch(config)#interface vlan 10\nSwitch(config-if)#ip address 192.168.0.1 255 255.255.248",
+    "C": "Switch(config)#interface vlan 10\nSwitch(config-if)#ip address 192.168.0.1 255 255.255.0",
+    "D": "Switch(config)#interface vlan 10\nSwitch(config-if)#ip address 192.168.0.1 255.255.255.128"
+  },
+  "200": {
+    "A": "interface GigabitEthernet0/0/1\nchannel-group 10 mode auto",
+    "B": "interface GigabitEthernet0/0/1\nchannel-group 10 mode on",
+    "C": "interface port-channel 10\nno switchport\nip address 172.16.0.1 255.255.255.0",
+    "D": "interface GigabitEthernet0/0/1\nchannel-group 10 mode active",
+    "E": "interface port-channel 10\nswitchport\nswitchport mode trunk"
+  },
+  "249": {
+    "A": "interface gigabitethernet1/1\nswitchport mode access\nswitchport access vlan 300\nswitchport voice vlan 400",
+    "B": "interface gigabitethernet1/1\nswitchport mode trunk\nswitchport trunk vlan 300\nswitchport trunk vlan 400",
+    "C": "interface gigabitethernet1/1\nswitchport mode access\nswitchport voice vlan 300\nswitchport access vlan 400",
+    "D": "interface gigabitethernet1/1\nswitchport mode trunk\nswitchport trunk vlan 300\nswitchport voice vlan 400"
+  },
+  "267": {
+    "A": "interface vlan 1148\nip address 10.70.148.1 255.255.254.0",
+    "B": "interface vlan 3002\nip address 10.70.147.17 255.255.255.224",
+    "C": "interface vlan 4722\nip address 10.70.133.17 255.255.255.192",
+    "D": "interface vlan 1234\nip address 10.70.159.1 255.255.254.0",
+    "E": "interface vlan 155\nip address 10.70.155.65 255.255.255.224"
+  },
+  "268": {
+    "A": "interface gigabitethernet1/1\nswitchport mode access\nswitchport access vlan 8 !\ninterface gigabitethernet1/3\nswitchport mode access\nswitchport access vlan 8\nswitchport voice vlan 9",
+    "B": "interface gigabitethernet1/1\nswitchport mode access\nswitchport access vlan 8 !\ninterface gigabitethernet1/3\nswitchport mode trunk\nswitchport trunk vlan 8\nswitchport voice vlan 9",
+    "C": "interface gigabitethernet1/1\nswitchport mode access\nswitchport access vlan 9 !\ninterface gigabitethernet1/3\nswitchport mode trunk\nswitchport trunk vlan 8\nswitchport trunk vlan 9",
+    "D": "interface gigabitethernet1/1\nswitchport mode access\nswitchport access vlan 8 !\ninterface gigabitethernet1/3\nswitchport mode access\nswitchport voice vlan 8\nswitchport access vlan 9"
+  },
+  "276": {
+    "A": "SW1(config)#interface fa0/2\nSW1(config-if)#no switchport access vlan 2\nSW1(config-if)#no switchport trunk allowed vlan 3\nSW1(config-if)#switchport trunk allowed vlan 2",
+    "B": "SW1(config)#interface fa0/2\nSW1(config-if)#no switchport access vlan 2\nSW1(config-if)#switchport trunk native vlan 2\nSW1(config-if)#switchport trunk allowed vlan 3",
+    "C": "SW1(config)#interface fa0/2\nSW1(config-if)#no switchport mode trunk\nSW1(config-if)#no switchport trunk allowed vlan 3\nSW1(config-if)#switchport mode access",
+    "D": "SW1(config)#interface fa0/1\nSW1(config-if)#no switchport access vlan 2\nSW1(config-if)#switchport access vlan 3\nSW1(config-if)#switchport trunk allowed vlan 2"
+  },
+  "280": {
+    "A": "Interface range G1/1 \" 1/3\nswitchport mode trunk\nchannel-group 1 mode active\nno shutdown",
+    "B": "Interface range G1/1 \" 1/3\nswitchport mode access\nchannel-group 1 mode passive\nno shutdown",
+    "C": "Interface range G1/1 \" 1/3\nswitchport mode trunk\nchannel-group 1 mode desirable\nno shutdown",
+    "D": "Interface range G1/1 \" 1/3\nswitchport mode access\nchannel-group 1 mode on\nno shutdown"
+  },
+  "288": {
+    "A": "R5(config)#int Gi0/1\nR5(config-if)#no cdp enable\nR5(config-if)#exit\nR5(config)#lldp run\nR5(config)#no cdp run\nR5#sh\ncdp neighbor detail\nR5#sh\nlldp neighbor",
+    "B": "R5(config)#int Gi0/1\nR5(config-if)#no cdp enable\nR5(config-if)#exit\nR5(config)#no lldp run\nR5(config)#cdp run\nR5#sh\ncdp neighbor\nR5#sh\nlldp neighbor",
+    "C": "R5(config)#int Gi0/1\nR5(config-if)#no cdp run\nR5(config-if)#exit\nR5(config)#lldp run\nR5(config)#cdp enable\nR5#sh\ncdp neighbor\nR5#sh\nlldp neighbor",
+    "D": "R5(config)#int Gi0/1\nR5(config-if)#no cdp enable\nR5(config-if)#exit\nR5(config)#no lldp run\nR5(config)#cdp run\nR5#sh\ncdp neighbor detail\nR5#sh\nlldp neighbor"
+  },
+  "291": {
+    "A": "interface fastethernet0/1\nswitchport voice vlan dot1p",
+    "B": "interface fastethernet0/1\nswitchport priority extend cos 7",
+    "C": "interface fastethernet0/1\nswitchport voice vlan untagged",
+    "D": "interface fastethernet0/1\nswitchport priority extend trust"
+  },
+  "293": {
+    "A": "SW1(config-if)#switchport mode dynamic auto\nSW1(config-if)#switchport port-security SW1(config- if)#switchport port-security violation restrict",
+    "B": "SW1(config-if)#switchport mode nonegotiate\nSW1(config-if)#switchport port-security SW1(config- if)#switchport port-security maximum 1",
+    "C": "SW1(config-if)#switchport mode access\nSW1(config-if)#switchport port-security\nSW1(config-if)#switchport port-security mac-address 0050.7966.6800",
+    "D": "SW1(config-if)#switchport mode dynamic desirable\nSW1(config-if)#switchport port-security mac-address 0050.7966.6800\nSW1(config-if)#switchport port-security mac-address sticky"
+  },
+  "297": {
+    "A": "switchport mode dynamic desirable\nswitchport access vlan 20\nswitchport trunk allowed vlan 30\nswitchport voice vlan 30",
+    "B": "switchport mode access\nswitchport access vlan 20\nswitchport voice vlan 30",
+    "C": "switchport mode dynamic auto\nswitchport trunk native vlan 20\nswitchport trunk allowed vlan 30\nswitchport voice vlan 30",
+    "D": "switchport mode trunk\nswitchport access vlan 20\nswitchport voice vlan 30"
+  },
+  "299": {
+    "A": "interface range gigabitethernet0/0/0-15\nchannel-group 1 mode on",
+    "B": "interface range gigabitethernet0/0/0-15\nchannel-group 1 mode desirable",
+    "C": "interface port-channel 1\nchannel-group 1 mode auto",
+    "D": "interface port-channel 1\nchannel-group 1 mode passive"
+  },
+  "306": {
+    "A": "interface GigabitEthernet1/2\nswitchport mode access\nswitchport access vlan 2 !\ninterface GigabitEthernet1/24\nswitchport mode trunk",
+    "B": "interface GigabitEthernet1/1\nswitchport mode access\nswitchport access vlan 11 !\ninterface GigabitEthernet1/24\nswitchport mode trunk",
+    "C": "interface GigabitEthernet1/24\nswitchport mode trunk\nswitchport trunk allowed vlan 11, 12 !\ninterface GigabitEthernet1/1\nswitchport access vlan 11",
+    "D": "interface GigabitEthernet1/2\nswitchport mode access\nswitchport access vlan 12 !\ninterface GigabitEthernet1/24\nswitchport mode trunk\nswitchport trunk allowed vlan 11, 12"
+  },
+  "307": {
+    "A": "Switch2(config)#lldp timer 60\nSwitch2(config)#lldp tlv-select 180",
+    "B": "Switch2(config)#lldp timer 60\nSwitch2(config)#lldp holdtime 180",
+    "C": "Switch2(config)#lldp timer 1\nSwitch2(config)#lldp holdtime 3",
+    "D": "Switch2(config)#lldp timer 1\nSwitch2(config)#lldp tlv-select 3"
+  },
+  "308": {
+    "A": "SwitchA(config-if)#switchport mode access\nSwitchA(config-if)#switchport access vlan 50 SwitchA(config- if)#switchport voice vlan 51",
+    "B": "SwitchA(config-if)#switchport mode trunk\nSwitchA(config-if)#switchport trunk allowed vlan add 50, 51\nSwitchA(config-if)#switchport voice vlan dot1p",
+    "C": "SwitchA(config-if)#switchport mode trunk\nSwitchA(config-if)#switchport trunk allowed vlan 50, 51\nSwitchA(config-if)#mis qos trust cos",
+    "D": "SwitchA(config-if)#switchport mode access\nSwitchA(config-if)#switchport access vlan 50 SwitchA(config- if)#switchport voice vlan untagged"
+  },
+  "309": {
+    "A": "SwitchA(config)#interface GigabitEthernet0/1\nSwitchA(config-if)#switchport access vlan 500\nSwitchB(config)#interface GigabitEthernet0/1\nSwitchB(config-if)#switchport access vlan 500",
+    "B": "SwitchA(config)#interface GigabitEthernet0/1\nSwitchA(config-if)#switchport mode trunk\nSwitchB(config)#interface GigabitEthernet0/1\nSwitchB(config-if)#switchport mode trunk",
+    "C": "SwitchA(config)#interface GigabitEthernet0/0\nSwitchA(config-if)#switchport trunk allowed vlan 500, 550\nSwitchB(config)#interface GigabitEthernet0/0\nSwitchB(config-if)#switchport trunk allowed vlan 500, 550",
+    "D": "SwitchA(config)#interface GigabitEthernet0/0\nSwitchA(config-if)#spanning-tree portfast SwitchA(config- if)#spanning-tree bpduguard enable\nSwitchB(config)#interface GigabitEthernet0/0 SwitchB(config- if)#spanning-tree portfast\nSwitchB(config-if)#spanning-tree bpduguard enable"
+  },
+  "310": {
+    "A": "NewSW(config)#interface f0/0\nNewSW(config-if)#switchport mode trunk\nNewSW(config-if)#switchport trunk native vlan 10\nNewSW(config-if)#switchport trunk native vlan 10",
+    "B": "NewSW(config)#interface f0/0\nNewSW(config-if)#switchport mode access\nNewSW(config-if)#switchport trunk allowed vlan 2, 10\nNewSW(config-if)#switchport trunk native vlan 2",
+    "C": "NewSW(config)#interface f0/0\nNewSW(config-if)#switchport mode access\nNewSW(config-if)#switchport trunk allowed vlan 2, 10\nNewSW(config-if)#switchport trunk native vlan 10",
+    "D": "NewSW(config)#interface f0/0\nNewSW(config-if)#switchport mode trunk\nNewSW(config-if)#switchport trunk allowed vlan 2, 10\nNewSW(config-if)#switchport trunk native vlan 2"
+  },
+  "345": {
+    "A": "R1#config t\nR1(config)#ip routing\nR1(config)#ip route default-route 192.168.1.1",
+    "B": "R1#config t\nR1(config)#ip routing\nR1(config)#ip route 192.168.1.1 0.0.0.0 0.0.0.0",
+    "C": "R1#config t\nR1(config)#ip routing\nR1(config)#ip route 0.0.0.0 0.0.0.0 192.168.1.1",
+    "D": "R1#config t\nR1(config)#ip routing\nR1(config)#ip default-gateway 192.168.1.1"
+  },
+  "354": {
+    "A": "R1(config)#interface ethernet0/0\nR1(config-if)#encapsulation dot1q 20\nR1(config-if)#ip address 10.20.20.1 255.255.255.0",
+    "B": "R1(config)#interface ethernet0/0.20\nR1(config-if)#encapsulation dot1q 20\nR1(config-if)#ip address 10.20.20.1 255.255.255.0",
+    "C": "R1(config)#interface ethernet0/0.20\nR1(config-if)#ip address 10.20.20.1 255.255.255.0",
+    "D": "R1(config)#interface ethernet0/0\nR1(config-if)#ip address 10.20.20.1 255.255.255.0"
+  },
+  "442": {
+    "A": "R3(config)#interface Gig0/0\nR3(config-if)#ip ospf priority 100",
+    "B": "R3(config)#interface Gig0/0\nR3(config-if)#ip ospf priority 1",
+    "C": "R3(config)#interface Gig0/1\nR3(config-if)#ip ospf priority 0",
+    "D": "R3(config)#interface Gig0/1\nR3(config-if)#ip ospf priority 100"
+  },
+  "443": {
+    "A": "R1(config)#ip route 10.0.0.0 255.255.255.0 172.16.0.2\nR1(config)#ip route 10.0.0.5 255.255.255.255 192.168.0.2",
+    "B": "R1(config)#ip route 10.0.0.0 255.255.0.0 172.16.0.2\nR1(config)#ip route 10.0.0.5 255.255.255.255 192.168.0.2",
+    "C": "R1(config)#ip route 10.0.0.0 255.255.255.0 192.168.0.2\nR1(config)#ip route 10.0.0.5 255.255.255.255 172.16.0.2",
+    "D": "R1(config)#ip route 10.0.0.0 255.255.0.0 192.168.0.2\nR1(config)#ip route 10.0.0.5 255.255.255.0 172.16.0.2"
+  },
+  "446": {
+    "A": "R3(config)#interface fastethernet 0/0\nR3(config-if)#ip ospf priority 0",
+    "B": "R1(config)#router ospf 1\nR1(config-router)#router-id 192.168.100.1",
+    "C": "R1(config)#interface fastethernet 0/0\nR1(config-if)#ip ospf priority 200",
+    "D": "R1(config)#interface fastethernet 0/0\nR1(config-if)#ip ospf priority 0",
+    "E": "R3(config)#interface fastethernet 0/0\nR3(config-if)#ip ospf priority 200"
+  },
+  "454": {
+    "A": "R4(config)#interface gi0/0\nR4(config-if)#ip ospf priority 20\nR5(config)#interface gi0/0\nR5(config-if)#ip ospf priority 10",
+    "B": "R5(config)#interface gi0/0\nR5(config-if)#ip ospf priority 120\nR4(config)#interface gi0/0\nR4(config-if)#ip ospf priority 110",
+    "C": "R3(config)#interface gi0/0\nR3(config-if)#ip ospf priority 255\nR2(config)#interface gi0/0\nR2(config-if)#ip ospf priority 240",
+    "D": "R2(config)#interface gi0/0\nR2(config-if)#ip ospf priority 259\nR3(config)#interface gi0/0\nR3(config-if)#ip ospf priority 256"
+  },
+  "457": {
+    "A": "interface gigabitethernet0/0\nip address 10.0.0.34 255.255.255.248\nip ospf priority 0",
+    "B": "interface gigabitethernet0/0\nip address 10.0.0.34 255.255.255.224\nip ospf priority 100",
+    "C": "interface gigabitethernet0/0\nip address 10.0.1.1 255.255.255.0\nip ospf priority 255",
+    "D": "interface gigabitethernet0/0\nip address 10.0.1.1 255.255.255.224\nip ospf priority 98"
+  },
+  "459": {
+    "A": "R17# !\nno ip domain lookup\nip cef ipv6 cef !\ninterface FastEthernet0/0\nno ip address\nduplex auto\nspeed auto\nipv6 address 2001:DB8:2::201/64 !\nInterface FastEthernet1/0\nno ip address\nduplex auto\nspeed auto\nipv6 address 2001:DB8:3::201/64 !\nno cdp log mismatch\nduplex ipv6 route 2001:DB8:4::/64 2001:DB8:4::302",
+    "B": "R17# !\nno ip domain lookup\nip cef\nipv6 unicast-routing !\ninterface FastEthernet0/0\nno ip address\nduplex auto\nspeed auto\nipv6 address 2001:DB8:2::201/64 !\nInterface FastEthernet1/0\nno ip address\nduplex auto\nspeed auto\nipv6 address 2001:DB8:3::201/64 !\nno cdp log mismatch\nduplex ipv6 route 2001:DB8:4::/64 2001:DB8:3::301",
+    "C": "R17# !\nno ip domain lookup\nip cef !\ninterface FastEthernet0/0\nno ip address\nduplex auto\nspeed auto\nipv6 address 2001:DB8:3::201/64 !\nInterface FastEthernet1/0\nno ip address\nduplex auto\nspeed auto\nipv6 address 2001:DB8:2::201/64 !\nno cdp log mismatch\nduplex ipv6 route 2001:DB8:4::/64 2001:DB8:5::101",
+    "D": "R17# !\nno ip domain lookup\nip cef\nipv6 unicast-routing !\ninterface FastEthernet0/0\nno ip address\nduplex auto\nspeed auto\nipv6 address 2001:DB8:2::201/64 !\nInterface FastEthernet1/0\nno ip address\nduplex auto\nspeed auto\nipv6 address 2001:DB8:3::201/64 !\nno cdp log mismatch\nduplex ipv6 route 2001:DB8:4::/64 2001:DB8:2::201"
+  },
+  "461": {
+    "A": "router ospf 1\nnetwork 192.168.1.1 0.0.0.0 area 0\ninterface e1/1\nip address 192.168.1.1 255.255.255.252\nip ospf cost 0",
+    "B": "router ospf 1\nnetwork 192.168.1.1 0.0.0.0 area 0 hello interval 15\ninterface e1/1\nip address 192.168.1.1 255.255.255.252",
+    "C": "router ospf 1\nnetwork 192.168.1.1 0.0.0.0 area 0\ninterface e1/1\nip address 192.168.1.1 255.255.255.252\nip ospf network broadcast",
+    "D": "router ospf 1\nnetwork 192.168.1.1 0.0.0.0 area 0\ninterface e1/1\nip address 192.168.1.1 255.255.255.252\nip ospf network point-to-point"
+  },
+  "470": {
+    "A": "R14#\ninterface FastEthernet0/0\nip address 10.73.65.65 255.255.255.252\nip ospf network broadcast\nip ospf priority 0\nip mtu 1400\nrouter ospf 10\nrouter-id 10.10.1.14\nnetwork 10.10.1.14 0.0.0.0 area0\nnetwork 10.73.65.64 0.0.0.3 area0\nR86#\ninterface Loopback0\nip address 10.10.1.86 255.255.255.255\ninterface FastEthernet0/0\nip address 10.73.65.66 255.255.255.252\nip ospf network broadcast\nip mtu 1500\nrouter ospf 10\nrouter-id 10.10.1.86\nnetwork 10.10.1.86 0.0.0.0 area 0\nnetwork 10.73.65.64 0.0.0.3 area 0",
+    "B": "R14#\ninterface Loopback0\nip ospf 10 area 0\ninterface FastEthernet0/0\nip address 10.73.65.65 255.255.255.252\nip ospf network broadcast\nip ospf 10 area 0\nip mtu 1500\nrouter ospf 10\nip ospf priority 255\nrouter-id 10.10.1 14\nR86#\ninterface Loopback0\nip ospf 10 area 0\ninterface FastEthernet0/0\nip address 10.73.65.66 255.255.255.252\nip ospf network broadcast\nip ospf 10 area 0\nip mtu 1500\nrouter ospf 10\nrouter-id 10.10.1.86",
+    "C": "R14#\ninterface FastEthernet0/0\nip address 10.73.65.65 255.255.255.252\nip ospf network broadcast\nip ospf priority 255\nip mtu 1500\nrouter ospf 10\nrouter-id 10.10.1.14\nnetwork 10.10.1.14 0.0.0.0 area0\nnetwork 10.73.65.64 0.0.0.3 area0\nR86#\ninterface FastEthernet0/0\nip address 10.73.65.66 255.255.255.252\nip ospf network broadcast\nip mtu 1500\nrouter ospf 10\nrouter-id 10.10.1.86\nnetwork 10.10.1.86 0.0.0.0 area 0\nnetwork 10.73.65.64 0.0.0.3 area 0",
+    "D": "R14#\ninterface FastEthernet0/0\nip address 10.73.65.65 255.255.255.252\nip ospf network broadcast\nip ospf priority 255\nip mtu 1500\nrouter ospf 10\nrouter-id 10.10.1.14\nnetwork 10.10.1.14 0.0.0.0 area0\nnetwork 10.73.65.64 0.0.0.3 area0\nR86#\ninterface FastEthernet0/0\nip address 10.73.65.66 255.255.255.252\nip ospf network broadcast\nip mtu 1400\nrouter ospf 10\nrouter-id 10.10.1.86\nnetwork 10.10.1.86 0.0.0.0 area 0\nnetwork 10.73.65.64 0.0.0.3 area 0"
+  },
+  "472": {
+    "A": "R1(config)#ip route 0.0.0.0 0.0.0.0 10.10.10.6\nR2(config)#ip route 0.0.0.0 0.0.0.0 10.10.10.5",
+    "B": "R1(config)#ip route 10.10.13.10 255.255.255.255 10.10.10.2\nR2(config)#ip route 192.168.0.100 255.255.255.255 10.10.10.1",
+    "C": "R1(config)#ip route 10.10.13.10 255.255.255.255 10.10.10.6\nR2(config)#ip route 192.168.0.100 255.255.255.255 10.10.10.5",
+    "D": "R1(config)#ip route 0.0.0.0 0.0.0.0 10.10.10.6 2\nR2(config)#ip route 0.0.0.0 0.0.0.0 10.10.10.5 2"
+  },
+  "474": {
+    "A": "R1(config)#interface FastEthernet 0/0\nR1(config-if)#ip ospf priority 1\nR1#clear ip ospf process",
+    "B": "R3(config)#interface FastEthernet 0/1\nR3(config-if)#ip ospf priority 200\nR3#clear ip ospf process",
+    "C": "R2(config)#interface FastEthernet 0/2\nR2(config-if)#ip ospf priority 1\nR2#clear ip ospf process",
+    "D": "R1(config)#interface FastEthernet 0/0\nR1(config-if)#ip ospf priority 200\nR1#clear ip ospf process"
+  },
+  "479": {
+    "A": "OldR(config)#interface g0/0/0\nOldR(config-if)#ip ospf hello-interval 15",
+    "B": "OldR(config)#router ospf 1\nOldR(config-router)#network 192.168.1.0 255.255.255.0 area 2",
+    "C": "OldR(config)#interface g0/0/0\nOldR(config-if)#ip ospf dead-interval 15",
+    "D": "OldR(config)#router ospf 1\nOldR(config-router)#no router-id 192.168.1.1"
+  },
+  "483": {
+    "A": "R2(config)#router ospf 1\nR2(config-router)#network 192.168.1.0 255.255.255.0 area 2",
+    "B": "R2(config)#interface g0/0/0\nR2(config-if)#ip ospf hello-interval 10",
+    "C": "R2(config)#interface g0/0/0\nR2(config-if)#ip ospf dead-interval 40",
+    "D": "R2(config)#router ospf 1\nR2(config-router)#router-id 192.168.1.2"
+  },
+  "484": {
+    "A": "R14#\ninterface FastEthernet0/0\nip address 10.73.65.65 255.255.255.252\nip ospf priority 255\nip mtu 1500\nrouter ospf 10\nrouter-id 10.10.1.14\nnetwork 10.10.1.14 0.0.0.0 area 0\nnetwork 10.73.65.64 0.0.0.3 area 0\nR86#\ninterface FastEthernet0/0\nip address 10.73.65.66 255.255.255.252\nip mtu 1400\nrouter ospf 10\nrouter-id 10.10.1.86\nnetwork 10.10.1.86 0.0.0.0 area 0\nnetwork 10.73.65.64 0.0.0.3 area 0",
+    "B": "R14#\ninterface Loopback0\nip ospf 10 area 0\ninterface FastEthernet0/0\nip address 10.73.65.65 255.255.255.252\nip ospf 10 area 0\nip mtu 1500\nrouter ospf 10\nip ospf priority 255\nrouter-id 10.10.1.14\nR86#\ninterface Loopback0\nip ospf 10 area 0\ninterface FastEthernet0/0\nip address 10.73.65.66 255.255.255.252\nip ospf 10 area 0\nip mtu 1500\nrouter ospf 10\nrouter-id 10.10.1.86",
+    "C": "R14#\ninterface FastEthernet0/0\nip address 10.73.65.65 255.255.255.252\nip ospf priority 0\nip mtu 1500\nrouter ospf 10\nrouter-id 10.10.1.14\nnetwork 10.10.1.14 0.0.0.0 area 0\nnetwork 10.73.65.64 0.0.0.3 area 0\nR86#\ninterface FastEthernet0/0\nip address 10.73.65.66 255.255.255.252\nip mtu 1500\nrouter ospf 10\nrouter-id 10.10.1.86\nnetwork 10.10.1.86 0.0.0.0 area 0\nnetwork 10.73.65.64 0.0.0.3 area 0",
+    "D": "R14#\ninterface Loopback0\nip ospf 10 area 0\ninterface FastEthernet0/0\nip address 10.73.65.65 255.255.255.252\nip ospf priority 255\nip ospf 10 area 0\nip mtu 1500\nrouter ospf 10\nrouter-id 10.10.1.14\nR86#\ninterface Loopback0\nip ospf 10 area 0\ninterface FastEthernet0/0\nip address 10.73.65.66 255.255.255.252\nip ospf 10 area 0\nip mtu 1500\nrouter ospf 10\nrouter-id 10.10.1.86"
+  },
+  "487": {
+    "A": "R2(config)#intergface gi0/0\nR2(config-if)#ip ospf priority 100",
+    "B": "R2(config)#router ospf 1\nR2(config-router)#router-id 192.168.2.7",
+    "C": "R2(config)#router ospf 1\nR2(config-router)#router-id 10.100.100.100",
+    "D": "R2(config)#intergface gi0/0\nR2(config-if)#ip ospf priority 1"
+  },
+  "492": {
+    "A": "R1(config)#ip route 10.10.13.10 255.255.255.255 10.10.10.6\nR2(config)#ip route 192.168.0.100 255.255.255.255 10.10.10.5",
+    "B": "R1(config)#ip route 10.10.13.10 255.255.255.128 10.10.10.6\nR2(config)#lp route 192.168.0.100 255.255.255.0 10.10.10.5",
+    "C": "R1(config)#ip route 10.10.13.10 255.255.255.252 10.10.10.6\nR2(config)#tp route 192.168.0.100 255.255.255.252 10.10.10.5",
+    "D": "R1(config)#ip route 10.10.13.10 255.255.255.255 10.10.10.2\nR2(config)#ip route 192.168.0.100 255.255.255.255 10.10.10.1"
+  },
+  "498": {
+    "A": "Router(config)#interface GigabitEthernet 0/0\nRouter(config-if)#ip ospf cost 5",
+    "B": "Router(config)#interface GigabitEthernet 0/0\nRouter(config-if)#ip ospf priority 1",
+    "C": "Router(config)#interface GigabitEthernet 0/0\nRouter(config-if)#ip ospf area 2",
+    "D": "Router(config)#interface GigabitEthernet 0/0\nRouter(config-if)#ip ospf network point-to-point"
+  },
+  "560": {
+    "A": "SW1#\nconfig t\nSW1(config)#ntp peer 192.168.1.1\nSW1(config)#ntp access-group peer accesslist1",
+    "B": "SW1#\nconfig t\nSW1(config)#ntp master\nSW1(config)#ntp server192.168.1.1",
+    "C": "SW1#\nconfig t\nSW1(config)#ntp backup\nSW1(config)#ntp server192.168.1.1",
+    "D": "SW1#\nconfig t\nSW1(config)#ntp server192.168.1.1\nSW1(config)#ntp access-group peer accesslist1"
+  },
+  "605": {
+    "A": "R1(config)#username admin\nR1(config-if)#line vty 0 4\nR1(config-line)#password [email protected] R1(config- line)#transport input telnet",
+    "B": "R1(config)#username admin privilege 15 secret [email protected]\nR1(config-if)#line vty 0 4 R1(config- line)#login local",
+    "C": "R1(config)#username admin secret [email protected]\nR1(config-if)#line vty 0 4\nR1(config-line)#login local\nR1(config)#enable secret [email protected]",
+    "D": "R1(config)#username admin\nR1(config-if)#line vty 0 4\nR1(config-line)#password [email protected]"
+  },
+  "645": {
+    "A": "R1#enable\nR1#configure terminal\nR1(config)#ip domain-name cisco.com\nR1(config)#crypto key generate ec keysize 1024",
+    "B": "R1#enable\nR1#configure terminal\nR1(config)#ip domain-name cisco.com\nR1(config)#crypto key generate ec keysize 2048",
+    "C": "R1#enable\nR1#configure terminal\nR1(config)#ip domain-name cisco.com\nR1(config)#crypto key encrypt rsa name myKey",
+    "D": "R1#enable\nR1#configure terminal\nR1(config)#ip domain-name cisco.com\nR1(config)#crypto key generate rsa modulus 1024"
+  },
+  "696": {
+    "A": "line vty 0 15 access-class 120 in !\nip access-list extended 120 permit tcp 10.139.58.0 0.0.0.15 any eq 22",
+    "B": "interface FastEthernet0/0\nip address 10.122.49.1 255.255.255.252\nip access-group 10 in !\nip access-list standard 10 permit udp 10.139.58.0 0.0.0.7 host 10.122.49.1 eq 22",
+    "C": "interface FastEthernet0/0\nip address 10.122.49.1 255.255.255.252\nip access-group 110 in !\nip access-list standard 110 permit tcp 10.139.58.0 0.0.0.15 eq 22 host 10.122.49.1",
+    "D": "line vty 0 15 access-group 120 in !\nip access-list extended 120 permit tcp 10.139.58.0 0.0.0.15 any eq 22"
+  },
+  "834": {
+    "A": "SW1#\ninterface Gi0/1\nswitchport\nswitchport mode access\nchannel-group 1 mode active !\ninterface Gi0/2\nswitchport\nswitchport mode access\nchannel-group 1 mode active\nSW2#\ninterface Gi0/1\nswitchport\nswitchport mode access\nchannel-group 1 mode desirable !\ninterface Gi0/2\nswitchport\nswitchport mode access\nchannel-group 1 mode desirable",
+    "B": "SW1#\ninterface Gi0/1\nswitchport\nswitchport mode trunk\nchannel-group 1 mode on !\ninterface Gi0/2\nswitchport\nswitchport mode trunk\nchannel-group 1 mode auto\nSW2#\ninterface Gi0/1\nswitchport\nswitchport mode trunk\nchannel-group 1 mode auto !\ninterface Gi0/2\nswitchport\nswitchport mode trunk\nchannel-group 1 mode on\ninterface port-channel 1\nswitchport\nswitchport mode trunk",
+    "C": "SW1#\ninterface Gi0/1\nswitchport\nswitchport mode trunk\nchannel-group 1 mode active !\ninterface Gi0/2\nswitchport\nswitchport mode trunk\nchannel-group 1 mode active\nSW2#\ninterface Gi0/1\nswitchport\nswitchport mode trunk\nchannel-group 1 mode passive !\ninterface Gi0/2\nswitchport\nswitchport mode trunk\nchannel-group 1 mode passive",
+    "D": "SW1#\ninterface Gi0/1\nswitchport\nswitchport mode trunk\nchannel-group 1 mode auto !\ninterface Gi0/2\nswitchport\nswitchport mode trunk\nchannel-group 1 mode auto\nSW2#\ninterface Gi0/1\nswitchport\nswitchport mode trunk\nchannel-group 1 mode desirable !\ninterface Gi0/2\nswitchport\nswitchport mode trunk\nchannel-group 1 mode desirable"
+  },
+  "846": {
+    "A": "switchport mode trunk\nswitchport trunk native vlan 321\nswitchport trunk allowed vlan 100,200,300",
+    "B": "switchport mode dynamic desirable\nswitchport trunk native vlan 321\nswitchport trunk allowed vian 100,200,300",
+    "C": "switchport trunk\nencapsulation dot1q\nswitchport trunk native vlan 321\nswitchport trunk allowed vlan 100-300",
+    "D": "switchport nonegotiate\nswitchport access vlan 321\nswitchport trunk allowed vlan except 2-1001"
+  },
+  "875": {
+    "A": "SW1#\ninterface Gi0/1\nswitchport mode trunk\nswitchport trunk allowed vlan 5,7,9,108\nswitchport trunk native vlan 5\ninterface Gi0/2\nswitchport mode trunk\nswitchport trunk allowed vlan 5,7,9,108\nSW2#\ninterface Gi0/1\nswitchport mode access\nswitchport access vlan 7\ninterface Gi0/7\nswitchport mode trunk\nswitchport trunk allowed vlan 7,9,108",
+    "B": "SW1#\ninterface Gi0/1\nswitchport mode trunk\nswitchport trunk allowed vlan 5,7,9,108\nswitchport trunk native vlan 5\ninterface Gi0/2\nswitchport mode access\nswitchport trunk allowed vlan 7,9,108\nSW2#\ninterface Gi0/1\nswitchport mode access\nno switchport access vlan 1\nswitchport access vlan 7\ninterface Gi0/7\nswitchport mode trunk\nswitchport trunk allowed vlan 7,9,108\nswitchport trunk native vlan 5",
+    "C": "SW#1 -\ninterface Gi0/1\nswitchport mode trunk\nswitchport trunk allowed vlan 5,7,9,108\nswitchport trunk native vlan 5\ninterface Gi0/2\nswitchport mode trunk\nswitchport trunk allowed vlan 5,7,9,108\nSW2#\ninterface Gi0/1\nswitchport mode access\nswitchport access vlan 7\ninterface Gi0/7\nswitchport mode trunk\nswitchport trunk allowed vlan 5,7,9,108\nswitchport trunk native vlan 5",
+    "D": "SW1#\ninterface Gi0/1\nswitchport mode trunk\nswitchport trunk allowed vian 5,7,9,108\ninterface Gi0/2\nswitchport mode trunk\nswitchport trunk allowed vlan 7,9,108\nSW2#\ninterface Gi0/1\nswitchport mode trunk\nswitchport trunk allowed vlan 7\ninterface Gi0/7\nswitchport mode trunk\nswitchport trunk allowed vlan 5,7,9,108"
+  },
+  "904": {
+    "A": "R1(config-if)#ip address 10.10.10.1 255.255.255.252\nR2(config-if)#ip address 10.10.10.2 255.255.255.252",
+    "B": "R1(config-if)#ip address 10.10.10.1 255.255.255.240\nR2(config-if)#ip address 10.10.10.12 255.255.255.240",
+    "C": "R1(config-if)#ip address 10.10.10.1 255.255.255.248\nR2(config-if)#ip address 10.10.10.4 255.255.255.248",
+    "D": "R1(config-if)#ip address 10.10.10.1 255.255.255.0\nR2(config-if)#ip address 10.10.10.5 255.255.255.0"
+  },
+  "964": {
+    "A": "Router(config)#hostname R15 -\nR15(config)#ip domain-name cisco.com\nR15(config)#crypto key generate rsa general-keys modulus 1024\nR15(config)#ip ssh version 2 -\nR15(config-line)#line vty 0 15 -\nR15(config-line)# transport input ssh",
+    "B": "Router(config)#crypto key generate rsa general-keys modulus 1024\nRouter(config)#ip ssh version 2 -\nRouter(config-line)#line vty 015\nRouter(config-line)# transport input ssh Router(contig)#ip ssh logging events\nR15(config)#ip ssh stricthostkeycheck",
+    "C": "Router(config)#hostname R15 -\nR15(config)#crypto key generate rsa general-keys modulus 1024\nR15(config-line)#line vty 0 15 -\nR15(config-line)# transport input ssh\nR15(config)#ip ssh source-interface Fa0/0\nR15(config)#ip ssh stricthostkeycheck",
+    "D": "Router(config)#ip domain-name cisco.com\nRouter(config)#crypto key generate rsa general-keys modulus 1024 Router(contig)#ip ssh version 2 -\nRouter(config-line)#line vty 0 15\nRouter(config-line)# transport input all\nRouter(config)#ip ssh logging events"
+  },
+  "972": {
+    "A": "R1(config)#username admin -\nR1(config-if)#line vty 0 4 -\nR1(config-line)#password [email protected]\nR1(config-line)#transport input telnet",
+    "B": "R1(config)#username admin privilege 15 secret [email protected]\nR1(config-if)#line vty 0 4 -\nR1(config-line)#login local",
+    "C": "R1(config)#username admin secret [email protected]\nR1(config-if)#line vty 0 4 -\nR1(config-line)#login local -\nR1(config)#enable secret [email protected]",
+    "D": "R1(config)#username admin -\nR1(config-if)#line vty 0 4 -\nR1(config-line)#password [email protected]"
+  },
+  "999": {
+    "A": "interface FastEthernet0/0\nip address 10.122.49.1 255.255.255.252\nip access-group 110 in\nip access-list extended 110 permit tcp 10.139.58.0 0.0.0.15 host 10.122.49.1 eq 22",
+    "B": "interface FastEthernet0/0\nip address 10.122.49.1 255.255.255.240 access-group 120 in\nip access-list extended 120 permit tcp 10.139.58.0 255.255.255.248 any eq 22",
+    "C": "interface FastEthernet0/0\nip address 10.122.49.1 255.255.255.252\nip access-group 105 in\nip access-list standard 105 permit tcp 10.139.58.0 0.0.0.7 eq 22 host 10.122.49.1",
+    "D": "interface FastEthernet0/0\nip address 10.122.49.1 255.255.255.248\nip access-group 10 in\nip access-list standard 10 permit udp 10.139.58.0 0.0.0.7 host 10.122.49.1 eq 22"
+  },
+  "1033": {
+    "A": "Switch1(config) #\ninterface Fa0/0\nSwitch1(config-if) #\nlacp port-priority 100\nSwitch1(config) #\ninterface Fa0/1\nSwitch1(config-if) #\nlacp port-priority 200",
+    "B": "Switch1(config) #\ninterface port-channel 1\nSwitch1(config-if) # port-channel min-links 1",
+    "C": "Switch1(config) #\ninterface Fa0/0\nSwitch1(config-if) #\nlacp port-priority 200\nSwitch1(config) #\ninterface Fa0/1\nSwitch1(config-if) #\nlacp port-priority 100",
+    "D": "Switch1(config) #\ninterface port-channel 1\nSwitch1(config-if) #\nlacp max-bundle 1"
+  },
+  "1046": {
+    "A": "interface port-channel 2\nchannel-group 2 mode desirable",
+    "B": "interface fastethernet 1/1\nchannel-group 2 mode on",
+    "C": "interface fastethernet 1/1\nchannel-group 2 mode active",
+    "D": "interface port-channel 2\nchannel-group 2 mode auto"
+  },
+  "1050": {
+    "A": "Switch(config-if)#switchport mode trunk\nSwitch(config-if)#switchport trunk\nencapsulation dot1q\nSwitch(config-if)#switchport trunk allowed vlan 100,105\nSwitch(config-if)#switchport trunk native vlan 3",
+    "B": "Switch(config-if)#switchport mode trunk\nSwitch(config-if)#switchport trunk\nencapsulation isl\nSwitch(config-if)#switchport trunk allowed vlan 100,105\nSwitch(config-if)#switchport trunk native vlan 1",
+    "C": "Switch(config-if)#switchport mode dynamic\nSwitch(config-if)#switchport access vlan 100,105\nSwitch(config-if)#switchport trunk native vlan 1",
+    "D": "Switch(config-if)#switchport mode access\nSwitch(config-if)#switchport trunk\nencapsulation dot1q\nSwitch(config-if)#switchport access vlan 100,105\nSwitch(config-if)#switchport trunk native vlan 3"
+  },
+  "1053": {
+    "A": "no switchport channel group 1 mode active",
+    "B": "no switchport\nchannel-group 1 mode on",
+    "C": "switchport mode trunk\nchannel-group 1 mode active",
+    "D": "switchport\nswitchport mode trunk"
+  },
+  "1056": {
+    "A": "switchport mode trunk\nswitchport trunk\nencapsulation dot1q",
+    "B": "switchport mode trunk\nswitchport trunk allowed vlan all\nswitchport dot1q ethertype 0800",
+    "C": "switchport mode dynamic desirable\nswitchport trunk allowed vlan all\nswitchport trunk native vlan 7",
+    "D": "switchport dynamic auto\nswitchport nonegotiate"
+  },
+  "1141": {
+    "A": "ip dhcp snooping vlan 1-4094 !\ninterface Port-channel1\nswitchport protected\nswitchport port-security maximum 1",
+    "B": "ip dhcp snooping vlan 1-4094 ip dhcp snooping !\ninterface Port-channel1 ip dhcp snooping trust",
+    "C": "ip dhcp snooping !\ninterface Port-channel1\nswitchport port-security maximum 1\nswitchport port-security",
+    "D": "ip arp inspection trust !\ninterface Port-channel1\nswitchport port-security maximum 4094\nswitchport port-security ip verify source mac-check",
+    "E": "ip arp inspection vlan 1-4094 !\ninterface Port-channel1\nip arp inspection trust"
+  },
+  "1149": {
+    "A": "interface GigabitEthernet1/1\nswitchport access vlan 11 !\ninterface GigabitEthernet1/24\nswitchport mode trunk\nswitchport trunk allowed vlan 10,11",
+    "B": "interface GigabitEthernet1/3\nswitchport mode access\nswitchport access vlan 10 !\ninterface GigabitEthernet1/24\nswitchport mode trunk\nswitchport trunk allowed vlan 2,10",
+    "C": "interface GigabitEthernet1/3\nswitchport mode access\nswitchport access vlan 10 !\ninterface GigabitEthernet1/24\nswitchport mode trunk",
+    "D": "interface GigabitEthernet1/1\nswitchport mode access\nswitchport access vlan 11 !\ninterface GigabitEthernet1/24\nswitchport mode trunk"
+  },
+  "1204": {
+    "A": "switchport mode dynamic auto\nswitchport private-vlan association host 5",
+    "B": "switchport mode trunk\nswitchport trunk pruning vlan add 5",
+    "C": "switchport mode dynamic desirable\nswitchport trunk allowed vlan add 5",
+    "D": "switchport mode dynamic auto\nswitchport trunk\nencapsulation negotiate"
+  },
+  "1318": {
+    "A": "R2(config)#interface g0/0/0 -\nR2(config-if)#ip ospf hello-interval 10",
+    "B": "R2(config)#router ospf 1 -\nR2(config-router)#router-id 192.168.1.1",
+    "C": "R2(config)#router ospf 1 -\nR2(config-router)#network 192.168.1.0 255.255.255.0 area 2",
+    "D": "R2(config)#interface g0/0/0 -\nR2(config-if)#ip ospf dead-interval 45"
+  },
+  "1343": {
+    "A": "SW1(config)#interface range f0/13 -14\nSW1(config-if-range)#channel-group 1 mode auto\nSW2(config)#interface range f0/13 -14\nSW2(config-if-range)#channel-group 1 mode passive",
+    "B": "SW1(config)#interface range f0/13 -14\nSW1(config-if-range)#channel-group 1 mode desirable\nSW2(config)#interface range f0/13 -14\nSW2(config-if-range)#channel-group 1 mode passive",
+    "C": "SW1(config)#interface range f0/13 -14\nSW1(config-if-range)#channel-group 1 mode on\nSW2(config)#interface range f0/13 -14\nSW2(config-if-range)#channel-group 1 mode passive",
+    "D": "SW1(config)#interface range f0/13 -14\nSW1(config-if-range)#channel-group 1 mode active\nSW2(config)#interface range f0/13 -14\nSW2(config--range)#channel-group 1 mode passive"
+  },
+  "1359": {
+    "A": "interface Gi1/0/34\nswitchport mode trunk\nswitchport trunk allowed native vlan 400\nswitchport voice vlan 4041",
+    "B": "interface Gi1/0/34\nswitchport mode trunk\nswitchport trunk allowed vlan 400, 4041\nswitchport voice vlan 4041",
+    "C": "interface Gi1/0/34\nswitchport mode access\nswitchport access vlan 400\nswitchport voice vlan 4041",
+    "D": "interface Gi1/0/34\nswitchport mode access\nswitchport access vlan 4041\nswitchport voice vlan 400"
   }
 }
