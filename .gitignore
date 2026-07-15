@@ -11,3 +11,17 @@ preview-изменений.html
 
 # OS cruft
 .DS_Store
+
+# Внутренние рабочие инструкции и заметки — не публикуем в репозитории
+CLAUDE.md
+MEMORY.md
+HANDOFF.md
+ИНСТРУКЦИЯ.md
+ccna-exam-simulator/README.md
+ccna-exam-simulator/README.ru.md
+
+# Неиспользуемый архив SVG-топологий (app.js рисует схемы только из images/exhibits/)
+ccna-exam-simulator/images/topo/
+
+# Дизайн-исходник стиля диаграмм — для запуска приложения не нужен
+diagrams/
