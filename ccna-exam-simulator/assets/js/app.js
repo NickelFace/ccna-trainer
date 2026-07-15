@@ -6,7 +6,7 @@ const $ = s => document.querySelector(s);
 const app = () => document.getElementById('app');
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; };
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0;[a[i], a[j]] = [a[j], a[i]]; } return a; };
-const ASSET_V = '5';                        // bump when topo SVGs / exhibits are regenerated (cache-bust)
+const ASSET_V = '6';                        // bump when exhibits are regenerated (cache-bust)
 const IMG = n => `images/exhibits/q${n}.jpg?v=${ASSET_V}`;
 
 let DATA = [], META = null, DOM = {};      // DOM: id -> {name,weight}
@@ -219,7 +219,7 @@ function qBadges(q, extra = '') {
   return h + extra + `</div>`;
 }
 function exhibit(q) {
-  if (q.svg) return `<img class="eximg svgex" src="images/topo/${q.svg}?v=${ASSET_V}" alt="exhibit ${q.n}" loading="lazy">`;
+  // Схемы берём только из images/exhibits/ (растровые кропы из PDF); topo/*.svg — архив, не используется.
   return q.img ? `<img class="eximg" src="${IMG(q.n)}" alt="exhibit ${q.n}" loading="lazy">` : '';
 }
 
