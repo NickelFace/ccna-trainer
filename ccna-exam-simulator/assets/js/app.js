@@ -168,6 +168,10 @@ function cfg(mode) {
       <select id="cnt">${(isEx ? [30, 60, 100] : [20, 50, 100, 0]).map(c => `<option value="${c}"${c === (isEx ? 60 : 20) ? ' selected' : ''}>${c || 'все'}</option>`).join('')}</select>
       ${isEx ? '' : '<label class="chip on" id="shf" onclick="this.classList.toggle(\'on\')">перемешать</label>'}
     </div>
+    ${isEx ? '' : `<div class="lbl">Или сразу к вопросу по номеру (фильтры выше игнорируются)</div>
+    <div class="row"><input class="qstart" id="qstart" type="number" min="1" max="${maxQN()}"
+      placeholder="Введите любой номер вопроса: 1 – ${maxQN()}"
+      onkeydown="if(event.key==='Enter')startPractice()"></div>`}
     ${isEx ? `<div class="lbl">Время (минут)</div>
     <div class="row"><select id="min"><option>30</option><option selected>90</option><option>120</option><option value="0">без таймера</option></select></div>` : ''}
     <div class="nav"><button class="btn" onclick="home()">← назад</button><div class="spacer"></div>
@@ -200,7 +204,18 @@ function startCustomExam() {
   const qs = shuffle(domPool(false)).slice(0, n);
   beginExam(qs, mins);
 }
+const maxQN = () => DATA.reduce((m, q) => Math.max(m, q.n), 0);
+
 function startPractice() {
+  // Explicit question number wins: whole bank in order, opened at that question.
+  const jn = $('#qstart') ? parseInt($('#qstart').value, 10) : 0;
+  if (jn) {
+    const all = DATA.slice().sort((a, b) => a.n - b.n);
+    const i = all.findIndex(q => q.n === jn);
+    if (i < 0) { $('#qstart').value = ''; $('#qstart').placeholder = `Вопроса ${jn} нет в банке`; return; }
+    S = { mode: 'pr', qs: all, i, ans: {}, ok: 0, done: 0 };
+    return renderPractice();
+  }
   let p = domPool(true);
   if ($('#shf').classList.contains('on')) p = shuffle(p);
   const c = +$('#cnt').value; if (c) p = p.slice(0, c);
@@ -271,13 +286,13 @@ function rationale(q, given) {
   // Which option blocks to show:
   //  • multi-answer question (choose 2-3): show every option in full;
   //  • single-answer, correct: only the correct option's block;
-  //  • single-answer, wrong: only the wrongly-picked option's block.
+  //  • single-answer, wrong: the wrongly-picked option AND the correct one.
   const multi = q.a.length > 1;
   const answeredOk = !!given && given.slice().sort().join('') === q.a.split('').sort().join('');
   let h = `<div class="rationale">`;
   for (const k of Object.keys(q.o)) {
     const ok = q.a.includes(k), picked = !!(given && given.includes(k));
-    const show = multi ? true : (answeredOk ? ok : picked);
+    const show = multi ? true : (answeredOk ? ok : (picked || ok));
     if (!show) continue;
     let tag = ok ? '✓ верно' : '✗ неверно';
     if (picked && !ok) tag += ' · твой выбор';
@@ -296,6 +311,9 @@ function renderPractice() {
   const q = S.qs[S.i]; if (!q) return home();
   const st = S.ans[q.n];
   let h = `<div class="row"><button class="btn" onclick="home()">✕ выход</button><div class="spacer"></div>
+    <input class="qjump" id="qjump" type="number" placeholder="№" title="Перейти к вопросу по номеру"
+      onkeydown="if(event.key==='Enter')pGoto()">
+    <button class="btn" onclick="pGoto()">→</button>
     <div class="stat">${S.i + 1}/${S.qs.length}</div>
     <div class="stat"><span class="ok">${S.ok}</span>✓ <span class="bad">${S.done - S.ok}</span>✗</div></div>`;
   h += `<div class="card">${qBadges(q)}${exhibit(q)}${q.y === 'sim' ? '' : `<div class="qtext">${esc(q.t)}</div>`}${cliBlock(q.cli)}`;
@@ -345,6 +363,20 @@ function gradeDD(q, placement) {
   S.ans[q.n] = { placement, ok }; S.done++; if (ok) S.ok++; renderPractice();
 }
 function pMove(d) { const n = S.i + d; if (n >= 0 && n < S.qs.length) { S.i = n; renderPractice(); } else if (n >= S.qs.length) home(); }
+
+// Jump to any question by its bank number. If it isn't in the current practice set,
+// it's inserted right after the current one so the session continues normally.
+function pGoto() {
+  const el = $('#qjump'); const n = parseInt(el.value, 10);
+  if (!n) return;
+  let i = S.qs.findIndex(q => q.n === n);
+  if (i < 0) {
+    const q = DATA.find(x => x.n === n);
+    if (!q) { el.value = ''; el.placeholder = 'нет'; return; }
+    S.qs.splice(S.i + 1, 0, q); i = S.i + 1;
+  }
+  S.i = i; renderPractice();
+}
 
 // ============================ DRAG & DROP ENGINE ============================
 // q.dd = { items:[str...], buckets:[{label,correct:[str...]}], note? }

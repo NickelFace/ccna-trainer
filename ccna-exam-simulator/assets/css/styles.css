@@ -122,6 +122,8 @@ details.cli-wrap summary:hover{color:#fff}
 .nav{display:flex;gap:10px;align-items:center;margin-top:18px;flex-wrap:wrap}
 .stat{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:13px}
 .stat b{color:var(--cyan)}.stat .ok{color:var(--green)}.stat .bad{color:var(--red)}
+.qjump{width:74px;padding:6px 8px;font-size:13px;text-align:center}
+.qstart{width:100%;max-width:420px}
 .timer{font-family:'Unbounded';font-size:19px;color:var(--amber)}
 .timer.low{color:var(--red);animation:pulse 1s infinite}
 @keyframes pulse{50%{opacity:.5}}
