@@ -797,5 +797,8 @@
  },
  "494": {
   "t": "An OSPF neighbor relationship must be configured using these guidelines: R1 is only permitted to establish a neighbor with R2. R1 will never participate in DR elections. R1 will use a router-id of 10.1.1.1. Which configuration must be used?"
+ },
+ "1184": {
+  "cli": "D    10.245.54.69/29 [90/9388] via G0/16\nD    10.245.54.69/29 [90/50147] via G0/21\nR    10.245.54.69/29 [120/15] via G0/5\nR    10.245.54.69/29 [120/13] via G0/4"
  }
 }
