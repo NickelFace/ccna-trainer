@@ -1,4 +1,7 @@
 {
+ "11": {
+  "cli": "[root@HostTest ~]# ip route\ndefault via 192.168.1.193 dev eth1  proto static\n192.168.1.0/26 dev eth1  proto kernel  scope link  src 192.168.1.200  metric 1\n\n[root@HostTest ~]# ip addr show eth1\neth1:  mtu 1500 qdisc pfifo_fast qlen 1000\n    link/ether 00:0C:22:83:79:A3 brd ff:ff:ff:ff:ff:ff\n    inet 192.168.1.200/26 brd 192.168.1.255 scope global eth1\n    inet6 fe80::20c:29ff:fe89:79b3/64 scope link\n    valid_lft forever preferred_lft forever"
+ },
  "379": {
   "t": "Refer to the exhibit. Router R1 must be configured to reach the 10.0.3.0/24 network from the 10.0.1.0/24 segment. Which command must be used to configure the route?"
  },
