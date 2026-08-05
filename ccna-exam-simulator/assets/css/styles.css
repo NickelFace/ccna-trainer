@@ -140,7 +140,7 @@ details.cli-wrap summary:hover{color:#fff}
 .big-score{font-family:'Unbounded';font-size:52px;text-align:center;margin:8px 0 2px}
 .scaled{text-align:center;font-size:14px;color:var(--muted);margin-bottom:4px}
 .pass{color:var(--green)}.fail{color:var(--red)}
-.review-item{border:1px solid var(--border);border-radius:9px;padding:14px;margin-bottom:10px}
+.review-item{background:var(--panel);border:1px solid var(--border2);border-radius:14px;padding:18px;margin-bottom:22px;box-shadow:0 0 24px rgba(0,212,255,.05)}
 
 /* domain report bars */
 .dbar{margin:10px 0}

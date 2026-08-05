@@ -567,11 +567,20 @@ function finishExam() {
   // Cisco scales 300..1000, pass 825. Approximate linear map from raw %.
   const scaled = Math.round(300 + (pct / 100) * 700);
   const pass = scaled >= 825;
+  S.result = { rev, perDom, ok, pct, scaled, pass };
+  // Default to "работа над ошибками" — jump straight to what needs fixing.
+  S.reviewFilter = rev.some(r => !r.good) ? 'bad' : 'all';
+  renderResults();
+}
+function setReviewFilter(mode) { S.reviewFilter = mode; renderResults(); }
+function renderResults() {
+  const { rev, perDom, ok, pct, scaled, pass } = S.result;
+  const nBad = rev.filter(r => !r.good).length, nOk = rev.length - nBad;
 
   let h = `<h1>Результат</h1><div class="card">
     <div class="big-score ${pass ? 'pass' : 'fail'}">${scaled}</div>
     <div class="scaled">шкала 300–1000 · порог 825</div>
-    <div class="center sub">${ok} из ${S.qs.length} верно (${pct}%) · ${pass ? '<span class="pass">✓ проходной уровень</span>' : '<span class="fail">✗ ниже проходного</span>'}</div>
+    <div class="center sub">${ok} из ${rev.length} верно (${pct}%) · ${pass ? '<span class="pass">✓ проходной уровень</span>' : '<span class="fail">✗ ниже проходного</span>'}</div>
     <div class="nav center" style="justify-content:center"><button class="btn" onclick="home()">← домой</button>
       <button class="btn primary" onclick="startFullExam()">Ещё полный экзамен</button></div>
   </div>
@@ -583,8 +592,15 @@ function finishExam() {
     h += `<div class="dbar"><div class="top"><span class="nm">${esc(domShort(d.id))}</span><span class="vl">${p.ok}/${p.tot} · ${pc}%</span></div>
       <div class="track"><div class="fill ${cls}" style="width:${pc}%"></div></div></div>`;
   });
-  h += `</div><h2>Разбор</h2>`;
-  for (const { q, good } of rev) {
+  h += `</div><h2>Разбор</h2><div class="row" style="margin-bottom:14px">
+    <span class="chip ${S.reviewFilter === 'bad' ? 'on' : ''}" onclick="setReviewFilter('bad')">Ошибки<span class="c">${nBad}</span></span>
+    <span class="chip ${S.reviewFilter === 'all' ? 'on' : ''}" onclick="setReviewFilter('all')">Все<span class="c">${rev.length}</span></span>
+    <span class="chip ${S.reviewFilter === 'ok' ? 'on' : ''}" onclick="setReviewFilter('ok')">Верно<span class="c">${nOk}</span></span>
+  </div>`;
+
+  const shown = rev.filter(r => S.reviewFilter === 'all' || (S.reviewFilter === 'bad' ? !r.good : r.good));
+  if (!shown.length) h += `<div class="exp muted">${S.reviewFilter === 'bad' ? 'Ошибок нет — можно выдохнуть 🎉' : 'Верных ответов нет.'}</div>`;
+  for (const { q, good } of shown) {
     h += `<div class="review-item">${qBadges(q, good ? '<span class="badge b-ok">верно</span>' : '<span class="badge b-disp">ошибка</span>')}${exhibit(q)}<div class="qtext">${esc(q.t)}</div>${cliBlock(q.cli)}`;
     if (q.y === 'dd') {
       h += ddReview(q, S.ans[q.n]);
@@ -612,5 +628,5 @@ function ddReview(q, ans) {
 }
 
 // expose for inline onclick
-Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam });
+Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter });
 window.addEventListener('DOMContentLoaded', boot);
