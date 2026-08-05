@@ -601,7 +601,7 @@ function renderResults() {
   const shown = rev.filter(r => S.reviewFilter === 'all' || (S.reviewFilter === 'bad' ? !r.good : r.good));
   if (!shown.length) h += `<div class="exp muted">${S.reviewFilter === 'bad' ? 'Ошибок нет — можно выдохнуть 🎉' : 'Верных ответов нет.'}</div>`;
   for (const { q, good } of shown) {
-    h += `<div class="review-item">${qBadges(q, good ? '<span class="badge b-ok">верно</span>' : '<span class="badge b-disp">ошибка</span>')}${exhibit(q)}<div class="qtext">${esc(q.t)}</div>${cliBlock(q.cli)}`;
+    h += `<div class="review-item ${good ? 'ok' : 'bad'}">${qBadges(q, good ? '<span class="badge b-ok">верно</span>' : '<span class="badge b-disp">ошибка</span>')}${exhibit(q)}<div class="qtext">${esc(q.t)}</div>${cliBlock(q.cli)}`;
     if (q.y === 'dd') {
       h += ddReview(q, S.ans[q.n]);
     } else {
