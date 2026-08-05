@@ -608,6 +608,7 @@ function renderResults() {
       const given = (S.ans[q.n] && S.ans[q.n].given) || [];
       h += rationale(q, given);
     }
+    h += `</div>`;
   }
   app().innerHTML = h; window.scrollTo(0, 0);
 }
