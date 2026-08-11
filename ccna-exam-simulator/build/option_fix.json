@@ -122,10 +122,10 @@
     "D": "SW1(config)#interface fa0/1\nSW1(config-if)#no switchport access vlan 2\nSW1(config-if)#switchport access vlan 3\nSW1(config-if)#switchport trunk allowed vlan 2"
   },
   "280": {
-    "A": "Interface range G1/1 \" 1/3\nswitchport mode trunk\nchannel-group 1 mode active\nno shutdown",
-    "B": "Interface range G1/1 \" 1/3\nswitchport mode access\nchannel-group 1 mode passive\nno shutdown",
-    "C": "Interface range G1/1 \" 1/3\nswitchport mode trunk\nchannel-group 1 mode desirable\nno shutdown",
-    "D": "Interface range G1/1 \" 1/3\nswitchport mode access\nchannel-group 1 mode on\nno shutdown"
+    "A": "Interface range G1/1 - 1/3\nswitchport mode trunk\nchannel-group 1 mode active\nno shutdown",
+    "B": "Interface range G1/1 - 1/3\nswitchport mode access\nchannel-group 1 mode passive\nno shutdown",
+    "C": "Interface range G1/1 - 1/3\nswitchport mode trunk\nchannel-group 1 mode desirable\nno shutdown",
+    "D": "Interface range G1/1 - 1/3\nswitchport mode access\nchannel-group 1 mode on\nno shutdown"
   },
   "288": {
     "A": "R5(config)#int Gi0/1\nR5(config-if)#no cdp enable\nR5(config-if)#exit\nR5(config)#lldp run\nR5(config)#no cdp run\nR5#sh\ncdp neighbor detail\nR5#sh\nlldp neighbor",
@@ -428,5 +428,103 @@
     "B": "interface Gi1/0/34\nswitchport mode trunk\nswitchport trunk allowed vlan 400, 4041\nswitchport voice vlan 4041",
     "C": "interface Gi1/0/34\nswitchport mode access\nswitchport access vlan 400\nswitchport voice vlan 4041",
     "D": "interface Gi1/0/34\nswitchport mode access\nswitchport access vlan 4041\nswitchport voice vlan 400"
+  },
+  "129": {
+    "A": "Subnet: 10.7.54.0\nSubnet mask: 255.255.128.0\nBroadcast address: 10.5.55.255\nUsable IP address range: 10.7.54.1 - 10.7.55.254",
+    "B": "Subnet: 10.7.54.0\nSubnet mask: 255.255.255.0\nBroadcast address: 10.7.54.255\nUsable IP address range: 10.7.54.1 - 10.7.55.254",
+    "C": "Subnet: 10.7.54.0\nSubnet mask: 255.255.254.0\nBroadcast address: 10.7.54.255\nUsable IP address range: 10.7.54.1 - 10.7.55.254",
+    "D": "Subnet: 10.7.54.0\nSubnet mask: 255.255.254.0\nBroadcast address: 10.7.55.255\nUsable IP address range: 10.7.54.1 - 10.7.55.254"
+  },
+  "201": {
+    "A": "int range g0/0-1\nchannel-group 10 mode active",
+    "B": "int range g0/0-1\nchannel-group 10 mode desirable",
+    "C": "int range g0/0-1\nchannel-group 10 mode passive",
+    "D": "int range g0/0-1\nchannel-group 10 mode auto",
+    "E": "int range g0/0-1\nchannel-group 10 mode on"
+  },
+  "274": {
+    "A": "SW4\ninterface Gi0/7\nswitchport mode trunk\nswitchport trunk allowed vlan 108\n!\ninterface Gi/0/2\nswitchport mode access\nswitchport access vlan 14\n\nSW11#\ninterface Gi0/2\nswitchport mode trunk\nswitchport trunk allowed vlan 14,108\n!\ninterface Gi0/1\nswitchport mode trunk\nswitchport trunk allowed vlan 14,108\n\nSW9#\ninterface Gi0/2\nswitchport mode access\nswitchport access vlan 14",
+    "B": "SW4\ninterface Gi0/2\nswitchport mode trunk\nswitchport trunk allowed vlan 14,108\n\nSW11#\ninterface Gi0/2\nswitchport mode trunk\nswitchport trunk allowed vlan 14,108\n!\ninterface Gi0/1\nswitchport mode trunk\nswitchport trunk allowed vlan 14,108\n\nSW9#\ninterface Gi0/2\nswitchport mode trunk\nswitchport trunk allowed vlan 14",
+    "C": "SW4\ninterface Gi0/2\nswitchport mode trunk\nswitchport trunk allowed vlan 14\n\nSW11#\ninterface Gi0/1\nswitchport mode trunk\nswitchport trunk allowed vlan 14\n\nSW9#\ninterface Gi0/2\nswitchport mode trunk\nswitchport trunk allowed vlan 108",
+    "D": "SW4\ninterface Gi/0/2\nswitchport mode access\nswitchport access vlan 14\n\nSW11#\ninterface Gi0/2\nswitchport mode trunk\nswitchport trunk allowed vlan 14\n!\ninterface Gi0/0\nswitchport mode access\nswitchport access vlan 14\n!\ninterface Gi0/1\nswitchport mode trunk\n\nSW9#\ninterface Gi0/2\nswitchport mode access\nswitchport access vlan 14"
+  },
+  "735": {
+    "A": "It transmits packets between hosts in the same broadcast domain.",
+    "B": "It provides shared applications to end users.",
+    "C": "It routes traffic between Layer 3 devices.",
+    "D": "It creates security zones between trusted and untrusted networks."
+  },
+  "448": {
+    "A": "R1\nip route 192.168.1.1 255.255.255.0 GigabitEthernet0/1\n\nR2\nip route 10.1.1.1 255.255.255.0 GigabitEthernet0/1",
+    "B": "R1\nip route 192.168.1.0 255.255.255.0 GigabitEthernet0/0\n\nR2\nip route 10.1.1.1 255.255.255.0 GigabitEthernet0/0",
+    "C": "R1\nip route 0.0.0.0 0.0.0.0 209.165.200.225\n\nR2\nip route 0.0.0.0 0.0.0.0 209.165.200.226",
+    "D": "R1\nip route 0.0.0.0 0.0.0.0 209.165.200.226\n\nR2\nip route 0.0.0.0 0.0.0.0 209.165.200.225"
+  },
+  "584": {
+    "A": "hostname R1\nservice password-encryption\ncrypto key generate rsa general-keys modulus 1024\nusername cisco privilege 15 password 0 cisco123\nip ssh version 2\nline vty 0 15\ntransport input ssh\nlogin local",
+    "B": "hostname R1\nip domain name cisco\ncrypto key generate rsa general-keys modulus 1024\nusername cisco privilege 15 password 0 cisco123\nip ssh version 2\nline vty 0 15\ntransport input ssh\nlogin local",
+    "C": "hostname R1\ncrypto key generate rsa general-keys modulus 1024\nusername cisco privilege 15 password 0 cisco123\nip ssh version 2\nline vty 0 15\ntransport input ssh\nlogin local",
+    "D": "hostname R1\nip domain name cisco\ncrypto key generate rsa general-keys modulus 1024\nusername cisco privilege 15 password 0 cisco123\nip ssh version 2\nline vty 0 15\ntransport input all\nlogin local"
+  },
+  "658": {
+    "A": "ip access-list standard 99\npermit 10.100.100.0 0.0.0.255\ndeny 192.168.0.0 0.0.255.255",
+    "B": "ip access-list standard 99\npermit 10.100.100.0 0.0.0.255\ndeny 192.168.0.0 0.255.255.255",
+    "C": "ip access-list standard 199\npermit 10.100.100.0 0.0.0.255\ndeny 192.168.0.0 0.255.255.255",
+    "D": "ip access-list standard 199\npermit 10.100.100.0 0.0.0.255\ndeny 192.168.0.0 0.0.255.255"
+  },
+  "663": {
+    "A": "enable secret priv4t3p4ss\n!\nline con 0\npassword p4ssw0rd1\n!\nline vty 0 15\npassword s3cr3t2",
+    "B": "enable secret priv4t3p4ss\n!\nline con 0\npassword p4ssw0rd1\nlogin\n!\nline vty 0 15\npassword s3cr3t2\nlogin",
+    "C": "enable secret priv4t3p4ss\n!\nline con 0\npassword login p4ssw0rd1\n!\nline vty 0 15\npassword login s3cr3t2\nlogin",
+    "D": "enable secret privilege 15 priv4t3p4ss\n!\nline con 0\npassword p4ssw0rd1\nlogin\n!\nline vty 0 15\npassword s3cr3t2\nlogin"
+  },
+  "702": {
+    "A": "interface gi1/0/15\nswitchport port-security\nswitchport port-security maximum 2",
+    "B": "interface gi1/0/15\nswitchport port-security\nswitchport port-security mac-address 0000.abcd.0004vlan 100",
+    "C": "interface gi1/0/15\nswitchport port-security mac-address 0000.abcd.0004 vlan 100",
+    "D": "interface gi1/0/15\nswitchport port-security mac-address 0000.abcd.0004 vlan 100\ninterface switchport secure-mac limit 2"
+  },
+  "896": {
+    "A": "R1 - ip route 172.16.2.0 255.255.255.248 172.16.0.5 110\nR2 - ip route 172.16.1.0 255.255.255.0 172.16.0.6 110",
+    "B": "R1 - ip route 172.16.2.0 255.255.255.240 172.16.0.2 113\nR2 - ip route 172.16.1.0 255.255.255.0 172.16.0.1 114",
+    "C": "R1 - ip route 172.16.2.0 255.255.255.224 172.16.0.6 111\nR2 - ip route 172.16.1.0 255.255.255.0 172.16.0.5 112",
+    "D": "R1 - ip route 172.16.2.0 255.255.255.240 172.16.0.5 89\nR2 - ip route 172.16.1.0 255.255.255.0 172.16.0.6 89"
+  },
+  "984": {
+    "A": "! conf t\n! username test1 password testpass1\nenable secret level 15 0 Test123\n! line vty 0 15\nlogin local\ntransport input telnet",
+    "B": "! config t\n! username test1 password testpass1\nenable password level 15 0 Test123\n! line vty 0 15\nlogin local\ntransport input all",
+    "C": "! config t\n! username test1 password testpass1\nenable password level 1 7 Test123\n! line vty 0 15\naccounting exec default\ntransport input all",
+    "D": "! config t\n! username test1 password testpass1\nenable secret level 1 0 Test123\n! line vty 0 15\nlogin authentication password Test123\ntransport input telnet"
+  },
+  "1036": {
+    "A": "switchport mode dynamic\nchannel-protocol lacp\nswitchport trunk allowed vlans 1-10",
+    "B": "switchport mode trunk\nswitchport trunk allowed vlans 1-10\nswitchport trunk native vlan 11",
+    "C": "switchport mode trunk\nswitchport trunk encapsulation dot1q\nswitchport trunk allowed vlans 1-10",
+    "D": "switchport mode dynamic desirable\nchannel-group 1 mode desirable\nswitchport trunk encapsulation isl\nswitchport trunk allowed vlan except 11-4094"
+  },
+  "1045": {
+    "A": "ip route 0.0.0.0 0.0.0.0 198.51.100.1 255\nip route 0.0.0.0 0.0.0.0 203.0.113.1 255\nip route 128.0.0.0 128.0.0.0 203.0.113.1",
+    "B": "ip route 0.0.0.0 128.0.0.0 198.51.100.1\nip route 128.0.0.0 128.0.0.0 203.0.113.1\nip route 0.0.0.0 0.0.0.0 198.51.100.1\nip route 0.0.0.0 0.0.0.0 203.0.113.1",
+    "C": "ip route 0.0.0.0 0.0.0.0 198.51.100.1\nip route 0.0.0.0 0.0.0.0 203.0.113.1",
+    "D": "ip route 0.0.0.0 128.0.0.0 198.51.100.1\nip route 128.0.0.0 128.0.0.0 203.0.113.1",
+    "E": "ip route 0.0.0.0 0.0.0.0 198.51.100.1\nip route 0.0.0.0 0.0.0.0 203.0.113.1 2"
+  },
+  "1051": {
+    "A": "switch port mode dynamic\nchannel group 1 mode active\nswitchport trunk allowed vlan 5,10,15, 20",
+    "B": "no switchport mode trunk\nswitchport trunk encapsulation isl\nswitchport mode access vlan 20",
+    "C": "switchport nonegotiate\nno switchport trunk allowed vlan 5,10\nswitchport trunk allowed vlan 5,10,15,20",
+    "D": "no switchport trunk encapsulation isl\nswitchport trunk encapsulation dot1q\nswitchport trunk allowed vlan add 20"
+  },
+  "1222": {
+    "A": "vlan73 name VoIP\ne0/0\nswitchport voice vlan dot1p",
+    "B": "vlan 73 name VoIP\ne0/0\nswitchport trunk allowed vlan 72,73\nswitchport voice vlan 73",
+    "C": "vlan 73 name VoIP\ne0/0\nswitchport mode trunk\nchannel-group 73 mode active",
+    "D": "vlan 73 name VoIP\ne0/0\nswitchport voice vlan 73"
+  },
+  "1240": {
+    "A": "ip route 10.10.10.0 255.255.255.0 192.168.2.3\nip route 10.10.10.10 255.255.255.255 192.168.2.2",
+    "B": "ip route 10.10.10.0 255.255.255.0 192.168.2.2\nip route 10.10.2.2 255.255.255.255 10.10.10.10",
+    "C": "ip route 10.10.10.0 255.255.255.0 192.168.2.3\nip route 10.10.10.8 255.255.255.252 g0/0",
+    "D": "ip route 10.10.10.0 255.255.255.248 192.168.2.2\nip route 10.10.2.8 255.255.255.252 g0/1"
   }
 }
