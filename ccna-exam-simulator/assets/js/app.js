@@ -628,6 +628,17 @@ function ddReview(q, ans) {
   return h + `</div></div>`;
 }
 
+// Arrow keys move between questions in practice/exam, matching the on-screen ← пред / след → buttons.
+// Ignored while typing in a field (e.g. the "перейти к вопросу" input) so cursor movement still works there.
+document.addEventListener('keydown', e => {
+  const t = e.target;
+  if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+  if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+  const d = e.key === 'ArrowRight' ? 1 : -1;
+  if (S.mode === 'pr') { e.preventDefault(); pMove(d); }
+  else if (S.mode === 'ex') { e.preventDefault(); eMove(d); }
+});
+
 // expose for inline onclick
 Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter });
 window.addEventListener('DOMContentLoaded', boot);
