@@ -526,5 +526,23 @@
     "B": "ip route 10.10.10.0 255.255.255.0 192.168.2.2\nip route 10.10.2.2 255.255.255.255 10.10.10.10",
     "C": "ip route 10.10.10.0 255.255.255.0 192.168.2.3\nip route 10.10.10.8 255.255.255.252 g0/0",
     "D": "ip route 10.10.10.0 255.255.255.248 192.168.2.2\nip route 10.10.2.8 255.255.255.252 g0/1"
+  },
+  "568": {
+    "A": "ntp authenticate\nntp authentication-key 2 sha1 CISCO123\nntp source Loopback0\nntp access-group server-only 10\nntp master 2\n!\naccess-list 10 permit udp host 209.165.200.225 any eq 123",
+    "B": "ntp authenticate\nntp authentication-key 2 md5 CISCO123\nntp interface Loopback0\nntp access-group server-only 10\nntp stratum 2\n!\naccess-list 10 permit 209.165.200.225",
+    "C": "ntp authenticate\nntp authentication-key 2 md5 CISCO123\nntp source Loopback0\nntp access-group server-only 10\nntp master 2\n!\naccess-list 10 permit 209.165.200.225",
+    "D": "ntp authenticate\nntp authentication-key 2 md5 CISCO123\nntp source Loopback0\nntp access-group server-only 10\nntp stratum 2\n!\naccess-list 10 permit udp host 209.165.200.225 any eq 123"
+  },
+  "486": {
+    "A": "router ospf 100\nnetwork 10.0.0.0 0.0.0.252 area0\nnetwork 10.0.1.0 0.0.0.255 area0",
+    "B": "router ospf 100\nnetwork 10.0.0.0 0.0.0.3 area0\nnetwork 10.0.2.0 255.255.255.0 area0",
+    "C": "router ospf 10\nnetwork 10.0.0.0 0.0.0.3 area0\nnetwork 10.0.1.0 0.0.0.255 area0",
+    "D": "router ospf 10\nnetwork 10.0.0.0 0.0.0.3 area0\nnetwork 10.0.2.0 0.0.0.255 area0"
+  },
+  "677": {
+    "A": "aaa new-model\nline con 0\npassword plaintextpassword\nprivilege level 15",
+    "B": "aaa new-model\naaa authorization exec default local\naaa authentication login default radius\nusername localuser privilege 15 secret plaintextpassword",
+    "C": "username localuser secret plaintextpassword\nline con 0\nno login local\nprivilege level 15",
+    "D": "username localuser secret plaintextpassword\nline con 0\nlogin authentication default\nprivilege level 15"
   }
 }

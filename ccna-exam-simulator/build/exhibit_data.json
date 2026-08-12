@@ -5731,120 +5731,7 @@
     "cli": "SW1#show run interface fastEthernet 0/1\nswitchport trunk encapsulation dot1q\nswitchport mode trunk\nswitchport trunk allowed vlan 100, 200, 300\nchannel-group 1 mode on\n\nSW1#show run interface fastEthernet 0/2\nswitchport trunk encapsulation dot1q\nswitchport mode trunk\nswitchport trunk allowed vlan 100, 200, 300\nchannel-group 1 mode on\n\nSW2#show run interface fastEthernet 0/1\nswitchport trunk encapsulation dot1q\nswitchport mode trunk\nswitchport trunk allowed vlan 100, 200, 300\nchannel-group 1 mode active\n\nSW2#show run interface fastEthernet 0/2\nswitchport trunk encapsulation dot1q\nswitchport mode trunk\nswitchport trunk allowed vlan 100, 200, 300\nchannel-group 1 mode active"
   },
   "322": {
-    "category": "mixed",
-    "topology": {
-      "devices": [
-        {
-          "id": "RA1",
-          "type": "router",
-          "label": "Company A router 1"
-        },
-        {
-          "id": "RA2",
-          "type": "router",
-          "label": "Company A router 2"
-        },
-        {
-          "id": "FW1",
-          "type": "firewall",
-          "label": "Firewall 1"
-        },
-        {
-          "id": "FW2",
-          "type": "firewall",
-          "label": "Firewall 2"
-        },
-        {
-          "id": "SW1",
-          "type": "sw2",
-          "label": "SW1"
-        },
-        {
-          "id": "SW2",
-          "type": "sw2",
-          "label": "SW2"
-        },
-        {
-          "id": "SW3",
-          "type": "sw2",
-          "label": "SW3"
-        },
-        {
-          "id": "SW4",
-          "type": "sw2",
-          "label": "SW4"
-        }
-      ],
-      "links": [
-        {
-          "from": "RA1",
-          "to": "RA2"
-        },
-        {
-          "from": "RA1",
-          "to": "FW1"
-        },
-        {
-          "from": "RA2",
-          "to": "FW2"
-        },
-        {
-          "from": "FW1",
-          "to": "FW2"
-        },
-        {
-          "from": "FW1",
-          "to": "SW1"
-        },
-        {
-          "from": "FW1",
-          "to": "SW2"
-        },
-        {
-          "from": "FW2",
-          "to": "SW1"
-        },
-        {
-          "from": "FW2",
-          "to": "SW2"
-        },
-        {
-          "from": "SW1",
-          "to": "SW2"
-        },
-        {
-          "from": "SW1",
-          "to": "SW3"
-        },
-        {
-          "from": "SW2",
-          "to": "SW4"
-        },
-        {
-          "from": "SW3",
-          "to": "SW4"
-        }
-      ],
-      "zones": [
-        {
-          "label": "Company A",
-          "members": [
-            "RA1",
-            "RA2"
-          ]
-        },
-        {
-          "label": "DMZ",
-          "members": [
-            "SW1",
-            "SW2",
-            "SW3",
-            "SW4"
-          ]
-        }
-      ]
-    },
-    "cli": "SW1: VLAN10 - 32778 0018.1843.3cb0\nSW2: VLAN10 - 24586 004a.13e9.3912\nSW3: VLAN10 - 28682 0022.55cf.cc00\nSW4: VLAN10 - 64000 0022.66ed.a29f"
+    "category": "topology"
   },
   "359": {
     "category": "mixed",
@@ -9650,30 +9537,7 @@
     "cli": "10.0.0.0/24 is subsetted, 1 subnets\nC        10.0.0.0 is directly connected, FastEthernet0/1\nC        172.160.0/16 is directly connected, FastEthernet0/0\nD        192.168.0.0/24 [90/30720] via 172.16.0.2, 00:00:03, FastEthernet0/0"
   },
   "438": {
-    "category": "mixed",
-    "topology": {
-      "devices": [
-        {
-          "id": "R1",
-          "type": "router",
-          "label": "R1"
-        },
-        {
-          "id": "R2",
-          "type": "router",
-          "label": "R2"
-        }
-      ],
-      "links": [
-        {
-          "from": "R1",
-          "to": "R2",
-          "label": "Gi1/0",
-          "label2": "Gi2/0"
-        }
-      ]
-    },
-    "cli": "R1#show running-config\nBuilding configuration...\n!\ninterface GigabitEthernet1/0\n mtu 1600\n ip address 192.168.0.1 255.255.255.252\n negotiation auto\n!\nrouter ospf 1\n router-id 1.1.1.1\n passive-interface default\n no passive-interface GigabitEthernet1/0\n network 192.168.0.1 0.0.0.0 area 0\n!\nR2#show running-config\nBuilding configuration...\n!\ninterface GigabitEthernet2/0\n ip address 192.168.0.2 255.255.255.252\n negotiation auto\n!\nrouter ospf 1\n router-id 2.2.2.2\n passive-interface default\n no passive-interface GigabitEthernet2/0\n network 192.168.0.2 0.0.0.0 area 0"
+    "category": "mixed"
   },
   "455": {
     "category": "cli_output",
@@ -13408,6 +13272,9 @@
     "category": "mixed"
   },
   "938": {
+    "category": "topology"
+  },
+  "427": {
     "category": "topology"
   }
 }
