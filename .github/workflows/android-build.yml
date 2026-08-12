@@ -1,0 +1,55 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "ccna-exam-simulator/**"
+      - ".github/workflows/android-build.yml"
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ccna-exam-simulator
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install npm deps
+        run: npm ci
+
+      - name: Sync web assets into www/
+        run: npm run sync-www
+
+      - name: Capacitor sync (copy www into android project)
+        run: npx cap sync android
+
+      - name: Build debug APK
+        working-directory: ccna-exam-simulator/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ccna-trainer-debug-apk
+          path: ccna-exam-simulator/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
