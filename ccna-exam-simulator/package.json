@@ -13,8 +13,5 @@
     "@capacitor/android": "7.6.8",
     "@capacitor/cli": "7.6.8",
     "@capacitor/core": "7.6.8"
-  },
-  "devDependencies": {
-    "@capacitor/assets": "^3.0.5"
   }
 }
