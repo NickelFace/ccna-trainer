@@ -978,5 +978,8 @@
   },
   "1292": {
     "cli": "R1# show ip route | begin gateway\nGateway of last resort is not set\n     172.16.0.0/16 is variably subnetted, 3 subnets, 2 masks\n     172.16.1.0/24 is directly connected, FastEthernet0/0\n     172.16.1.1/32 is directly connected, FastEthernet0/0\n     172.16.2.0/24 [120/2] via 207.165.200.250, 00:00:25, Serial0/0/0\n     192.168.1.0/24 [110/84437] via 207.165.200.254, 00:00:17, Serial0/0/1\n     192.168.2.0/24 [90/3184437] via 207.165.200.254, 00:00:15, Serial0/0/1\n     207.165.200.0/24 is variably subnetted, 5 subnets, 2 masks\n     207.165.200.244/30 [1/1] via 207.165.200.254, Serial0/0/1\n     207.165.200.248/30 is directly connected, Serial0/0/0\n     207.165.200.249/32 is directly connected, Serial0/0/0\n     207.165.200.252/30 is directly connected, Serial0/0/1\n     207.165.200.253/32 is directly connected, Serial0/0/1"
+  },
+  "403": {
+    "cli": "R1: Ethernet0 is up, line protocol is up\n     Internet address 192.168.1.2/24, Area 0\n     Process ID 1, Router ID 192.168.31.33, Network Type BROADCAST, Cost: 10\n     Transmit Delay is 1 sec, State DR, Priority 1\n     Designated Router (ID) 192.168.31.33, Interface address 192.168.1.2\n     No backup designated router on this network\n     Timer intervals configured, Hello 5, Dead 20, Wait 20, Retransmit 5\n\nR2: Ethernet0 is up, line protocol is up\n     Internet address 192.168.1.2/24, Area 0\n     Process ID 2, Router ID 192.168.31.11, Network Type BROADCAST, Cost: 10\n     Transmit Delay is 1 sec, State DR, Priority 1\n     Designated Router (ID) 192.168.31.11, Interface address 192.168.1.1\n     No backup designated router on this network\n     Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5"
   }
 }

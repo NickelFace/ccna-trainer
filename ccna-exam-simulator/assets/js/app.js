@@ -256,16 +256,16 @@ function expParts(t) {
     .split(/(?<=[.!?…])\s+(?=[«"“(A-ZА-Я0-9])/)
     .map(s => s.trim()).filter(Boolean);
 }
-// A readable explanation block: short ones render in full; long ones show a preview
-// with a "развернуть полностью" toggle that opens the rest in a scrollable box.
+// A readable explanation block: short ones render in full; long ones are collapsed
+// behind a real spoiler — nothing is shown until the summary is clicked, unlike the
+// old "first sentence always visible" preview, which read as a half-open spoiler.
 function expHTML(text, wrapCls, wrapTag) {
   const parts = expParts(text);
   const P = p => `<p>${esc(p)}</p>`;
   const long = String(text).length > 240 && parts.length > 2;
   const inner = long
-    ? `<div class="exp-head">${P(parts[0])}</div>` +
-      `<details class="exp-toggle"><summary>развернуть полностью</summary>` +
-      `<div class="exp-scroll">${parts.slice(1).map(P).join('')}</div></details>`
+    ? `<details class="exp-toggle"><summary>показать пояснение (${parts.length} предл.)</summary>` +
+      `<div class="exp-scroll">${parts.map(P).join('')}</div></details>`
     : parts.map(P).join('');
   return `<${wrapTag} class="${wrapCls}">${inner}</${wrapTag}>`;
 }
