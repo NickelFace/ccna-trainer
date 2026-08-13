@@ -105,15 +105,33 @@ function formatSimText(t) {
   return h || `<p>${esc(t)}</p>`;
 }
 
+// Worked-solution text: prose paragraphs with ```-fenced CLI command blocks in between
+// (the fences are our own transcription convention, not part of the source dump).
+function formatSimAnswer(text) {
+  if (!text) return '<p class="muted">Ответ отсутствует в исходном дампе.</p>';
+  const parts = String(text).split('```');
+  let h = '';
+  parts.forEach((part, i) => {
+    if (i % 2 === 1) { h += `<pre class="cli">${esc(part.trim())}</pre>`; return; }
+    part.trim().split(/\n\s*\n/).filter(Boolean).forEach(para => {
+      const cls = /^Step\s*\d+/i.test(para) ? 'sim-task' : '';
+      h += cls ? `<div class="${cls}">${esc(para)}</div>` : `<p>${esc(para)}</p>`;
+    });
+  });
+  return h;
+}
+
 function browseSims() {
   const sims = DATA.filter(q => q.y === 'sim');
   let h = `<div class="row"><button class="btn" onclick="home()">← назад</button></div>
     <h1>Лаб-симуляции</h1>
-    <div class="sub">${sims.length} интерактивных лаб-заданий из дампа. Это hands-on симуляции Cisco (настройка на виртуальных устройствах) — офлайн в тренажёре не выполняются и не оцениваются. Ниже приведён текст задания для ознакомления.</div>`;
+    <div class="sub">${sims.length} интерактивных лаб-заданий из дампа. Это hands-on симуляции Cisco (настройка на виртуальных устройствах) — офлайн в тренажёре не выполняются и не оцениваются. Ниже приведён текст задания и, где есть топология в дампе, схема. Проверенное решение — под тоглом «Показать ответ».</div>`;
   sims.forEach(q => {
     h += `<div class="card">${qBadges(q, '<span class="badge b-ex">ЛАБ</span>')}
       <div class="exp muted" style="margin:6px 0">Лаб-симуляция · офлайн не выполняется</div>
-      <div class="sim-body">${formatSimText(q.t)}</div>${cliBlock(q.cli)}</div>`;
+      ${exhibit(q)}
+      <div class="sim-body">${formatSimText(q.t)}</div>${cliBlock(q.cli)}
+      <details class="cli-wrap sim-answer"><summary>Показать ответ</summary><div class="sim-body">${formatSimAnswer(q.answer)}</div></details></div>`;
   });
   app().innerHTML = h;
 }

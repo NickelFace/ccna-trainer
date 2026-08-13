@@ -202,6 +202,8 @@ details.cli-wrap summary:hover{color:#fff}
 .sim-h{font-weight:700;font-size:15px;color:var(--cyan);margin:14px 0 6px}
 .sim-task{font-weight:600;margin:10px 0 2px;color:var(--text)}
 .sim-guide{margin:8px 0 12px}
+.sim-answer{margin:12px 0 0}
+.sim-answer summary{color:var(--green)}
 .sim-guide-b{padding:8px 13px 10px}
 .sim-guide-b p{margin:4px 0;color:var(--muted);font-size:13px}
 .sim-guide-b li{color:var(--muted);font-size:12.5px}

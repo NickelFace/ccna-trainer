@@ -86,6 +86,11 @@ def main():
     why_path = os.path.join(HERE,'why_data.json')
     why_data = json.load(open(why_path, encoding='utf-8')) if os.path.exists(why_path) else {}
 
+    # optional verified worked-solutions for lab simulations (y == 'sim'); see build_data.py
+    # note at point of use for why this isn't just copied from the archive dump
+    simans_path = os.path.join(HERE,'sim_answers.json')
+    sim_answers = json.load(open(simans_path, encoding='utf-8')) if os.path.exists(simans_path) else {}
+
     # optional per-question explanation override — fills 'exp' for questions the archive
     # left blank (drag-drops carry their rationale here; the app renders q.exp for y=='dd')
     exp_path = os.path.join(HERE,'exp_data.json')
@@ -181,6 +186,12 @@ def main():
         # attach reconstructed drag-drop data if present
         if q.get('y') == 'dd' and str(n) in dd_data:
             item['dd'] = dd_data[str(n)]
+
+        # attach a verified worked-solution for lab simulations, where we've checked the
+        # archive's dumped "Answer" is actually correct (most are missing or wrong — see
+        # sim_answers.json comments in git history; never copy one in without checking it)
+        if item['y'] == 'sim' and str(n) in sim_answers:
+            item['answer'] = sim_answers[str(n)]
 
         # attach per-option rationale if present
         if str(n) in why_data:
