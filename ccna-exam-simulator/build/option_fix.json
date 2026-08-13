@@ -550,5 +550,11 @@
     "B": "SW1(config)#no cdp run\nSW1(config)#interface gigabitethernet1/0/1\nSW1(config-if)#lldp transmit\nSW1(config-if)#lldp receive",
     "C": "SW1(config)#lldp enable\nSW1(config)#interface gigabitethernet1/0/1\nSW1(config-if)#lldp run",
     "D": "SW1(config)#no cdp enable\nSW1(config)#interface gigabitethernet1/0/1\nSW1(config-if)#cdp run"
+  },
+  "942": {
+    "A": "Gateway of last resort is 172.16.1.1 to network 0.0.0.0\n\nO E2  10.0.0.0/8 [110/5] via 192.168.1.1, 0:01:00, Ethernet0\nO E2  10.0.0.0/16 [110/5] via 192.168.2.1, 0:01:00, Ethernet1\nO E2  10.0.0.0/24 [110/5] via 192.168.3.1, 0:01:00, Ethernet2",
+    "B": "Gateway of last resort is 172.16.1.1 to network 0.0.0.0\n\nO E2  10.0.0.0/8 [110/5] via 192.168.1.1, 0:01:00, Ethernet0",
+    "C": "Gateway of last resort is 172.16.1.1 to network 0.0.0.0\n\nO E2  10.0.0.0/24 [110/5] via 192.168.3.1, 0:01:00, Ethernet2",
+    "D": "Gateway of last resort is 172.16.1.1 to network 0.0.0.0\n\nO E2  10.0.0.0/16 [110/5] via 192.168.2.1, 0:01:00, Ethernet1\nO E2  10.0.0.0/24 [110/5] via 192.168.3.1, 0:01:00, Ethernet2"
   }
 }
