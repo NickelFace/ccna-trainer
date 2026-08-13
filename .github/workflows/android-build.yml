@@ -6,6 +6,7 @@ on:
     paths:
       - "ccna-exam-simulator/**"
       - ".github/workflows/android-build.yml"
+      - "!ccna-exam-simulator/ccna-trainer.apk"
   workflow_dispatch: {}
 
 jobs:
