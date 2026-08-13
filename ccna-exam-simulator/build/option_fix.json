@@ -544,5 +544,11 @@
     "B": "aaa new-model\naaa authorization exec default local\naaa authentication login default radius\nusername localuser privilege 15 secret plaintextpassword",
     "C": "username localuser secret plaintextpassword\nline con 0\nno login local\nprivilege level 15",
     "D": "username localuser secret plaintextpassword\nline con 0\nlogin authentication default\nprivilege level 15"
+  },
+  "843": {
+    "A": "SW1(config)#lldp run\nSW1(config)#interface gigabitethernet1/0/1\nSW1(config-if)#lldp enable",
+    "B": "SW1(config)#no cdp run\nSW1(config)#interface gigabitethernet1/0/1\nSW1(config-if)#lldp transmit\nSW1(config-if)#lldp receive",
+    "C": "SW1(config)#lldp enable\nSW1(config)#interface gigabitethernet1/0/1\nSW1(config-if)#lldp run",
+    "D": "SW1(config)#no cdp enable\nSW1(config)#interface gigabitethernet1/0/1\nSW1(config-if)#cdp run"
   }
 }
