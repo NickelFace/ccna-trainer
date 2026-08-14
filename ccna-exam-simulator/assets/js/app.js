@@ -8,7 +8,8 @@ const esc = s => { const d = document.createElement('div'); d.textContent = s ==
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0;[a[i], a[j]] = [a[j], a[i]]; } return a; };
 const ASSET_V = '8';                        // bump when exhibits are regenerated (cache-bust)
 const IMG = n => `images/exhibits/q${n}.jpg?v=${ASSET_V}`;
-
+const DATA_V = '2';                          // bump whenever questions.json/meta.json content changes —
+                                              // the host (Cloudflare/Pages) caches these for 10 min otherwise
 let DATA = [], META = null, DOM = {};      // DOM: id -> {name,weight}
 let POOL = [];                             // scorable (txt/ex, + dd that are ready)
 let S = {};                                // active session state
@@ -16,8 +17,8 @@ let S = {};                                // active session state
 // ---- load ----
 async function boot() {
   const [q, m] = await Promise.all([
-    fetch('data/questions.json').then(r => r.json()),
-    fetch('data/meta.json').then(r => r.json()),
+    fetch(`data/questions.json?v=${DATA_V}`).then(r => r.json()),
+    fetch(`data/meta.json?v=${DATA_V}`).then(r => r.json()),
   ]);
   DATA = q; META = m;
   META.domains.forEach(d => DOM[d.id] = d);
