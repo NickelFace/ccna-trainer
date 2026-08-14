@@ -340,7 +340,8 @@ function renderPractice() {
   if (q.y === 'dd') {
     h += ddMarkup(q, st);
   } else if (q.y === 'sim') {
-    h += `<div class="exp muted" style="margin:2px 0 6px">Лаб-симуляция · офлайн не выполняется и не оценивается</div><div class="sim-body">${formatSimText(q.t)}</div>`;
+    h += `<div class="exp muted" style="margin:2px 0 6px">Лаб-симуляция · офлайн не выполняется и не оценивается</div><div class="sim-body">${formatSimText(q.t)}</div>
+      <details class="cli-wrap sim-answer"><summary>Показать ответ</summary><div class="sim-body">${formatSimAnswer(q.answer)}</div></details>`;
   } else {
     const multi = q.a.length > 1;
     h += `<div class="opts">`;
