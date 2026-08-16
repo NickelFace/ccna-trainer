@@ -325,11 +325,70 @@ function rationale(q, given) {
   return h;
 }
 
+// ============================ SHARE FOR AI ============================
+// Plain-text rendering of a question (+ the user's answer, if any) — meant to be
+// pasted into an AI chat to get an independent explanation. Deliberately omits
+// the app's own exp/why, so the AI reasons from scratch instead of echoing it.
+function qToAIText(q, ans) {
+  const L = [`Вопрос ${q.n} [${domShort(q.dom)}]${q.disp ? ' (спорный ключ)' : ''}`, q.t];
+  if (q.cli) L.push('', q.cli);
+  else if (q.img) L.push('', '[к вопросу приложена схема/скриншот — картинка не входит в этот текст]');
+  if (q.y === 'dd' && q.dd) {
+    L.push('', 'Тип: Drag & Drop', 'Элементы: ' + q.dd.items.join(', '));
+    q.dd.buckets.forEach(b => L.push(`${b.label}: ${b.correct.join(', ')}`));
+    const placement = ans && ans.placement;
+    if (placement) {
+      L.push('', 'Мой вариант распределения:');
+      q.dd.items.forEach((t, i) => {
+        if (placement[i] === undefined) return;
+        L.push(`  ${t} → ${q.dd.buckets[placement[i]] ? q.dd.buckets[placement[i]].label : '?'}`);
+      });
+    }
+  } else if (q.o) {
+    L.push('');
+    Object.keys(q.o).forEach(k => L.push(`${k}. ${q.o[k]}`));
+    L.push('', `Правильный ответ: ${q.a.split('').join(', ')}`);
+    if (ans && ans.given && ans.given.length) L.push(`Мой ответ: ${ans.given.join(', ')}`);
+  }
+  return L.join('\n');
+}
+function copyToClipboard(text, btn) {
+  const done = () => {
+    const old = btn.textContent; btn.textContent = '✓ скопировано'; btn.disabled = true;
+    setTimeout(() => { btn.textContent = old; btn.disabled = false; }, 1500);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  } else fallbackCopy(text, done);
+}
+function fallbackCopy(text, done) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); done(); } catch (e) { alert('Не удалось скопировать в буфер обмена.'); }
+  document.body.removeChild(ta);
+}
+function copyQuestion(btn, qn) {
+  const q = DATA.find(x => x.n === qn); if (!q) return;
+  copyToClipboard(qToAIText(q, S.ans && S.ans[qn]), btn);
+}
+// Bulk-export every wrong answer of the current review (practice or exam results)
+// as one paste-ready block, separated by "---", with a short instruction header.
+function copyMistakes(btn) {
+  const bad = S.result.rev.filter(r => !r.good);
+  if (!bad.length) return;
+  const header = `Ниже ${bad.length} вопрос(ов) CCNA 200-301, на которые я ответил неправильно. Разбери каждый: почему мой ответ неверный и почему верный вариант правильный.\n\n`;
+  const body = bad.map(r => qToAIText(r.q, S.ans[r.q.n])).join('\n\n---\n\n');
+  copyToClipboard(header + body, btn);
+}
+
 // ============================ PRACTICE ============================
 function renderPractice() {
   const q = S.qs[S.i]; if (!q) return home();
   const st = S.ans[q.n];
-  let h = `<div class="row"><button class="btn" onclick="home()">✕ выход</button><div class="spacer"></div>
+  let h = `<div class="row"><button class="btn" onclick="home()">✕ выход</button>
+    ${S.done ? `<button class="btn" onclick="finishPractice()">📋 Разбор ошибок</button>` : ''}
+    <div class="spacer"></div>
     <input class="qjump" id="qjump" type="number" placeholder="№" title="Перейти к вопросу по номеру"
       onkeydown="if(event.key==='Enter')pGoto()">
     <button class="btn" onclick="pGoto()">→</button>
@@ -357,6 +416,7 @@ function renderPractice() {
   if (st) {
     h += `<div class="verdict ${st.ok ? 'ok' : 'bad'}">${st.ok ? '✓ Верно' : '✗ Неверно'}${q.y !== 'dd' ? ` · ключ: ${q.a.split('').join(', ')}` : ''}</div>`;
     h += rationale(q, st.given);
+    h += `<div class="row" style="margin-top:8px"><button class="btn sm" onclick="copyQuestion(this, ${q.n})">📋 Скопировать для ИИ</button></div>`;
   }
   h += `<div class="nav"><button class="btn" onclick="pMove(-1)" ${S.i === 0 ? 'disabled' : ''}>← пред</button>
     <button class="btn" onclick="pMove(1)">${S.i === S.qs.length - 1 ? 'завершить' : 'след →'}</button></div></div>`;
@@ -382,7 +442,40 @@ function gradeDD(q, placement) {
   const ok = ddCorrect(q, placement);
   S.ans[q.n] = { placement, ok }; S.done++; if (ok) S.ok++; renderPractice();
 }
-function pMove(d) { const n = S.i + d; if (n >= 0 && n < S.qs.length) { S.i = n; renderPractice(); } else if (n >= S.qs.length) home(); }
+function pMove(d) {
+  const n = S.i + d;
+  if (n >= 0 && n < S.qs.length) { S.i = n; renderPractice(); }
+  else if (n >= S.qs.length) { S.done ? finishPractice() : home(); }
+}
+// Practice has no timer/scale like the exam — just tally what was answered so far
+// (works mid-session via "Разбор ошибок" too, not only after the last question).
+function finishPractice() {
+  const rev = S.qs.filter(q => S.ans[q.n] !== undefined).map(q => ({ q, good: S.ans[q.n].ok }));
+  S.result = { rev, ok: rev.filter(r => r.good).length };
+  S.reviewFilter = rev.some(r => !r.good) ? 'bad' : 'all';
+  S.mode = 'pr-done';
+  renderPracticeResults();
+}
+function renderPracticeResults() {
+  const { rev, ok } = S.result;
+  const nBad = rev.filter(r => !r.good).length, nOk = rev.length - nBad;
+  const pct = rev.length ? Math.round(ok / rev.length * 100) : 0;
+  let h = `<h1>Итоги тренировки</h1><div class="card">
+    <div class="center sub">${ok} из ${rev.length} отвечено верно (${pct}%)</div>
+    <div class="nav center" style="justify-content:center"><button class="btn" onclick="home()">← домой</button>
+      <button class="btn primary" onclick="S.i=S.qs.findIndex(q=>S.ans[q.n]===undefined);if(S.i<0)S.i=0;renderPractice()">Продолжить тренировку</button></div>
+  </div>
+  <h2>Разбор</h2><div class="row" style="margin-bottom:14px">
+    <span class="chip ${S.reviewFilter === 'bad' ? 'on' : ''}" onclick="setReviewFilter('bad')">Ошибки<span class="c">${nBad}</span></span>
+    <span class="chip ${S.reviewFilter === 'all' ? 'on' : ''}" onclick="setReviewFilter('all')">Все<span class="c">${rev.length}</span></span>
+    <span class="chip ${S.reviewFilter === 'ok' ? 'on' : ''}" onclick="setReviewFilter('ok')">Верно<span class="c">${nOk}</span></span>
+    ${nBad ? `<div class="spacer"></div><button class="btn" onclick="copyMistakes(this)">📋 Скопировать ошибки для ИИ</button>` : ''}
+  </div>`;
+  const shown = rev.filter(r => S.reviewFilter === 'all' || (S.reviewFilter === 'bad' ? !r.good : r.good));
+  if (!shown.length) h += `<div class="exp muted">${S.reviewFilter === 'bad' ? 'Ошибок нет — можно выдохнуть 🎉' : 'Нет вопросов.'}</div>`;
+  for (const { q, good } of shown) h += reviewItemHTML(q, good, S.ans[q.n]);
+  app().innerHTML = h; window.scrollTo(0, 0);
+}
 
 // Jump to any question by its bank number. If it isn't in the current practice set,
 // it's inserted right after the current one so the session continues normally.
@@ -592,7 +685,7 @@ function finishExam() {
   S.reviewFilter = rev.some(r => !r.good) ? 'bad' : 'all';
   renderResults();
 }
-function setReviewFilter(mode) { S.reviewFilter = mode; renderResults(); }
+function setReviewFilter(mode) { S.reviewFilter = mode; (S.mode === 'pr-done' ? renderPracticeResults : renderResults)(); }
 function renderResults() {
   const { rev, perDom, ok, pct, scaled, pass } = S.result;
   const nBad = rev.filter(r => !r.good).length, nOk = rev.length - nBad;
@@ -616,21 +709,22 @@ function renderResults() {
     <span class="chip ${S.reviewFilter === 'bad' ? 'on' : ''}" onclick="setReviewFilter('bad')">Ошибки<span class="c">${nBad}</span></span>
     <span class="chip ${S.reviewFilter === 'all' ? 'on' : ''}" onclick="setReviewFilter('all')">Все<span class="c">${rev.length}</span></span>
     <span class="chip ${S.reviewFilter === 'ok' ? 'on' : ''}" onclick="setReviewFilter('ok')">Верно<span class="c">${nOk}</span></span>
+    ${nBad ? `<div class="spacer"></div><button class="btn" onclick="copyMistakes(this)">📋 Скопировать ошибки для ИИ</button>` : ''}
   </div>`;
 
   const shown = rev.filter(r => S.reviewFilter === 'all' || (S.reviewFilter === 'bad' ? !r.good : r.good));
   if (!shown.length) h += `<div class="exp muted">${S.reviewFilter === 'bad' ? 'Ошибок нет — можно выдохнуть 🎉' : 'Верных ответов нет.'}</div>`;
-  for (const { q, good } of shown) {
-    h += `<div class="review-item ${good ? 'ok' : 'bad'}">${qBadges(q, good ? '<span class="badge b-ok">верно</span>' : '<span class="badge b-disp">ошибка</span>')}${exhibit(q)}<div class="qtext">${esc(q.t)}</div>${cliBlock(q.cli)}`;
-    if (q.y === 'dd') {
-      h += ddReview(q, S.ans[q.n]);
-    } else {
-      const given = (S.ans[q.n] && S.ans[q.n].given) || [];
-      h += rationale(q, given);
-    }
-    h += `</div>`;
-  }
+  for (const { q, good } of shown) h += reviewItemHTML(q, good, S.ans[q.n]);
   app().innerHTML = h; window.scrollTo(0, 0);
+}
+// Shared by exam results and practice results: one reviewed question, with a
+// per-question "copy for AI" button alongside the built-in rationale.
+function reviewItemHTML(q, good, ans) {
+  let h = `<div class="review-item ${good ? 'ok' : 'bad'}">${qBadges(q, good ? '<span class="badge b-ok">верно</span>' : '<span class="badge b-disp">ошибка</span>')}${exhibit(q)}<div class="qtext">${esc(q.t)}</div>${cliBlock(q.cli)}`;
+  if (q.y === 'dd') h += ddReview(q, ans);
+  else h += rationale(q, (ans && ans.given) || []);
+  h += `<div class="row" style="margin-top:8px"><button class="btn sm" onclick="copyQuestion(this, ${q.n})">📋 для ИИ</button></div>`;
+  return h + `</div>`;
 }
 function ddReview(q, ans) {
   const placed = (ans && ans.placement) || {};

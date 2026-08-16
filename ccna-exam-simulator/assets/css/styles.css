@@ -45,6 +45,7 @@ button{font-family:inherit;font-size:14px;cursor:pointer}
 .btn:hover{border-color:var(--cyan);box-shadow:0 0 10px rgba(0,212,255,.25)}
 .btn:disabled{opacity:.4;cursor:not-allowed}
 .btn.primary{border-color:var(--cyan);color:var(--cyan)}
+.btn.sm{padding:6px 12px;font-size:12px}
 .btn.big{font-size:16px;padding:18px 20px;width:100%;text-align:left;display:flex;gap:16px;align-items:center}
 .btn.big .ico{font-size:26px;line-height:1}
 .btn.big .tx b{display:block;font-family:'Unbounded',sans-serif;color:var(--cyan);margin-bottom:4px;font-size:16px}
