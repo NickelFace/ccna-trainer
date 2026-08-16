@@ -9,6 +9,9 @@ on:
       - "!ccna-exam-simulator/ccna-trainer.apk"
   workflow_dispatch: {}
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -48,9 +51,21 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
 
-      - name: Upload APK
+      - name: Upload APK (build artifact, 90-day retention)
         uses: actions/upload-artifact@v4
         with:
           name: ccna-trainer-debug-apk
           path: ccna-exam-simulator/android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+
+      - name: Rename APK for release
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk ccna-trainer-build-${{ github.run_number }}.apk
+
+      - name: Publish GitHub Release with APK
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: "Build ${{ github.run_number }} (${{ github.sha }})"
+          body: ${{ github.event.head_commit.message || format('Manual build via workflow_dispatch ({0})', github.sha) }}
+          make_latest: true
+          files: ccna-exam-simulator/ccna-trainer-build-${{ github.run_number }}.apk
