@@ -8610,7 +8610,7 @@
     "cli": "Workstation   Mac address\nPC 1          00:50:7278:66:80\nPC 2          28:39:26:34:82:51\nPC 3          00:50:7278:66:78\nPC 4          00:50:7278:66:44"
   },
   "326": {
-    "category": "mixed",
+    "category": "topology",
     "topology": {
       "devices": [
         {

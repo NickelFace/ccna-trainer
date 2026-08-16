@@ -1,4 +1,19 @@
 {
+  "254": {
+    "t": "Refer to the exhibit. Only four switches are participating in the VLAN spanning-tree process.\n\nBranch-1: priority 614440\nBranch-2: priority 39391170\nBranch-3: priority 0\nBranch-4: root primary\n\nWhich switch becomes the permanent root bridge for VLAN 5?"
+  },
+  "326": {
+    "cli": "SW1 = 24596 0018.184e.3c00\nSW2 = 28692 004a.13e9.6900\nSW3 = 32788 0022.55cf.dd00\nSW4 = 64000 0041.396d.690f"
+  },
+  "471": {
+    "t": "Refer to the exhibit. When an administrator executes the show ip route command on router D to view its routing table, which value is displayed for the administrative distance for the route to network 192.168.1.0?"
+  },
+  "473": {
+    "t": "Refer to the exhibit. R1 learns all routes via OSPF. Which command configures a backup static route on R1 to reach the 192.168.20.0/24 network via R3?"
+  },
+  "491": {
+    "t": "Refer to the exhibit. Traffic from R1 to the 10.10.2.0/24 subnet uses 192.168.1.2 as its next hop. A network engineer wants to update the R1 configuration so that traffic with destination 10.10.2.1 passes through router R3, and all other traffic to the 10.10.2.0/24 subnet passes through R2. Which command must be used?"
+  },
   "11": {
     "cli": "[root@HostTest ~]# ip route\ndefault via 192.168.1.193 dev eth1  proto static\n192.168.1.0/26 dev eth1  proto kernel  scope link  src 192.168.1.200  metric 1\n\n[root@HostTest ~]# ip addr show eth1\neth1:  mtu 1500 qdisc pfifo_fast qlen 1000\n    link/ether 00:0C:22:83:79:A3 brd ff:ff:ff:ff:ff:ff\n    inet 192.168.1.200/26 brd 192.168.1.255 scope global eth1\n    inet6 fe80::20c:29ff:fe89:79b3/64 scope link\n    valid_lft forever preferred_lft forever"
   },

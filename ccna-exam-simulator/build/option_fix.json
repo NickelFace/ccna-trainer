@@ -562,5 +562,29 @@
     "B": "2001:db8:9bb6:6bb9:C001:6BFE:FF01:1",
     "C": "2001:db8:9bb6:6bb9:4679:824F:FE88:1",
     "D": "2001:db8:9bb6:6bb9:C801:B6FF:FEB4:1"
+  },
+  "166": {
+    "A": "Switch(config)#interface vlan 10\nSwitch(config-if)#ip address 192.168.0.1 255.255.255.252",
+    "B": "Switch(config)#interface vlan 10\nSwitch(config-if)#ip address 192.168.0.1 255.255.255.248",
+    "C": "Switch(config)#interface vlan 10\nSwitch(config-if)#ip address 192.168.0.1 255.255.255.0",
+    "D": "Switch(config)#interface vlan 10\nSwitch(config-if)#ip address 192.168.0.1 255.255.255.128"
+  },
+  "309": {
+    "A": "SwitchA(config)#interface GigabitEthernet0/1\nSwitchA(config-if)#switchport access vlan 500\nSwitchB(config)#interface GigabitEthernet0/1\nSwitchB(config-if)#switchport access vlan 500",
+    "B": "SwitchA(config)#interface GigabitEthernet0/1\nSwitchA(config-if)#switchport mode trunk\nSwitchB(config)#interface GigabitEthernet0/1\nSwitchB(config-if)#switchport mode trunk",
+    "C": "SwitchA(config)#interface GigabitEthernet0/0\nSwitchA(config-if)#switchport trunk allowed vlan 500, 550\nSwitchB(config)#interface GigabitEthernet0/0\nSwitchB(config-if)#switchport trunk allowed vlan 500, 550",
+    "D": "SwitchA(config)#interface GigabitEthernet0/0\nSwitchA(config-if)#spanning-tree portfast\nSwitchA(config-if)#spanning-tree bpduguard enable\nSwitchB(config)#interface GigabitEthernet0/0\nSwitchB(config-if)#spanning-tree portfast\nSwitchB(config-if)#spanning-tree bpduguard enable"
+  },
+  "459": {
+    "A": "R17# !\nno ip domain lookup\nip cef ipv6 cef !\ninterface FastEthernet0/0\nno ip address\nduplex auto\nspeed auto\nipv6 address 2001:DB8:2::201/64 !\nInterface FastEthernet1/0\nno ip address\nduplex auto\nspeed auto\nipv6 address 2001:DB8:3::201/64 !\nno cdp log mismatch duplex\nipv6 route 2001:DB8:4::/64 2001:DB8:4::302",
+    "B": "R17# !\nno ip domain lookup\nip cef\nipv6 unicast-routing !\ninterface FastEthernet0/0\nno ip address\nduplex auto\nspeed auto\nipv6 address 2001:DB8:2::201/64 !\nInterface FastEthernet1/0\nno ip address\nduplex auto\nspeed auto\nipv6 address 2001:DB8:3::201/64 !\nno cdp log mismatch duplex\nipv6 route 2001:DB8:4::/64 2001:DB8:3::301",
+    "C": "R17# !\nno ip domain lookup\nip cef !\ninterface FastEthernet0/0\nno ip address\nduplex auto\nspeed auto\nipv6 address 2001:DB8:3::201/64 !\nInterface FastEthernet1/0\nno ip address\nduplex auto\nspeed auto\nipv6 address 2001:DB8:2::201/64 !\nno cdp log mismatch duplex\nipv6 route 2001:DB8:4::/64 2001:DB8:5::101",
+    "D": "R17# !\nno ip domain lookup\nip cef\nipv6 unicast-routing !\ninterface FastEthernet0/0\nno ip address\nduplex auto\nspeed auto\nipv6 address 2001:DB8:2::201/64 !\nInterface FastEthernet1/0\nno ip address\nduplex auto\nspeed auto\nipv6 address 2001:DB8:3::201/64 !\nno cdp log mismatch duplex\nipv6 route 2001:DB8:4::/64 2001:DB8:2::201"
+  },
+  "491": {
+    "A": "ip route 10.10.2.1 255.255.255.255 192.168.1.4 115",
+    "B": "ip route 10.10.2.0 255.255.255.0 192.168.1.4 115",
+    "C": "ip route 10.10.2.0 255.255.255.0 192.168.1.4 100",
+    "D": "ip route 10.10.2.1 255.255.255.255 192.168.1.4 100"
   }
 }
