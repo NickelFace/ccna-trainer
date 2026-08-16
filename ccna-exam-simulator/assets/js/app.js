@@ -6,7 +6,7 @@ const $ = s => document.querySelector(s);
 const app = () => document.getElementById('app');
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; };
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0;[a[i], a[j]] = [a[j], a[i]]; } return a; };
-const ASSET_V = '8';                        // bump when exhibits are regenerated (cache-bust)
+const ASSET_V = '9';                        // bump when exhibits are regenerated (cache-bust)
 const IMG = n => `images/exhibits/q${n}.jpg?v=${ASSET_V}`;
 const DATA_V = '3';                          // bump whenever questions.json/meta.json content changes —
                                               // the host (Cloudflare/Pages) caches these for 10 min otherwise
