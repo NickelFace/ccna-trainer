@@ -556,5 +556,11 @@
     "B": "Gateway of last resort is 172.16.1.1 to network 0.0.0.0\n\nO E2  10.0.0.0/8 [110/5] via 192.168.1.1, 0:01:00, Ethernet0",
     "C": "Gateway of last resort is 172.16.1.1 to network 0.0.0.0\n\nO E2  10.0.0.0/24 [110/5] via 192.168.3.1, 0:01:00, Ethernet2",
     "D": "Gateway of last resort is 172.16.1.1 to network 0.0.0.0\n\nO E2  10.0.0.0/16 [110/5] via 192.168.2.1, 0:01:00, Ethernet1\nO E2  10.0.0.0/24 [110/5] via 192.168.3.1, 0:01:00, Ethernet2"
+  },
+  "1331": {
+    "A": "2001:db8:9bb6:6bb9:C081:B6FF:FF4B:1",
+    "B": "2001:db8:9bb6:6bb9:C001:6BFE:FF01:1",
+    "C": "2001:db8:9bb6:6bb9:4679:824F:FE88:1",
+    "D": "2001:db8:9bb6:6bb9:C801:B6FF:FEB4:1"
   }
 }
