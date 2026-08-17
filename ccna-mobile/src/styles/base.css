@@ -1,0 +1,200 @@
+/* App shell: fixed header, one scrolling region, fixed tab bar.
+   The rule from the spec that everything here exists to enforce: content must never
+   sit under a sticky panel, so the scroll area reserves the panel heights itself. */
+
+/* ---- fonts (all local, subset by unicode-range) ---- */
+@font-face {
+  font-family: 'Space Grotesk'; font-style: normal; font-weight: 400 700; font-display: block;
+  src: url('assets/fonts/space-grotesk-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk'; font-style: normal; font-weight: 400 700; font-display: block;
+  src: url('assets/fonts/space-grotesk-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Manrope'; font-style: normal; font-weight: 400 700; font-display: block;
+  src: url('assets/fonts/manrope-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Manrope'; font-style: normal; font-weight: 400 700; font-display: block;
+  src: url('assets/fonts/manrope-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'JetBrains Mono'; font-style: normal; font-weight: 400 700; font-display: block;
+  src: url('assets/fonts/jetbrains-mono-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono'; font-style: normal; font-weight: 400 700; font-display: block;
+  src: url('assets/fonts/jetbrains-mono-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'JetBrains Mono'; font-style: normal; font-weight: 400 700; font-display: block;
+  src: url('assets/fonts/jetbrains-mono-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;              /* only #scroll scrolls — sticky panels stay put */
+  overscroll-behavior: none;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, input, select { font: inherit; color: inherit; }
+button { background: none; border: 0; cursor: pointer; }
+
+.mono { font-family: var(--font-mono); }
+
+/* Section label: 12px mono, 1px tracking, uppercase, --text-4 */
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-4);
+}
+
+/* ---- shell ---- */
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
+}
+
+/* Sticky top area. Owns the status-bar inset so screens never re-pad for it. */
+#header {
+  flex: 0 0 auto;
+  padding-top: var(--safe-top);
+  background: var(--bg);
+}
+#header:not(:empty) { border-bottom: 1px solid var(--divider); }
+
+#scroll {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 var(--pad-screen);
+}
+
+/* Screens that end above the tab bar still need breathing room under the last card. */
+#scroll > * { padding-bottom: 26px; }
+
+/* ---- tab bar: 10px 12px 22px + safe-area, per spec ---- */
+#tabbar {
+  flex: 0 0 auto;
+  display: flex;
+  background: var(--bar);
+  border-top: 1px solid var(--divider);
+  padding: 10px 12px calc(22px + var(--safe-bottom));
+}
+#tabbar[hidden] { display: none; }        /* modal screens cover the tabs */
+
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  min-height: var(--tap);
+  justify-content: center;
+  padding: 0;
+}
+.tab .ind {
+  width: 22px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--border-soft);
+}
+.tab .lbl {
+  font-size: var(--fs-label);
+  color: var(--text-3);
+}
+.tab[aria-selected="true"] .ind { background: var(--primary); }
+.tab[aria-selected="true"] .lbl { color: var(--primary); font-weight: 600; }
+
+/* ---- primitives shared by every screen ---- */
+.screen-title {
+  font-size: var(--fs-screen-title);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -.3px;
+  padding: 18px 0 14px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+  padding: 16px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--tap);
+  padding: 0 18px;
+  border-radius: var(--r-btn);
+  background: var(--elev);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 500;
+}
+.btn.primary { background: var(--primary); border-color: var(--primary); color: var(--on-primary); font-weight: 600; }
+.btn.soft { background: var(--primary-bg); border-color: var(--primary-border); color: var(--primary-text); }
+.btn:disabled { opacity: .5; }
+
+.muted { color: var(--text-3); font-size: var(--fs-caption); }
+code { font-family: var(--font-mono); font-size: .95em; color: var(--text-2); }
+
+.btn.wide { width: 100%; margin-top: 12px; }
+
+/* Back control in the sticky header — 48dp tap target, flush with the screen padding. */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--tap);
+  padding: 0 var(--pad-screen);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.label.spaced { display: block; padding: 22px 0 10px; }
+
+.big { font-size: 28px; font-weight: 700; letter-spacing: -1px; padding-top: 4px; }
+
+/* Two-column row inside a card: name left, mono value right. */
+.dom-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 9px 0;
+  font-size: var(--fs-caption);
+}
+.dom-row + .dom-row { border-top: 1px solid var(--divider); }
+.dom-row:first-child { padding-top: 0; }
+.dom-row:last-child { padding-bottom: 0; }

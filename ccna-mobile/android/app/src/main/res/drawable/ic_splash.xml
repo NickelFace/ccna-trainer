@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Splash glyph: three nodes and the links between them. One vector replaces the twelve
+     rasterised splash.png files Capacitor generates. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:strokeColor="@color/splashIcon"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:pathData="M54,34 L30,72 M54,34 L78,72 M30,72 L78,72" />
+    <path android:fillColor="@color/splashIcon" android:pathData="M54,26m-10,0a10,10 0 1,0 20,0a10,10 0 1,0 -20,0" />
+    <path android:fillColor="@color/splashIcon" android:pathData="M30,80m-10,0a10,10 0 1,0 20,0a10,10 0 1,0 -20,0" />
+    <path android:fillColor="@color/splashIcon" android:pathData="M78,80m-10,0a10,10 0 1,0 20,0a10,10 0 1,0 -20,0" />
+</vector>

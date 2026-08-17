@@ -1,0 +1,28 @@
+{
+  "name": "ccna-mobile",
+  "version": "0.1.0",
+  "description": "CCNA Trainer — Android app (own UX, offline, shares the question bank with ccna-exam-simulator)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sync-data": "node scripts/sync-data.mjs",
+    "build": "npm run sync-data && node scripts/build.mjs",
+    "dev": "node scripts/build.mjs --watch --serve 8100",
+    "android": "npm run build && npx cap sync android",
+    "android:open": "npm run android && npx cap open android",
+    "android:release": "npm run android && cd android && ./gradlew bundleRelease",
+    "test": "node --test"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@capacitor/android": "7.6.8",
+    "@capacitor/app": "7.1.0",
+    "@capacitor/app-launcher": "^7.0.2",
+    "@capacitor/cli": "7.6.8",
+    "@capacitor/core": "7.6.8",
+    "@capacitor/preferences": "^7.0.2"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.10"
+  }
+}

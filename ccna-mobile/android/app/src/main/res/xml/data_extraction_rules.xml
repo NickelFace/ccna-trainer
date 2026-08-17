@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Progress, the SRS schedule and the attempt history describe one person's preparation on
+  one device. Letting them ride along in a cloud backup or a device-to-device transfer
+  would silently resurrect a stale exam clock and a repetition queue whose due dates no
+  longer mean anything. Nothing is carried over; a fresh install starts fresh.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="external" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="external" />
+    </device-transfer>
+</data-extraction-rules>

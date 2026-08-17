@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+body{margin:0;background:#0a0b0d}
+a{color:#7aa2ff;text-decoration:none}
+a:hover{color:#a6c1ff}
+</style>
+</helmet>
+<div style="font-family:'Space Grotesk',system-ui,sans-serif;color:#e8eaed;padding:40px;display:flex;flex-direction:column;gap:34px">
+
+  <section id="analysis" style="display:flex;flex-direction:column;gap:18px;max-width:1180px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+      <div style="font-size:12px;font-family:'JetBrains Mono',monospace;color:#6f7681;letter-spacing:1px">АНАЛИЗ</div>
+      <h1 style="margin:0;font-size:30px;font-weight:600;letter-spacing:-.5px">Что мешает сейчас — и что с этим делать</h1>
+    </div>
+    <div style="font-size:15px;line-height:1.65;color:#a8afba;max-width:800px">Разобрал <span style="font-family:'JetBrains Mono',monospace;font-size:13.5px;color:#e8eaed">index.html · styles.css · app.js · android/</span> в ветке main. Приложение и сайт сейчас — один и тот же файл в WebView, поэтому все веб-компромиссы приезжают в APK как есть. Ниже — проблемы по убыванию цены, каждая с решением, которое видно на макетах справа.</div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px">
+
+      <div style="background:#16191e;border:1px solid #262b32;border-radius:16px;padding:18px">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#f2777a;border:1px solid #4a2b2e;background:#241a1c;border-radius:6px;padding:2px 7px">блокер</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7681">01</span></div>
+        <div style="font-size:16px;font-weight:600;margin-bottom:7px">Прогресс не сохраняется</div>
+        <div style="font-size:13.5px;line-height:1.6;color:#a8afba">Сессия живёт в глобальной <span style="font-family:'JetBrains Mono',monospace;font-size:12.5px">S</span>, в localStorage лежит только язык. Android выгружает WebView в фоне — свернул на звонок и 60 вопросов экзамена исчезли. Плюс кнопка «назад» у <span style="font-family:'JetBrains Mono',monospace;font-size:12.5px">BridgeActivity</span> не перехвачена: системный свайп закрывает приложение посреди экзамена.</div>
+        <div style="margin-top:11px;font-size:13.5px;line-height:1.6;color:#8fd4a8">→ автосейв каждого ответа, карточка «Продолжить» на главной, перехват back → «Выйти из экзамена?»</div>
+      </div>
+
+      <div style="background:#16191e;border:1px solid #262b32;border-radius:16px;padding:18px">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#f2777a;border:1px solid #4a2b2e;background:#241a1c;border-radius:6px;padding:2px 7px">блокер</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7681">02</span></div>
+        <div style="font-size:16px;font-weight:600;margin-bottom:7px">Нет оболочки и нет памяти о тебе</div>
+        <div style="font-size:13.5px;line-height:1.6;color:#a8afba">Каждый экран — это <span style="font-family:'JetBrains Mono',monospace;font-size:12.5px">app().innerHTML = …</span>: постоянного меню нет, вернуться можно только «домой». Результат экзамена нигде не остаётся, слабые домены после закрытия забыты, повторять ошибки нечем.</div>
+        <div style="margin-top:11px;font-size:13.5px;line-height:1.6;color:#8fd4a8">→ таб-бар из 4 разделов, дашборд с готовностью к экзамену, история попыток, очередь повторения (SRS) на ошибках</div>
+      </div>
+
+      <div style="background:#16191e;border:1px solid #262b32;border-radius:16px;padding:18px">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#e3b341;border:1px solid #4a3d1c;background:#221e14;border-radius:6px;padding:2px 7px">важно</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7681">03</span></div>
+        <div style="font-size:16px;font-weight:600;margin-bottom:7px">Drag &amp; drop неудобен именно там, где чаще всего используется</div>
+        <div style="font-size:13.5px;line-height:1.6;color:#a8afba">HTML5-drag на Android почти не работает, tap-фолбэк есть, но о нём нигде не сказано. На 390px сетка складывается в одну колонку: банк сверху, категории под ним — палец тянется через пол-экрана, а список ещё и скроллится.</div>
+        <div style="margin-top:11px;font-size:13.5px;line-height:1.6;color:#8fd4a8">→ никакого перетаскивания: тап по элементу → тап по категории, активный элемент липнет к нижней панели, «Отменить» рядом</div>
+      </div>
+
+      <div style="background:#16191e;border:1px solid #262b32;border-radius:16px;padding:18px">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#e3b341;border:1px solid #4a3d1c;background:#221e14;border-radius:6px;padding:2px 7px">важно</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7681">04</span></div>
+        <div style="font-size:16px;font-weight:600;margin-bottom:7px">Действия вне зоны большого пальца</div>
+        <div style="font-size:13.5px;line-height:1.6;color:#a8afba">«← пред / след →», «Проверить», «Завершить» лежат в конце карточки и прыгают по вертикали в зависимости от длины вопроса. Таймер и счётчик уезжают вверх при скролле — на длинном стеме с exhibit не видно, сколько осталось.</div>
+        <div style="margin-top:11px;font-size:13.5px;line-height:1.6;color:#8fd4a8">→ липкая нижняя панель с одним главным действием (48dp), липкая шапка с таймером и прогрессом, свайп влево/вправо между вопросами</div>
+      </div>
+
+      <div style="background:#16191e;border:1px solid #262b32;border-radius:16px;padding:18px">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#e3b341;border:1px solid #4a3d1c;background:#221e14;border-radius:6px;padding:2px 7px">важно</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7681">05</span></div>
+        <div style="font-size:16px;font-weight:600;margin-bottom:7px">Первый экран говорит о банке, а не о тебе</div>
+        <div style="font-size:13.5px;line-height:1.6;color:#a8afba">«ключ исправлен: #151, #986, #787…», «418/418 картиночных», «банк 1401 вопрос», «159/159 готово» — это заметки автора сборки. Студенту с них нечего решать; они занимают весь первый экран до кнопок.</div>
+        <div style="margin-top:11px;font-size:13.5px;line-height:1.6;color:#8fd4a8">→ на главной только состояние подготовки и следующее действие; техничность про банк — в «О банке» внутри настроек</div>
+      </div>
+
+      <div style="background:#16191e;border:1px solid #262b32;border-radius:16px;padding:18px">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#7aa2ff;border:1px solid #263457;background:#151b28;border-radius:6px;padding:2px 7px">рост</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7681">06</span></div>
+        <div style="font-size:16px;font-weight:600;margin-bottom:7px">ИИ-разбор недоделан до конца</div>
+        <div style="font-size:13.5px;line-height:1.6;color:#a8afba">«Скопировать для ИИ» отдаёт только текст вопроса и ключ — дальше ты сам объясняешь модели, что с этим делать.</div>
+        <div style="margin-top:11px;font-size:13.5px;line-height:1.6;color:#8fd4a8">→ генератор промпта: тема + твоя ошибка + запрос «объясни теорию → покажи разбор → дай 5 вопросов на закрепление», одна кнопка «Скопировать и открыть»; пачкой по всем ошибкам домена</div>
+      </div>
+
+      <div style="background:#16191e;border:1px solid #262b32;border-radius:16px;padding:18px">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#7aa2ff;border:1px solid #263457;background:#151b28;border-radius:6px;padding:2px 7px">рост</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7681">07</span></div>
+        <div style="font-size:16px;font-weight:600;margin-bottom:7px">Читаемость и контраст</div>
+        <div style="font-size:13.5px;line-height:1.6;color:#a8afba">Всё моно-шрифтом 15px, включая длинные английские стемы; <span style="font-family:'JetBrains Mono',monospace;font-size:12.5px">--muted #5b6b85</span> на фоне #0a0e17 даёт ≈3.6:1 при размере 12px — ниже нормы 4.5:1. Сетка-фон и свечения добавляют шум под текстом.</div>
+        <div style="margin-top:11px;font-size:13.5px;line-height:1.6;color:#8fd4a8">→ гротеск для интерфейса и вопросов, моно только для команд и вывода CLI; вторичный текст поднят до 4.6:1; фон без сетки</div>
+      </div>
+
+      <div style="background:#16191e;border:1px solid #262b32;border-radius:16px;padding:18px">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#7aa2ff;border:1px solid #263457;background:#151b28;border-radius:6px;padding:2px 7px">рост</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7681">08</span></div>
+        <div style="font-size:16px;font-weight:600;margin-bottom:7px">Обучение без плана</div>
+        <div style="font-size:13.5px;line-height:1.6;color:#a8afba">Есть три режима — и всё. Ни даты экзамена, ни дневной нормы, ни подсказки «что учить сегодня». Три твоих сценария (спринт, недели подготовки, добивание ошибок) сейчас никак не различаются.</div>
+        <div style="margin-top:11px;font-size:13.5px;line-height:1.6;color:#8fd4a8">→ дата экзамена на онбординге → дневная норма и план: сначала повторение ошибок, потом слабый домен, раз в неделю пробный экзамен</div>
+      </div>
+
+      <div style="background:#16191e;border:1px solid #262b32;border-radius:16px;padding:18px;grid-column:span 2">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8fd4a8;border:1px solid #24422f;background:#151f18;border-radius:6px;padding:2px 7px">Android / APK</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7681">09</span></div>
+        <div style="font-size:16px;font-weight:600;margin-bottom:7px">Обёртка Capacitor настроена «по умолчанию» — приложение должно стать отдельным продуктом</div>
+        <div style="font-size:13.5px;line-height:1.75;color:#a8afba">Одинаковый UI везде — самое дешёвое решение, но именно оно делает APK «сайтом в рамке». Что стоит развести: <b style="color:#e8eaed">edge-to-edge и safe-area</b> (сейчас <span style="font-family:'JetBrains Mono',monospace;font-size:12.5px">.lang-switch</span> прижат к 12px сверху и лезет под статус-бар; с targetSdk 35 Android рисует под системными панелями принудительно) · <b style="color:#e8eaed">системная «назад»</b> → шаг назад по экрану, а не выход · <b style="color:#e8eaed">не гасить экран</b> во время экзамена · <b style="color:#e8eaed">splash</b> через Splash Screen API вместо 12 растровых png · <b style="color:#e8eaed">разрешение INTERNET</b> офлайн-приложению не нужно, а <span style="font-family:'JetBrains Mono',monospace;font-size:12.5px">allowBackup=true</span> тащит прогресс между устройствами без спроса · <b style="color:#e8eaed">versionCode 1 / minify off</b> — перед публикацией это надо привести в порядок. Веб-версия при этом остаётся: та же логика, но с боковой навигацией, клавиатурой (1–4 = варианты, Enter = дальше) и широкой раскладкой «вопрос слева / exhibit справа».</div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="screens" style="display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+      <div style="font-size:12px;font-family:'JetBrains Mono',monospace;color:#6f7681;letter-spacing:1px">МАКЕТЫ · ANDROID 390×844</div>
+      <h2 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-.3px">Приложение как отдельный продукт</h2>
+    </div>
+    <div style="font-size:14px;line-height:1.6;color:#a8afba;max-width:820px">Новая палитра: нейтральный тёмный фон без сетки, один синий акцент, зелёный/красный только как вердикт. Интерфейс — Space Grotesk, моно осталось там, где оно несёт смысл: команды, адреса, вывод <span style="font-family:'JetBrains Mono',monospace;font-size:13px">show</span>.</div>
+
+    <div style="display:flex;gap:26px;align-items:flex-start;overflow:visible">
+
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7681;letter-spacing:.5px">01 · ОНБОРДИНГ</div>
+        <div data-screen-label="Onboarding" style="position:relative;width:390px;height:844px;background:#0e1013;border:1px solid #262b32;border-radius:28px;overflow:hidden">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:12px;font-family:'JetBrains Mono',monospace;color:#6f7681">
+            <span>9:41</span><span>LTE 84%</span>
+          </div>
+          <div style="padding:24px 20px 0">
+            <div style="font-size:13px;font-family:'JetBrains Mono',monospace;color:#7aa2ff;letter-spacing:1px;margin-bottom:14px">ШАГ 2 ИЗ 3</div>
+            <div style="font-size:27px;font-weight:600;line-height:1.25;letter-spacing:-.5px">Когда сдаёшь<br>CCNA 200-301?</div>
+            <div style="font-size:14.5px;line-height:1.6;color:#a8afba;margin-top:12px">От даты зависит дневная норма и то, что приложение будет предлагать первым: разбор ошибок или новые темы.</div>
+
+            <div style="margin-top:26px;display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:center;justify-content:space-between;background:#16191e;border:1px solid #262b32;border-radius:14px;padding:16px 18px">
+                <div><div style="font-size:15.5px;font-weight:500">Через 2 недели</div><div style="font-size:13px;color:#8c939e;margin-top:2px">спринт · 60 вопросов в день</div></div>
+                <div style="width:22px;height:22px;border-radius:50%;border:1.5px solid #3a4048"></div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;background:#182130;border:1px solid #3c6ae0;border-radius:14px;padding:16px 18px">
+                <div><div style="font-size:15.5px;font-weight:500">Через месяц</div><div style="font-size:13px;color:#9fb6e8;margin-top:2px">30 вопросов в день · 1 пробный в неделю</div></div>
+                <div style="width:22px;height:22px;border-radius:50%;background:#3c6ae0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff">✓</div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;background:#16191e;border:1px solid #262b32;border-radius:14px;padding:16px 18px">
+                <div><div style="font-size:15.5px;font-weight:500">Через 3 месяца и больше</div><div style="font-size:13px;color:#8c939e;margin-top:2px">спокойный темп · 15 вопросов в день</div></div>
+                <div style="width:22px;height:22px;border-radius:50%;border:1.5px solid #3a4048"></div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;background:#16191e;border:1px solid #262b32;border-radius:14px;padding:16px 18px">
+                <div><div style="font-size:15.5px;font-weight:500">Даты пока нет</div><div style="font-size:13px;color:#8c939e;margin-top:2px">без нормы, только тренировка</div></div>
+                <div style="width:22px;height:22px;border-radius:50%;border:1.5px solid #3a4048"></div>
+              </div>
+            </div>
+
+            <div style="margin-top:22px;background:#131720;border:1px dashed #2c3542;border-radius:14px;padding:14px 16px;font-size:13.5px;line-height:1.6;color:#a8afba">Точную дату можно указать в «Профиле» — тогда на главной появится обратный отсчёт и норма пересчитается сама.</div>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:0;padding:14px 20px 26px;background:linear-gradient(to top,#0e1013 60%,rgba(14,16,19,0));display:flex;gap:12px;align-items:center">
+            <button style="font-family:inherit;font-size:15px;color:#a8afba;background:transparent;border:none;padding:14px 6px">Назад</button>
+            <div style="flex:1"></div>
+            <button style="font-family:inherit;font-size:15.5px;font-weight:600;color:#0e1013;background:#7aa2ff;border:none;border-radius:14px;padding:15px 30px;min-height:48px">Дальше</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7681;letter-spacing:.5px">02 · ГЛАВНАЯ — ГОТОВНОСТЬ И ПЛАН НА ДЕНЬ</div>
+        <div data-screen-label="Home" style="position:relative;width:390px;height:844px;background:#0e1013;border:1px solid #262b32;border-radius:28px;overflow:hidden">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:12px;font-family:'JetBrains Mono',monospace;color:#6f7681"><span>9:41</span><span>LTE 84%</span></div>
+          <div style="padding:8px 20px 0;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between">
+              <div>
+                <div style="font-size:22px;font-weight:600;letter-spacing:-.3px">Готовность 71%</div>
+                <div style="font-size:13.5px;color:#8c939e;margin-top:3px">экзамен через 26 дней · порог 825</div>
+              </div>
+              <div style="width:44px;height:44px;border-radius:50%;background:#16191e;border:1px solid #262b32;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#a8afba">МК</div>
+            </div>
+
+            <div style="height:10px;border-radius:6px;background:#1a1e24;display:flex;overflow:hidden">
+              <div style="width:71%;background:linear-gradient(90deg,#3c6ae0,#7aa2ff)"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;font-family:'JetBrains Mono',monospace;color:#6f7681;margin-top:-6px"><span>прогноз 812 / 1000</span><span>+38 за неделю</span></div>
+
+            <div style="background:#182130;border:1px solid #3c6ae0;border-radius:18px;padding:18px">
+              <div style="font-size:12px;font-family:'JetBrains Mono',monospace;color:#9fb6e8;letter-spacing:.5px;margin-bottom:8px">ПРОДОЛЖИТЬ</div>
+              <div style="font-size:17px;font-weight:600">Пробный экзамен · вопрос 62 из 100</div>
+              <div style="font-size:13.5px;color:#9fb6e8;margin-top:4px">осталось 47:12 · сохранено 12 минут назад</div>
+              <button style="font-family:inherit;width:100%;margin-top:14px;font-size:15.5px;font-weight:600;color:#0e1013;background:#7aa2ff;border:none;border-radius:13px;padding:15px;min-height:48px">Вернуться к экзамену</button>
+            </div>
+
+            <div style="font-size:12px;font-family:'JetBrains Mono',monospace;color:#6f7681;letter-spacing:1px;margin-top:2px">ПЛАН НА СЕГОДНЯ · 12 ИЗ 30</div>
+
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="background:#16191e;border:1px solid #262b32;border-radius:16px;padding:16px;display:flex;gap:14px;align-items:center">
+                <div style="width:38px;height:38px;border-radius:11px;background:#241a1c;border:1px solid #4a2b2e;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:#f2777a">18</div>
+                <div style="flex:1"><div style="font-size:15.5px;font-weight:500">Повторить ошибки</div><div style="font-size:13px;color:#8c939e;margin-top:2px">18 вопросов пора освежить</div></div>
+                <div style="color:#6f7681;font-size:18px">›</div>
+              </div>
+              <div style="background:#16191e;border:1px solid #262b32;border-radius:16px;padding:16px;display:flex;gap:14px;align-items:center">
+                <div style="width:38px;height:38px;border-radius:11px;background:#221e14;border:1px solid #4a3d1c;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:#e3b341">30%</div>
+                <div style="flex:1"><div style="font-size:15.5px;font-weight:500">Слабый домен: Automation</div><div style="font-size:13px;color:#8c939e;margin-top:2px">15 вопросов с разбором</div></div>
+                <div style="color:#6f7681;font-size:18px">›</div>
+              </div>
+              <div style="background:#16191e;border:1px solid #262b32;border-radius:16px;padding:16px;display:flex;gap:14px;align-items:center">
+                <div style="width:38px;height:38px;border-radius:11px;background:#151f18;border:1px solid #24422f;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:#8fd4a8">D&amp;D</div>
+                <div style="flex:1"><div style="font-size:15.5px;font-weight:500">Тренажёр сопоставлений</div><div style="font-size:13px;color:#8c939e;margin-top:2px">10 заданий · тапом, без перетаскивания</div></div>
+                <div style="color:#6f7681;font-size:18px">›</div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:2px">
+              <div style="flex:1;background:#16191e;border:1px solid #262b32;border-radius:14px;padding:13px 14px"><div style="font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700">9</div><div style="font-size:12.5px;color:#8c939e;margin-top:2px">дней подряд</div></div>
+              <div style="flex:1;background:#16191e;border:1px solid #262b32;border-radius:14px;padding:13px 14px"><div style="font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700">1 143</div><div style="font-size:12.5px;color:#8c939e;margin-top:2px">пройдено вопросов</div></div>
+            </div>
+          </div>
+
+          <div style="position:absolute;left:0;right:0;bottom:0;background:#111418;border-top:1px solid #23272e;padding:10px 12px 22px;display:flex;gap:4px">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0;min-height:48px"><div style="width:22px;height:3px;border-radius:2px;background:#7aa2ff"></div><div style="font-size:12px;font-weight:600;color:#7aa2ff">Главная</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0;min-height:48px"><div style="width:22px;height:3px;border-radius:2px;background:#23272e"></div><div style="font-size:12px;color:#8c939e">Учить</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0;min-height:48px"><div style="width:22px;height:3px;border-radius:2px;background:#23272e"></div><div style="font-size:12px;color:#8c939e">Экзамен</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0;min-height:48px"><div style="width:22px;height:3px;border-radius:2px;background:#23272e"></div><div style="font-size:12px;color:#8c939e">Прогресс</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7681;letter-spacing:.5px">03 · ВОПРОС · ЛИПКАЯ ШАПКА И НИЖНЯЯ ПАНЕЛЬ</div>
+        <div data-screen-label="Question" style="position:relative;width:390px;height:844px;background:#0e1013;border:1px solid #262b32;border-radius:28px;overflow:hidden">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:12px;font-family:'JetBrains Mono',monospace;color:#6f7681"><span>9:41</span><span>LTE 84%</span></div>
+          <div style="padding:6px 20px 12px;background:#0e1013;border-bottom:1px solid #1c2027">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="font-size:22px;color:#a8afba;width:24px">✕</div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;justify-content:space-between;gap:10px;font-size:12px;font-family:'JetBrains Mono',monospace;color:#8c939e;white-space:nowrap"><span>62 / 100</span><span style="color:#e3b341">47:12</span></div>
+                <div style="height:4px;border-radius:3px;background:#1a1e24;overflow:hidden"><div style="width:62%;height:100%;background:#7aa2ff"></div></div>
+              </div>
+              <div style="font-size:19px;color:#a8afba;width:22px;text-align:right">☰</div>
+            </div>
+          </div>
+
+          <div style="padding:18px 20px 0">
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+              <span style="font-size:12px;font-weight:500;color:#9fb6e8;background:#182130;border:1px solid #263457;border-radius:7px;padding:3px 9px">IP Connectivity</span>
+              <span style="font-size:12px;color:#8c939e;font-family:'JetBrains Mono',monospace">№365</span>
+            </div>
+            <div style="font-size:17px;line-height:1.5;text-wrap:pretty">Router A learns the same route from two different neighbors; one is an OSPF neighbor, the other an EIGRP neighbor. What is the administrative distance of the route that will be installed in the routing table?</div>
+
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:14px">
+              <div style="display:flex;gap:12px;align-items:center;background:#16191e;border:1px solid #262b32;border-radius:14px;padding:12px 16px;min-height:48px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:#8c939e;width:20px">A</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:15px">20</span>
+              </div>
+              <div style="display:flex;gap:12px;align-items:center;background:#182130;border:1px solid #3c6ae0;border-radius:14px;padding:12px 16px;min-height:48px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:#7aa2ff;width:20px">B</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:15px;color:#e8eaed">90</span>
+              </div>
+              <div style="display:flex;gap:12px;align-items:center;background:#16191e;border:1px solid #262b32;border-radius:14px;padding:12px 16px;min-height:48px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:#8c939e;width:20px">C</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:15px">110</span>
+              </div>
+              <div style="display:flex;gap:12px;align-items:center;background:#16191e;border:1px solid #262b32;border-radius:14px;padding:12px 16px;min-height:48px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:#8c939e;width:20px">D</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:15px">115</span>
+              </div>
+            </div>
+
+            <div style="margin-top:12px;display:flex;gap:10px;align-items:center;font-size:13px;color:#8c939e">
+              <span style="border:1px solid #262b32;border-radius:9px;padding:9px 13px;min-height:40px;display:flex;align-items:center;gap:7px">☆ Отложить</span>
+              <span style="border:1px solid #262b32;border-radius:9px;padding:9px 13px;min-height:40px;display:flex;align-items:center;gap:7px">Aa Размер</span>
+              <span style="flex:1"></span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#4d545e">свайп → далее</span>
+            </div>
+          </div>
+
+          <div style="position:absolute;left:0;right:0;bottom:0;background:#111418;border-top:1px solid #23272e;padding:12px 20px 26px;display:flex;gap:12px;align-items:center">
+            <button style="font-family:inherit;font-size:15px;color:#a8afba;background:#1a1e24;border:1px solid #262b32;border-radius:13px;padding:14px 18px;min-height:48px">←</button>
+            <button style="font-family:inherit;flex:1;font-size:16px;font-weight:600;color:#0e1013;background:#7aa2ff;border:none;border-radius:13px;padding:15px;min-height:48px">Ответить</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7681;letter-spacing:.5px">04 · РАЗБОР ОТВЕТА · ШТОРКА</div>
+        <div data-screen-label="Answer review" style="position:relative;width:390px;height:844px;background:#0e1013;border:1px solid #262b32;border-radius:28px;overflow:hidden">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:12px;font-family:'JetBrains Mono',monospace;color:#6f7681"><span>9:41</span><span>LTE 84%</span></div>
+          <div style="padding:6px 20px 12px;border-bottom:1px solid #1c2027">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="font-size:22px;color:#a8afba;width:24px">✕</div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;justify-content:space-between;gap:10px;font-size:12px;font-family:'JetBrains Mono',monospace;color:#8c939e;white-space:nowrap"><span>тренировка · 12 / 30</span><span><span style="color:#8fd4a8">9✓</span> <span style="color:#f2777a">3✗</span></span></div>
+                <div style="height:4px;border-radius:3px;background:#1a1e24;overflow:hidden"><div style="width:40%;height:100%;background:#7aa2ff"></div></div>
+              </div>
+              <div style="font-size:19px;color:#a8afba;width:22px;text-align:right">☰</div>
+            </div>
+          </div>
+          <div style="padding:16px 20px 0;opacity:.5">
+            <div style="font-size:15.5px;line-height:1.5">Router A learns the same route from two different neighbors; one is an OSPF neighbor, the other an EIGRP neighbor…</div>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:14px">
+              <div style="display:flex;gap:12px;background:#16191e;border:1px solid #262b32;border-radius:12px;padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:14px"><span style="color:#8c939e;width:18px">A</span><span>20</span></div>
+              <div style="display:flex;gap:12px;background:#151f18;border:1px solid #2f6b45;border-radius:12px;padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:14px"><span style="color:#8fd4a8;width:18px">B</span><span>90</span></div>
+              <div style="display:flex;gap:12px;background:#241a1c;border:1px solid #6b3236;border-radius:12px;padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:14px"><span style="color:#f2777a;width:18px">C</span><span>110</span></div>
+            </div>
+          </div>
+
+          <div style="position:absolute;left:0;right:0;bottom:0;background:#14171c;border-top:1px solid #262b32;border-radius:24px 24px 0 0;box-shadow:0 -18px 40px rgba(0,0,0,.5);padding:12px 20px 26px">
+            <div style="width:36px;height:4px;border-radius:3px;background:#2c3138;margin:0 auto 14px"></div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+              <div style="font-size:17px;font-weight:600;color:#f2777a">Неверно</div>
+              <div style="font-size:13.5px;color:#8c939e">правильный ответ B · 90</div>
+              <div style="flex:1"></div>
+              <div style="font-size:12px;font-family:'JetBrains Mono',monospace;color:#8c939e;border:1px solid #262b32;border-radius:7px;padding:3px 8px">повтор через 1 д.</div>
+            </div>
+
+            <div style="background:#111418;border:1px solid #23272e;border-radius:14px;padding:14px;margin-bottom:10px">
+              <div style="font-size:14px;font-weight:600;margin-bottom:6px">Почему B</div>
+              <div style="font-size:14px;line-height:1.6;color:#a8afba">Внутренний EIGRP имеет административную дистанцию 90 — меньше, чем 110 у OSPF, поэтому в таблицу маршрутизации попадает именно он.</div>
+            </div>
+            <div style="background:#111418;border:1px solid #23272e;border-radius:14px;padding:14px;margin-bottom:10px">
+              <div style="font-size:14px;font-weight:600;margin-bottom:6px;color:#f2777a">Почему не C</div>
+              <div style="font-size:14px;line-height:1.6;color:#a8afba">110 — это AD OSPF. Она больше, значит маршрут проигрывает при равном префиксе.</div>
+            </div>
+            <div style="background:#111418;border:1px solid #23272e;border-radius:14px;padding:13px 14px;margin-bottom:14px;display:flex;gap:10px;align-items:center">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#8c939e;flex:1">AD: connected 0 · static 1 · eBGP 20 · EIGRP 90 · OSPF 110 · RIP 120</div>
+            </div>
+
+            <div style="display:flex;gap:10px;align-items:center">
+              <button style="font-family:inherit;font-size:14.5px;font-weight:600;color:#9fb6e8;background:#182130;border:1px solid #263457;border-radius:13px;padding:14px 16px;min-height:48px">Разобрать с ИИ</button>
+              <button style="font-family:inherit;flex:1;font-size:16px;font-weight:600;color:#0e1013;background:#7aa2ff;border:none;border-radius:13px;padding:15px;min-height:48px">Следующий →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7681;letter-spacing:.5px">05 · СОПОСТАВЛЕНИЕ ВМЕСТО DRAG &amp; DROP</div>
+        <div data-screen-label="Match (drag-drop replacement)" style="position:relative;width:390px;height:844px;background:#0e1013;border:1px solid #262b32;border-radius:28px;overflow:hidden">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:12px;font-family:'JetBrains Mono',monospace;color:#6f7681"><span>9:41</span><span>LTE 84%</span></div>
+          <div style="padding:6px 20px 12px;border-bottom:1px solid #1c2027">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="font-size:22px;color:#a8afba;width:24px">✕</div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;justify-content:space-between;gap:10px;font-size:12px;font-family:'JetBrains Mono',monospace;color:#8c939e;white-space:nowrap"><span>сопоставление · 4 / 10</span><span>4 из 6</span></div>
+                <div style="height:4px;border-radius:3px;background:#1a1e24;overflow:hidden"><div style="width:40%;height:100%;background:#7aa2ff"></div></div>
+              </div>
+              <div style="font-size:19px;color:#a8afba;width:22px;text-align:right">☰</div>
+            </div>
+          </div>
+          <div style="padding:16px 20px 0">
+            <div style="font-size:16px;line-height:1.5;margin-bottom:6px">Распредели протоколы по транспортному уровню, который они используют.</div>
+            <div style="font-size:13px;color:#8c939e;margin-bottom:16px">Тапни протокол, затем категорию. Тянуть ничего не нужно.</div>
+
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:14px;background:#182130;border:1px solid #3c6ae0;color:#e8eaed;border-radius:11px;padding:11px 15px;min-height:44px;display:flex;align-items:center">SNMP</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:14px;background:#16191e;border:1px solid #262b32;color:#a8afba;border-radius:11px;padding:11px 15px;min-height:44px;display:flex;align-items:center">TFTP</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:14px;background:#111418;border:1px dashed #2c3138;color:#4d545e;border-radius:11px;padding:11px 15px;min-height:44px;display:flex;align-items:center;text-decoration:line-through">DHCP</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:14px;background:#111418;border:1px dashed #2c3138;color:#4d545e;border-radius:11px;padding:11px 15px;min-height:44px;display:flex;align-items:center;text-decoration:line-through">FTP</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:14px;background:#111418;border:1px dashed #2c3138;color:#4d545e;border-radius:11px;padding:11px 15px;min-height:44px;display:flex;align-items:center;text-decoration:line-through">SMTP</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:14px;background:#111418;border:1px dashed #2c3138;color:#4d545e;border-radius:11px;padding:11px 15px;min-height:44px;display:flex;align-items:center;text-decoration:line-through">SSH</span>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div style="background:#16191e;border:1px solid #3c6ae0;border-radius:16px;padding:14px 16px">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                  <div style="font-size:15px;font-weight:600;font-family:'JetBrains Mono',monospace">TCP</div>
+                  <div style="font-size:12px;color:#9fb6e8">тапни, чтобы положить SNMP</div>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:13.5px;background:#1a1e24;border:1px solid #2c3138;border-radius:10px;padding:9px 13px">FTP ✕</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:13.5px;background:#1a1e24;border:1px solid #2c3138;border-radius:10px;padding:9px 13px">SMTP ✕</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:13.5px;background:#1a1e24;border:1px solid #2c3138;border-radius:10px;padding:9px 13px">SSH ✕</span>
+                </div>
+              </div>
+              <div style="background:#16191e;border:1px solid #3c6ae0;border-radius:16px;padding:14px 16px">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                  <div style="font-size:15px;font-weight:600;font-family:'JetBrains Mono',monospace">UDP</div>
+                  <div style="font-size:12px;color:#9fb6e8">тапни, чтобы положить SNMP</div>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:13.5px;background:#1a1e24;border:1px solid #2c3138;border-radius:10px;padding:9px 13px">DHCP ✕</span>
+                  <span style="font-size:13px;color:#4d545e;padding:9px 4px">2 места свободно</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="position:absolute;left:0;right:0;bottom:0;background:#111418;border-top:1px solid #23272e;padding:12px 20px 26px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:13px;color:#9fb6e8">
+              <span style="font-family:'JetBrains Mono',monospace;background:#182130;border:1px solid #3c6ae0;border-radius:9px;padding:7px 11px">SNMP</span>
+              <span>выбран — выбери категорию</span>
+              <span style="flex:1"></span>
+              <span style="color:#8c939e">Отменить</span>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center">
+              <button style="font-family:inherit;font-size:15px;color:#a8afba;background:#1a1e24;border:1px solid #262b32;border-radius:13px;padding:14px 18px;min-height:48px">Сброс</button>
+              <button style="font-family:inherit;flex:1;font-size:16px;font-weight:600;color:#0e1013;background:#7aa2ff;border:none;border-radius:13px;padding:15px;min-height:48px">Проверить</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7681;letter-spacing:.5px">06 · ГОТОВЫЙ ПРОМПТ ДЛЯ ИИ</div>
+        <div data-screen-label="AI prompt" style="position:relative;width:390px;height:844px;background:#0e1013;border:1px solid #262b32;border-radius:28px;overflow:hidden">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:12px;font-family:'JetBrains Mono',monospace;color:#6f7681"><span>9:41</span><span>LTE 84%</span></div>
+          <div style="padding:8px 20px 0">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+              <div style="font-size:22px;color:#a8afba">←</div>
+              <div style="font-size:18px;font-weight:600">Разобрать с ИИ</div>
+            </div>
+            <div style="font-size:13.5px;line-height:1.6;color:#a8afba;margin-bottom:16px">Промпт собирается сам: тема, твоя ошибка, уровень подготовки и что вернуть в ответе. Ничего дописывать не нужно.</div>
+
+            <div style="font-size:12px;font-family:'JetBrains Mono',monospace;color:#6f7681;letter-spacing:1px;margin-bottom:10px">ЧТО ВКЛЮЧИТЬ</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px">
+              <span style="font-size:13.5px;background:#182130;border:1px solid #3c6ae0;color:#e8eaed;border-radius:20px;padding:9px 14px;min-height:40px;display:flex;align-items:center">Теория темы</span>
+              <span style="font-size:13.5px;background:#182130;border:1px solid #3c6ae0;color:#e8eaed;border-radius:20px;padding:9px 14px;min-height:40px;display:flex;align-items:center">Разбор моей ошибки</span>
+              <span style="font-size:13.5px;background:#182130;border:1px solid #3c6ae0;color:#e8eaed;border-radius:20px;padding:9px 14px;min-height:40px;display:flex;align-items:center">5 вопросов на закрепление</span>
+              <span style="font-size:13.5px;background:#16191e;border:1px solid #262b32;color:#8c939e;border-radius:20px;padding:9px 14px;min-height:40px;display:flex;align-items:center">Команды IOS</span>
+              <span style="font-size:13.5px;background:#16191e;border:1px solid #262b32;color:#8c939e;border-radius:20px;padding:9px 14px;min-height:40px;display:flex;align-items:center">Аналогия «на пальцах»</span>
+              <span style="font-size:13.5px;background:#16191e;border:1px solid #262b32;color:#8c939e;border-radius:20px;padding:9px 14px;min-height:40px;display:flex;align-items:center">Ответ на русском</span>
+            </div>
+
+            <div style="background:#111418;border:1px solid #23272e;border-radius:16px;padding:14px 15px;max-height:250px;overflow:hidden">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.75;color:#a8afba;white-space:pre-wrap">Ты преподаёшь CCNA 200-301. Я готовлюсь к экзамену, уровень — средний, слабый домен 3.0 IP Connectivity.
+
+Тема: административная дистанция и выбор маршрута между OSPF и EIGRP.
+
+Я ошибся в таком вопросе:
+Router A learns the same route from two different neighbors (OSPF и EIGRP). Какая AD попадёт в таблицу?
+Мой ответ: C (110). Правильный: B (90).
+
+Сделай по порядку:
+1. Объясни теорию темы с нуля, коротко и по делу, с таблицей AD всех источников.
+2. Покажи, где именно ломается моя логика.
+3. Дай 3 практических примера с выводом show ip route.
+4. Задай мне 5 вопросов формата CCNA на эту тему и жди мои ответы, не показывай ключ сразу.</div>
+            </div>
+          </div>
+
+          <div style="position:absolute;left:0;right:0;bottom:0;background:#111418;border-top:1px solid #23272e;padding:12px 20px 26px;display:flex;flex-direction:column;gap:10px">
+            <button style="font-family:inherit;font-size:16px;font-weight:600;color:#0e1013;background:#7aa2ff;border:none;border-radius:13px;padding:15px;min-height:48px">Скопировать и открыть ИИ</button>
+            <div style="display:flex;gap:10px">
+              <button style="font-family:inherit;flex:1;font-size:14px;color:#a8afba;background:#1a1e24;border:1px solid #262b32;border-radius:12px;padding:13px;min-height:44px">Только скопировать</button>
+              <button style="font-family:inherit;flex:1;font-size:14px;color:#a8afba;background:#1a1e24;border:1px solid #262b32;border-radius:12px;padding:13px;min-height:44px">Все ошибки домена</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7681;letter-spacing:.5px">07 · РЕЗУЛЬТАТ ЭКЗАМЕНА</div>
+        <div data-screen-label="Results" style="position:relative;width:390px;height:844px;background:#0e1013;border:1px solid #262b32;border-radius:28px;overflow:hidden">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:12px;font-family:'JetBrains Mono',monospace;color:#6f7681"><span>9:41</span><span>LTE 84%</span></div>
+          <div style="padding:10px 20px 0">
+            <div style="background:#16191e;border:1px solid #262b32;border-radius:20px;padding:16px;text-align:center">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:52px;font-weight:700;letter-spacing:-2px;color:#e3b341;line-height:1">812</div>
+              <div style="font-size:13px;color:#8c939e;margin-top:6px">не хватило 13 баллов до порога 825</div>
+              <div style="margin-top:14px;height:8px;border-radius:5px;background:#1a1e24;position:relative;overflow:hidden">
+                <div style="width:73%;height:100%;background:linear-gradient(90deg,#8a6a1e,#e3b341)"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;font-family:'JetBrains Mono',monospace;color:#6f7681;margin-top:6px"><span>300</span><span>порог 825</span><span>1000</span></div>
+              <div style="display:flex;gap:10px;margin-top:14px;text-align:left">
+                <div style="flex:1;background:#111418;border:1px solid #23272e;border-radius:12px;padding:11px 12px"><div style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700">73/100</div><div style="font-size:12px;color:#8c939e">верно</div></div>
+                <div style="flex:1;background:#111418;border:1px solid #23272e;border-radius:12px;padding:11px 12px"><div style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700">1:47</div><div style="font-size:12px;color:#8c939e">мин / вопрос</div></div>
+                <div style="flex:1;background:#111418;border:1px solid #23272e;border-radius:12px;padding:11px 12px"><div style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700">+38</div><div style="font-size:12px;color:#8c939e">к прошлой</div></div>
+              </div>
+            </div>
+
+            <div style="background:#182130;border:1px solid #3c6ae0;border-radius:18px;padding:14px 16px;margin-top:10px">
+              <div style="font-size:15.5px;font-weight:600;margin-bottom:4px">Что делать дальше</div>
+              <div style="font-size:13.5px;line-height:1.6;color:#9fb6e8">27 ошибок уже в очереди повторения. Начни с Automation (30%) и Security (53%) — при их подтягивании до 75% прогноз выходит на 861.</div>
+              <button style="font-family:inherit;width:100%;margin-top:13px;font-size:15.5px;font-weight:600;color:#0e1013;background:#7aa2ff;border:none;border-radius:13px;padding:15px;min-height:48px">Работа над ошибками · 27</button>
+            </div>
+
+            <div style="font-size:12px;font-family:'JetBrains Mono',monospace;color:#6f7681;letter-spacing:1px;margin:16px 0 10px">ПО ДОМЕНАМ</div>
+            <div style="display:flex;flex-direction:column;gap:9px;padding-bottom:96px">
+              <div><div style="display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:4px"><span>Network Fundamentals</span><span style="color:#8c939e;font-family:'JetBrains Mono',monospace;font-size:12.5px">15/20 · 75%</span></div><div style="height:7px;border-radius:5px;background:#1a1e24;overflow:hidden"><div style="width:75%;height:100%;background:#e3b341"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:4px"><span>Network Access</span><span style="color:#8c939e;font-family:'JetBrains Mono',monospace;font-size:12.5px">18/20 · 90%</span></div><div style="height:7px;border-radius:5px;background:#1a1e24;overflow:hidden"><div style="width:90%;height:100%;background:#58c08c"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:4px"><span>IP Connectivity</span><span style="color:#8c939e;font-family:'JetBrains Mono',monospace;font-size:12.5px">19/25 · 76%</span></div><div style="height:7px;border-radius:5px;background:#1a1e24;overflow:hidden"><div style="width:76%;height:100%;background:#e3b341"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:4px"><span>IP Services</span><span style="color:#8c939e;font-family:'JetBrains Mono',monospace;font-size:12.5px">8/10 · 80%</span></div><div style="height:7px;border-radius:5px;background:#1a1e24;overflow:hidden"><div style="width:80%;height:100%;background:#58c08c"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:4px"><span>Security Fundamentals</span><span style="color:#8c939e;font-family:'JetBrains Mono',monospace;font-size:12.5px">8/15 · 53%</span></div><div style="height:7px;border-radius:5px;background:#1a1e24;overflow:hidden"><div style="width:53%;height:100%;background:#f2777a"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:4px"><span>Automation &amp; Programmability</span><span style="color:#8c939e;font-family:'JetBrains Mono',monospace;font-size:12.5px">3/10 · 30%</span></div><div style="height:7px;border-radius:5px;background:#1a1e24;overflow:hidden"><div style="width:30%;height:100%;background:#f2777a"></div></div></div>
+            </div>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:0;background:#111418;border-top:1px solid #23272e;padding:12px 20px 26px;display:flex;gap:10px">
+            <button style="font-family:inherit;flex:1;font-size:14.5px;color:#a8afba;background:#1a1e24;border:1px solid #262b32;border-radius:12px;padding:14px;min-height:48px">Разбор всех 100</button>
+            <button style="font-family:inherit;flex:1;font-size:14.5px;color:#a8afba;background:#1a1e24;border:1px solid #262b32;border-radius:12px;padding:14px;min-height:48px">Ошибки в ИИ</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7681;letter-spacing:.5px">08 · ПРОГРЕСС · ИСТОРИЯ И ПОВТОРЕНИЕ</div>
+        <div data-screen-label="Progress" style="position:relative;width:390px;height:844px;background:#0e1013;border:1px solid #262b32;border-radius:28px;overflow:hidden">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:12px;font-family:'JetBrains Mono',monospace;color:#6f7681"><span>9:41</span><span>LTE 84%</span></div>
+          <div style="padding:8px 20px 0">
+            <div style="font-size:22px;font-weight:600;letter-spacing:-.3px;margin-bottom:14px">Прогресс</div>
+
+            <div style="background:#16191e;border:1px solid #262b32;border-radius:18px;padding:16px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px">
+                <div style="font-size:14px;font-weight:600">Баллы за 6 попыток</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#8fd4a8">+112</div>
+              </div>
+              <div style="display:flex;align-items:flex-end;gap:10px;height:104px;position:relative;padding-right:34px">
+                <div style="position:absolute;left:0;right:0;bottom:88px;border-top:1px dashed #3a4048"></div>
+                <div style="position:absolute;right:0;bottom:82px;font-size:10px;font-family:'JetBrains Mono',monospace;color:#6f7681">825</div>
+                <div style="flex:1;height:34px;background:#2c3138;border-radius:5px 5px 0 0"></div>
+                <div style="flex:1;height:42px;background:#2c3138;border-radius:5px 5px 0 0"></div>
+                <div style="flex:1;height:39px;background:#2c3138;border-radius:5px 5px 0 0"></div>
+                <div style="flex:1;height:56px;background:#3c6ae0;border-radius:5px 5px 0 0"></div>
+                <div style="flex:1;height:62px;background:#3c6ae0;border-radius:5px 5px 0 0"></div>
+                <div style="flex:1;height:78px;background:#7aa2ff;border-radius:5px 5px 0 0"></div>
+              </div>
+              <div style="display:flex;gap:10px;margin-top:7px;padding-right:34px;font-size:10px;font-family:'JetBrains Mono',monospace;color:#6f7681;text-align:center">
+                <span style="flex:1">700</span><span style="flex:1">721</span><span style="flex:1">714</span><span style="flex:1">758</span><span style="flex:1">774</span><span style="flex:1;color:#e8eaed">812</span>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:12px">
+              <div style="flex:1;background:#16191e;border:1px solid #262b32;border-radius:14px;padding:13px 14px"><div style="font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700">18</div><div style="font-size:12.5px;color:#8c939e;margin-top:2px">к повторению сегодня</div></div>
+              <div style="flex:1;background:#16191e;border:1px solid #262b32;border-radius:14px;padding:13px 14px"><div style="font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700">1:47</div><div style="font-size:12.5px;color:#8c939e;margin-top:2px">средн. на вопрос</div></div>
+            </div>
+
+            <div style="font-size:12px;font-family:'JetBrains Mono',monospace;color:#6f7681;letter-spacing:1px;margin:18px 0 10px">СЛАБЫЕ ТЕМЫ</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="background:#16191e;border:1px solid #262b32;border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px">
+                <div style="flex:1"><div style="font-size:15px;font-weight:500">REST API и southbound</div><div style="font-size:12.5px;color:#8c939e;margin-top:2px">Automation · 4 из 14 верно</div></div>
+                <span style="font-size:12.5px;color:#9fb6e8;border:1px solid #263457;background:#182130;border-radius:9px;padding:8px 11px;min-height:40px;display:flex;align-items:center">Учить</span>
+              </div>
+              <div style="background:#16191e;border:1px solid #262b32;border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px">
+                <div style="flex:1"><div style="font-size:15px;font-weight:500">Port security и 802.1x</div><div style="font-size:12.5px;color:#8c939e;margin-top:2px">Security · 6 из 15 верно</div></div>
+                <span style="font-size:12.5px;color:#9fb6e8;border:1px solid #263457;background:#182130;border-radius:9px;padding:8px 11px;min-height:40px;display:flex;align-items:center">Учить</span>
+              </div>
+              <div style="background:#16191e;border:1px solid #262b32;border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px">
+                <div style="flex:1"><div style="font-size:15px;font-weight:500">Подсети и VLSM</div><div style="font-size:12.5px;color:#8c939e;margin-top:2px">Network Fundamentals · 11 из 18 верно</div></div>
+                <span style="font-size:12.5px;color:#9fb6e8;border:1px solid #263457;background:#182130;border-radius:9px;padding:8px 11px;min-height:40px;display:flex;align-items:center">Учить</span>
+              </div>
+            </div>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:0;background:#111418;border-top:1px solid #23272e;padding:10px 12px 22px;display:flex;gap:4px">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0;min-height:48px"><div style="width:22px;height:3px;border-radius:2px;background:#23272e"></div><div style="font-size:12px;color:#8c939e">Главная</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0;min-height:48px"><div style="width:22px;height:3px;border-radius:2px;background:#23272e"></div><div style="font-size:12px;color:#8c939e">Учить</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0;min-height:48px"><div style="width:22px;height:3px;border-radius:2px;background:#23272e"></div><div style="font-size:12px;color:#8c939e">Экзамен</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0;min-height:48px"><div style="width:22px;height:3px;border-radius:2px;background:#7aa2ff"></div><div style="font-size:12px;font-weight:600;color:#7aa2ff">Прогресс</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6f7681;letter-spacing:.5px">09 · НАСТРОЙКА ЭКЗАМЕНА · ОДИН ЭКРАН</div>
+        <div data-screen-label="Exam setup" style="position:relative;width:390px;height:844px;background:#0e1013;border:1px solid #262b32;border-radius:28px;overflow:hidden">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:12px;font-family:'JetBrains Mono',monospace;color:#6f7681"><span>9:41</span><span>LTE 84%</span></div>
+          <div style="padding:8px 20px 0">
+            <div style="font-size:22px;font-weight:600;letter-spacing:-.3px;margin-bottom:6px">Экзамен</div>
+            <div style="font-size:13.5px;color:#8c939e;margin-bottom:18px">Пресеты сверху покрывают 90% случаев. Тонкая настройка — ниже, свёрнута.</div>
+
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="background:#182130;border:1px solid #3c6ae0;border-radius:16px;padding:16px 18px">
+                <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:16.5px;font-weight:600">Как на экзамене</div><div style="width:22px;height:22px;border-radius:50%;background:#3c6ae0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff">✓</div></div>
+                <div style="font-size:13.5px;color:#9fb6e8;margin-top:4px">100 вопросов · 120 мин · вес по 6 доменам Cisco</div>
+              </div>
+              <div style="background:#16191e;border:1px solid #262b32;border-radius:16px;padding:16px 18px">
+                <div style="font-size:16.5px;font-weight:600">Короткий прогон</div>
+                <div style="font-size:13.5px;color:#8c939e;margin-top:4px">30 вопросов · 35 мин · те же веса</div>
+              </div>
+              <div style="background:#16191e;border:1px solid #262b32;border-radius:16px;padding:16px 18px">
+                <div style="font-size:16.5px;font-weight:600">Только слабые домены</div>
+                <div style="font-size:13.5px;color:#8c939e;margin-top:4px">40 вопросов · Automation, Security · без таймера</div>
+              </div>
+            </div>
+
+            <div style="margin-top:20px;background:#16191e;border:1px solid #262b32;border-radius:16px;padding:16px 18px">
+              <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:15px;font-weight:600">Настроить вручную</div><div style="color:#8c939e;font-size:16px">▾</div></div>
+              <div style="font-size:13px;color:#8c939e;margin-top:6px">домены · типы вопросов · количество · таймер · перемешать</div>
+            </div>
+
+            <div style="margin-top:20px;background:#111418;border:1px solid #23272e;border-radius:16px;padding:16px">
+              <div style="font-size:14px;font-weight:600;margin-bottom:10px">На время экзамена</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0">
+                <div style="font-size:14px;color:#a8afba">Не гасить экран</div>
+                <div style="width:44px;height:26px;border-radius:14px;background:#3c6ae0;position:relative"><div style="position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:#fff"></div></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-top:1px solid #1c2027">
+                <div style="font-size:14px;color:#a8afba">Скрыть уведомления</div>
+                <div style="width:44px;height:26px;border-radius:14px;background:#3c6ae0;position:relative"><div style="position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:#fff"></div></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-top:1px solid #1c2027">
+                <div style="font-size:14px;color:#a8afba">Показывать ответ сразу</div>
+                <div style="width:44px;height:26px;border-radius:14px;background:#2c3138;position:relative"><div style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#8c939e"></div></div>
+              </div>
+            </div>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:0;background:#111418;border-top:1px solid #23272e;padding:12px 20px 26px">
+            <button style="font-family:inherit;width:100%;font-size:16px;font-weight:600;color:#0e1013;background:#7aa2ff;border:none;border-radius:13px;padding:16px;min-height:48px">Начать · 100 вопросов</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</div>
+</x-dc>
+</body>
+</html>

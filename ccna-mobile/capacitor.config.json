@@ -1,0 +1,9 @@
+{
+  "appId": "com.nickelface.ccnatrainer",
+  "appName": "CCNA Trainer",
+  "webDir": "dist",
+  "backgroundColor": "#0e1013",
+  "android": {
+    "backgroundColor": "#0e1013"
+  }
+}

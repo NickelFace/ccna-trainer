@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Unbounded:wght@600&display=swap">
+<style>
+body{margin:0;background:#06080f}
+a{color:#00d4ff;text-decoration:none}
+a:hover{color:#7ce7ff}
+</style>
+</helmet>
+<div style="font-family:'JetBrains Mono',ui-monospace,monospace;color:#d1d9e6;padding:40px;display:flex;flex-direction:column;gap:14px">
+  <div style="font-family:'Unbounded',sans-serif;font-size:20px;color:#00d4ff">Как выглядит сейчас — воссоздано из кода</div>
+  <div style="font-size:12.5px;color:#5b6b85;max-width:900px;line-height:1.7">Экраны собраны 1:1 по <b style="color:#d1d9e6">assets/css/styles.css</b> и <b style="color:#d1d9e6">assets/js/app.js</b> (ветка main): те же токены (--bg #0a0e17, --cyan #00d4ff, --purple #7c3aed), та же сетка-фон 32px, JetBrains Mono + Unbounded, та же структура разметки функций home() / renderPractice() / renderExam() / renderResults(). Ширина 390px = типичный Android-экран, то есть ровно то, что показывает APK через Capacitor WebView.</div>
+
+  <div style="display:flex;gap:28px;align-items:flex-start;margin-top:10px">
+
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#5b6b85">01 · home()</div>
+      <div data-screen-label="Home (current)" style="position:relative;width:390px;background:#0a0e17;background-image:linear-gradient(rgba(0,212,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.03) 1px,transparent 1px);background-size:32px 32px;border:1px solid #1c2740;font-size:15px;line-height:1.55">
+        <div style="position:absolute;top:8px;right:8px;z-index:5;display:flex;gap:2px;background:#0e1421;border:1px solid #1c2740;border-radius:20px;padding:3px;box-shadow:0 0 16px rgba(0,0,0,.35)">
+          <span style="padding:4px 9px;font-size:10px;letter-spacing:.5px;border-radius:16px;background:#131a2b;border:1px solid #00d4ff;color:#00d4ff;box-shadow:0 0 8px rgba(0,212,255,.3)">RU</span>
+          <span style="padding:4px 9px;font-size:10px;letter-spacing:.5px;border-radius:16px;color:#5b6b85">EN</span>
+        </div>
+        <div style="padding:22px 16px 40px">
+          <h1 style="margin:0;font-family:'Unbounded',sans-serif;font-size:24px;font-weight:600;color:#00d4ff;text-shadow:0 0 18px rgba(0,212,255,.35);letter-spacing:.5px">CCNA 200-301</h1>
+          <div style="color:#5b6b85;font-size:12.5px;margin:0 0 20px;line-height:1.7">1360 оцениваемых вопросов · 274 со схемами · 566 с пояснениями<br>Банк проверен онлайн (418/418 картиночных), ключ исправлен: #151, #986, #787, #1045, #1320.</div>
+
+          <div style="background:#0e1421;border:1px solid #1c2740;border-radius:14px;padding:20px;box-shadow:0 0 24px rgba(0,212,255,.05);margin-bottom:16px">
+            <div style="background:#131a2b;border:1px solid #1c2740;border-radius:9px;font-size:16px;padding:18px 20px;width:100%;display:flex;gap:16px;align-items:center;color:#d1d9e6">
+              <span style="font-size:26px;line-height:1">🎯</span>
+              <span><b style="display:block;font-family:'Unbounded',sans-serif;color:#00d4ff;margin-bottom:4px;font-size:16px">Полный экзамен</b><span style="color:#5b6b85;font-size:12px">100 вопросов · 120 мин · взвешено по 6 доменам Cisco · порог 825/1000 · отчёт по доменам</span></span>
+            </div>
+          </div>
+          <div style="background:#0e1421;border:1px solid #1c2740;border-radius:14px;padding:20px;box-shadow:0 0 24px rgba(0,212,255,.05);margin-bottom:16px">
+            <div style="background:#131a2b;border:1px solid #1c2740;border-radius:9px;font-size:16px;padding:18px 20px;width:100%;display:flex;gap:16px;align-items:center;color:#d1d9e6">
+              <span style="font-size:26px;line-height:1">⚙️</span>
+              <span><b style="display:block;font-family:'Unbounded',sans-serif;color:#7c3aed;margin-bottom:4px;font-size:16px">Свой экзамен</b><span style="color:#5b6b85;font-size:12px">выбрать домены · число вопросов · таймер · разбор в конце</span></span>
+            </div>
+          </div>
+          <div style="background:#0e1421;border:1px solid #1c2740;border-radius:14px;padding:20px;box-shadow:0 0 24px rgba(0,212,255,.05);margin-bottom:16px">
+            <div style="background:#131a2b;border:1px solid #1c2740;border-radius:9px;font-size:16px;padding:18px 20px;width:100%;display:flex;gap:16px;align-items:center;color:#d1d9e6">
+              <span style="font-size:26px;line-height:1">📚</span>
+              <span><b style="display:block;font-family:'Unbounded',sans-serif;color:#10b981;margin-bottom:4px;font-size:16px">Тренировка</b><span style="color:#5b6b85;font-size:12px">вопрос за вопросом · мгновенная проверка · пояснения</span></span>
+            </div>
+          </div>
+
+          <h2 style="font-family:'Unbounded',sans-serif;font-size:17px;font-weight:600;color:#d1d9e6;margin:18px 0 12px">Домены экзамена</h2>
+          <div style="background:#0e1421;border:1px solid #1c2740;border-radius:14px;padding:20px;box-shadow:0 0 24px rgba(0,212,255,.05);margin-bottom:16px">
+            <div style="margin:10px 0"><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span>1.0 Network Fundamentals</span><span style="color:#5b6b85">вес 20% · 378 вопр.</span></div><div style="height:9px;background:#0b1120;border:1px solid #1c2740;border-radius:6px;overflow:hidden"><div style="height:100%;width:44%;border-radius:5px;background:linear-gradient(90deg,#0f766e,#10b981)"></div></div></div>
+            <div style="margin:10px 0"><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span>2.0 Network Access</span><span style="color:#5b6b85">вес 20% · 296 вопр.</span></div><div style="height:9px;background:#0b1120;border:1px solid #1c2740;border-radius:6px;overflow:hidden"><div style="height:100%;width:44%;border-radius:5px;background:linear-gradient(90deg,#0f766e,#10b981)"></div></div></div>
+            <div style="margin:10px 0"><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span>3.0 IP Connectivity</span><span style="color:#5b6b85">вес 25% · 244 вопр.</span></div><div style="height:9px;background:#0b1120;border:1px solid #1c2740;border-radius:6px;overflow:hidden"><div style="height:100%;width:55%;border-radius:5px;background:linear-gradient(90deg,#0f766e,#10b981)"></div></div></div>
+            <div style="margin:10px 0"><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span>4.0 IP Services</span><span style="color:#5b6b85">вес 10% · 159 вопр.</span></div><div style="height:9px;background:#0b1120;border:1px solid #1c2740;border-radius:6px;overflow:hidden"><div style="height:100%;width:22%;border-radius:5px;background:linear-gradient(90deg,#0f766e,#10b981)"></div></div></div>
+            <div style="margin:10px 0"><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span>5.0 Security Fundamentals</span><span style="color:#5b6b85">вес 15% · 173 вопр.</span></div><div style="height:9px;background:#0b1120;border:1px solid #1c2740;border-radius:6px;overflow:hidden"><div style="height:100%;width:33%;border-radius:5px;background:linear-gradient(90deg,#0f766e,#10b981)"></div></div></div>
+            <div style="margin:10px 0"><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span>6.0 Automation and Programmability</span><span style="color:#5b6b85">вес 10% · 145 вопр.</span></div><div style="height:9px;background:#0b1120;border:1px solid #1c2740;border-radius:6px;overflow:hidden"><div style="height:100%;width:22%;border-radius:5px;background:linear-gradient(90deg,#0f766e,#10b981)"></div></div></div>
+          </div>
+          <div style="color:#5b6b85;font-size:12.5px;margin-bottom:20px;line-height:1.7">Drag-and-drop интерактивно: <b style="color:#d1d9e6">159/159</b> готово. Лаб-симуляции (35) вынесены отдельно — <a href="#redesign">открыть справочно</a>.</div>
+          <div style="margin-top:40px;text-align:center;color:#3a4763;font-size:11px">CCNA 200-301 Exam Simulator · банк 1401 вопрос · офлайн, без бэкенда</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#5b6b85">02 · renderPractice() — после ответа</div>
+      <div data-screen-label="Practice (current)" style="width:390px;background:#0a0e17;background-image:linear-gradient(rgba(0,212,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.03) 1px,transparent 1px);background-size:32px 32px;border:1px solid #1c2740;font-size:15px;line-height:1.55">
+        <div style="padding:22px 16px 40px">
+          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+            <button style="font-family:inherit;background:#131a2b;border:1px solid #1c2740;color:#d1d9e6;border-radius:9px;padding:10px 16px;font-size:14px">✕ выход</button>
+            <button style="font-family:inherit;background:#131a2b;border:1px solid #1c2740;color:#d1d9e6;border-radius:9px;padding:10px 16px;font-size:14px">📋 Разбор ошибок</button>
+            <div style="flex:1"></div>
+            <input value="" placeholder="№" style="font-family:inherit;width:74px;padding:6px 8px;font-size:13px;text-align:center;background:#131a2b;border:1px solid #1c2740;color:#d1d9e6;border-radius:8px">
+            <button style="font-family:inherit;background:#131a2b;border:1px solid #1c2740;color:#d1d9e6;border-radius:9px;padding:10px 16px;font-size:14px">→</button>
+            <div style="background:#131a2b;border:1px solid #1c2740;border-radius:8px;padding:6px 12px;font-size:13px">4/20</div>
+            <div style="background:#131a2b;border:1px solid #1c2740;border-radius:8px;padding:6px 12px;font-size:13px"><span style="color:#10b981">2</span>✓ <span style="color:#ef4444">1</span>✗</div>
+          </div>
+          <div style="background:#0e1421;border:1px solid #1c2740;border-radius:14px;padding:20px;box-shadow:0 0 24px rgba(0,212,255,.05);margin-top:16px">
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;align-items:center">
+              <span style="font-size:11px;padding:2px 9px;border-radius:6px;border:1px solid #26324f;color:#00d4ff;white-space:nowrap">IP Connectivity</span>
+              <span style="color:#5b6b85;font-size:12px">Вопрос 365</span>
+            </div>
+            <div style="margin:8px 0 14px;white-space:pre-wrap;font-size:15px">Router A learns the same route from two different neighbors; one of the neighbor routers is an OSPF neighbor, and the other is an EIGRP neighbor. What is the administrative distance of the route that will be installed in the routing table?</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;gap:10px;text-align:left;background:transparent;border:1px solid #1c2740;border-radius:9px;padding:11px 13px;color:#d1d9e6;opacity:.95"><span style="color:#00d4ff;font-weight:700;min-width:18px">A</span><span>20</span></div>
+              <div style="display:flex;gap:10px;text-align:left;background:transparent;border:1px solid #10b981;box-shadow:0 0 10px rgba(16,185,129,.30);border-radius:9px;padding:11px 13px;color:#d1d9e6;opacity:.95"><span style="color:#00d4ff;font-weight:700;min-width:18px">B</span><span>90</span></div>
+              <div style="display:flex;gap:10px;text-align:left;background:transparent;border:1px solid #ef4444;box-shadow:0 0 10px rgba(239,68,68,.30);border-radius:9px;padding:11px 13px;color:#d1d9e6;opacity:.95"><span style="color:#00d4ff;font-weight:700;min-width:18px">C</span><span>110</span></div>
+              <div style="display:flex;gap:10px;text-align:left;background:transparent;border:1px solid #1c2740;border-radius:9px;padding:11px 13px;color:#d1d9e6;opacity:.95"><span style="color:#00d4ff;font-weight:700;min-width:18px">D</span><span>115</span></div>
+            </div>
+            <div style="margin-top:14px;font-size:14px;font-weight:700;color:#ef4444">✗ Неверно · ключ: B</div>
+            <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
+              <div style="border-radius:9px;padding:10px 12px;background:#131a2b;border-left:3px solid #ef4444">
+                <div style="font-size:13.5px;white-space:pre-wrap"><b style="color:#d1d9e6">C.</b> 110 <span style="color:#ef4444;font-size:11px;font-weight:700;margin-left:4px">✗ неверно · твой выбор</span></div>
+                <div style="margin-top:5px;font-size:12.5px;color:#5b6b85;line-height:1.5"><p style="margin:0 0 7px">110 — административная дистанция OSPF, но она хуже (больше), чем у внутреннего EIGRP.</p><p style="margin:0">Маршрутизатор выбирает маршрут с наименьшей AD, поэтому OSPF-маршрут в таблицу не попадёт.</p></div>
+              </div>
+              <div style="border-radius:9px;padding:10px 12px;background:#131a2b;border-left:3px solid #10b981">
+                <div style="font-size:13.5px;white-space:pre-wrap"><b style="color:#d1d9e6">B.</b> 90 <span style="color:#10b981;font-size:11px;font-weight:700;margin-left:4px">✓ верно</span></div>
+                <div style="margin-top:5px;font-size:12.5px;color:#5b6b85;line-height:1.5"><p style="margin:0">Внутренний EIGRP имеет AD 90 — меньше, чем 110 у OSPF, поэтому именно он устанавливается в таблицу маршрутизации.</p></div>
+              </div>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:8px"><button style="font-family:inherit;background:#131a2b;border:1px solid #1c2740;color:#d1d9e6;border-radius:9px;padding:6px 12px;font-size:12px">📋 Скопировать для ИИ</button></div>
+            <div style="display:flex;gap:10px;align-items:center;margin-top:18px;flex-wrap:wrap">
+              <button style="font-family:inherit;background:#131a2b;border:1px solid #1c2740;color:#d1d9e6;border-radius:9px;padding:10px 16px;font-size:14px">← пред</button>
+              <button style="font-family:inherit;background:#131a2b;border:1px solid #1c2740;color:#d1d9e6;border-radius:9px;padding:10px 16px;font-size:14px">след →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#5b6b85">03 · renderExam() + сетка навигации</div>
+      <div data-screen-label="Exam (current)" style="width:390px;background:#0a0e17;background-image:linear-gradient(rgba(0,212,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.03) 1px,transparent 1px);background-size:32px 32px;border:1px solid #1c2740;font-size:15px;line-height:1.55">
+        <div style="padding:22px 16px 40px">
+          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+            <button style="font-family:inherit;background:#131a2b;border:1px solid #1c2740;color:#d1d9e6;border-radius:9px;padding:10px 16px;font-size:14px">✕</button>
+            <div style="flex:1"></div>
+            <span style="font-family:'Unbounded',sans-serif;font-size:19px;color:#f59e0b">89:42</span>
+            <div style="background:#131a2b;border:1px solid #1c2740;border-radius:8px;padding:6px 12px;font-size:13px">7/100</div>
+          </div>
+          <div style="background:#0e1421;border:1px solid #1c2740;border-radius:14px;padding:20px;box-shadow:0 0 24px rgba(0,212,255,.05);margin-top:16px">
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;align-items:center">
+              <span style="font-size:11px;padding:2px 9px;border-radius:6px;border:1px solid #26324f;color:#00d4ff">Network Access</span>
+              <span style="color:#5b6b85;font-size:12px">Вопрос 962</span>
+              <span style="font-size:11px;padding:2px 9px;border-radius:6px;border:1px solid #f59e0b;color:#f59e0b">СХЕМА</span>
+            </div>
+            <svg viewBox="0 0 340 150" style="max-width:100%;border:1px solid #1c2740;border-radius:8px;margin-bottom:14px;background:#fff;display:block">
+              <defs><pattern id="st" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#eef1f5"></rect><rect width="4" height="8" fill="#e3e7ee"></rect></pattern></defs>
+              <rect width="340" height="150" fill="url(#st)"></rect>
+              <text x="170" y="78" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#6b7688">images/exhibits/q962.jpg</text>
+            </svg>
+            <div style="margin:8px 0 14px;white-space:pre-wrap;font-size:15px">Refer to the exhibit. The DHCP server is configured with a DHCP pool for each of the subnets represented. Which command must be configured on switch SW1 to allow DHCP clients on VLAN 10 to receive dynamic IP addresses from the DHCP server?</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;gap:10px;border:1px solid #1c2740;border-radius:9px;padding:11px 13px"><span style="color:#00d4ff;font-weight:700;min-width:18px">A</span><span>SW1(config-if)#ip helper-address 192.168.10.1</span></div>
+              <div style="display:flex;gap:10px;border:1px solid #7c3aed;box-shadow:0 0 8px rgba(124,58,237,.3);border-radius:9px;padding:11px 13px"><span style="color:#00d4ff;font-weight:700;min-width:18px">B</span><span>SW1(config-if)#ip helper-address 192.168.20.1</span></div>
+              <div style="display:flex;gap:10px;border:1px solid #1c2740;border-radius:9px;padding:11px 13px"><span style="color:#00d4ff;font-weight:700;min-width:18px">C</span><span>SW1(config-if)#ip helper-address 192.168.20.2</span></div>
+              <div style="display:flex;gap:10px;border:1px solid #1c2740;border-radius:9px;padding:11px 13px"><span style="color:#00d4ff;font-weight:700;min-width:18px">D</span><span>SW1(config-if)#ip helper-address 192.168.10.2</span></div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;margin-top:18px;flex-wrap:wrap">
+              <button style="font-family:inherit;background:#131a2b;border:1px solid #1c2740;color:#d1d9e6;border-radius:9px;padding:10px 16px;font-size:14px">← пред</button>
+              <button style="font-family:inherit;background:#131a2b;border:1px solid #1c2740;color:#d1d9e6;border-radius:9px;padding:10px 16px;font-size:14px">след →</button>
+              <button style="font-family:inherit;background:#131a2b;border:1px solid #1c2740;color:#d1d9e6;border-radius:9px;padding:10px 16px;font-size:14px">☆ на потом</button>
+              <div style="flex:1"></div>
+              <button style="font-family:inherit;background:#131a2b;border:1px solid #00d4ff;color:#00d4ff;border-radius:9px;padding:10px 16px;font-size:14px">Завершить</button>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:6px;margin-top:16px">
+              <div style="border:1px solid #00d4ff;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#00d4ff">1</div>
+              <div style="border:1px solid #00d4ff;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#00d4ff">2</div>
+              <div style="border:1px solid #f59e0b;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#f59e0b">3</div>
+              <div style="border:1px solid #00d4ff;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#00d4ff">4</div>
+              <div style="border:1px solid #00d4ff;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#00d4ff">5</div>
+              <div style="border:1px solid #00d4ff;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#00d4ff">6</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#d1d9e6;background:#131a2b;outline:1px solid #00d4ff">7</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">8</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">9</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">10</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">11</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">12</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">13</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">14</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">15</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">16</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">17</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">18</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">19</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">20</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">21</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">22</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">23</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">24</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">25</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">26</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">27</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">28</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">29</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">30</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">31</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">32</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">33</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">34</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">35</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#5b6b85">36</div>
+              <div style="border:1px solid #1c2740;border-radius:6px;padding:6px 0;text-align:center;font-size:12px;color:#3a4763">…</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#5b6b85">04 · ddMarkup() — drag &amp; drop на телефоне</div>
+      <div data-screen-label="Drag-drop (current)" style="width:390px;background:#0a0e17;background-image:linear-gradient(rgba(0,212,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.03) 1px,transparent 1px);background-size:32px 32px;border:1px solid #1c2740;font-size:15px;line-height:1.55">
+        <div style="padding:22px 16px 40px">
+          <div style="background:#0e1421;border:1px solid #1c2740;border-radius:14px;padding:20px;box-shadow:0 0 24px rgba(0,212,255,.05)">
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;align-items:center">
+              <span style="font-size:11px;padding:2px 9px;border-radius:6px;border:1px solid #26324f;color:#00d4ff">Network Fundamentals</span>
+              <span style="color:#5b6b85;font-size:12px">Вопрос 44</span>
+              <span style="font-size:11px;padding:2px 9px;border-radius:6px;border:1px solid #3b82f6;color:#3b82f6">DRAG&amp;DROP</span>
+            </div>
+            <div style="margin:8px 0 14px;white-space:pre-wrap;font-size:15px">Drag and drop the protocols from the left onto the transport-layer protocol they use on the right.</div>
+            <div style="display:grid;grid-template-columns:1fr;gap:16px;margin:6px 0 4px">
+              <div>
+                <h3 style="font-family:'Unbounded',sans-serif;font-size:13px;font-weight:600;color:#5b6b85;margin:0 0 10px;text-transform:uppercase;letter-spacing:1px">Элементы</h3>
+                <div style="display:flex;flex-direction:column;gap:8px;min-height:40px;padding:8px;border:1px dashed #1c2740;border-radius:9px">
+                  <div style="background:#131a2b;border:1px solid #26324f;border-radius:8px;padding:10px 12px;font-size:13px">DHCP</div>
+                  <div style="background:#131a2b;border:1px solid #26324f;border-radius:8px;padding:10px 12px;font-size:13px">FTP</div>
+                  <div style="background:#131a2b;border:1px solid #26324f;border-radius:8px;padding:10px 12px;font-size:13px">SMTP</div>
+                  <div style="background:#131a2b;border:1px solid #26324f;border-radius:8px;padding:10px 12px;font-size:13px">SSH</div>
+                  <div style="background:#131a2b;border:1px solid #26324f;border-radius:8px;padding:10px 12px;font-size:13px">SNMP</div>
+                  <div style="background:#131a2b;border:1px solid #26324f;border-radius:8px;padding:10px 12px;font-size:13px">TFTP</div>
+                </div>
+              </div>
+              <div>
+                <h3 style="font-family:'Unbounded',sans-serif;font-size:13px;font-weight:600;color:#5b6b85;margin:0 0 10px;text-transform:uppercase;letter-spacing:1px">Категории</h3>
+                <div style="border:1px solid #1c2740;border-radius:9px;padding:10px;margin-bottom:10px;background:#0b1120">
+                  <div style="font-size:12px;color:#f59e0b;margin-bottom:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px">TCP</div>
+                  <div style="display:flex;flex-direction:column;gap:8px;min-height:44px;border:1px dashed #1c2740;border-radius:8px;padding:8px"></div>
+                </div>
+                <div style="border:1px solid #1c2740;border-radius:9px;padding:10px;margin-bottom:10px;background:#0b1120">
+                  <div style="font-size:12px;color:#f59e0b;margin-bottom:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px">UDP</div>
+                  <div style="display:flex;flex-direction:column;gap:8px;min-height:44px;border:1px dashed #1c2740;border-radius:8px;padding:8px"></div>
+                </div>
+              </div>
+            </div>
+            <button style="font-family:inherit;background:#131a2b;border:1px solid #1c2740;color:#d1d9e6;border-radius:9px;padding:10px 16px;font-size:14px;margin-top:6px;opacity:.4">Проверить</button>
+            <div style="display:flex;gap:10px;align-items:center;margin-top:18px;flex-wrap:wrap">
+              <button style="font-family:inherit;background:#131a2b;border:1px solid #1c2740;color:#d1d9e6;border-radius:9px;padding:10px 16px;font-size:14px">← пред</button>
+              <button style="font-family:inherit;background:#131a2b;border:1px solid #1c2740;color:#d1d9e6;border-radius:9px;padding:10px 16px;font-size:14px">след →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#5b6b85">05 · renderResults()</div>
+      <div data-screen-label="Results (current)" style="width:390px;background:#0a0e17;background-image:linear-gradient(rgba(0,212,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.03) 1px,transparent 1px);background-size:32px 32px;border:1px solid #1c2740;font-size:15px;line-height:1.55">
+        <div style="padding:22px 16px 40px">
+          <h1 style="margin:0 0 12px;font-family:'Unbounded',sans-serif;font-size:24px;font-weight:600;color:#00d4ff;text-shadow:0 0 18px rgba(0,212,255,.35)">Результат</h1>
+          <div style="background:#0e1421;border:1px solid #1c2740;border-radius:14px;padding:20px;box-shadow:0 0 24px rgba(0,212,255,.05);margin-bottom:16px">
+            <div style="font-family:'Unbounded',sans-serif;font-size:52px;text-align:center;margin:8px 0 2px;color:#ef4444">748</div>
+            <div style="text-align:center;font-size:14px;color:#5b6b85;margin-bottom:4px">шкала 300–1000 · порог 825</div>
+            <div style="text-align:center;color:#5b6b85;font-size:12.5px;margin-bottom:20px;line-height:1.7">64 из 100 верно (64%) · <span style="color:#ef4444">✗ ниже проходного</span></div>
+            <div style="display:flex;gap:10px;align-items:center;margin-top:18px;flex-wrap:wrap;justify-content:center">
+              <button style="font-family:inherit;background:#131a2b;border:1px solid #1c2740;color:#d1d9e6;border-radius:9px;padding:10px 16px;font-size:14px">← домой</button>
+              <button style="font-family:inherit;background:#131a2b;border:1px solid #00d4ff;color:#00d4ff;border-radius:9px;padding:10px 16px;font-size:14px">Ещё полный экзамен</button>
+            </div>
+          </div>
+          <h2 style="font-family:'Unbounded',sans-serif;font-size:17px;font-weight:600;margin:18px 0 12px">По доменам</h2>
+          <div style="background:#0e1421;border:1px solid #1c2740;border-radius:14px;padding:20px;box-shadow:0 0 24px rgba(0,212,255,.05);margin-bottom:16px">
+            <div style="margin:10px 0"><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span>Network Fundamentals</span><span style="color:#5b6b85">15/20 · 75%</span></div><div style="height:9px;background:#0b1120;border:1px solid #1c2740;border-radius:6px;overflow:hidden"><div style="height:100%;width:75%;border-radius:5px;background:linear-gradient(90deg,#78350f,#f59e0b)"></div></div></div>
+            <div style="margin:10px 0"><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span>Network Access</span><span style="color:#5b6b85">17/20 · 85%</span></div><div style="height:9px;background:#0b1120;border:1px solid #1c2740;border-radius:6px;overflow:hidden"><div style="height:100%;width:85%;border-radius:5px;background:linear-gradient(90deg,#0f766e,#10b981)"></div></div></div>
+            <div style="margin:10px 0"><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span>IP Connectivity</span><span style="color:#5b6b85">14/25 · 56%</span></div><div style="height:9px;background:#0b1120;border:1px solid #1c2740;border-radius:6px;overflow:hidden"><div style="height:100%;width:56%;border-radius:5px;background:linear-gradient(90deg,#7f1d1d,#ef4444)"></div></div></div>
+            <div style="margin:10px 0"><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span>IP Services</span><span style="color:#5b6b85">7/10 · 70%</span></div><div style="height:9px;background:#0b1120;border:1px solid #1c2740;border-radius:6px;overflow:hidden"><div style="height:100%;width:70%;border-radius:5px;background:linear-gradient(90deg,#78350f,#f59e0b)"></div></div></div>
+            <div style="margin:10px 0"><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span>Security Fundamentals</span><span style="color:#5b6b85">8/15 · 53%</span></div><div style="height:9px;background:#0b1120;border:1px solid #1c2740;border-radius:6px;overflow:hidden"><div style="height:100%;width:53%;border-radius:5px;background:linear-gradient(90deg,#7f1d1d,#ef4444)"></div></div></div>
+            <div style="margin:10px 0"><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span>Automation and Programmability</span><span style="color:#5b6b85">3/10 · 30%</span></div><div style="height:9px;background:#0b1120;border:1px solid #1c2740;border-radius:6px;overflow:hidden"><div style="height:100%;width:30%;border-radius:5px;background:linear-gradient(90deg,#7f1d1d,#ef4444)"></div></div></div>
+          </div>
+          <h2 style="font-family:'Unbounded',sans-serif;font-size:17px;font-weight:600;margin:18px 0 12px">Разбор</h2>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px">
+            <span style="border:1px solid #7c3aed;box-shadow:0 0 8px rgba(124,58,237,.3);border-radius:20px;padding:6px 13px;font-size:12px;color:#d1d9e6">Ошибки<span style="color:#7c3aed;margin-left:6px">36</span></span>
+            <span style="border:1px solid #1c2740;border-radius:20px;padding:6px 13px;font-size:12px;color:#5b6b85">Все<span style="color:#3a4763;margin-left:6px">100</span></span>
+            <span style="border:1px solid #1c2740;border-radius:20px;padding:6px 13px;font-size:12px;color:#5b6b85">Верно<span style="color:#3a4763;margin-left:6px">64</span></span>
+            <div style="flex:1"></div>
+            <button style="font-family:inherit;background:#131a2b;border:1px solid #1c2740;color:#d1d9e6;border-radius:9px;padding:10px 16px;font-size:14px">📋 Скопировать ошибки для ИИ</button>
+          </div>
+          <div style="background:#0e1421;border:1px solid #26324f;border-left:4px solid #ef4444;border-radius:14px;padding:18px;margin-bottom:30px;box-shadow:0 0 24px rgba(0,212,255,.05)">
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;align-items:center">
+              <span style="font-size:11px;padding:2px 9px;border-radius:6px;border:1px solid #26324f;color:#00d4ff">Automation and Programmability</span>
+              <span style="color:#5b6b85;font-size:12px">Вопрос 1073</span>
+              <span style="font-size:11px;padding:2px 9px;border-radius:6px;border:1px solid #ef4444;color:#ef4444">ошибка</span>
+            </div>
+            <div style="margin:8px 0 14px;font-size:15px">What describes the functionality of southbound APIs?</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="border-radius:9px;padding:10px 12px;background:#131a2b;border-left:3px solid #ef4444">
+                <div style="font-size:13.5px"><b style="color:#d1d9e6">C.</b> They use HTTP messages to communicate. <span style="color:#ef4444;font-size:11px;font-weight:700;margin-left:4px">✗ неверно · твой выбор</span></div>
+              </div>
+              <div style="border-radius:9px;padding:10px 12px;background:#131a2b;border-left:3px solid #10b981">
+                <div style="font-size:13.5px"><b style="color:#d1d9e6">A.</b> They enable communication between the controller and the network device. <span style="color:#10b981;font-size:11px;font-weight:700;margin-left:4px">✓ верно</span></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:8px"><button style="font-family:inherit;background:#131a2b;border:1px solid #1c2740;color:#d1d9e6;border-radius:9px;padding:6px 12px;font-size:12px">📋 для ИИ</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

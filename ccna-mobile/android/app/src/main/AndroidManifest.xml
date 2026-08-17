@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <!--
+          Portrait only. The screens are designed at 390x844 with a sticky header and a
+          sticky action bar; rotated on a phone that leaves about 400px of content between
+          the two panels, which is checked and genuinely unpleasant to read a question in.
+          userPortrait, not portrait, so an upside-down phone still works.
+          Trade-off worth naming: this locks tablets too. Exempting them needs a
+          sw600dp bool read in MainActivity, which is only worth doing if the layout ever
+          gets a wide variant.
+        -->
+        <activity
+            android:screenOrientation="userPortrait"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation"
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.NoActionBarLaunch"
+            android:launchMode="singleTask"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"></meta-data>
+        </provider>
+    </application>
+
+    <!-- Permissions -->
+    <!--
+      No android.permission.INTERNET. The bank, the exhibits and the fonts are all bundled
+      in the APK and served over Capacitor's local scheme, so the app never opens a socket.
+      Handing an AI link to another app goes through an ACTION_VIEW intent, which needs no
+      permission of ours. Declaring INTERNET on an offline study app would be asking for
+      something we do not use.
+    -->
+
+    <!-- The AI target opens in whichever browser or app claims an https link. Android 11+
+         requires declaring that we intend to look at web links at all. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
+</manifest>

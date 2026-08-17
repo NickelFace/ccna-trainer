@@ -1,0 +1,17 @@
+# Build output. dist/data and dist/images are pulled from ../ccna-exam-simulator
+# by `npm run sync-data` — the bank is never duplicated in git.
+dist/
+node_modules/
+
+# Capacitor-generated Android build artifacts
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+android/app/src/main/assets/public/
+android/app/src/main/res/xml/config.xml
+
+# Signing material never belongs in the repo
+*.jks
+*.keystore
+keystore.properties

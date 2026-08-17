@@ -1,0 +1,95 @@
+/* Design tokens — from design_handoff_ccna_android/README.md.
+   These replace the web app's neon-cyan scheme entirely: no gradient page background,
+   no grid pattern, no glow shadows. The only gradients allowed are the readiness bar
+   and the result scale; the only shadow is the review sheet's. */
+
+:root {
+  /* ---- surfaces ---- */
+  --bg: #0e1013;
+  --surface: #16191e;
+  --surface-alt: #111418;
+  --bar: #111418;
+  --sheet: #14171c;
+  --elev: #1a1e24;
+
+  /* ---- lines ---- */
+  --border: #262b32;
+  --border-soft: #23272e;
+  --divider: #1c2027;
+
+  /* ---- text ---- */
+  --text: #e8eaed;
+  --text-2: #a8afba;
+  --text-3: #8c939e;
+  --text-4: #6f7681;
+  --text-disabled: #4d545e;
+
+  /* ---- accent ---- */
+  --primary: #7aa2ff;
+  --primary-strong: #3c6ae0;
+  --primary-bg: #182130;
+  --primary-border: #263457;
+  --primary-text: #9fb6e8;
+  --on-primary: #0e1013;
+
+  /* ---- semantic ---- */
+  --ok: #58c08c;
+  --ok-text: #8fd4a8;
+  --ok-bg: #151f18;
+  --ok-border: #2f6b45;
+  --err: #f2777a;
+  --err-bg: #241a1c;
+  --err-border: #6b3236;
+  --warn: #e3b341;
+  --warn-bg: #221e14;
+  --warn-border: #4a3d1c;
+
+  /* ---- the two permitted gradients ---- */
+  --grad-readiness: linear-gradient(90deg, #3c6ae0, #7aa2ff);
+  --grad-scale: linear-gradient(90deg, #8a6a1e, #e3b341);
+  --shadow-sheet: 0 -18px 40px rgba(0, 0, 0, .5);
+
+  /* ---- type ----
+     Space Grotesk has no Cyrillic (Google Fonts ships it as latin/latin-ext/vietnamese
+     only), so Manrope covers the Cyrillic ranges. Per-character fallback in the stack
+     below does the switch: Latin glyphs resolve in Space Grotesk, Cyrillic ones fall
+     through to Manrope. Both are bundled locally — the app never touches the network. */
+  --font-ui: 'Space Grotesk', 'Manrope', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --fs-screen-title: 22px;
+  --fs-onboard-title: 27px;
+  --fs-score: 52px;
+  --fs-question: 17px;
+  --fs-option: 15px;
+  --fs-card-title: 16px;
+  --fs-body: 14px;
+  --fs-caption: 13px;
+  --fs-label: 12px;
+  --fs-stat: 19px;
+
+  /* ---- geometry ---- */
+  --r-frame: 28px;
+  --r-lg: 18px;
+  --r-card: 16px;
+  --r-sm: 14px;
+  --r-btn: 13px;
+  --r-chip: 11px;
+  --r-pill: 20px;
+  --r-badge: 7px;
+
+  --pad-screen: 20px;
+  --tap: 48px;        /* primary actions and answer options */
+  --tap-sm: 44px;     /* secondary chips */
+
+  /* ---- safe area ----
+     Android draws edge-to-edge from targetSdk 35, so every sticky panel pads itself
+     with these instead of assuming a 0px inset. The fallbacks keep the dev browser
+     (where the insets are 0) looking like the 390x844 mockups. */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
+  --tabbar-h: 64px;
+}

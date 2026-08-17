@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Same background token as the web layer, so the splash and the first painted frame
+         match and there is no flash of a different colour on launch. -->
+    <color name="splashBackground">#0e1013</color>
+    <color name="splashIcon">#7aa2ff</color>
+</resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Launcher foreground: the same three-node glyph as the splash, drawn inside the 72dp
+  safe zone of the 108dp adaptive-icon canvas so no launcher mask can clip it.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:strokeColor="#7aa2ff"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:pathData="M54,40 L38,68 M54,40 L70,68 M38,68 L70,68" />
+    <path android:fillColor="#7aa2ff" android:pathData="M54,36m-7,0a7,7 0 1,0 14,0a7,7 0 1,0 -14,0" />
+    <path android:fillColor="#7aa2ff" android:pathData="M38,72m-7,0a7,7 0 1,0 14,0a7,7 0 1,0 -14,0" />
+    <path android:fillColor="#7aa2ff" android:pathData="M70,72m-7,0a7,7 0 1,0 14,0a7,7 0 1,0 -14,0" />
+</vector>
