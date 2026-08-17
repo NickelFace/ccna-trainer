@@ -93,7 +93,36 @@ button { background: none; border: 0; cursor: pointer; }
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;   /* no glow chaining out to the page behind */
   padding: 0 var(--pad-screen);
+}
+
+/* ---- motion ----
+   Two rules only. Arriving screens fade up 8px; anything tappable answers the finger
+   immediately. Everything that moves does so on transform and opacity, which the
+   compositor can run without a layout pass. */
+@keyframes screen-in {
+  from { opacity: 0; transform: translate3d(0, 8px, 0); }
+}
+.screen-in { animation: screen-in 200ms cubic-bezier(.22, .9, .3, 1) both; }
+
+.btn, .opt, .chip, .grid-cell, .placed-chip, .tab .lbl, .tab .ind,
+.q-tool, .q-icon, .back-btn {
+  transition: transform 120ms ease-out, background-color 160ms ease-out,
+              border-color 160ms ease-out, color 160ms ease-out, opacity 160ms ease-out;
+}
+.btn:active:not(:disabled), .opt:active:not(:disabled),
+.chip:active:not(:disabled), .grid-cell:active { transform: scale(.97); }
+.q-tool:active, .q-icon:active, .back-btn:active { opacity: .55; }
+.tab:active .lbl { opacity: .55; }
+
+/* A phone set to reduce motion gets the same app without any of it. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
 }
 
 /* Screens that end above the tab bar still need breathing room under the last card. */

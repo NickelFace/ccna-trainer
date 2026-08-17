@@ -45,6 +45,28 @@ The engine was lifted out of the web app's `assets/js/app.js` without changing b
 that was verified by running both implementations over the same inputs and comparing
 9732 results.
 
+## Motion
+
+Everything that moves does so on `transform` and `opacity` only, so the compositor can run
+it without a layout pass. Three rules the code holds itself to:
+
+- **The swipe tracks the finger.** `bindSwipe` in `screens/question.js` moves `.q-pane`
+  1:1 while dragging; releasing past 22% of the width — or on a flick still travelling that
+  way — hands off to the next question, and anything short of that springs back. The axis
+  is decided once, after 10px, and vertical intent gives the gesture up to the scroller
+  (`touch-action: pan-y` means the listeners never call `preventDefault`).
+- **Entrances are CSS animations, not rAF flips.** A backgrounded WebView stops serving
+  frames, and a pane waiting for a callback that never comes would be an invisible screen.
+  `.q-pane.in-next` / `.in-prev` use `animation-fill-mode: backwards`, so the resting state
+  is the plain visible element the drag can move.
+- **A tap repaints what it changed.** Selecting an option updates the option row and the
+  action bar (`router.renderFooter()`), never the whole body — a full rebuild re-inserts
+  the exhibit `<img>` and the screen blinks on every tap. Same for the bookmark label and
+  the font-size step.
+
+`prefers-reduced-motion: reduce` collapses every duration in `base.css`, and the hand-off
+skips its animation entirely.
+
 ## Release
 
 Every push to `main` that touches `ccna-mobile/` or the question bank runs

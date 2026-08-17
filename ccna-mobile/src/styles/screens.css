@@ -43,9 +43,26 @@
 @keyframes blink { 50% { opacity: .35; } }
 
 .q-progress { height: 4px; border-radius: 2px; background: var(--elev); overflow: hidden; }
-.q-progress i { display: block; height: 100%; background: var(--primary); }
+.q-progress i {
+  display: block; height: 100%; background: var(--primary);
+  transition: width 260ms cubic-bezier(.22, .9, .3, 1);
+}
 
 /* ---------------------------------------------------------- question body */
+/* The pane is the swipe surface: the finger moves it, question.js writes transform and
+   opacity straight onto it. pan-y hands vertical scrolling back to the browser, so the
+   gesture listeners never have to fight it (or call preventDefault). */
+.q-pane { touch-action: pan-y; }
+/* Entering after a swipe or a ← / Дальше tap. `backwards`, not `both`: once the keyframes
+   are done the pane must go back to being an ordinary element the drag can move. */
+@keyframes q-in-next { from { opacity: 0; transform: translate3d(26%, 0, 0); } }
+@keyframes q-in-prev { from { opacity: 0; transform: translate3d(-26%, 0, 0); } }
+.q-pane.in-next { animation: q-in-next 220ms cubic-bezier(.22, .9, .3, 1) backwards; }
+.q-pane.in-prev { animation: q-in-prev 220ms cubic-bezier(.22, .9, .3, 1) backwards; }
+/* Mid-swipe the finger is moving the pane, not pressing what is under it: the option it
+   started on must not sit there shrunk into its pressed state for the whole drag. */
+.q-pane.dragging { will-change: transform; }
+.q-pane.dragging .opt:active, .q-pane.dragging .chip:active { transform: none; }
 .q-body { padding-top: 16px; }
 .q-body.graded { opacity: .5; }         /* the sheet takes over — spec 04 */
 
@@ -190,7 +207,9 @@
 
 /* ---------------------------------------------------------- bottom sheet */
 .sheet-backdrop { position: fixed; inset: 0; display: flex; align-items: flex-end; z-index: 40; }
-.sheet-backdrop.dim { background: rgba(0, 0, 0, .35); }
+/* The dim fades in with the panel instead of appearing under it in one frame. */
+.sheet-backdrop.dim { background: rgba(0, 0, 0, 0); transition: background-color 240ms ease-out; }
+.sheet-backdrop.dim.in { background: rgba(0, 0, 0, .35); }
 .sheet {
   width: 100%;
   max-height: 82%;

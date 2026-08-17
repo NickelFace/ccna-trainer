@@ -24,10 +24,24 @@ import { aiPrompt as aiPromptScreen } from './ai-prompt.js';
 const FONT_STEPS = [1, 1.12, 1.25];
 const LOW_TIME_MS = 120000;      // timer turns red and blinks under two minutes
 
+// ---- gesture / motion constants (see bindSwipe) ----
+const SLOP = 10;                 // px of travel before the gesture commits to an axis
+const COMMIT_RATIO = 0.22;       // of the pane width — a slow drag past this flips over
+const COMMIT_V = 0.4;            // px/ms — a flick this fast flips over well short of the threshold
+const FLICK_MIN = 30;            // px — but never from a distance this small; that is a tap that slipped
+const EDGE_DRAG = 0.28;          // resistance factor when there is nothing to swipe to
+const OUT_MS = 150;              // outgoing question — the incoming one is timed in CSS (.q-pane.in-*)
+const EASE = 'cubic-bezier(.22,.9,.3,1)';
+
+const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 let pending = new Set();         // practice-only: selected letters before "Ответить"
 let pendingFor = null;           // the question those letters belong to
 let timer = null;
 let els = {};
+let enterDir = 0;                // +1: the next question slides in from the right, -1: from the left
+let shownPct = null;             // last painted progress width, so the bar can animate to the new one
+let animating = false;           // a hand-off is in flight — ignore new gestures until it lands
 
 const fmtClock = ms => {
   const total = Math.ceil(ms / 1000);
@@ -73,6 +87,10 @@ function header(ctx) {
     ? '<span class="mono q-timer" data-role="timer"></span>'
     : q.y === 'dd' ? `<span class="mono q-placed">${placedCount()} из ${ddNeeded(q)}</span>` : '<span></span>';
 
+  // The header is rebuilt from scratch on every render, so the bar starts at the width it
+  // last had and grows to the new one on the next frame — otherwise it would jump.
+  const pct = ((s.i + 1) / s.qs.length) * 100;
+
   const node = h(`
     <div class="q-head">
       <button class="q-icon" data-act="close" type="button" aria-label="Закрыть">✕</button>
@@ -81,7 +99,7 @@ function header(ctx) {
           <span class="mono">${s.i + 1} / ${s.qs.length}</span>
           ${rightSlot}
         </div>
-        <div class="q-progress"><i style="width:${((s.i + 1) / s.qs.length) * 100}%"></i></div>
+        <div class="q-progress"><i style="width:${shownPct ?? pct}%"></i></div>
       </div>
       <button class="q-icon" data-act="grid" type="button" aria-label="Список вопросов">☰</button>
     </div>`);
@@ -89,6 +107,10 @@ function header(ctx) {
   node.querySelector('[data-act="close"]').addEventListener('click', () => ctx.router.back());
   node.querySelector('[data-act="grid"]').addEventListener('click', () => openGrid(ctx));
   els.timer = node.querySelector('[data-role="timer"]');
+
+  els.bar = node.querySelector('.q-progress i');
+  els.barTo = pct;
+  shownPct = pct;
   return node;
 }
 
@@ -105,6 +127,8 @@ function render(ctx) {
 
   const scale = store.profile.fontScale;
 
+  // The pane — the node h() wraps everything in anyway — is what the swipe moves and fades.
+  // .q-body stays a separate element because it carries its own opacity when graded.
   const node = h(`
     <div class="q-body${graded ? ' graded' : ''}" style="--q-scale:${scale}">
       <div class="q-badges">
@@ -122,7 +146,7 @@ function render(ctx) {
         <button class="q-tool" data-act="font" type="button">Aa Размер</button>
         <span class="q-hint mono">свайп → далее</span>
       </div>
-    </div>`);
+    </div>`, 'div', 'q-pane');
 
   wireBody(node, ctx, q, s, graded);
   return node;
@@ -149,32 +173,30 @@ function wireBody(node, ctx, q, s, graded) {
 
   if (q.y === 'dd' && !graded) wireMatch(node.querySelector('.match'), q, s, () => ctx.router.render());
 
+  // Tapping an option repaints the option row and the footer, never the whole body:
+  // a full rebuild re-inserts the exhibit <img> and the screen visibly blinks on every tap.
   node.querySelectorAll('.opt').forEach(btn => btn.addEventListener('click', () => {
     const k = btn.dataset.k;
     const multi = q.a.length > 1;
+    if (multi) { pending.has(k) ? pending.delete(k) : pending.add(k); } else { pending.clear(); pending.add(k); }
+    pendingFor = q.n;
     // An exam banks the choice as you tap; anything that shows the rationale waits for
     // "Ответить", otherwise the sheet would fly up before a choice was made.
-    if (!gradesImmediately(s)) {
-      const set = new Set(answerOf(s, q)?.given || []);
-      if (multi) { set.has(k) ? set.delete(k) : set.add(k); } else { set.clear(); set.add(k); }
-      store.answer(q.n, { given: [...set].sort() });
-      pendingFor = null;
-      ctx.router.render();
-      return;
-    }
-    if (multi) { pending.has(k) ? pending.delete(k) : pending.add(k); } else { pending.clear(); pending.add(k); }
-    ctx.router.render();
+    if (!gradesImmediately(s)) store.answer(q.n, { given: [...pending].sort() });
+    node.querySelectorAll('.opt').forEach(b => b.classList.toggle('sel', pending.has(b.dataset.k)));
+    ctx.router.renderFooter();
   }));
 
-  node.querySelector('[data-act="bookmark"]').addEventListener('click', () => {
+  const bookmark = node.querySelector('[data-act="bookmark"]');
+  bookmark.addEventListener('click', () => {
     toggleFlag(s, q);
-    ctx.router.render();
+    bookmark.textContent = isFlagged(s, q) ? '★ Отложен' : '☆ Отложить';
   });
 
   node.querySelector('[data-act="font"]').addEventListener('click', () => {
     const next = FONT_STEPS[(FONT_STEPS.indexOf(store.profile.fontScale) + 1) % FONT_STEPS.length];
     store.patchProfile({ fontScale: next });
-    ctx.router.render();
+    node.querySelector('.q-body').style.setProperty('--q-scale', next);
   });
 
   bindSwipe(node, ctx);
@@ -182,21 +204,111 @@ function wireBody(node, ctx, q, s, graded) {
 }
 
 // Horizontal swipe moves between questions, the same job the ← / → arrows do on the web.
-// Vertical intent wins so the swipe never fights the scroll.
+// The pane follows the finger the whole way, so the gesture is reversible: let go short of
+// the threshold and it springs back, which is the only way to tell a swipe is even there.
+//
+// Vertical intent wins so the swipe never fights the scroll — the axis is decided once,
+// after SLOP px of travel, and never revisited within the same touch. `touch-action: pan-y`
+// on the pane leaves vertical scrolling to the browser, which is why every listener here
+// can stay passive.
 function bindSwipe(node, ctx) {
-  let x0 = 0, y0 = 0, tracking = false;
+  let x0 = 0, y0 = 0, dx = 0, v = 0, lastX = 0, lastT = 0, axis = null, live = false;
+
+  const width = () => node.offsetWidth || window.innerWidth;
+  // Swiping right goes back; there is nothing behind the first question, and the drag
+  // turns into a rubber band that says so.
+  const blocked = d => d > 0 && store.session.i === 0;
+
+  const paint = d => {
+    node.style.transform = `translate3d(${d.toFixed(1)}px,0,0)`;
+    node.style.opacity = String(1 - Math.min(Math.abs(d) / width(), 0.5));
+  };
+
   node.addEventListener('touchstart', e => {
-    if (e.touches.length !== 1) return;
-    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; tracking = true;
+    if (e.touches.length !== 1 || animating) return;
+    // A finger arriving mid-entrance takes over: the keyframes outrank the inline
+    // transform the drag is about to write, so the animation has to go first.
+    node.classList.remove('in-next', 'in-prev');
+    x0 = lastX = e.touches[0].clientX;
+    y0 = e.touches[0].clientY;
+    lastT = e.timeStamp;
+    dx = 0; v = 0; axis = null; live = true;
+    node.style.transition = 'none';
   }, { passive: true });
-  node.addEventListener('touchend', e => {
-    if (!tracking) return;
-    tracking = false;
-    const dx = e.changedTouches[0].clientX - x0;
-    const dy = e.changedTouches[0].clientY - y0;
-    if (Math.abs(dx) < 60 || Math.abs(dy) > 40) return;
-    move(ctx, dx < 0 ? 1 : -1);
+
+  node.addEventListener('touchmove', e => {
+    if (!live || e.touches.length !== 1) return;
+    const x = e.touches[0].clientX;
+    const mx = x - x0, my = e.touches[0].clientY - y0;
+
+    if (!axis) {
+      if (Math.abs(mx) < SLOP && Math.abs(my) < SLOP) return;
+      axis = Math.abs(mx) > Math.abs(my) ? 'x' : 'y';
+      if (axis === 'y') { live = false; return; }
+      node.classList.add('dragging');
+    }
+    // Smoothed instantaneous velocity: a short flick has to count as much as a long drag.
+    const dt = e.timeStamp - lastT;
+    if (dt > 0) v = v * 0.7 + ((x - lastX) / dt) * 0.3;
+    lastX = x; lastT = e.timeStamp;
+
+    dx = blocked(mx) ? mx * EDGE_DRAG : mx;
+    paint(dx);
   }, { passive: true });
+
+  const release = () => {
+    if (!live) return;
+    live = false;
+    node.classList.remove('dragging');
+    if (axis !== 'x') return;
+    // A flick only counts when it is still travelling the way the pane was dragged —
+    // pulling back toward rest is how you cancel, however fast you let go.
+    const flick = Math.abs(v) > COMMIT_V && Math.sign(v) === Math.sign(dx) && Math.abs(dx) > FLICK_MIN;
+    const far = Math.abs(dx) > width() * COMMIT_RATIO || flick;
+    if (far && !blocked(dx)) handOff(node, ctx, dx < 0 ? 1 : -1);
+    else settle(node);
+  };
+  node.addEventListener('touchend', release, { passive: true });
+  node.addEventListener('touchcancel', release, { passive: true });
+}
+
+// Released short of the threshold: back to rest.
+function settle(node) {
+  node.style.transition = `transform 260ms ${EASE}, opacity 200ms ease-out`;
+  node.style.transform = 'translate3d(0,0,0)';
+  node.style.opacity = '1';
+}
+
+// Released past it: carry the pane the rest of the way out, then swap in the next question,
+// which enters from the other side. Not a full-width slide — the pane leaves and arrives
+// over a short distance while fading, so the two halves read as one movement.
+function handOff(node, ctx, dir) {
+  if (reduced()) return move(ctx, dir);
+  animating = true;
+  node.style.transition = `transform ${OUT_MS}ms ease-in, opacity ${OUT_MS}ms ease-in`;
+  node.style.transform = `translate3d(${-dir * Math.round(node.offsetWidth * 0.32)}px,0,0)`;
+  node.style.opacity = '0';
+  // 150ms is long enough for the screen to have left underneath us — an exam timer running
+  // out mid-swipe hands off to the result screen, and move() would then be working on a
+  // session that is already over.
+  setTimeout(() => {
+    animating = false;
+    if (store.session && ctx.router.current().screen === question) move(ctx, dir);
+  }, OUT_MS);
+}
+
+// The entrance is a CSS animation rather than an inline transform flipped on the next
+// frame: a WebView that goes to the background stops serving rAF, and a question left
+// waiting for a frame that never comes would be an invisible screen. A keyframe whose
+// resting state is simply "visible" cannot fail that way, and it drops the inline styles
+// the outgoing pane left behind.
+function animateIn(node) {
+  const dir = enterDir;
+  enterDir = 0;
+  node.style.cssText = '';
+  if (!dir || reduced()) return;
+  node.classList.add(dir > 0 ? 'in-next' : 'in-prev');
+  node.addEventListener('animationend', () => node.classList.remove('in-next', 'in-prev'), { once: true });
 }
 
 // ---------------------------------------------------------------- footer
@@ -285,6 +397,8 @@ function gradeCurrent(ctx) {
   ctx.router.render();
 }
 
+// `delta` doubles as the direction the next question enters from, so tapping ← / Дальше
+// animates exactly like the matching swipe does.
 function move(ctx, delta) {
   closeSheet();
   const s = store.session;
@@ -293,6 +407,7 @@ function move(ctx, delta) {
   if (next >= s.qs.length) return finish(ctx);
   store.patchSession({ i: next });
   pendingFor = null;
+  enterDir = delta > 0 ? 1 : -1;
   ctx.router.render();
 }
 
@@ -358,7 +473,9 @@ function openGrid(ctx) {
     const cell = e.target.closest('[data-i]');
     if (!cell) return;
     closeSheet();
-    store.patchSession({ i: +cell.dataset.i });
+    const target = +cell.dataset.i;
+    enterDir = target === s.i ? 0 : (target > s.i ? 1 : -1);
+    store.patchSession({ i: target });
     pendingFor = null;
     ctx.router.render();
   });
@@ -397,6 +514,14 @@ export const question = {
   render,
 
   mount(node, ctx) {
+    animateIn(node);
+    // The bar was painted at its previous width. Now that the header is in the document,
+    // reading offsetWidth settles that width, so assigning the new one transitions from
+    // it — no waiting for a frame that a backgrounded WebView would never serve.
+    if (els.bar) {
+      void els.bar.offsetWidth;
+      els.bar.style.width = `${els.barTo}%`;
+    }
     startTimer(ctx);
     // Only for a timed exam, and only while it is on screen: a study session that sits
     // untouched should let the phone sleep like anything else.
@@ -412,6 +537,9 @@ export const question = {
     pending = new Set();
     pendingFor = null;
     els = {};
+    enterDir = 0;
+    shownPct = null;
+    animating = false;
   },
 
   // Leaving mid-exam is a real decision — the spec asks for a confirmation, and the

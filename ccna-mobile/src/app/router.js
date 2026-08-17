@@ -95,20 +95,22 @@ export const router = {
     const { screen, params } = this.current();
     const ctx = { ...this.ctx, params };
     const inModal = this.modals.length > 0;
+    const arriving = this._mounted !== screen;
 
     // Let the outgoing screen drop timers and listeners before its nodes disappear.
-    if (this._mounted && this._mounted !== screen) this._mounted.unmount?.();
+    if (this._mounted && arriving) this._mounted.unmount?.();
     this._mounted = screen;
 
     this.els.header.replaceChildren();
     const header = screen.header ? screen.header(ctx) : null;
     if (header) this.els.header.append(header);
 
-    this.els.footer.replaceChildren();
-    const footer = screen.footer ? screen.footer(ctx) : null;
-    if (footer) this.els.footer.append(footer);
+    this.renderFooter();
 
     const body = screen.render(ctx);
+    // Only a real navigation fades in. A screen re-rendering itself (an option tapped,
+    // a chip placed) must not replay the entrance — that reads as a flicker, not motion.
+    if (arriving) body.classList.add('screen-in');
     this.els.scroll.replaceChildren(body);
     if (screen.mount) screen.mount(body, ctx);
 
@@ -121,6 +123,16 @@ export const router = {
     this.els.scroll.scrollTop = inModal || this.stacks[this.activeTab].length > 1
       ? 0
       : (this.scrollTops[this.activeTab] || 0);
+  },
+
+  // Repaint just the action bar. Screens use this when a tap changes what the primary
+  // button may do but nothing in the body's structure — rebuilding the body instead would
+  // throw away and re-insert its images on every tap.
+  renderFooter() {
+    const { screen, params } = this.current();
+    this.els.footer.replaceChildren();
+    const footer = screen.footer ? screen.footer({ ...this.ctx, params }) : null;
+    if (footer) this.els.footer.append(footer);
   },
 
   renderTabs() {

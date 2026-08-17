@@ -32,14 +32,17 @@ export function openExhibit(src, alt = '') {
   let startDist = 0, startScale = 1, startTx = 0, startTy = 0, startMid = null;
   let lastTap = 0, tapTimer = null;
 
-  const apply = () => {
+  // `eased` is for the jumps the fingers are not driving — double-tap zoom and the settle
+  // back to fit. A live pinch or pan must stay at 1:1 with the fingers, so it passes false.
+  const apply = (eased = false) => {
     // Pan is bounded by how much bigger than the stage the image currently is, so it can
     // never be dragged off screen entirely.
     const maxX = Math.max(0, (stage.clientWidth * scale - stage.clientWidth) / 2);
     const maxY = Math.max(0, (stage.clientHeight * scale - stage.clientHeight) / 2);
     tx = Math.min(maxX, Math.max(-maxX, tx));
     ty = Math.min(maxY, Math.max(-maxY, ty));
-    img.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+    img.style.transition = eased ? 'transform 220ms cubic-bezier(.22,.9,.3,1)' : 'none';
+    img.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${scale})`;
     root.classList.toggle('zoomed', scale > 1.01);
   };
 
@@ -58,7 +61,7 @@ export function openExhibit(src, alt = '') {
     tx = px - (px - tx) * ratio;
     ty = py - (py - ty) * ratio;
     scale = next;
-    apply();
+    apply(true);
   };
 
   const dist = ([a, b]) => Math.hypot(a.x - b.x, a.y - b.y);
@@ -97,7 +100,7 @@ export function openExhibit(src, alt = '') {
   const release = e => {
     pointers.delete(e.pointerId);
     // Settle back to a clean fit once the fingers are off and nothing is zoomed in.
-    if (pointers.size === 0 && scale <= 1.01) { scale = 1; tx = 0; ty = 0; apply(); }
+    if (pointers.size === 0 && scale <= 1.01) { scale = 1; tx = 0; ty = 0; apply(true); }
   };
   stage.addEventListener('pointerup', release);
   stage.addEventListener('pointercancel', release);
@@ -110,7 +113,7 @@ export function openExhibit(src, alt = '') {
       clearTimeout(tapTimer);
       lastTap = 0;
       if (onImage) {
-        if (scale > 1.01) { scale = 1; tx = 0; ty = 0; apply(); }
+        if (scale > 1.01) { scale = 1; tx = 0; ty = 0; apply(true); }
         else zoomTo(DOUBLE_TAP_SCALE, e.clientX, e.clientY);
       }
       return;
