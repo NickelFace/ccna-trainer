@@ -13,12 +13,12 @@ preview-изменений.html
 .DS_Store
 
 # Внутренние рабочие инструкции и заметки — не публикуем в репозитории
+# (README.md/README.ru.md сюда раньше тоже попали по ошибке — это публичная
+# документация, она должна быть в репозитории и на GitHub)
 CLAUDE.md
 MEMORY.md
 HANDOFF.md
 ИНСТРУКЦИЯ.md
-ccna-exam-simulator/README.md
-ccna-exam-simulator/README.ru.md
 
 # Неиспользуемый архив SVG-топологий (app.js рисует схемы только из images/exhibits/)
 ccna-exam-simulator/images/topo/
