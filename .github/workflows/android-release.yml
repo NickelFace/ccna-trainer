@@ -1,16 +1,34 @@
 name: Release Android app
 
-# Tag a release to ship it:  git tag v1.2 && git push origin v1.2
+# Every push to main that touches the app or the question bank publishes a new release
+# and deletes the previous one, so there is always exactly one build to download.
 #
-# versionName comes from the tag, versionCode from the run number — monotonic, which is
-# what Play requires, and it never collides with a locally built APK (those stay at 1).
+# Versioning: BASE_VERSION is the release line. The first run on a line publishes it
+# verbatim (2.0), every run after that adds a patch number (2.0.1, 2.0.2, …). To start a
+# new line, bump BASE_VERSION and set RUN_OFFSET to the run number of that first build —
+# the run counter is per-workflow-file and never resets.
+#
+# versionCode is the run number: monotonic, which is all Android requires of it.
 on:
   push:
-    tags: ["v*"]
+    branches: ["main"]
+    paths:
+      - "ccna-mobile/**"
+      - "ccna-exam-simulator/data/**"
+      - "ccna-exam-simulator/images/exhibits/**"
+      - ".github/workflows/android-release.yml"
   workflow_dispatch: {}
 
 permissions:
   contents: write
+
+env:
+  BASE_VERSION: "2.0"
+  RUN_OFFSET: 1
+
+concurrency:
+  group: android-release
+  cancel-in-progress: false
 
 jobs:
   release:
@@ -21,74 +39,133 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: ccna-mobile/package-lock.json
 
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "21"
           cache: gradle
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
+
+      - name: Work out the version
+        id: version
+        run: |
+          patch=$(( ${{ github.run_number }} - ${{ env.RUN_OFFSET }} ))
+          if [ "$patch" -le 0 ]; then
+            name="${BASE_VERSION}"
+          else
+            name="${BASE_VERSION}.${patch}"
+          fi
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "code=${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+          echo "Publishing $name (versionCode ${{ github.run_number }})"
 
       - name: Install deps
         run: npm ci
 
-      # The engine tests also validate the bank the build is about to package, so a broken
-      # key or a missing exhibit stops the release instead of shipping.
+      # The engine tests also validate the bank this build is about to package, so a broken
+      # answer key or a missing exhibit stops the release instead of shipping.
       - name: Test
         run: npm test
 
       - name: Build web bundle and sync
         run: npm run android
 
-      # Written from secrets, never committed. Without these the release build still runs
-      # and produces an unsigned artifact, which is useful for a dry run.
+      # Written from secrets, never committed, removed again below. Without them there is
+      # no signing key, and an unsigned release APK cannot be installed — so the build
+      # falls back to the debug variant, which Android signs with a throwaway key.
       - name: Restore keystore
-        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+        id: keystore
+        env:
+          KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/release.jks
+          if [ -z "$KEYSTORE" ]; then
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::ANDROID_KEYSTORE_BASE64 is not set — publishing a debug-signed APK."
+            exit 0
+          fi
+          echo "$KEYSTORE" | base64 -d > android/release.jks
           cat > android/keystore.properties <<EOF
           storeFile=release.jks
           storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
           keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
           EOF
+          echo "signed=true" >> "$GITHUB_OUTPUT"
 
-      - name: Build AAB and APK
+      - name: Build signed release (AAB + APK)
+        if: steps.keystore.outputs.signed == 'true'
         working-directory: ccna-mobile/android
         env:
-          VERSION_NAME: ${{ github.ref_type == 'tag' && github.ref_name || format('0.0.{0}-dev', github.run_number) }}
-          VERSION_CODE: ${{ github.run_number }}
+          VERSION_NAME: ${{ steps.version.outputs.name }}
+          VERSION_CODE: ${{ steps.version.outputs.code }}
         run: ./gradlew bundleRelease assembleRelease --no-daemon
+
+      - name: Build debug APK
+        if: steps.keystore.outputs.signed != 'true'
+        working-directory: ccna-mobile/android
+        env:
+          VERSION_NAME: ${{ steps.version.outputs.name }}
+          VERSION_CODE: ${{ steps.version.outputs.code }}
+        run: ./gradlew assembleDebug --no-daemon
 
       - name: Remove signing material
         if: always()
         run: rm -f android/release.jks android/keystore.properties
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+      - name: Collect artifacts
+        id: collect
+        run: |
+          mkdir -p out
+          v="${{ steps.version.outputs.name }}"
+          if [ "${{ steps.keystore.outputs.signed }}" = "true" ]; then
+            cp android/app/build/outputs/apk/release/*.apk "out/ccna-trainer-$v.apk"
+            cp android/app/build/outputs/bundle/release/*.aab "out/ccna-trainer-$v.aab"
+          else
+            cp android/app/build/outputs/apk/debug/app-debug.apk "out/ccna-trainer-$v-debug.apk"
+          fi
+          ls -lh out
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v7
         with:
-          name: ccna-trainer-${{ github.ref_name }}
-          path: |
-            ccna-mobile/android/app/build/outputs/bundle/release/*.aab
-            ccna-mobile/android/app/build/outputs/apk/release/*.apk
+          name: ccna-trainer-${{ steps.version.outputs.name }}
+          path: ccna-mobile/out/*
           if-no-files-found: error
 
-      - name: Attach to the GitHub release
-        if: github.ref_type == 'tag'
-        uses: softprops/action-gh-release@v2
+      # One release at a time: the previous build is always superseded by this one, and
+      # keeping a trail of sideload APKs around serves nobody.
+      - name: Delete previous releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release list --repo ${{ github.repository }} --limit 200 --json tagName -q '.[].tagName' \
+          | while read -r tag; do
+              echo "Deleting old release $tag"
+              gh release delete "$tag" --repo ${{ github.repository }} --yes --cleanup-tag
+            done
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v3
         with:
-          files: |
-            ccna-mobile/android/app/build/outputs/bundle/release/*.aab
-            ccna-mobile/android/app/build/outputs/apk/release/*.apk
-          generate_release_notes: true
+          tag_name: v${{ steps.version.outputs.name }}
+          name: v${{ steps.version.outputs.name }}
+          body: |
+            ${{ github.event.head_commit.message || format('Manual build ({0})', github.sha) }}
+
+            ---
+            versionCode ${{ steps.version.outputs.code }} · commit ${{ github.sha }}
+            ${{ steps.keystore.outputs.signed == 'true' && 'Signed release build (minified).' || 'Debug build — no signing key configured. Add the ANDROID_KEYSTORE_* secrets for a signed, minified release.' }}
+          make_latest: true
+          files: ccna-mobile/out/*

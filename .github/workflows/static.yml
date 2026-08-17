@@ -30,14 +30,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Setup Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
+      # Only what the browser actually loads. The build/ pipeline is 33 MB of Python and
+      # intermediate JSON that nothing on the site references — it stays in the repo as the
+      # source of truth for the bank, but there is no reason to publish it.
+      - name: Stage the site
+        run: |
+          mkdir -p _site
+          cp -r ccna-exam-simulator/index.html ccna-exam-simulator/assets \
+                ccna-exam-simulator/data ccna-exam-simulator/images _site/
+          du -sh _site
+
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
-          # Upload entire repository
-          path: './ccna-exam-simulator'
+          path: '_site'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5

@@ -23,7 +23,6 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode ciVersionCode
         versionName ciVersionName
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
@@ -54,12 +53,6 @@ android {
             }
         }
     }
-
-    packagingOptions {
-        // The bank and the exhibits are already compressed; leaving them alone keeps the
-        // install size honest instead of paying to re-deflate 18 MB of JPEG.
-        jniLibs { useLegacyPackaging false }
-    }
 }
 
 repositories {
@@ -74,10 +67,9 @@ dependencies {
     implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
     implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
     implementation project(':capacitor-android')
-    testImplementation "junit:junit:$junitVersion"
-    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
+    // No JUnit/Espresso: the logic that is worth testing lives in src/engine and is
+    // covered by `npm test`. There is nothing on the Java side but an empty BridgeActivity.
 }
 
 apply from: 'capacitor.build.gradle'

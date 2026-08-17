@@ -50,6 +50,10 @@ ccna-exam-simulator/images/exhibits/      ← source of truth
   suite against the bank on every change to it: answer keys pointing at options that do
   not exist, matching questions no bucket can satisfy, exhibits referenced but missing
   from disk, domain counts that no longer match `meta.json`.
-- [`android-release.yml`](.github/workflows/android-release.yml) — tag `v*` to build a
-  signed AAB and APK and attach them to the GitHub release.
+- [`android-release.yml`](.github/workflows/android-release.yml) — every push touching
+  `ccna-mobile/` or the bank builds the app, deletes the previous release and publishes a
+  new one, so there is always exactly one build to download. Versions run `2.0`, `2.0.1`,
+  `2.0.2`, … — see [ccna-mobile/README.md](ccna-mobile/README.md#versioning).
 - [`static.yml`](.github/workflows/static.yml) — publishes the web app to GitHub Pages.
+  Only what the browser loads goes up: `index.html`, `assets/`, `data/`, `images/`. The
+  33 MB `build/` pipeline stays in the repo and off the site.

@@ -20,6 +20,10 @@ MEMORY.md
 HANDOFF.md
 ИНСТРУКЦИЯ.md
 
+# Постановка задачи для Android-приложения (промпт для Claude Code, .dc.html-моки) —
+# входная спека, а не документация продукта; актуальное описание — ccna-mobile/README.md
+design_handoff_ccna_android/
+
 # Неиспользуемый архив SVG-топологий (app.js рисует схемы только из images/exhibits/)
 ccna-exam-simulator/images/topo/
 

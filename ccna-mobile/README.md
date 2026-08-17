@@ -47,13 +47,44 @@ that was verified by running both implementations over the same inputs and compa
 
 ## Release
 
-Version comes from CI: the tag becomes `versionName`, the run number `versionCode`.
-Signing material is never in the repo — the workflow writes `android/keystore.properties`
-from GitHub Secrets and deletes it afterwards. Without it, a release build still succeeds
-and produces an unsigned artifact.
+Every push to `main` that touches `ccna-mobile/` or the question bank runs
+[android-release.yml](../.github/workflows/android-release.yml): it tests, builds,
+**deletes the previous release** and publishes a new one. There is always exactly one
+build to download.
 
-Secrets the release workflow expects: `ANDROID_KEYSTORE_BASE64`,
-`ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`.
+### Versioning
+
+`BASE_VERSION` in the workflow is the release line. The first build on a line publishes it
+verbatim, every build after that adds a patch number:
+
+```
+2.0  →  2.0.1  →  2.0.2  →  …
+```
+
+`versionCode` is the workflow run number — monotonic, which is all Android asks of it.
+Nothing is stored in `package.json` or a VERSION file; the run counter is the source.
+
+To open a new line: bump `BASE_VERSION` and set `RUN_OFFSET` to the run number of that
+first build (the counter is per workflow file and never resets).
+
+### Signing
+
+Signing material is never in the repo. The workflow writes `android/keystore.properties`
+from secrets and deletes it afterwards.
+
+| Secret | |
+|---|---|
+| `ANDROID_KEYSTORE_BASE64` | `base64 -w0 release.jks` |
+| `ANDROID_KEYSTORE_PASSWORD` | |
+| `ANDROID_KEY_ALIAS` | |
+| `ANDROID_KEY_PASSWORD` | |
+
+**Without these secrets the workflow publishes a debug APK instead.** An unsigned release
+APK cannot be installed at all, so falling back to the debug variant is the only way the
+release stays useful — at the cost of no minification and a throwaway signing key, which
+means a build cannot be installed over a previous one without uninstalling first. Add the
+secrets and every build becomes a signed, minified release AAB + APK that upgrades in
+place.
 
 ## Known gaps
 
