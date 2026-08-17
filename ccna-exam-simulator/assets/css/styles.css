@@ -66,6 +66,13 @@ select,input{font-family:inherit;font-size:14px;background:var(--panel2);border:
 .chip .c{color:var(--dim);margin-left:6px}
 .chip.on .c{color:var(--purple)}
 
+/* Language switch — fixed, outside #app so it survives every SPA re-render. */
+.lang-switch{position:fixed;top:12px;right:12px;z-index:50;display:flex;gap:2px;background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:3px;box-shadow:0 0 16px rgba(0,0,0,.35)}
+.lang-opt{padding:5px 11px;font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:.5px;color:var(--muted);border-radius:16px;cursor:pointer;user-select:none;transition:.12s}
+.lang-opt:hover{color:var(--text)}
+.lang-opt.on{background:var(--panel2);border:1px solid var(--cyan);color:var(--cyan);box-shadow:0 0 8px rgba(0,212,255,.3)}
+@media (max-width:480px){.lang-switch{top:8px;right:8px}.lang-opt{padding:4px 9px;font-size:10px}}
+
 /* badges */
 .badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;align-items:center}
 .badge{font-size:11px;padding:2px 9px;border-radius:6px;border:1px solid;white-space:nowrap}
