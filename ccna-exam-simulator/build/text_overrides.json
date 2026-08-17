@@ -14,6 +14,30 @@
   "491": {
     "t": "Refer to the exhibit. Traffic from R1 to the 10.10.2.0/24 subnet uses 192.168.1.2 as its next hop. A network engineer wants to update the R1 configuration so that traffic with destination 10.10.2.1 passes through router R3, and all other traffic to the 10.10.2.0/24 subnet passes through R2. Which command must be used?"
   },
+  "1069": {
+    "cli": "D    10.10.20.64/27 [90/6881] via F0/12\nD    10.10.20.64/27 [90/43618] via F0/5\nR    10.10.20.64/27 [120/7] via F0/9\nR    10.10.20.64/27 [120/3] via F0/6"
+  },
+  "1121": {
+    "cli": "O    10.139.120.253/29 [110/9443] via G0/20\nO    10.139.120.253/29 [110/29560] via G0/16\nR    10.139.120.253/29 [120/12] via G0/11\nR    10.139.120.253/29 [120/6] via G0/9"
+  },
+  "1139": {
+    "cli": "D    10.214.247.237/28 [90/2170] via G0/12\nD    10.214.247.237/28 [90/46985] via G0/19\nO    10.214.247.237/28 [110/665] via G0/9\nO    10.214.247.237/28 [110/3399] via G0/1"
+  },
+  "1145": {
+    "cli": "D    10.148.172.22/27 [90/10259] via G0/24\nD    10.148.172.22/27 [90/47955] via G0/10\nR    10.148.172.22/27 [120/14] via G0/5\nR    10.148.172.22/27 [120/1] via G0/1"
+  },
+  "1167": {
+    "cli": "D    10.232.106.30/27 [90/6580] via F0/9\nD    10.232.106.30/27 [90/46095] via F0/16\nO    10.232.106.30/27 [110/3158] via F0/7\nO    10.232.106.30/27 [110/7367] via F0/24"
+  },
+  "1276": {
+    "cli": "O    10.18.75.113/27 [110/6906] via G0/6\nO    10.18.75.113/27 [110/23018] via G0/3\nR    10.18.75.113/27 [120/16] via G0/16\nR    10.18.75.113/27 [120/14] via G0/23"
+  },
+  "1297": {
+    "cli": "O    10.90.207.87/26 [110/1912] via F0/7\nO    10.90.207.87/26 [110/28968] via F0/6\nR    10.90.207.87/26 [120/14] via F0/4\nR    10.90.207.87/26 [120/11] via F0/5"
+  },
+  "1333": {
+    "cli": "D    10.47.114.119/29 [90/6451] via F0/2\nD    10.47.114.119/29 [90/52201] via F0/20\nR    10.47.114.119/29 [120/9] via F0/12\nR    10.47.114.119/29 [120/10] via F0/10"
+  },
   "11": {
     "cli": "[root@HostTest ~]# ip route\ndefault via 192.168.1.193 dev eth1  proto static\n192.168.1.0/26 dev eth1  proto kernel  scope link  src 192.168.1.200  metric 1\n\n[root@HostTest ~]# ip addr show eth1\neth1:  mtu 1500 qdisc pfifo_fast qlen 1000\n    link/ether 00:0C:22:83:79:A3 brd ff:ff:ff:ff:ff:ff\n    inet 192.168.1.200/26 brd 192.168.1.255 scope global eth1\n    inet6 fe80::20c:29ff:fe89:79b3/64 scope link\n    valid_lft forever preferred_lft forever"
   },
