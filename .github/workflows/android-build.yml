@@ -59,13 +59,22 @@ jobs:
           if-no-files-found: error
 
       - name: Rename APK for release
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk ccna-trainer-build-${{ github.run_number }}.apk
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk ccna-trainer-1.${{ github.run_number }}.apk
+
+      - name: Delete previous app releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release list --repo ${{ github.repository }} --limit 200 --json tagName -q '.[].tagName' | while read -r tag; do
+            echo "Deleting old release $tag"
+            gh release delete "$tag" --repo ${{ github.repository }} --yes --cleanup-tag
+          done
 
       - name: Publish GitHub Release with APK
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: build-${{ github.run_number }}
-          name: "Build ${{ github.run_number }} (${{ github.sha }})"
+          tag_name: 1.${{ github.run_number }}
+          name: "v1.${{ github.run_number }} (${{ github.sha }})"
           body: ${{ github.event.head_commit.message || format('Manual build via workflow_dispatch ({0})', github.sha) }}
           make_latest: true
-          files: ccna-exam-simulator/ccna-trainer-build-${{ github.run_number }}.apk
+          files: ccna-exam-simulator/ccna-trainer-1.${{ github.run_number }}.apk
