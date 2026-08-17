@@ -67,6 +67,19 @@ it without a layout pass. Three rules the code holds itself to:
 `prefers-reduced-motion: reduce` collapses every duration in `base.css`, and the hand-off
 skips its animation entirely.
 
+## Backup
+
+Progress lives only in the phone's SharedPreferences (`store.js`, via `@capacitor/preferences`)
+— there is no server, so nothing else has a copy. `store.toBackup()`/`restore()` and
+`app/backup.js` turn the whole store into one JSON file, exposed as Экспорт/Импорт at the
+bottom of the Прогресс tab: export hands the file to Android's share sheet (Web Share API —
+Drive, Files, email, whatever is installed) and falls back to the clipboard on older
+WebViews; import reads a file, confirms before it overwrites anything, then reloads so
+every screen rebuilds from the restored state rather than being hand-patched live.
+
+This is what makes a signing-key change survivable (see Signing above) and doubles as the
+only way to move progress to a new phone.
+
 ## Release
 
 Every push to `main` that touches `ccna-mobile/` or the question bank runs
@@ -100,6 +113,11 @@ from secrets and deletes it afterwards.
 | `ANDROID_KEYSTORE_PASSWORD` | |
 | `ANDROID_KEY_ALIAS` | |
 | `ANDROID_KEY_PASSWORD` | |
+
+Switching a phone from a debug build to this signed release (or rotating the keystore
+later) is a signature change — Android refuses to install over a mismatched one, so it
+uninstalls the old app first, and `allowBackup="false"` in the manifest means that takes
+its data with it. Export a backup (below) before that install, import it after.
 
 **Without these secrets the workflow publishes a debug APK instead.** An unsigned release
 APK cannot be installed at all, so falling back to the debug variant is the only way the

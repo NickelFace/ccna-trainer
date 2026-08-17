@@ -8,6 +8,8 @@ import { PASS_SCALED, SCALE_MIN, SCALE_MAX } from '../../engine/score.js';
 import { msPerQuestion, scaledDelta, weakTopics, scoreTone } from '../../engine/stats.js';
 import { startPractice } from '../session.js';
 import { confirmDialog } from '../dialog.js';
+import { exportBackup, readBackupFile } from '../backup.js';
+import { toast } from '../toast.js';
 import { question as questionScreen } from './question.js';
 import { result as resultScreen } from './result.js';
 
@@ -58,6 +60,24 @@ function historyRows(attempts) {
     </button>`).join('');
 }
 
+// Progress lives only on this phone; this is the one place in the app that says so and
+// offers a way out. Shown regardless of whether there is an attempt yet — bookmarks, SRS
+// state and an unfinished session are all worth saving too.
+function backupCard() {
+  return `
+    <div class="card backup-card">
+      <div class="card-head"><span>Резервная копия</span></div>
+      <p class="muted">Прогресс хранится только на этом телефоне. Сохрани копию перед
+      переустановкой или сменой телефона — импорт вернёт всё как было, включая профиль
+      и закладки.</p>
+      <div class="backup-actions">
+        <button class="btn" data-act="export" type="button">Экспорт</button>
+        <button class="btn" data-act="import" type="button">Импорт</button>
+      </div>
+      <input class="backup-file" type="file" accept="application/json" hidden>
+    </div>`;
+}
+
 function topicCards(topics) {
   return topics.map(t => `
     <div class="topic-card">
@@ -77,13 +97,16 @@ export const progress = {
     const { bank } = ctx;
 
     if (!attempts.length) {
-      return h(`
+      const node = h(`
         <h1 class="screen-title">Прогресс</h1>
         <div class="card empty">
           <p>Здесь появится график баллов, средняя скорость и темы, которые проседают.</p>
           <p class="muted">Пройди первый пробный экзамен — одной попытки уже хватит, чтобы
           увидеть расклад по доменам.</p>
-        </div>`);
+        </div>
+        ${backupCard()}`);
+      wireBackup(node);
+      return node;
     }
 
     const delta = scaledDelta(attempts);
@@ -109,6 +132,7 @@ export const progress = {
         <div class="topics">${topicCards(topics)}</div>` : ''}
       <div class="label spaced">Все попытки</div>
       <div class="card tight">${historyRows(attempts)}</div>
+      ${backupCard()}
     `);
 
     node.addEventListener('click', async e => {
@@ -133,6 +157,36 @@ export const progress = {
       }
     });
 
+    wireBackup(node);
     return node;
   },
 };
+
+// Export needs no confirmation — it changes nothing. Import overwrites the whole store,
+// so it asks first and then reloads the app rather than trying to hand-patch every screen
+// that could be showing.
+function wireBackup(node) {
+  const fileInput = node.querySelector('.backup-file');
+
+  node.querySelector('[data-act="export"]')?.addEventListener('click', () => exportBackup());
+  node.querySelector('[data-act="import"]')?.addEventListener('click', () => fileInput.click());
+
+  fileInput?.addEventListener('change', async e => {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    try {
+      const data = await readBackupFile(file);
+      const yes = await confirmDialog({
+        title: 'Восстановить резервную копию?',
+        text: 'Текущий прогресс на телефоне будет заменён тем, что в файле.',
+        ok: 'Восстановить', cancel: 'Отмена',
+      });
+      if (!yes) return;
+      await store.restore(data);
+      location.reload();
+    } catch (err) {
+      toast(err.message || 'Не удалось восстановить копию.');
+    }
+  });
+}

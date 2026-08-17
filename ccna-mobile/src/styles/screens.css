@@ -487,6 +487,12 @@
 .card.empty p { font-size: var(--fs-caption); line-height: 1.6; }
 .card.empty p + p { margin-top: 10px; }
 
+.backup-card { margin-top: 16px; }
+.backup-card .card-head { margin-bottom: 8px; }
+.backup-card p { line-height: 1.6; margin-bottom: 14px; }
+.backup-actions { display: flex; gap: 10px; }
+.backup-actions .btn { flex: 1; }
+
 /* ---------------------------------------------------------- home: readiness */
 .readiness { padding: 22px 0 4px; }
 .readiness-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }

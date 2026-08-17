@@ -157,6 +157,41 @@ export const store = {
     return this.profile;
   },
 
+  // ---- backup ----
+  // The only way progress survives an install that Android treats as a fresh one — a
+  // signing key change (debug → release, or a lost keystore) forces an uninstall first,
+  // and allowBackup is off, so SharedPreferences does not survive that on its own.
+  // Everything the store owns goes in; restoring is meant to put the phone back exactly
+  // where the export left it, onboarding included.
+  toBackup() {
+    return {
+      v: 1,
+      exportedAt: new Date().toISOString(),
+      profile: this.profile,
+      session: this.session,
+      attempts: this.attempts,
+      bookmarks: this.bookmarks,
+      srs: this.srs,
+      activity: this.activity,
+    };
+  },
+
+  // Defensive about shape, not just the version tag — a hand-edited or partially copied
+  // file is a real way this arrives (the clipboard fallback exists for exactly that path).
+  async restore(data) {
+    if (!data || typeof data !== 'object' || data.v !== 1) {
+      throw new Error('Файл не похож на резервную копию CCNA Trainer.');
+    }
+    this.profile = { ...DEFAULT_PROFILE, ...(data.profile && typeof data.profile === 'object' ? data.profile : {}) };
+    this.session = data.session ?? null;
+    this.attempts = Array.isArray(data.attempts) ? data.attempts : [];
+    this.bookmarks = Array.isArray(data.bookmarks) ? data.bookmarks : [];
+    this.srs = data.srs && typeof data.srs === 'object' ? data.srs : {};
+    this.activity = data.activity && typeof data.activity === 'object' ? data.activity : {};
+    for (const key of Object.keys(KEY)) this._touch(key);
+    await this.flush();
+  },
+
   // ---- persistence ----
   _touch(key) {
     this._dirty.add(key);
