@@ -31,7 +31,7 @@
 | Статическая маршрутизация IPv4 и IPv6 | IPC | 33 | 1449 | 35 |
 | OSPFv2 в одной зоне | IPC | 54 | 2046 | 55 |
 | EIGRP и BGP в объёме экзамена | IPC | 8 | 1319 | 35 |
-| FHRP: HSRP, VRRP, GLBP | IPC | 15 | 655 | 30 |
+| FHRP: HSRP, VRRP, GLBP | IPC | 15 | 1394 | 30 |
 | NAT и PAT | IPS | 75 | 711 | 40 |
 | DHCP и DNS | IPS | 33 | 660 | 35 |
 | NTP и точное время | IPS | 9 | 547 | 20 |
@@ -54,4 +54,4 @@
 
 Мало вопросов (<5): nf-10-client-ip, na-03-intervlan, na-08-wlan-infra, sec-05-aaa, aut-05-config-tools
 Тема блюпринта, которой нет в банке: aut-06-ai-ml
-Короткие главы (<900 слов): na-01-vlan, na-02-trunks, na-03-intervlan, na-04-discovery, na-05-etherchannel, na-07-wireless-arch, na-08-wlan-infra, na-09-wlan-gui, na-10-device-access, ipc-06-fhrp, ips-01-nat, ips-02-dhcp-dns, ips-03-ntp, ips-04-snmp-syslog, ips-05-qos, ips-06-ssh-files, sec-01-concepts, sec-02-passwords, sec-03-acl, sec-04-l2-security, sec-05-aaa, sec-06-vpn, sec-07-wireless-security, aut-01-automation, aut-02-sdn, aut-03-rest-api, aut-04-data-formats, aut-05-config-tools, aut-06-ai-ml
+Короткие главы (<900 слов): na-01-vlan, na-02-trunks, na-03-intervlan, na-04-discovery, na-05-etherchannel, na-07-wireless-arch, na-08-wlan-infra, na-09-wlan-gui, na-10-device-access, ips-01-nat, ips-02-dhcp-dns, ips-03-ntp, ips-04-snmp-syslog, ips-05-qos, ips-06-ssh-files, sec-01-concepts, sec-02-passwords, sec-03-acl, sec-04-l2-security, sec-05-aaa, sec-06-vpn, sec-07-wireless-security, aut-01-automation, aut-02-sdn, aut-03-rest-api, aut-04-data-formats, aut-05-config-tools, aut-06-ai-ml
