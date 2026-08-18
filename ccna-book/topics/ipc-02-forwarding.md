@@ -151,8 +151,9 @@ R1# show cef state
 CEF Status: RP instance state: enabled
 IPv4 CEF Status: enabled
 
-R1# show interfaces gi0/1 | include switch
+R1# show interfaces gi0/1 | include queue
   Input queue: 0/75/1234/0 (size/max/drops/flushes)
+  Output queue: 0/40/0/0 (size/max/drops/flushes)
 ```
 
 **Что нашли.** Растущий счётчик `flushes`/`drops` во входной очереди при включённом CEF
@@ -161,7 +162,7 @@ R1# show interfaces gi0/1 | include switch
 CPU разобрать каждый совпавший пакет), некоторые функции NAT/QoS, туннели с фрагментацией,
 либо просто отключённый по ошибке `ip cef` на интерфейсе. Экзаменационный вывод — иерархия
 трёх путей пересылки не абстракция: **process switching объясняет реальную перегрузку CPU
-на trafике, который в норме должен идти по аппаратно ускоренному CEF**.
+на трафике, который в норме должен идти по аппаратно ускоренному CEF**.
 
 > [!trap] Ловушка
 > «Маршрут в таблице правильный, значит пересылка в порядке» — не обязательно: даже

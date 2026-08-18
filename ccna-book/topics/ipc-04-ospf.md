@@ -142,9 +142,9 @@ Neighbor ID     Pri   State           Dead Time   Address         Interface
 4.4.4.4           0   FULL/  -        00:00:38    10.10.20.2      Serial0/0/0
 
 R1# show ip ospf interface brief
-Interface    PID   Area   IP Address/Mask    Cost  State Nbrs F/C
-Gi0/1        1     0      10.10.10.1/24      1     DROTH 2/2
-Se0/0/0      1     0      10.10.20.1/30      64    P2P   1/1
+Interface    PID   Area   IP Address/Mask    Cost  State    Nbrs F/C
+Gi0/1        1     0      10.10.10.1/24      1     DROTHER  2/2
+Se0/0/0      1     0      10.10.20.1/30      64    P2P      1/1
 
 R1# show ip protocols
 Routing Protocol is "ospf 1"
@@ -180,10 +180,13 @@ Routing Protocol is "ospf 1"
 Дана схема: R1 — R2 гигабитом, R1 — R3 — R2 двумя каналами по 100 Мбит/с. Все в area 0.
 Спрашивают, каким путём R1 доберётся до сети за R2.
 
-1. Считаем стоимость прямого пути: гигабит → cost 1.
-2. Считаем через R3: 19 + 19 = 38 (два FastEthernet).
-3. Прямой путь дешевле — трафик пойдёт напрямую, маршрут через R3 останется в базе как
-   запасной и появится в таблице только при отказе прямого.
+1. Считаем стоимость прямого пути: гигабит при reference bandwidth по умолчанию → cost 1.
+2. Считаем через R3: два FastEthernet-хопа, у каждого cost 1 (см. таблицу выше) → 1 + 1 = 2.
+3. Прямой путь дешевле (1 против 2) — трафик пойдёт напрямую, маршрут через R3 останется в
+   базе как запасной и появится в таблице только при отказе прямого. Обрати внимание: при
+   reference bandwidth по умолчанию гигабит и FastEthernet стоят **одинаково** (cost 1
+   каждый) — прямой путь выигрывает не за счёт разницы в скорости интерфейсов, а просто
+   потому, что в нём меньше хопов.
 
 Если бы reference bandwidth подняли до 10 000, гигабит получил бы cost 10, а
 FastEthernet — 100: соотношение сохранилось бы, но стало осмысленным для 10G-линков.
@@ -271,11 +274,10 @@ point-to-point` (интерфейс не ждёт выборов вовсе). С
 **Что смотрим.** Reference bandwidth на роутерах вдоль обоих путей:
 
 ```cli
-R1# show ip ospf | include reference bandwidth
-  It is used for autonomous system boundary routing
+R1# show ip ospf | include eference bandwidth
     Reference bandwidth unit is 100 mbps
 
-R3# show ip ospf | include reference bandwidth
+R3# show ip ospf | include eference bandwidth
     Reference bandwidth unit is 10000 mbps
 ```
 

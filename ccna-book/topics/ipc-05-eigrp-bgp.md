@@ -131,8 +131,14 @@ successor. Если бы reported distance соседа оказалась 3100 
 **Что смотрим.** То, что обязано совпасть у EIGRP-соседей, — не только номер AS:
 
 ```cli
-R1# show ip protocols | include K1|K2|K3|K4|K5|Autonomous
-  Autonomous System 100, K1=1, K2=0, K3=1, K4=0, K5=0
+R1# show ip protocols
+Routing Protocol is "eigrp 100"
+  ...
+  Default networks flagged in outgoing updates
+  Default networks accepted from incoming updates
+  EIGRP metric weight K1=1, K2=0, K3=1, K4=0, K5=0
+  EIGRP maximum hopcount 100
+  Automatic Summarization: disabled
 ```
 
 **Что нашли.** Помимо номера автономной системы (`router eigrp 100`), у соседей обязаны

@@ -157,7 +157,7 @@ Router Advertisement нет — частая причина «клиенты н�
 
 ```cli
 R1# show running-config | include ipv6 unicast-routing
-R1# show ipv6 interface gi0/0 | include Advertisement|joined
+R1# show ipv6 interface gi0/0 | include dvertisement|oined
 ```
 
 **Что нашли.** Если `ipv6 unicast-routing` в конфигурации нет — вот и причина: без этой

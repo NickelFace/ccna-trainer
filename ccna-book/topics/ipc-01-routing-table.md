@@ -26,7 +26,7 @@ Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
 Gateway of last resort is 10.10.10.18 to network 0.0.0.0
 
 S*    0.0.0.0/0 [1/0] via 10.10.10.18
-      10.0.0.0/8 is variably subnetted, 5 subnets, 3 masks
+      10.0.0.0/8 is variably subnetted, 4 subnets, 4 masks
 C        10.10.10.0/30 is directly connected, FastEthernet0/1
 L        10.10.10.2/32 is directly connected, FastEthernet0/1
 O        10.10.13.0/25 [110/6576] via 10.10.10.1, 06:58:21, FastEthernet0/1

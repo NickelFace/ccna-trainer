@@ -142,7 +142,9 @@ Vlan10 - Group 10 (version 2)
 **Что смотрим.** Считаем приоритет после декремента и сравниваем с соседним роутером:
 
 ```cli
-R1# show standby vlan10 10 | include Priority
+R1# show standby vlan10 10
+Vlan10 - Group 10 (version 2)
+  State is Active
   Priority 110 (configured 110)
     Track object Gi0/1 state Down decrement 10
 ```
@@ -183,7 +185,9 @@ PC2 ARP → шлюз 10.1.1.254 → AVG отвечает MAC роутера R2 (
   бо́льшим приоритетом.
 - «Which router becomes active?» — с наибольшим приоритетом, при равенстве — с
   наибольшим IP.
-- «What is the virtual MAC of HSRP group 10?» — 0000.0C07.AC0A (номер группы в hex).
+- «What is the virtual MAC of HSRPv1 group 10?» — `0000.0C07.AC0A` (номер группы в hex, два
+  знака). Для HSRPv2 тот же номер группы даёт другой формат — `0000.0C9F.F00A` (номер группы
+  занимает три hex-знака), как и показано в примере `show standby` выше.
 - «Why did the router remain active after its uplink failed?» — не настроен tracking.
 - «Both routers in an FHRP group show Active state. What is the most likely cause?» —
   роутеры перестали получать hello друг от друга (разрыв линка, ACL режет multicast,
