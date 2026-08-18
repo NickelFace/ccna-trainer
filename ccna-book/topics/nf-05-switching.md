@@ -233,7 +233,7 @@ Vlan    Mac Address       Type        Ports
 ----    -----------       --------    -----
   10    0050.7966.6800    DYNAMIC     Gi1/0/1
   10    aabb.cc00.0100    STATIC      Gi1/0/24
-  10    0011.2233.4455    SECURE      Gi1/0/5
+  10    0011.2233.4455    STATIC      Gi1/0/5
 Total Mac Addresses for this criterion: 3
 
 SW1# show mac address-table count vlan 10
@@ -243,14 +243,21 @@ Static  Address (User-defined) Count: 1
 Total Mac Addresses In Use:   3
 ```
 
-Четыре типа записи, которые различают в вопросах:
+В основной таблице (`show mac address-table`) у записи всего два практических значения
+Type: `DYNAMIC` — выучена коммутатором, и `STATIC` — закреплена и не стареет. Запись на
+`Gi1/0/5` в примере выше как раз такая: она пришла не от команды `mac address-table
+static`, а от **port security в режиме sticky** (`switchport port-security mac-address
+sticky`) — коммутатор сам выучил первый увиденный MAC и «приклеил» его как статический.
+Разница видна в `show mac address-table count`, где sticky-адрес учитывается отдельной
+строкой `Secure Address`, и в специализированной команде `show port-security address`,
+которая показывает именно секьюрные записи и их привязку к порту — это отдельная тема
+главы про безопасность L2.
 
 | Type | Кто создал | Живёт после перезагрузки | Стареет |
 |---|---|---|---|
 | `DYNAMIC` | коммутатор сам, по source MAC | нет | да, 300 сек по умолчанию |
-| `STATIC` | администратор вручную (`mac address-table static`) | да, если сохранена конфигурация | нет |
-| `SECURE` | port security в режиме sticky, превращается в статическую | да, если `sticky` и конфигурация сохранена | нет |
-| (пусто, `SECURE` + флаг) | port security динамически, без sticky | нет | нет, но исчезает при down порта |
+| `STATIC` (вручную) | администратор, `mac address-table static` | да, если сохранена конфигурация | нет |
+| `STATIC` (sticky) | port security, `switchport port-security mac-address sticky` | да, если сохранена конфигурация | нет |
 
 `show mac address-table count` — быстрый способ понять, не подбирается ли VLAN к пределу
 ёмкости таблицы (обычно 8–16 тысяч записей на модель), прежде чем начнётся деградация из-за
@@ -266,10 +273,10 @@ Total Mac Addresses In Use:   3
 
 ```cli
 SW1# show mac address-table count
-Dynamic Address Count:        8192
+Dynamic Address Count:        8180
 Secure Address (User-defined) Count: 0
 Static  Address (User-defined) Count: 12
-Total Mac Addresses In Use:   8204
+Total Mac Addresses In Use:   8192
 Total Mac Addresses Available: 8192
 
 SW1# show interfaces gi1/0/13 counters
@@ -277,7 +284,7 @@ Port         InOctets       InUcastPkts    InMcastPkts   InBcastPkts
 Gi1/0/13     812934110293   980234123      1204          890
 ```
 
-**Что нашли.** Таблица **переполнена** (`Available` меньше, чем нужно) — новые записи
+**Что нашли.** Таблица **заполнена до предела** (`In Use` = `Available`) — новые записи
 некуда добавлять, и коммутатор больше не может учиться новым source MAC. По стандарту
 поведение при переполнении CAM-таблицы — **fail open**: коммутатор начинает флудить *весь*
 неизвестный unicast-трафик во все порты VLAN, как хаб, потому что у него физически нет
@@ -373,8 +380,8 @@ the same port appear multiple times in the MAC table» почти всегда �
 - «Log shows a MAC address flapping between two ports. What are two possible causes?» —
   петля второго уровня без активного STP на этом сегменте, либо дублированный MAC-адрес
   на двух устройствах.
-- «Which type of MAC address table entry survives a reload?» — `STATIC` и `SECURE sticky`,
-  если конфигурация сохранена; обычные `DYNAMIC` — нет.
+- «Which type of MAC address table entry survives a reload?» — `STATIC`, в том числе
+  sticky-записи port security, если конфигурация сохранена; обычные `DYNAMIC` — нет.
 - «What is the effect of unknown unicast flooding on hosts that are not the destination?»
   — они получают и отбрасывают кадр на уровне сетевой карты; сеть не ломается, но лишний
   трафик на сегменте есть.
@@ -432,8 +439,8 @@ the same port appear multiple times in the MAC table» почти всегда �
 !! Сначала петлю L2 без активного STP на этом сегменте (show spanning-tree), затем дублированный MAC-адрес на двух разных устройствах.
 ?? PC-A первый раз обращается к PC-D через три коммутатора. PC-B и PC-C сидят на промежуточных коммутаторах в той же VLAN. Кто из них увидит первый кадр?
 !! Оба — кадр флудится на каждом коммутаторе цепочки, пока адрес PC-D не выучен; их сетевые карты кадр примут и отбросят как не им адресованный, но по проводу он пройдёт.
-?? Чем запись типа STATIC отличается от SECURE sticky в show mac address-table?
-!! STATIC создаётся администратором вручную командой mac address-table static; SECURE sticky появляется автоматически из port security и «прилипает» к MAC, увиденному первым на порту — обе не стареют и переживают перезагрузку, если конфигурация сохранена.
+?? В show mac address-table две записи с типом STATIC: одна создана вручную, другая — port security sticky. Чем они отличаются по происхождению?
+!! Первая создана администратором командой mac address-table static; вторая появилась автоматически из port security и «прилипла» к MAC, увиденному первым на порту (детали sticky-записи видны в show port-security address) — обе не стареют и переживают перезагрузку, если конфигурация сохранена.
 ?? show mac address-table count показывает Total In Use почти вплотную к Available, на одном порту аномально много уникальных source MAC в секунду. Что происходит?
 !! Похоже на MAC flooding атаку (например, macof): таблица переполняется намеренно, коммутатор переходит в fail open и начинает флудить весь unicast-трафик, как хаб.
 ?? Один и тот же физический порт-транк присутствует в show mac address-table сразу в трёх разных строках с тремя разными VLAN. Это ошибка?
