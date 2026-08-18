@@ -7,7 +7,7 @@
 | Из чего состоит сеть | NF | 10 | 2802 | 35 |
 | Архитектуры и топологии сетей | NF | 21 | 2202 | 30 |
 | Физические интерфейсы, кабели и ошибки на них | NF | 61 | 2509 | 40 |
-| Модели OSI и TCP/IP, инкапсуляция | NF | 70 | 851 | 35 |
+| Модели OSI и TCP/IP, инкапсуляция | NF | 70 | 1823 | 35 |
 | Как коммутатор принимает решение | NF | 36 | 731 | 30 |
 | TCP и UDP | NF | 9 | 725 | 30 |
 | IPv4-адресация: классы, маски, приватные диапазоны | NF | 31 | 746 | 35 |
@@ -54,4 +54,4 @@
 
 Мало вопросов (<5): nf-10-client-ip, na-03-intervlan, na-08-wlan-infra, sec-05-aaa, aut-05-config-tools
 Тема блюпринта, которой нет в банке: aut-06-ai-ml
-Короткие главы (<900 слов): nf-04-models, nf-05-switching, nf-06-tcp-udp, nf-07-ipv4, nf-09-ipv6, nf-10-client-ip, nf-12-virtualization, na-01-vlan, na-02-trunks, na-03-intervlan, na-04-discovery, na-05-etherchannel, na-07-wireless-arch, na-08-wlan-infra, na-09-wlan-gui, na-10-device-access, ipc-02-forwarding, ipc-03-static, ipc-05-eigrp-bgp, ipc-06-fhrp, ips-01-nat, ips-02-dhcp-dns, ips-03-ntp, ips-04-snmp-syslog, ips-05-qos, ips-06-ssh-files, sec-01-concepts, sec-02-passwords, sec-03-acl, sec-04-l2-security, sec-05-aaa, sec-06-vpn, sec-07-wireless-security, aut-01-automation, aut-02-sdn, aut-03-rest-api, aut-04-data-formats, aut-05-config-tools, aut-06-ai-ml
+Короткие главы (<900 слов): nf-05-switching, nf-06-tcp-udp, nf-07-ipv4, nf-09-ipv6, nf-10-client-ip, nf-12-virtualization, na-01-vlan, na-02-trunks, na-03-intervlan, na-04-discovery, na-05-etherchannel, na-07-wireless-arch, na-08-wlan-infra, na-09-wlan-gui, na-10-device-access, ipc-02-forwarding, ipc-03-static, ipc-05-eigrp-bgp, ipc-06-fhrp, ips-01-nat, ips-02-dhcp-dns, ips-03-ntp, ips-04-snmp-syslog, ips-05-qos, ips-06-ssh-files, sec-01-concepts, sec-02-passwords, sec-03-acl, sec-04-l2-security, sec-05-aaa, sec-06-vpn, sec-07-wireless-security, aut-01-automation, aut-02-sdn, aut-03-rest-api, aut-04-data-formats, aut-05-config-tools, aut-06-ai-ml
