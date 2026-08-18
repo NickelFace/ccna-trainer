@@ -60,6 +60,23 @@ test('an exhibit that travels with the message is announced as attached', () => 
   assert.ok(!text.includes('не входит в этот текст'));
 });
 
+// A batch prompt carries no attachment, so the written-out schema is the only way the
+// diagram reaches the model at all — it has to replace the "picture is missing" note.
+test('a written-out schema replaces the note about the missing picture', () => {
+  const topo = 'Схема (текстом): R1 — роутер; SW1 — коммутатор L2\nСвязи:\n  R1 (.1) — SW1';
+  const text = questionToText({ ...mcq, img: 'q365.jpg', topo }, null, 'IP Connectivity');
+  assert.match(text, /Схема \(текстом\): R1 — роутер/);
+  assert.ok(!text.includes('картинка не входит в этот текст'));
+});
+
+test('a written-out schema and a CLI listing both survive on the same question', () => {
+  const text = questionToText(
+    { ...mcq, img: 'q365.jpg', cli: 'R1#show ip route', topo: 'Схема (текстом): R1 — роутер' },
+    null, 'IP Connectivity');
+  assert.match(text, /R1#show ip route/);
+  assert.match(text, /Схема \(текстом\)/);
+});
+
 test('CLI output is included in place of the exhibit note', () => {
   const text = questionToText({ ...mcq, cli: 'R1#show ip route', img: 'q1.jpg' }, null, 'IP Connectivity');
   assert.match(text, /R1#show ip route/);

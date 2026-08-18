@@ -16,6 +16,7 @@ exam domains. The catch-all 'General' bucket is classified per-question by
 keyword heuristic (refined later by an LLM pass -> classify_overrides.json).
 """
 import json, os, re, base64, collections, shutil
+from topo_text import topology_to_text
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ARCH = os.path.normpath(os.path.join(HERE, '..', '..', 'ccna-project-archive'))
@@ -182,6 +183,12 @@ def main():
                     f.write(base64.b64decode(b64))
             item['img'] = fn
             img_written += 1
+
+        # a written-out version of the diagram, for the mobile app's "разобрать с ИИ": a
+        # batch prompt cannot carry attachments, so the words go where the picture cannot.
+        if item.get('img'):
+            topo = topology_to_text((exhibit_meta.get(str(n)) or {}).get('topology'))
+            if topo: item['topo'] = topo
 
         # attach reconstructed drag-drop data if present
         if q.get('y') == 'dd' and str(n) in dd_data:

@@ -55,8 +55,13 @@ export const defaultParts = () =>
 export function questionToText(q, answer, domainName, imageAttached = false) {
   const lines = [`Вопрос ${q.n} [${domainName || q.dom}]${q.disp ? ' (спорный ключ)' : ''}`, questionText(q)];
 
+  // A schema can only ride along as an attachment, and only when a single question is
+  // being shared — so the bank carries `topo`, the same diagram written out (built in
+  // build/topo_text.py). Where it exists the batch keeps the schema; where it does not,
+  // say plainly that the picture is missing rather than let the model invent one.
   if (q.cli) lines.push('', q.cli);
-  else if (q.img) lines.push('', imageAttached
+  if (q.topo) lines.push('', q.topo);
+  else if (q.img && !q.cli) lines.push('', imageAttached
     ? '[схема к вопросу приложена картинкой к этому сообщению]'
     : '[к вопросу приложена схема — картинка не входит в этот текст]');
 

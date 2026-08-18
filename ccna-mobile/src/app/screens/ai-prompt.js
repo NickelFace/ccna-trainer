@@ -61,6 +61,12 @@ function sharedImagePath(items) {
   return q && q.img ? `images/exhibits/${q.img}` : null;
 }
 
+// Questions whose diagram exists as a picture and nothing else: no `topo` written out at
+// build time, no CLI text standing in for it. In a batch these are the only ones the
+// prompt genuinely cannot describe, so the screen offers them one at a time — one share
+// each, which is the only way an image reaches the chat.
+const imageOnly = items => (items || []).filter(({ q }) => q.img && !q.topo && !q.cli);
+
 async function shareViaIntent(text, imageAssetPath) {
   const ShareIntent = window.Capacitor?.Plugins?.ShareIntent;
   if (ShareIntent?.share) {
@@ -153,6 +159,7 @@ export const aiPrompt = {
     if (!parts) parts = defaultParts();
     const count = ctx.params.items.length;
     const imagePath = sharedImagePath(ctx.params.items);
+    const pictures = count > 1 ? imageOnly(ctx.params.items) : [];
 
     const chips = PROMPT_PARTS.map(p =>
       `<button class="pill${parts.has(p.id) ? ' on' : ''}" data-part="${p.id}" type="button">${esc(p.label)}</button>`
@@ -161,6 +168,16 @@ export const aiPrompt = {
     const attachedStrip = imagePath
       ? `<div class="ai-attached" role="note"><span class="mono">🖼</span> Схема уйдёт картинкой вместе с текстом — приложение выберешь в окне «Поделиться»</div>`
       : '';
+
+    // One button per question, not a queue: the share sheet is modal and the user picks a
+    // target every time, so a "next / next / next" flow would just hide how many sends are
+    // left. The buttons stay put and the pressed ones are visibly done.
+    const leftovers = pictures.length ? `
+      <div class="label spaced">Схема только картинкой · ${pictures.length}</div>
+      <p class="muted lead">Эти схемы описать текстом нечем — отправь их по одной, каждая уйдёт картинкой со своим вопросом.</p>
+      <div class="ai-chips">${pictures.map(({ q }) =>
+        `<button class="pill" data-single="${q.n}" type="button">Вопрос ${q.n}</button>`
+      ).join('')}</div>` : '';
 
     // With a schema the target app is picked in Android's own sheet, so a preference here
     // would be a setting that does nothing.
@@ -173,14 +190,16 @@ export const aiPrompt = {
     const node = h(`
       <p class="muted lead">${count === 1
         ? 'Промпт собирается на устройстве и работает без интернета.'
-        : `В промпт войдут ${count} вопросов, на которые ты ответил неправильно. Схемы в этот режим не идут — только текст.`}</p>
+        : `В промпт войдут ${count} вопросов, на которые ты ответил неправильно. Схемы уходят текстовым описанием${
+            pictures.length ? ', кроме перечисленных ниже' : ''}.`}</p>
       <div class="label">Что включить</div>
       <div class="ai-chips">${chips}</div>
       ${attachedStrip}
+      ${leftovers}
       ${targets}
     `);
 
-    node.addEventListener('click', e => {
+    node.addEventListener('click', async e => {
       const part = e.target.closest('[data-part]')?.dataset.part;
       if (part) {
         parts.has(part) ? parts.delete(part) : parts.add(part);
@@ -189,7 +208,22 @@ export const aiPrompt = {
       const target = e.target.closest('[data-target]')?.dataset.target;
       if (target) {
         store.patchProfile({ aiTarget: target });
-        ctx.router.render();
+        return ctx.router.render();
+      }
+      // Re-rendering here would wipe the "sent" marks, so the button is toggled in place.
+      const btn = e.target.closest('[data-single]');
+      if (btn) {
+        const item = pictures.find(({ q }) => String(q.n) === btn.dataset.single);
+        if (!item) return;
+        const result = await shareViaIntent(
+          promptFor(ctx, parts, true, [item]), `images/exhibits/${item.q.img}`);
+        if (result.mode === 'fallback') {
+          toast(result.ok ? `Скопировано · открываю ${result.target.label}` : 'Не удалось скопировать');
+        } else if (!result.ok) {
+          toast('Не удалось поделиться');
+          return;
+        }
+        btn.classList.add('on');
       }
     });
 
@@ -201,7 +235,7 @@ export const aiPrompt = {
   unmount() { /* keep parts */ },
 };
 
-function promptFor(ctx, enabled, imagesAttached = false) {
+function promptFor(ctx, enabled, imagesAttached = false, items = ctx.params.items) {
   const { bank } = ctx;
   const r = readiness(store.attempts, bank.byN, bank.meta.domains);
   const weakest = bank.meta.domains
@@ -210,7 +244,7 @@ function promptFor(ctx, enabled, imagesAttached = false) {
     .sort((a, b) => a.pct - b.pct)[0];
 
   return buildPrompt({
-    items: ctx.params.items,
+    items,
     parts: enabled,
     profile: store.profile,
     weakDomain: weakest ? weakest.name.replace(/^\d+\.\d+\s+/, '') : null,
