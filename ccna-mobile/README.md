@@ -2,8 +2,11 @@
 
 A separate product from the web simulator, not a wrapper around it. Same question bank,
 phone-shaped UX: tab navigation, a session that survives the system killing the app,
-spaced repetition, tap-to-match instead of drag-and-drop, and a prompt generator that
-hands a mistake to an AI chat with enough context to be useful.
+spaced repetition, tap-to-match instead of drag-and-drop, a prompt generator that hands a
+mistake to an AI chat with enough context to be useful, and a **Теория** tab: 47 chapters
+covering the whole blueprint, each one bound to the bank questions it answers, so a
+mistake leads straight to the paragraph that explains it and a chapter leads straight to
+practice on its own questions.
 
 Vanilla JS + esbuild + Capacitor. No framework, no CDN, no network at runtime: the bank,
 the exhibits and the fonts are all bundled, and the app does not declare
@@ -21,7 +24,9 @@ npm run android:open     # the same, then open Android Studio
 ```
 
 `npm run sync-data` copies `../ccna-exam-simulator/data` and `images/exhibits` into
-`dist/`. The bank is never duplicated in git — `dist/` is ignored.
+`dist/`, and compiles `../ccna-book/topics/*.md` into `dist/data/theory/` (chapter index,
+one file per chapter, and the question → chapter map). Neither the bank nor the compiled
+book is duplicated in git — `dist/` is ignored.
 
 ## Layout
 
@@ -38,6 +43,8 @@ src/
 │  ├─ cli.js        show-output blocks
 │  └─ ai-prompt.js  the AI request, assembled from toggles
 ├─ app/             screens, router, persistence — everything that touches the DOM
+│  ├─ theory.js     loads the book: index on tab open, a chapter when opened
+│  └─ book.js       renders chapter blocks (tables, CLI, callouts, self-checks)
 └─ styles/          tokens.css is the design system; nothing invents a value
 ```
 

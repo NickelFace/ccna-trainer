@@ -5,7 +5,8 @@ Two applications over one question bank, both offline-first, both simulating the
 
 - a **web app** — wide layout, keyboard navigation, runs from any static host;
 - an **Android app** — its own UX built for a phone: tab navigation, saved sessions,
-  spaced repetition, tap-to-match instead of drag-and-drop, and an AI prompt generator.
+  spaced repetition, tap-to-match instead of drag-and-drop, an AI prompt generator, and a
+  **textbook** whose 47 chapters are bound to the questions they answer.
 
 **Live (web):** https://ccna.maks.top
 
@@ -31,6 +32,10 @@ cd ccna-mobile && npm install && npm run dev
   Docs: [README.md](ccna-exam-simulator/README.md) · [по-русски](ccna-exam-simulator/README.ru.md)
 - [`ccna-mobile/`](ccna-mobile/) — the Android app (vanilla JS + esbuild + Capacitor).
   Docs: [README.md](ccna-mobile/README.md)
+- [`ccna-book/`](ccna-book/) — the textbook: Markdown chapters plus the build step that
+  compiles them and classifies every question in the bank against them. The build fails
+  if a question ends up with no chapter to read for it.
+  Docs: [README.md](ccna-book/README.md) · coverage report: [coverage.md](ccna-book/coverage.md)
 - `run.sh` / `stop.sh` — start/stop the local web server (port 8099).
 
 The bank lives in exactly one place. `ccna-mobile` copies it at build time with
@@ -40,6 +45,7 @@ applications from one edit.
 ```
 ccna-exam-simulator/data/questions.json   ← source of truth
 ccna-exam-simulator/images/exhibits/      ← source of truth
+ccna-book/topics/*.md                     ← source of truth (theory)
         │
         └── npm run sync-data ──► ccna-mobile/dist/ ──► APK
 ```

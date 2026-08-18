@@ -185,6 +185,8 @@ export async function loadTopics(dir = join(ROOT, 'topics')) {
       minutes: front.minutes || estimateMinutes(sections),
       words: countWords(sections),
       fallback: !!front.fallback,
+      // `bank: none` — тема из блюпринта, которой нет в этом дампе вопросов.
+      inBank: front.bank !== 'none',
       match: front.match || {},
       sections,
     });
@@ -307,6 +309,7 @@ export async function buildBook({ dir, bankPath = BANK, metaPath = META } = {}) 
       minutes: t.minutes,
       words: t.words,
       sections: t.sections.map(s => ({ id: s.id, title: s.title })),
+      inBank: t.inBank,
       qn: perTopic.get(t.id).length,
     })),
   };
@@ -341,9 +344,11 @@ export function coverageReport({ topics, index, stats, questions }) {
     const i = byId.get(t.id);
     lines.push(`| ${t.title} | ${t.dom} | ${i.qn} | ${i.words} | ${i.minutes} |`);
   }
-  const thin = topics.filter(t => byId.get(t.id).qn < 5).map(t => t.id);
+  const thin = topics.filter(t => t.inBank && byId.get(t.id).qn < 5).map(t => t.id);
+  const offBank = topics.filter(t => !t.inBank).map(t => t.id);
   const short = topics.filter(t => byId.get(t.id).words < 900).map(t => t.id);
   lines.push('', thin.length ? `Мало вопросов (<5): ${thin.join(', ')}` : 'Глав без вопросов нет.');
+  if (offBank.length) lines.push(`Тема блюпринта, которой нет в банке: ${offBank.join(', ')}`);
   if (short.length) lines.push(`Короткие главы (<900 слов): ${short.join(', ')}`);
   return lines.join('\n');
 }

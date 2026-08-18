@@ -8,6 +8,8 @@ import { store } from '../store.js';
 import { confirmDialog } from '../dialog.js';
 import { openSheet, closeSheet } from '../sheet.js';
 import { openExhibit } from '../exhibit.js';
+import { loadIndex, loadMap } from '../theory.js';
+import { topic as topicScreen } from './topic.js';
 import { isCorrect, ddNeeded } from '../../engine/grade.js';
 import { currentQuestion, remainingMs, finishSession, gradesImmediately } from '../session.js';
 import {
@@ -464,6 +466,7 @@ function openReview(ctx, q, s) {
         <span class="muted">${esc(answerSummary(q, given))}</span>
       </div>
       ${rationaleBlocks(q, given)}
+      <div class="review-theory"></div>
       <div class="review-actions">
         <button class="btn soft" data-act="ai" type="button">Разобрать с ИИ</button>
         <button class="btn primary grow" data-act="next" type="button">Следующий →</button>
@@ -480,6 +483,21 @@ function openReview(ctx, q, s) {
       moreItems: sessionMistakes(s, ctx.bank).filter(item => item.q.dom === q.dom),
     });
   });
+
+  // The chapter that covers this question, offered right where the mistake is fresh. The
+  // book loads on demand, so the sheet is already on screen when the link appears; it
+  // opens as a modal over the question, and Android back returns to the session.
+  Promise.all([loadMap(), loadIndex()]).then(([map, index]) => {
+    const t = index.byId.get(map[q.n]);
+    const slot = t && content.querySelector('.review-theory');
+    if (!slot) return;
+    slot.innerHTML = `<button class="btn soft wide" data-act="theory" type="button">
+      Теория: ${esc(t.title)}</button>`;
+    slot.querySelector('button').addEventListener('click', () => {
+      closeReview();
+      ctx.router.modal(topicScreen, { id: t.id });
+    });
+  }).catch(() => {});
 
   openSheet(content, {
     // Tapping the dim, or Android back, leaves the question underneath — dimmed and with

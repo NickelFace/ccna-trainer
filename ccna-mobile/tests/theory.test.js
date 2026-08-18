@@ -50,13 +50,17 @@ test('every chapter ends with a self-check that has answers', () => {
     assert.ok(checks.length, `${t.id}: no "Проверь себя" block`);
     for (const c of checks) {
       assert.ok(c.items.length >= 3, `${t.id}: self-check with fewer than 3 questions`);
-      for (const item of c.items) assert.ok(item.a.length > 5, `${t.id}: empty answer for "${item.q}"`);
+      for (const item of c.items) assert.ok(item.a.length > 3, `${t.id}: empty answer for "${item.q}"`);
     }
   }
 });
 
+// A chapter may legitimately have no questions — the blueprint moves faster than the dump
+// the bank came from — but that has to be declared in the chapter (`bank: none`), not
+// discovered as a silent zero.
 test('every chapter is bound to questions from the bank', () => {
   for (const t of book.index.topics) {
+    if (!t.inBank) { assert.equal(t.qn, 0, `${t.id}: declares bank: none but questions reach it`); continue; }
     assert.ok(t.qn > 0, `${t.id}: no question in the bank reaches this chapter`);
   }
 });

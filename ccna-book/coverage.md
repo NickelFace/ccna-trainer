@@ -1,6 +1,6 @@
 # Покрытие банка вопросов главами учебника
 
-Вопросов в банке: **1395** · глав: **34** · по ключевым словам легло **850**, в общую главу домена — **227** · **без главы: 318**
+Вопросов в банке: **1395** · глав: **47** · по ключевым словам легло **1055**, в общую главу домена — **340**
 
 | Глава | Домен | Вопросов | Слов | Минут |
 |---|---|---:|---:|---:|
@@ -38,6 +38,20 @@
 | SNMP и Syslog | IPS | 10 | 616 | 30 |
 | QoS: классификация, маркировка, очереди | IPS | 18 | 749 | 35 |
 | SSH, FTP и TFTP: управление устройством и файлами | IPS | 14 | 576 | 25 |
+| Основные понятия безопасности | SEC | 90 | 629 | 35 |
+| Пароли и защита доступа к устройству | SEC | 22 | 567 | 30 |
+| Списки доступа (ACL) | SEC | 15 | 734 | 45 |
+| Безопасность второго уровня | SEC | 23 | 701 | 40 |
+| AAA, RADIUS, TACACS+ и 802.1X | SEC | 4 | 514 | 30 |
+| VPN и IPsec | SEC | 7 | 635 | 30 |
+| Безопасность беспроводных сетей | SEC | 12 | 613 | 30 |
+| Зачем сети автоматизация | AUT | 25 | 540 | 25 |
+| SDN, плоскости и фабрика | AUT | 92 | 572 | 35 |
+| REST API | AUT | 8 | 570 | 30 |
+| JSON, XML и YAML | AUT | 18 | 514 | 30 |
+| Ansible, Terraform, Puppet и Chef | AUT | 2 | 574 | 25 |
+| ИИ и машинное обучение в сетях | AUT | 0 | 493 | 20 |
 
-Мало вопросов (<5): nf-10-client-ip, na-03-intervlan, na-08-wlan-infra
-Короткие главы (<900 слов): nf-04-models, nf-05-switching, nf-06-tcp-udp, nf-07-ipv4, nf-09-ipv6, nf-10-client-ip, nf-12-virtualization, na-01-vlan, na-02-trunks, na-03-intervlan, na-04-discovery, na-05-etherchannel, na-07-wireless-arch, na-08-wlan-infra, na-09-wlan-gui, na-10-device-access, ipc-02-forwarding, ipc-03-static, ipc-05-eigrp-bgp, ipc-06-fhrp, ips-01-nat, ips-02-dhcp-dns, ips-03-ntp, ips-04-snmp-syslog, ips-05-qos, ips-06-ssh-files
+Мало вопросов (<5): nf-10-client-ip, na-03-intervlan, na-08-wlan-infra, sec-05-aaa, aut-05-config-tools
+Тема блюпринта, которой нет в банке: aut-06-ai-ml
+Короткие главы (<900 слов): nf-04-models, nf-05-switching, nf-06-tcp-udp, nf-07-ipv4, nf-09-ipv6, nf-10-client-ip, nf-12-virtualization, na-01-vlan, na-02-trunks, na-03-intervlan, na-04-discovery, na-05-etherchannel, na-07-wireless-arch, na-08-wlan-infra, na-09-wlan-gui, na-10-device-access, ipc-02-forwarding, ipc-03-static, ipc-05-eigrp-bgp, ipc-06-fhrp, ips-01-nat, ips-02-dhcp-dns, ips-03-ntp, ips-04-snmp-syslog, ips-05-qos, ips-06-ssh-files, sec-01-concepts, sec-02-passwords, sec-03-acl, sec-04-l2-security, sec-05-aaa, sec-06-vpn, sec-07-wireless-security, aut-01-automation, aut-02-sdn, aut-03-rest-api, aut-04-data-formats, aut-05-config-tools, aut-06-ai-ml

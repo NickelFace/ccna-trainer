@@ -253,3 +253,8 @@
   line-height: 1.55;
   color: var(--ok-text);
 }
+
+/* The chapter link inside the review sheet — same weight as the actions under it, but
+   clearly a way out of the session rather than a way on through it. */
+.review-theory:not(:empty) { margin: 14px 0 4px; }
+.review-theory .btn { width: 100%; justify-content: center; }
