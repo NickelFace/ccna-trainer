@@ -11,6 +11,7 @@ import { remainingMs, isExpired, finishSession, startSrs, startPractice } from '
 import { confirmDialog } from '../dialog.js';
 import { question as questionScreen } from './question.js';
 import { result as resultScreen } from './result.js';
+import { profile as profileScreen } from './profile.js';
 
 const MODE_LABEL = { exam: 'Пробный экзамен', practice: 'Тренировка', srs: 'Повторение' };
 
@@ -43,15 +44,23 @@ const daysUntil = iso => {
 function readinessBlock(r, delta, profile) {
   const left = daysUntil(profile.examDate);
   const sub = [
-    left === null ? null : left === 0 ? 'экзамен сегодня' : `экзамен через ${left} ${plural(left, 'день', 'дня', 'дней')}`,
+    left === null ? 'дата экзамена не задана' : left === 0 ? 'экзамен сегодня' : `экзамен через ${left} ${plural(left, 'день', 'дня', 'дней')}`,
     'порог 825',
-  ].filter(Boolean).join(' · ');
+  ].join(' · ');
+
+  // The countdown and the daily quota are the whole plan, and both were set once during
+  // onboarding with no way back — so the line that shows them is also the way to change
+  // them. A settings screen filed under a tab nobody opens would not be found.
+  const planRow = `
+    <div class="muted readiness-sub">${esc(sub)}
+      <button class="plan-btn" data-act="profile" type="button">план · изменить</button>
+    </div>`;
 
   if (r.forecast === null) {
     return `
       <div class="readiness">
         <div class="readiness-head"><span class="readiness-pct">Готовность —</span></div>
-        <div class="muted">${esc(sub)}</div>
+        ${planRow}
         <p class="muted lead">Прогноз появится после первых ответов: он считается по
         последним 200 ответам, взвешенным по шести доменам Cisco.</p>
       </div>`;
@@ -62,7 +71,7 @@ function readinessBlock(r, delta, profile) {
       <div class="readiness-head">
         <span class="readiness-pct">Готовность ${r.pct}%</span>
       </div>
-      <div class="muted">${esc(sub)}</div>
+      ${planRow}
       <div class="readiness-track"><i style="width:${Math.min(100, r.pct)}%"></i></div>
       <div class="readiness-foot mono">
         <span>прогноз ${r.forecast} / 1000</span>
@@ -183,6 +192,8 @@ export const home = {
     node.addEventListener('click', async e => {
       const act = e.target.closest('[data-act]')?.dataset.act;
       if (!act) return;
+
+      if (act === 'profile') return ctx.router.modal(profileScreen);
 
       if (act === 'resume') {
         // An exam whose clock ran out while the app was gone is over — score it and show

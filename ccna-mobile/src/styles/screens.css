@@ -499,6 +499,32 @@
 .readiness-pct { font-size: var(--fs-screen-title); font-weight: 600; letter-spacing: -.3px; }
 .readiness .muted { font-size: 13.5px; margin-top: 2px; }
 .readiness .lead { padding: 12px 0 0; line-height: 1.6; }
+
+/* The countdown line doubles as the way into Профиль — the plan is set nowhere else. */
+.readiness-sub { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.plan-btn {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: 13.5px;
+  color: var(--primary-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---- Профиль ---- */
+.plan-card { margin-top: 18px; }
+.plan-line { font-size: 14.5px; line-height: 1.6; color: var(--text-2); }
+.date-input {
+  width: 100%;
+  background: var(--elev);
+  border: 1px solid var(--border);
+  border-radius: var(--r-btn);
+  padding: 12px 14px;
+  font-size: 15.5px;
+  margin-bottom: 10px;
+}
+.date-input::-webkit-calendar-picker-indicator { filter: invert(.7); }
 .readiness-track {
   height: 10px; border-radius: 6px;
   background: var(--elev);
