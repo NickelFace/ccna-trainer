@@ -59,6 +59,36 @@
 .bk-search::placeholder { color: var(--text-4); }
 .bk-search:focus { outline: none; border-color: var(--primary-border); }
 
+/* One domain, folded. summary is the tap target, so it carries the 48px minimum itself. */
+.bk-dom { margin-top: 18px; }
+.bk-dom > summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--tap);
+  padding: 6px 2px;
+  list-style: none;
+  cursor: pointer;
+}
+.bk-dom > summary::-webkit-details-marker { display: none; }
+.bk-dom-name {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.bk-dom-count { font-size: var(--fs-label); color: var(--text-4); }
+.bk-dom-chev {
+  color: var(--text-4);
+  font-size: 16px;
+  transition: transform 160ms ease-out;
+}
+.bk-dom[open] > summary .bk-dom-chev { transform: rotate(90deg); }
+.bk-dom[open] > summary .bk-dom-name { color: var(--text-2); }
+
 .bk-row {
   display: flex;
   gap: 12px;

@@ -38,14 +38,24 @@ export const theory = {
       const last = store.book.last && index.byId.get(store.book.last);
       const doneCount = index.topics.filter(t => read[t.id]).length;
 
+      // Six domains and 47 chapters do not fit on a phone screen, so each domain folds.
+      // A search always unfolds what it found, and the domain holding the chapter being
+      // read opens on its own — otherwise "Продолжить" would point into a closed box.
+      const lastDom = last ? last.dom : null;
       const groups = index.domains.map(d => {
         const list = d.topics.map(id => index.byId.get(id)).filter(t => t && matches(t, q));
         if (!list.length) return '';
         const readHere = list.filter(t => read[t.id]).length;
+        const open = q ? true : (store.book.open[d.id] ?? d.id === lastDom);
         return `
-          <div class="label spaced">${esc(d.name)}
-            <span class="mono muted">${readHere}/${d.topics.length}</span></div>
-          <div class="card tight">${list.map(t => row(t, !!read[t.id])).join('')}</div>`;
+          <details class="bk-dom" data-dom="${esc(d.id)}"${open ? ' open' : ''}>
+            <summary>
+              <span class="bk-dom-name">${esc(d.name)}</span>
+              <span class="mono bk-dom-count">${readHere}/${d.topics.length}</span>
+              <span class="bk-dom-chev mono">›</span>
+            </summary>
+            <div class="card tight">${list.map(t => row(t, !!read[t.id])).join('')}</div>
+          </details>`;
       }).join('');
 
       node.replaceChildren(...h(`
@@ -91,6 +101,15 @@ export const theory = {
       const btn = e.target.closest('[data-topic]');
       if (btn) ctx.router.push(topicScreen, { id: btn.dataset.topic });
     });
+
+    // `toggle` does not bubble, hence the capture phase. Folding is remembered per
+    // domain, so the tab reopens the way it was left.
+    node.addEventListener('toggle', e => {
+      const box = e.target.closest?.('.bk-dom');
+      if (!box || query.trim()) return;
+      store.book.open[box.dataset.dom] = box.open;
+      store.setBook({});
+    }, true);
 
     return node;
   },

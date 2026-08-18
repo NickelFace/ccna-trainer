@@ -24,7 +24,7 @@ const KEY = {
 
 // Reading state for the Теория tab: which chapters are done, where each was left off,
 // which one to offer to continue, and the reader's text size.
-const DEFAULT_BOOK = { read: {}, pos: {}, last: null, scale: 1 };
+const DEFAULT_BOOK = { read: {}, pos: {}, open: {}, last: null, scale: 1 };
 
 const FLUSH_MS = 200;
 
@@ -62,6 +62,7 @@ const mergeBook = (stored) => {
     ...b,
     read: b.read && typeof b.read === 'object' ? b.read : {},
     pos: b.pos && typeof b.pos === 'object' ? b.pos : {},
+    open: b.open && typeof b.open === 'object' ? b.open : {},
   };
 };
 
