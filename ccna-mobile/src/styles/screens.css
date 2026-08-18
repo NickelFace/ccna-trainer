@@ -515,7 +515,7 @@
 /* ---- Профиль ---- */
 .plan-card { margin-top: 18px; }
 .plan-line { font-size: 14.5px; line-height: 1.6; color: var(--text-2); }
-.date-input {
+.date-input, .time-input {
   width: 100%;
   background: var(--elev);
   border: 1px solid var(--border);
@@ -524,7 +524,12 @@
   font-size: 15.5px;
   margin-bottom: 10px;
 }
-.date-input::-webkit-calendar-picker-indicator { filter: invert(.7); }
+.date-input::-webkit-calendar-picker-indicator,
+.time-input::-webkit-calendar-picker-indicator { filter: invert(.7); }
+
+/* A reminder row is dead while the master switch is off — say so visually rather than
+   hiding it, so the list still answers "что вообще может приходить". */
+.switch-row.dim { opacity: .45; }
 .readiness-track {
   height: 10px; border-radius: 6px;
   background: var(--elev);

@@ -13,6 +13,7 @@ import { esc, h } from '../dom.js';
 import { store } from '../store.js';
 import { LEVELS } from '../../engine/ai-prompt.js';
 import { DAY_MS } from '../../engine/srs.js';
+import { DEFAULT_TIME, requestPermission, reschedule } from '../notify.js';
 
 // The onboarding presets, as a plain list — the pace a learner picks is one of these four
 // far more often than an arbitrary number, and a number pad for "вопросов в день" invites
@@ -58,6 +59,36 @@ function planLine(profile) {
   const total = left * goal;
   return `${days} по ${goal} ${plural(goal, 'вопросу', 'вопроса', 'вопросов')} в день — это ${total} ${plural(total, 'вопрос', 'вопроса', 'вопросов')} до даты.`;
 }
+
+const SWITCHES = [
+  { id: 'enabled', label: 'Напоминания', note: 'локальные, приходят с телефона' },
+  { id: 'daily', label: 'Дневная норма', note: 'если к вечеру норма не закрыта' },
+  { id: 'weeklyMock', label: 'Пробный экзамен раз в неделю', note: 'когда с прошлого прошло 7 дней' },
+];
+
+function switchRows(p) {
+  // The two specific reminders are meaningless while the master switch is off, so they
+  // are shown disabled rather than hidden — hiding them loses the answer to "а что вообще
+  // может приходить?", which is the question the switch is there to answer.
+  const off = !p.notify.enabled;
+  return SWITCHES.map(s => {
+    const on = s.id === 'enabled' ? p.notify.enabled : p.notify.enabled && p.notify[s.id] !== false;
+    const dim = s.id !== 'enabled' && off;
+    return `
+      <div class="switch-row${dim ? ' dim' : ''}">
+        <span class="switch-text">
+          <span class="switch-label">${esc(s.label)}</span>
+          <span class="switch-note">${esc(s.note)}</span>
+        </span>
+        <button class="switch${on ? ' on' : ''}" data-notify="${s.id}" type="button"
+          role="switch" aria-checked="${on}" ${dim ? 'disabled' : ''}><i></i></button>
+      </div>`;
+  }).join('');
+}
+
+// Reported rather than assumed: Android 13+ can refuse the permission outright, and a row
+// of switches that look armed while the OS drops every notification is the worst outcome.
+let permissionNote = '';
 
 export const profile = {
   id: 'profile',
@@ -106,12 +137,43 @@ export const profile = {
       ).join('')}</div>
       <p class="muted lead">Это «План на сегодня» на главной. Приложение не ограничивает — можно решать больше.</p>
 
+      <div class="label spaced">Напоминания</div>
+      <div class="switches">${switchRows(p)}</div>
+      ${p.notify.enabled ? `
+        <div class="card">
+          <input class="time-input" type="time" value="${p.notify.time || DEFAULT_TIME}">
+          <p class="muted lead">Время, в которое приходят оба напоминания. Всё считается на телефоне — интернет не нужен.</p>
+        </div>` : ''}
+      <p class="muted lead" data-perm>${esc(permissionNote)}</p>
+
       <div class="label spaced">С чего начинаешь</div>
       <div class="choices">${levels}</div>
       <p class="muted lead">Идёт в промпт для ИИ: «Я ${esc(LEVELS[p.level] || 'готовлюсь к экзамену')}». Больше ни на что не влияет.</p>
     `);
 
-    node.addEventListener('click', e => {
+    node.addEventListener('click', async e => {
+      const sw = e.target.closest('[data-notify]')?.dataset.notify;
+      if (sw) {
+        const notify = { ...store.profile.notify };
+        if (sw === 'enabled' && !notify.enabled) {
+          // Ask only when switching on: requesting on every render would nag, and asking
+          // after a refusal does nothing — Android answers from its own record.
+          const state = await requestPermission();
+          if (state === 'denied') {
+            permissionNote = 'Android не разрешил уведомления этому приложению. Включи их в настройках телефона, потом вернись сюда.';
+            return ctx.router.render();
+          }
+          permissionNote = state === 'unsupported'
+            ? 'В браузере напоминания не приходят — они работают только в приложении на телефоне.'
+            : '';
+        }
+        if (sw === 'enabled') notify.enabled = !notify.enabled;
+        else notify[sw] = notify[sw] === false;   // undefined and true both mean "on"
+        store.patchProfile({ notify });
+        await reschedule();
+        return ctx.router.render();
+      }
+
       const level = e.target.closest('[data-level]')?.dataset.level;
       if (level) {
         store.patchProfile({ level: store.profile.level === level ? null : level });
@@ -120,6 +182,7 @@ export const profile = {
       const goal = e.target.closest('[data-goal]')?.dataset.goal;
       if (goal) {
         store.patchProfile({ dailyGoal: Number(goal) });
+        await reschedule();   // the daily reminder quotes the quota and fires against it
         return ctx.router.render();
       }
       if (e.target.closest('[data-act="clear-date"]')) {
@@ -132,6 +195,13 @@ export const profile = {
     // year wheel, and each one would re-render the screen out from under the open picker.
     node.querySelector('.date-input').addEventListener('change', e => {
       store.patchProfile({ examDate: e.target.value || null });
+      ctx.router.render();
+    });
+
+    node.querySelector('.time-input')?.addEventListener('change', async e => {
+      const time = e.target.value || DEFAULT_TIME;
+      store.patchProfile({ notify: { ...store.profile.notify, time } });
+      await reschedule();
       ctx.router.render();
     });
 

@@ -7,6 +7,7 @@ import { store } from '../store.js';
 import { readiness, readinessDelta } from '../../engine/readiness.js';
 import { dueQueue, dueCount, nextDueAt, DAY_MS } from '../../engine/srs.js';
 import { streakDays, answeredOn, answeredTotal, toneFor } from '../../engine/stats.js';
+import { mockState } from '../../engine/plan.js';
 import { remainingMs, isExpired, finishSession, startSrs, startPractice } from '../session.js';
 import { confirmDialog } from '../dialog.js';
 import { question as questionScreen } from './question.js';
@@ -109,7 +110,30 @@ const planRow = ({ act, badge, tone, title, note }) => `
     <span class="plan-chevron">›</span>
   </button>`;
 
-function planCards({ due, nextDue, weakDomain, ddDone }) {
+// The weekly mock, which onboarding promised under "через месяц" and nothing ever
+// tracked. Due ones are a row you can act on; a mock that is not due yet still says when,
+// because "по какому плану я иду" was the question that got this built.
+function mockRow(mock) {
+  if (mock.due) {
+    return planRow({
+      act: 'mock', badge: '!', tone: 'warn',
+      title: 'Пробный экзамен',
+      note: mock.last
+        ? `последний ${mock.daysSince} ${plural(mock.daysSince, 'день', 'дня', 'дней')} назад — пора`
+        : 'ещё не проходил — одна попытка покажет расклад по доменам',
+    });
+  }
+  return `
+    <div class="plan-row static">
+      <span class="plan-badge ok">✓</span>
+      <span class="plan-text">
+        <span class="plan-title">Пробный экзамен пройден</span>
+        <span class="plan-note">${esc(`следующий через ${mock.daysLeft} ${plural(mock.daysLeft, 'день', 'дня', 'дней')}`)}</span>
+      </span>
+    </div>`;
+}
+
+function planCards({ due, nextDue, weakDomain, ddDone, mock }) {
   const rows = [];
 
   if (due) {
@@ -131,6 +155,8 @@ function planCards({ due, nextDue, weakDomain, ddDone }) {
         </span>
       </div>`);
   }
+
+  rows.push(mockRow(mock));
 
   if (weakDomain) {
     rows.push(planRow({
@@ -182,7 +208,7 @@ export const home = {
       ${readinessBlock(r, delta, store.profile)}
       ${s ? resumeCard(s) : ''}
       <div class="label spaced">План на сегодня · ${today} из ${goal}</div>
-      ${planCards({ due, nextDue, weakDomain, ddDone: false })}
+      ${planCards({ due, nextDue, weakDomain, ddDone: false, mock: mockState(store.attempts, now) })}
       <div class="mini-stats">
         <div class="card mini"><b class="mono">${streak}</b><span>${plural(streak, 'день подряд', 'дня подряд', 'дней подряд')}</span></div>
         <div class="card mini"><b class="mono">${groupThousands(total)}</b><span>пройдено вопросов</span></div>
@@ -194,6 +220,10 @@ export const home = {
       if (!act) return;
 
       if (act === 'profile') return ctx.router.modal(profileScreen);
+
+      // Hands over to the Экзамен tab rather than starting 100 questions on one tap — the
+      // preset is a decision, and a running session would be lost without being asked.
+      if (act === 'mock') return ctx.router.selectTab('exam');
 
       if (act === 'resume') {
         // An exam whose clock ran out while the app was gone is over — score it and show

@@ -1,0 +1,16 @@
+<!--
+  Status-bar icon for the study reminders. Android tints small icons to a flat white
+  silhouette and drops colour entirely, so this is a single opaque path and nothing else —
+  the launcher icon used as-is renders as an unrecognisable grey blob.
+
+  A check inside a rounded square: the reminders are about closing the day's quota.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M5,3h14c1.1,0 2,0.9 2,2v14c0,1.1 -0.9,2 -2,2H5c-1.1,0 -2,-0.9 -2,-2V5c0,-1.1 0.9,-2 2,-2zM10.6,16.6l7.1,-7.1l-1.4,-1.4l-5.7,5.7l-2.8,-2.8l-1.4,1.4L10.6,16.6z" />
+</vector>
