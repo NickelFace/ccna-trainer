@@ -1,6 +1,6 @@
 # Покрытие банка вопросов главами учебника
 
-Вопросов в банке: **1395** · глав: **22** · по ключевым словам легло **542**, в общую главу домена — **132** · **без главы: 721**
+Вопросов в банке: **1395** · глав: **34** · по ключевым словам легло **850**, в общую главу домена — **227** · **без главы: 318**
 
 | Глава | Домен | Вопросов | Слов | Минут |
 |---|---|---:|---:|---:|
@@ -26,6 +26,18 @@
 | Проводная часть беспроводной сети | NA | 3 | 712 | 30 |
 | Настройка WLAN в GUI контроллера | NA | 14 | 651 | 30 |
 | Доступ к управлению устройством | NA | 91 | 684 | 30 |
+| Таблица маршрутизации | IPC | 129 | 915 | 40 |
+| Как принимается решение о пересылке | IPC | 5 | 727 | 30 |
+| Статическая маршрутизация IPv4 и IPv6 | IPC | 33 | 718 | 35 |
+| OSPFv2 в одной зоне | IPC | 54 | 963 | 55 |
+| EIGRP и BGP в объёме экзамена | IPC | 8 | 663 | 35 |
+| FHRP: HSRP, VRRP, GLBP | IPC | 15 | 655 | 30 |
+| NAT и PAT | IPS | 75 | 711 | 40 |
+| DHCP и DNS | IPS | 33 | 660 | 35 |
+| NTP и точное время | IPS | 9 | 547 | 20 |
+| SNMP и Syslog | IPS | 10 | 616 | 30 |
+| QoS: классификация, маркировка, очереди | IPS | 18 | 749 | 35 |
+| SSH, FTP и TFTP: управление устройством и файлами | IPS | 14 | 576 | 25 |
 
 Мало вопросов (<5): nf-10-client-ip, na-03-intervlan, na-08-wlan-infra
-Короткие главы (<900 слов): nf-04-models, nf-05-switching, nf-06-tcp-udp, nf-07-ipv4, nf-09-ipv6, nf-10-client-ip, nf-12-virtualization, na-01-vlan, na-02-trunks, na-03-intervlan, na-04-discovery, na-05-etherchannel, na-07-wireless-arch, na-08-wlan-infra, na-09-wlan-gui, na-10-device-access
+Короткие главы (<900 слов): nf-04-models, nf-05-switching, nf-06-tcp-udp, nf-07-ipv4, nf-09-ipv6, nf-10-client-ip, nf-12-virtualization, na-01-vlan, na-02-trunks, na-03-intervlan, na-04-discovery, na-05-etherchannel, na-07-wireless-arch, na-08-wlan-infra, na-09-wlan-gui, na-10-device-access, ipc-02-forwarding, ipc-03-static, ipc-05-eigrp-bgp, ipc-06-fhrp, ips-01-nat, ips-02-dhcp-dns, ips-03-ntp, ips-04-snmp-syslog, ips-05-qos, ips-06-ssh-files

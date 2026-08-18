@@ -1,0 +1,201 @@
+---
+id: ipc-04-ospf
+dom: IPC
+title: OSPFv2 в одной зоне
+lead: Соседства и что обязано совпасть, типы сетей и выборы DR/BDR, router-id, стоимость маршрута и разбор show ip ospf neighbor.
+blueprint: ["3.4", "3.5"]
+minutes: 55
+match:
+  key: ["\\bOSPF\\b", "\\bDR\\b/\\bBDR\\b", "designated router", "router-?id", "hello (interval|timer)", "\\bLSA\\b", "\\bDBD\\b", "area 0"]
+  re: ["ospf", "adjacency", "neighbor state", "\\bFULL\\b state", "\\b2WAY\\b", "\\bEXSTART\\b", "point-to-point.*network type", "broadcast.*network type", "cost.*interface", "reference bandwidth", "passive-interface", "wildcard.*network"]
+---
+
+## Что делает OSPF
+
+Это **link-state** протокол: каждый роутер узнаёт полную карту зоны, а не пересказ соседа.
+Из карты алгоритмом SPF (Дейкстры) он сам считает кратчайшие пути. Отсюда свойства,
+которые проверяют: быстрая сходимость, отсутствие петель по построению, работа с VLSM и
+CIDR, открытый стандарт (в отличие от EIGRP).
+
+Обмен идёт multicast: **224.0.0.5** — всем роутерам OSPF, **224.0.0.6** — DR и BDR.
+Транспорт — IP протокол **89**, не TCP и не UDP.
+
+## Настройка
+
+```cfg
+router ospf 1
+ router-id 1.1.1.1
+ network 10.1.1.0 0.0.0.255 area 0
+ network 10.10.10.0 0.0.0.3 area 0
+ passive-interface GigabitEthernet0/2
+!
+interface GigabitEthernet0/1
+ ip ospf 1 area 0            ! современная альтернатива network-командам
+ ip ospf cost 10
+```
+
+Что здесь важно:
+
+- **Process ID (`router ospf 1`) локален** — на соседях он может отличаться, соседство от
+  этого не пострадает. Это любимый отвлекающий факт в вопросах.
+- В `network` используется **wildcard-маска**, а не обычная. `0.0.0.255` = /24.
+- `passive-interface` — интерфейс остаётся в объявлениях, но hello по нему не шлются:
+  так подключают LAN пользователей, чтобы не рассылать служебный трафик в их сегмент.
+
+## Router ID
+
+Выбирается в таком порядке:
+
+1. Явная команда `router-id`.
+2. Наибольший IP среди **loopback**-интерфейсов.
+3. Наибольший IP среди физических интерфейсов.
+
+Loopback предпочитают потому, что он никогда не падает. Смена router-id вступает в силу
+после `clear ip ospf process` — сам по себе он не меняется, и это спрашивают.
+
+## Что обязано совпасть для соседства
+
+| Параметр | Должен совпадать |
+|---|---|
+| Подсеть и маска на линке | да |
+| **Area ID** | да |
+| **Hello и Dead интервалы** | да |
+| Аутентификация | да |
+| Флаги stub-зоны | да |
+| MTU | да (иначе застрянет в EXSTART/EXCHANGE) |
+| Process ID | **нет** |
+| Router ID | должен быть **разным** (дубликат ломает соседство) |
+| Приоритет | нет |
+
+Таймеры по умолчанию: **hello 10 с, dead 40 с** для broadcast и point-to-point;
+на nonbroadcast — 30 и 120.
+
+> [!trap] Ловушка
+> Соседство «застряло в EXSTART/EXCHANGE» — почти всегда **несовпадение MTU**. Состояние
+> `2WAY` между двумя не-DR роутерами в broadcast-сети — это норма, а не ошибка: полные
+> смежности такие роутеры строят только с DR и BDR.
+
+## Состояния соседства
+
+`Down → Init → 2-Way → ExStart → Exchange → Loading → Full`
+
+- **Init** — hello от соседа получен, но себя в его hello ещё не видим.
+- **2-Way** — двусторонняя видимость; здесь же проходят выборы DR/BDR.
+- **ExStart/Exchange** — согласование master/slave и обмен описаниями базы (DBD).
+- **Loading** — запрос недостающих LSA.
+- **Full** — базы синхронизированы.
+
+Рабочее состояние — **FULL** (или **2WAY** с не-DR соседями в broadcast-сети).
+
+## Типы сетей и DR/BDR
+
+| Тип сети | Где | DR/BDR | Hello/Dead |
+|---|---|---|---|
+| **Broadcast** | Ethernet | да | 10/40 |
+| **Point-to-point** | serial, `ip ospf network point-to-point` | нет | 10/40 |
+| Non-broadcast (NBMA) | Frame Relay | да, соседей задают вручную | 30/120 |
+
+В broadcast-сети из N роутеров без DR было бы N(N−1)/2 смежностей. **DR** — центр
+синхронизации: все строят полные смежности только с DR и BDR.
+
+Выборы DR:
+
+1. Наибольший **приоритет интерфейса** (по умолчанию 1; приоритет 0 — участвовать не
+   может).
+2. При равенстве — наибольший **router-id**.
+
+Выборы **не вытесняющие**: появившийся позже роутер с лучшим приоритетом DR не отберёт —
+нужно перезапустить процесс. Это ещё один любимый вопрос.
+
+На линке между двумя роутерами Ethernet часто ставят `ip ospf network point-to-point` —
+и выборы DR не проводятся вовсе, соседство поднимается быстрее.
+
+## Стоимость маршрута
+
+`cost = reference bandwidth / полоса интерфейса`, reference по умолчанию **100 Мбит/с**.
+
+| Интерфейс | Полоса | Cost |
+|---|---|---:|
+| FastEthernet | 100 Мбит/с | 1 |
+| GigabitEthernet | 1 Гбит/с | 1 (!) |
+| 10G | 10 Гбит/с | 1 (!) |
+| Serial 1544 кбит/с | 1,544 Мбит/с | 64 |
+
+Гигабит и десять гигабит получают одинаковую стоимость — поэтому reference bandwidth
+поднимают на всех роутерах одинаково:
+
+```cfg
+router ospf 1
+ auto-cost reference-bandwidth 10000      ! в Мбит/с, то есть 10 Гбит/с
+```
+
+Либо задают стоимость руками: `ip ospf cost 5`. Метрика маршрута — **сумма стоимостей
+исходящих интерфейсов** по пути к сети.
+
+## Чтение вывода
+
+```cli
+R1# show ip ospf neighbor
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+2.2.2.2           1   FULL/DR         00:00:33    10.10.10.2      GigabitEthernet0/1
+3.3.3.3           1   FULL/BDR        00:00:31    10.10.10.3      GigabitEthernet0/1
+4.4.4.4           0   FULL/  -        00:00:38    10.10.20.2      Serial0/0/0
+
+R1# show ip ospf interface brief
+Interface    PID   Area   IP Address/Mask    Cost  State Nbrs F/C
+Gi0/1        1     0      10.10.10.1/24      1     DROTH 2/2
+Se0/0/0      1     0      10.10.20.1/30      64    P2P   1/1
+
+R1# show ip protocols
+Routing Protocol is "ospf 1"
+  Router ID 1.1.1.1
+  Number of areas in this router is 1. 1 normal
+  Routing for Networks:
+    10.10.10.0 0.0.0.255 area 0
+  Passive Interface(s):
+    GigabitEthernet0/2
+```
+
+`FULL/  -` в третьей строке — это point-to-point линк: ролей DR/BDR там нет вовсе.
+
+## Почему соседство не поднимается
+
+1. Интерфейс не попал в `network` (проверить wildcard) или помечен passive.
+2. Разные area, hello/dead, аутентификация, MTU.
+3. Адреса в разных подсетях.
+4. ACL блокирует протокол 89 или multicast.
+5. Одинаковый router-id на двух роутерах.
+
+Порядок проверки: `show ip ospf interface` (участвует ли интерфейс и с какими таймерами) →
+`show ip ospf neighbor` (на каком состоянии застряло) → `show ip protocols` (какие сети
+объявляются).
+
+## Что спрашивают
+
+- «Which parameters must match to form an adjacency?» — area, hello/dead, аутентификация,
+  подсеть, MTU (process ID — нет).
+- «Which router becomes the DR?» — наибольший приоритет, затем наибольший router-id.
+- «Why is the neighbor stuck in EXSTART?» — несовпадение MTU.
+- «How is the OSPF router ID determined?» — команда → loopback → физический интерфейс.
+- «What is the cost of a Gigabit interface by default?» — 1 (и это повод поднять reference
+  bandwidth).
+- «What does 2WAY state mean?» — соседи видят друг друга, но полные смежности строятся
+  только с DR/BDR.
+- «Which multicast addresses does OSPF use?» — 224.0.0.5 и 224.0.0.6.
+
+## Проверь себя
+
+```check
+?? Process ID на R1 равен 1, на R2 равен 10. Поднимется ли соседство?
+!! Да: process ID локален и совпадать не обязан.
+?? Соседи застряли в EXSTART. Что проверить первым?
+!! MTU на обоих интерфейсах.
+?? Как выбирается DR при одинаковых приоритетах?
+!! По наибольшему router-id; выборы не вытесняющие, новый роутер DR не отберёт.
+?? Почему у гигабитного и десятигигабитного интерфейсов одинаковая стоимость?
+!! Reference bandwidth по умолчанию 100 Мбит/с, и всё, что быстрее, округляется до 1 — поэтому его поднимают вручную.
+?? Что делает passive-interface?
+!! Прекращает отправку hello в этот интерфейс, но сеть интерфейса продолжает объявляться в OSPF.
+?? На каком состоянии нормально «стоять» двум не-DR роутерам в broadcast-сети?
+!! 2WAY — полные смежности они строят только с DR и BDR.
+```
