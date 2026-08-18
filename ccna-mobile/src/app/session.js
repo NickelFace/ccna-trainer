@@ -53,8 +53,11 @@ export function startExam(bank, preset = 'full', { settings = {}, manual = null,
   });
 }
 
-export function startPractice(bank, { count = 20, domain = null, topic = null, types = null } = {}) {
-  let pool = bank.pool;
+// `ns` is an explicit list of question numbers — how a textbook chapter starts practice
+// on exactly the questions it covers. Numbers that no longer resolve are dropped rather
+// than crashing the session the way an unfiltered list would.
+export function startPractice(bank, { count = 20, domain = null, topic = null, types = null, ns = null } = {}) {
+  let pool = ns ? ns.map(n => bank.byN.get(n)).filter(q => q && scorable(q)) : bank.pool;
   if (domain) pool = pool.filter(q => q.dom === domain);
   if (topic) pool = pool.filter(q => q.tp === topic);
   if (types) pool = pool.filter(q => types.includes(q.y));

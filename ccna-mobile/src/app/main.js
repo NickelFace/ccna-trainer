@@ -2,9 +2,11 @@
 // router. Everything is local — no network call happens at any point.
 import { router } from './router.js';
 import { store, bindPersistOnPause } from './store.js';
+import { reschedule } from './notify.js';
 import { scorable } from '../engine/select.js';
 import { sessionIsValid } from './session.js';
 import { home } from './screens/home.js';
+import { theory } from './screens/theory.js';
 import { learn } from './screens/learn.js';
 import { exam } from './screens/exam.js';
 import { progress } from './screens/progress.js';
@@ -12,6 +14,7 @@ import { onboarding } from './screens/onboarding.js';
 
 const TABS = [
   { id: 'home', label: 'Главная', screen: home },
+  { id: 'theory', label: 'Теория', screen: theory },
   { id: 'learn', label: 'Учить', screen: learn },
   { id: 'exam', label: 'Экзамен', screen: exam },
   { id: 'progress', label: 'Прогресс', screen: progress },
@@ -44,8 +47,12 @@ async function boot() {
       store.clearSession();
     }
 
-    bindPersistOnPause();
+    bindPersistOnPause(() => reschedule());
     router.init({ tabs: TABS, ctx: { bank } });
+
+    // Startup is the other moment the reminders can be stale: a day rolled over, or the
+    // quota was met in a session that ended without the app going to background.
+    reschedule();
 
     // First launch: ask the two questions that change what the app does, over the home
     // screen rather than in front of it, so backing out lands somewhere usable.

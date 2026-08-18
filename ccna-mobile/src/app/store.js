@@ -19,7 +19,12 @@ const KEY = {
   bookmarks: 'ccna.bookmarks',
   srs: 'ccna.srs',
   activity: 'ccna.activity',
+  book: 'ccna.book',
 };
+
+// Reading state for the Теория tab: which chapters are done, where each was left off,
+// which one to offer to continue, and the reader's text size.
+const DEFAULT_BOOK = { read: {}, pos: {}, last: null, scale: 1 };
 
 const FLUSH_MS = 200;
 
@@ -33,6 +38,31 @@ const DEFAULT_PROFILE = {
   onboarded: false,
   examPreset: 'full',
   exam: {},             // runtime switches, see RUN_SWITCHES in screens/exam.js
+  // Local reminders, off until asked for — see app/notify.js. `enabled` is the user's
+  // switch, not the OS permission: a granted permission with the switch off stays silent.
+  notify: { enabled: false, daily: true, weeklyMock: true, time: '19:00' },
+};
+
+// `notify` is a nested object, so a plain spread would drop any key a stored profile
+// predates — an older backup has no `notify.weeklyMock`, and shallow-merging it in would
+// leave the field undefined instead of at its default.
+const mergeProfile = (stored) => {
+  const p = stored && typeof stored === 'object' ? stored : {};
+  return {
+    ...DEFAULT_PROFILE,
+    ...p,
+    notify: { ...DEFAULT_PROFILE.notify, ...(p.notify && typeof p.notify === 'object' ? p.notify : {}) },
+  };
+};
+
+const mergeBook = (stored) => {
+  const b = stored && typeof stored === 'object' ? stored : {};
+  return {
+    ...DEFAULT_BOOK,
+    ...b,
+    read: b.read && typeof b.read === 'object' ? b.read : {},
+    pos: b.pos && typeof b.pos === 'object' ? b.pos : {},
+  };
 };
 
 const read = async (key, fallback) => {
@@ -56,27 +86,50 @@ export const store = {
   bookmarks: [],
   srs: {},            // qn -> { box, dueAt, lastResult, seenCount }
   activity: {},       // 'YYYY-MM-DD' -> answers graded that day
+  book: { ...DEFAULT_BOOK },
 
   _dirty: new Set(),
   _timer: null,
   _writing: null,
 
   async load() {
-    const [profile, session, attempts, bookmarks, srs, activity] = await Promise.all([
+    const [profile, session, attempts, bookmarks, srs, activity, book] = await Promise.all([
       read(KEY.profile, {}),
       read(KEY.session, null),
       read(KEY.attempts, []),
       read(KEY.bookmarks, []),
       read(KEY.srs, {}),
       read(KEY.activity, {}),
+      read(KEY.book, {}),
     ]);
-    this.profile = { ...DEFAULT_PROFILE, ...profile };
+    this.profile = mergeProfile(profile);
     this.session = session;
     this.attempts = attempts;
     this.bookmarks = bookmarks;
     this.srs = srs;
     this.activity = activity;
+    this.book = mergeBook(book);
     return this;
+  },
+
+  // ---- textbook ----
+  markRead(topicId, on = true) {
+    if (on) this.book.read[topicId] = Date.now();
+    else delete this.book.read[topicId];
+    this._touch('book');
+    return on;
+  },
+
+  setPos(topicId, y) {
+    if (y > 40) this.book.pos[topicId] = Math.round(y);
+    else delete this.book.pos[topicId];
+    this._touch('book');
+  },
+
+  setBook(patch) {
+    Object.assign(this.book, patch);
+    this._touch('book');
+    return this.book;
   },
 
   // ---- spaced repetition + activity ----
@@ -173,6 +226,7 @@ export const store = {
       bookmarks: this.bookmarks,
       srs: this.srs,
       activity: this.activity,
+      book: this.book,
     };
   },
 
@@ -182,12 +236,15 @@ export const store = {
     if (!data || typeof data !== 'object' || data.v !== 1) {
       throw new Error('Файл не похож на резервную копию CCNA Trainer.');
     }
-    this.profile = { ...DEFAULT_PROFILE, ...(data.profile && typeof data.profile === 'object' ? data.profile : {}) };
+    this.profile = mergeProfile(data.profile);
     this.session = data.session ?? null;
     this.attempts = Array.isArray(data.attempts) ? data.attempts : [];
     this.bookmarks = Array.isArray(data.bookmarks) ? data.bookmarks : [];
     this.srs = data.srs && typeof data.srs === 'object' ? data.srs : {};
     this.activity = data.activity && typeof data.activity === 'object' ? data.activity : {};
+    // Backups written before the Теория tab existed simply have no `book` key — the
+    // merge turns that into an untouched textbook rather than an error.
+    this.book = mergeBook(data.book);
     for (const key of Object.keys(KEY)) this._touch(key);
     await this.flush();
   },
@@ -215,9 +272,12 @@ export const store = {
 
 // Android freezes or kills the process without warning; both events fire before that,
 // so the last few taps make it to disk.
-export function bindPersistOnPause() {
+// `onPause` runs alongside the flush — reminders are re-scheduled from the counts as they
+// stand when the app leaves the screen, which is the last moment they can change before
+// one of them is due to fire.
+export function bindPersistOnPause(onPause = () => {}) {
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') store.flush();
+    if (document.visibilityState === 'hidden') { store.flush(); onPause(); }
   });
-  window.addEventListener('pagehide', () => store.flush());
+  window.addEventListener('pagehide', () => { store.flush(); onPause(); });
 }

@@ -13,12 +13,14 @@ on:
       - "ccna-exam-simulator/images/exhibits/**"
       - "ccna-mobile/src/engine/**"
       - "ccna-mobile/tests/**"
+      - "ccna-book/**"
       - ".github/workflows/data-check.yml"
   pull_request:
     paths:
       - "ccna-exam-simulator/data/**"
       - "ccna-exam-simulator/images/exhibits/**"
       - "ccna-mobile/**"
+      - "ccna-book/**"
   workflow_dispatch: {}
 
 jobs:

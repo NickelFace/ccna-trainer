@@ -1,6 +1,6 @@
 // Screen stack + tab navigation.
 //
-// Two levels, because the spec asks for two: each of the 4 tabs keeps its own stack and
+// Two levels, because the spec asks for two: each of the 5 tabs keeps its own stack and
 // its own scroll position, and modal screens (question, review, match, exam setup, AI
 // prompt) sit above all of them with the tab bar hidden.
 //
@@ -10,7 +10,7 @@
 // beforeBack returning false blocks the pop — the screen has taken over (e.g. the exam
 // asks for confirmation first and calls router.back() itself once the user agrees).
 
-const TAB_IDS = ['home', 'learn', 'exam', 'progress'];
+const TAB_IDS = ['home', 'theory', 'learn', 'exam', 'progress'];
 
 export const router = {
   tabs: [],

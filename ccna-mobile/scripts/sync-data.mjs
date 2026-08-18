@@ -4,13 +4,15 @@
 // ccna-exam-simulator/data + images/exhibits are the single source of truth: a fix
 // made in build/*.py lands in the web app and in the APK from one place. dist/ is
 // gitignored, so nothing here is ever committed twice.
-import { cp, mkdir, readdir, stat } from 'node:fs/promises';
+import { cp, mkdir, readdir, stat, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { buildBook, coverageReport, writeBook } from '../../ccna-book/build.mjs';
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const WEB = join(ROOT, '..', 'ccna-exam-simulator');
+const BOOK = join(ROOT, '..', 'ccna-book');
 const DIST = join(ROOT, 'dist');
 
 // [source, destination] — images/topo is deliberately excluded: the bank references
@@ -58,3 +60,15 @@ for (const [from, to] of ENTRIES) {
 }
 
 console.log(`sync-data: ${copied} copied, ${skipped} up to date → dist/`);
+
+// The textbook is Markdown in ccna-book/topics; it is compiled here rather than copied,
+// so an edited chapter reaches the APK through the same one command as a fixed question.
+// The build also binds every chapter to the bank questions it covers — a chapter list and
+// a question bank that disagree would make the Теория tab lie about its coverage.
+const book = await buildBook({});
+await writeBook(join(DIST, 'data', 'theory'), book);
+await writeFile(join(BOOK, 'coverage.md'), coverageReport(book) + '\n');
+const chapters = book.index.topics.length;
+console.log(`sync-data: ${chapters} chapters → dist/data/theory/`
+  + ` (${book.stats.matched} questions matched, ${book.stats.fallback} to a domain catch-all`
+  + (book.stats.orphan ? `, ${book.stats.orphan} WITHOUT A CHAPTER` : '') + ')');

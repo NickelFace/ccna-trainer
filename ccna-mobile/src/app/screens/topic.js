@@ -1,0 +1,168 @@
+// The reader. One chapter, its contents list, and the two things you do when you finish
+// it: mark it read and go answer the bank's questions on it.
+import { esc, h } from '../dom.js';
+import { store } from '../store.js';
+import { loadIndex, loadTopic } from '../theory.js';
+import { bodyMarkup, bindChecks } from '../book.js';
+import { startPractice } from '../session.js';
+import { confirmDialog } from '../dialog.js';
+import { question } from './question.js';
+import { toast } from '../toast.js';
+
+const SCALES = [0.95, 1, 1.12, 1.28];
+const PRACTICE = 20;
+
+let loaded = null;      // { topic, index } for the chapter currently on screen
+let pendingId = null;
+
+const scaleOf = () => SCALES[store.book.scale] ?? 1;
+
+export const topic = {
+  id: 'topic',
+
+  header: ctx => {
+    const bar = document.createElement('div');
+    bar.className = 'bk-head';
+
+    const back = document.createElement('button');
+    back.className = 'back-btn';
+    back.type = 'button';
+    back.innerHTML = '<span class="mono">←</span> Теория';
+    back.addEventListener('click', () => ctx.router.back());
+
+    const aa = document.createElement('button');
+    aa.className = 'q-tool';
+    aa.type = 'button';
+    aa.textContent = 'Aa';
+    aa.title = 'Размер текста';
+    aa.addEventListener('click', () => {
+      store.setBook({ scale: (store.book.scale + 1) % SCALES.length });
+      ctx.router.render();
+    });
+
+    bar.append(back, aa);
+    return bar;
+  },
+
+  footer(ctx) {
+    const t = loaded?.topic;
+    if (!t || t.id !== ctx.params.id) return null;
+    const read = !!store.book.read[t.id];
+
+    const bar = h(`
+      <button class="btn ${read ? '' : 'primary '}grow" data-act="read" type="button">
+        ${read ? '✓ Прочитано' : 'Прочитано'}
+      </button>
+      ${t.qs.length ? `<button class="btn grow" data-act="practice" type="button">
+        Вопросы · ${Math.min(PRACTICE, t.qs.length)}
+      </button>` : ''}
+    `, 'div', 'action-bar');
+
+    bar.addEventListener('click', async e => {
+      if (e.target.closest('[data-act="read"]')) {
+        const now = !store.book.read[t.id];
+        store.markRead(t.id, now);
+        toast(now ? 'Глава отмечена прочитанной' : 'Отметка снята');
+        return ctx.router.render();
+      }
+      if (e.target.closest('[data-act="practice"]')) {
+        if (store.session) {
+          const yes = await confirmDialog({
+            title: 'Начать тренировку?',
+            text: 'Незаконченная сессия будет потеряна.',
+            ok: 'Начать',
+            cancel: 'Отмена',
+          });
+          if (!yes) return;
+        }
+        startPractice(ctx.bank, { ns: t.qs, count: PRACTICE });
+        ctx.router.modal(question);
+      }
+    });
+    return bar;
+  },
+
+  render(ctx) {
+    const id = ctx.params.id;
+    const node = h('<p class="muted">Загружаю главу…</p>');
+
+    bindChecks(node);
+    // Reading the next chapter replaces this one on the stack instead of piling onto it:
+    // eight chapters in, Android back should return to the list, not walk back through
+    // everything already read.
+    node.addEventListener('click', e => {
+      const btn = e.target.closest('.bk-next');
+      if (!btn) return;
+      store.setPos(ctx.params.id, 0);
+      ctx.router.replace(topic, { id: btn.dataset.next });
+    });
+
+    if (loaded?.topic.id === id) {
+      node.append(...chapter(loaded, ctx).childNodes);
+      return node;
+    }
+
+    pendingId = id;
+    Promise.all([loadTopic(id), loadIndex()]).then(([t, index]) => {
+      if (pendingId !== id) return;              // user left before it arrived
+      loaded = { topic: t, index };
+      store.setBook({ last: id });
+      node.replaceChildren(...chapter(loaded, ctx).childNodes);
+      ctx.router.renderFooter();
+      restoreScroll(id);
+    }).catch(err => {
+      node.replaceChildren(...h(`<p class="muted">Глава не открылась: ${esc(err.message)}</p>`).childNodes);
+    });
+
+    return node;
+  },
+
+  mount(node, ctx) {
+    node.style.setProperty('--bk-scale', scaleOf());
+    if (loaded?.topic.id === ctx.params.id) restoreScroll(ctx.params.id);
+  },
+
+  unmount() {
+    const t = loaded?.topic;
+    if (t) store.setPos(t.id, document.getElementById('scroll')?.scrollTop || 0);
+    pendingId = null;
+  },
+};
+
+
+// Where the chapter was left off. Router resets scroll to 0 on a push, so this runs after
+// it — a chapter is long enough that starting from the top every time is a real cost.
+function restoreScroll(id) {
+  const y = store.book.pos[id] || 0;
+  if (!y) return;
+  requestAnimationFrame(() => { document.getElementById('scroll').scrollTop = y; });
+}
+
+function chapter({ topic: t, index }, ctx) {
+  const meta = index.byId.get(t.id);
+  const order = index.topics.map(x => x.id);
+  const next = index.byId.get(order[order.indexOf(t.id) + 1]);
+  const dom = index.domains.find(d => d.id === t.dom);
+
+  return h(`
+    <article class="bk" style="--bk-scale:${scaleOf()}">
+      <div class="bk-kicker mono">${esc(dom ? dom.name : t.dom)}${t.blueprint.length
+        ? ` · экзамен ${t.blueprint.map(esc).join(', ')}` : ''}</div>
+      <h1 class="bk-title">${esc(t.title)}</h1>
+      <p class="bk-lead">${esc(t.lead)}</p>
+      <div class="bk-meta mono">${t.minutes} мин · ${meta ? meta.qn : t.qs.length} вопросов банка по теме</div>
+
+      <details class="bk-toc">
+        <summary>Содержание · ${t.sections.length}</summary>
+        <ol>${t.sections.map(s => `<li><a href="#sec-${esc(s.id)}">${esc(s.title)}</a></li>`).join('')}</ol>
+      </details>
+
+      ${bodyMarkup(t)}
+
+      ${next ? `<button class="bk-next" data-next="${esc(next.id)}" type="button">
+        <span class="bk-resume-label">Следующая глава</span>
+        <span class="bk-resume-title">${esc(next.title)}</span>
+      </button>` : ''}
+    </article>
+  `);
+}

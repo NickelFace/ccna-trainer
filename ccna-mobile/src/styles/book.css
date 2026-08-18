@@ -1,0 +1,255 @@
+/* Теория: the chapter list and the reader.
+   Reading is the one place in this app where the text is the interface, so the body here
+   is wider-leading and larger than the rest of the UI, and --bk-scale (the Aa control)
+   multiplies everything in the chapter without touching a single other screen. */
+
+/* ---------------------------------------------------------- chapter list */
+.bk-cov { padding: 16px; }
+.bk-cov-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: var(--fs-body);
+  color: var(--text-2);
+  margin-bottom: 10px;
+}
+.bk-cov-pct { font-size: var(--fs-stat); color: var(--text); }
+.bk-cov-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--elev);
+  overflow: hidden;
+}
+.bk-cov-track i {
+  display: block;
+  height: 100%;
+  background: var(--grad-readiness);
+  transition: width 320ms cubic-bezier(.22, .9, .3, 1);
+}
+.bk-cov-foot { margin-top: 10px; font-size: var(--fs-caption); }
+
+.bk-resume, .bk-next {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  text-align: left;
+  margin-top: 12px;
+  padding: 14px 16px;
+  min-height: var(--tap);
+  background: var(--primary-bg);
+  border: 1px solid var(--primary-border);
+  border-radius: var(--r-card);
+}
+.bk-resume-label { font-size: var(--fs-label); color: var(--primary-text); }
+.bk-resume-title { font-size: var(--fs-card-title); color: var(--text); font-weight: 600; }
+
+.bk-search {
+  width: 100%;
+  margin: 16px 0 4px;
+  padding: 12px 14px;
+  min-height: var(--tap);
+  font: inherit;
+  font-size: var(--fs-body);
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+}
+.bk-search::placeholder { color: var(--text-4); }
+.bk-search:focus { outline: none; border-color: var(--primary-border); }
+
+.bk-row {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  padding: 13px 14px;
+  min-height: var(--tap);
+  border-bottom: 1px solid var(--divider);
+}
+.bk-row:last-child { border-bottom: 0; }
+.bk-row-mark {
+  flex: 0 0 18px;
+  padding-top: 2px;
+  color: var(--ok);
+  font-size: var(--fs-body);
+}
+.bk-row.read .bk-row-title { color: var(--text-2); }
+.bk-row-main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.bk-row-title { font-size: var(--fs-card-title); font-weight: 600; }
+.bk-row-note { font-size: var(--fs-caption); color: var(--text-3); line-height: 1.45; }
+.bk-row-meta { font-size: var(--fs-label); color: var(--text-4); }
+
+/* ---------------------------------------------------------- reader chrome */
+.bk-head { display: flex; align-items: center; justify-content: space-between; }
+.bk-head .q-tool { min-width: var(--tap); min-height: var(--tap); font-size: 15px; color: var(--text-2); }
+
+.bk { --bk-scale: 1; padding-bottom: 30px; }
+.bk-kicker { font-size: var(--fs-label); color: var(--text-4); }
+.bk-title {
+  font-size: calc(var(--fs-screen-title) * var(--bk-scale));
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -.3px;
+  margin: 8px 0 10px;
+}
+.bk-lead {
+  font-size: calc(var(--fs-body) * var(--bk-scale));
+  color: var(--text-2);
+  line-height: 1.55;
+}
+.bk-meta { font-size: var(--fs-label); color: var(--text-4); margin-top: 8px; }
+
+.bk-toc {
+  margin: 16px 0 4px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--r-sm);
+}
+.bk-toc summary {
+  padding: 12px 14px;
+  min-height: var(--tap);
+  display: flex;
+  align-items: center;
+  font-size: var(--fs-body);
+  color: var(--text-2);
+  cursor: pointer;
+}
+.bk-toc ol { margin: 0; padding: 0 16px 14px 34px; }
+.bk-toc li { margin: 7px 0; }
+.bk-toc a { color: var(--primary-text); text-decoration: none; font-size: var(--fs-body); }
+
+/* ---------------------------------------------------------- chapter body */
+.bk-section { margin-top: 26px; scroll-margin-top: 12px; }
+.bk-h2 {
+  font-size: calc(18px * var(--bk-scale));
+  font-weight: 600;
+  line-height: 1.25;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--divider);
+  margin-bottom: 12px;
+}
+.bk-h3 {
+  font-size: calc(15px * var(--bk-scale));
+  font-weight: 600;
+  color: var(--text);
+  margin: 18px 0 8px;
+}
+.bk p {
+  font-size: calc(var(--fs-body) * var(--bk-scale));
+  line-height: 1.62;
+  color: var(--text-2);
+  margin: 10px 0;
+}
+.bk strong { color: var(--text); font-weight: 600; }
+.bk em { font-style: italic; color: var(--text); }
+.bk code {
+  font-family: var(--font-mono);
+  font-size: calc(12.5px * var(--bk-scale));
+  color: var(--primary-text);
+  background: var(--elev);
+  border-radius: 5px;
+  padding: 1px 5px;
+}
+.bk-list {
+  margin: 10px 0;
+  padding-left: 22px;
+  font-size: calc(var(--fs-body) * var(--bk-scale));
+  line-height: 1.6;
+  color: var(--text-2);
+}
+.bk-list li { margin: 7px 0; }
+.bk-list li::marker { color: var(--text-4); }
+
+/* Tables and code are the two things that never fit a phone; both scroll inside
+   themselves so the page itself never gains a horizontal scrollbar. */
+.bk-tablewrap {
+  margin: 14px 0;
+  overflow-x: auto;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--r-sm);
+  -webkit-overflow-scrolling: touch;
+}
+.bk-table { border-collapse: collapse; width: 100%; font-size: calc(13px * var(--bk-scale)); }
+.bk-table th, .bk-table td {
+  padding: 9px 11px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--divider);
+  color: var(--text-2);
+  line-height: 1.45;
+}
+.bk-table th { color: var(--text); font-weight: 600; background: var(--surface-alt); white-space: nowrap; }
+.bk-table tr:last-child td { border-bottom: 0; }
+
+.bk-code {
+  margin: 14px 0;
+  padding: 12px 13px;
+  overflow-x: auto;
+  background: var(--surface-alt);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--r-sm);
+  font-family: var(--font-mono);
+  font-size: calc(12px * var(--bk-scale));
+  line-height: 1.5;
+  color: var(--text-2);
+  white-space: pre;
+  -webkit-overflow-scrolling: touch;
+}
+.bk-code.cfg { border-left: 3px solid var(--primary-strong); }
+.bk-code.cli { border-left: 3px solid var(--border); }
+.bk-code.txt { color: var(--text-3); }
+
+.bk-note {
+  margin: 16px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--border-soft);
+  border-left-width: 3px;
+  border-radius: var(--r-sm);
+  background: var(--surface-alt);
+}
+.bk-note-h {
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: .3px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  color: var(--text-3);
+}
+.bk-note p { margin: 6px 0; }
+.bk-note.key { border-left-color: var(--primary); background: var(--primary-bg); }
+.bk-note.key .bk-note-h { color: var(--primary-text); }
+.bk-note.trap { border-left-color: var(--err); background: var(--err-bg); }
+.bk-note.trap .bk-note-h { color: var(--err); }
+.bk-note.lab { border-left-color: var(--ok); background: var(--ok-bg); }
+.bk-note.lab .bk-note-h { color: var(--ok-text); }
+
+/* ---------------------------------------------------------- self-check */
+.bk-check {
+  margin: 16px 0;
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+  overflow: hidden;
+}
+.bk-q { border-bottom: 1px solid var(--divider); }
+.bk-q:last-child { border-bottom: 0; }
+.bk-qh {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 13px 14px;
+  min-height: var(--tap);
+  font-size: calc(var(--fs-body) * var(--bk-scale));
+  line-height: 1.5;
+  color: var(--text);
+}
+.bk-qmark { flex: 0 0 14px; color: var(--primary); }
+.bk-qh[aria-expanded="true"] { color: var(--text-2); }
+.bk-qa {
+  padding: 0 14px 14px 38px;
+  font-size: calc(var(--fs-body) * var(--bk-scale));
+  line-height: 1.55;
+  color: var(--ok-text);
+}
