@@ -92,10 +92,18 @@ export const aiPrompt = {
   },
 
   footer(ctx) {
+    // Two different jobs, and the button says which one it is doing. A schema can only
+    // travel through the share sheet, so the app is picked there; a text-only question has
+    // nothing the clipboard cannot carry, so it keeps the shorter copy-and-open route.
+    const imagePath = sharedImagePath(ctx.params.items);
+    const target = AI_TARGETS.find(t => t.id === store.profile.aiTarget) || AI_TARGETS[0];
+
     const node = h(`
       <div class="ai-bar">
         <div class="action-bar">
-          <button class="btn primary grow" data-act="share" type="button">Поделиться с ИИ</button>
+          <button class="btn primary grow" data-act="share" type="button">${imagePath
+            ? 'Отправить: схема + текст'
+            : `Скопировать и открыть ${esc(target.label)}`}</button>
         </div>
         <div class="ai-secondary">
           <button class="btn small" data-act="copy" type="button">Только скопировать</button>
@@ -111,10 +119,17 @@ export const aiPrompt = {
     });
 
     node.querySelector('[data-act="share"]').addEventListener('click', async () => {
-      const imagePath = sharedImagePath(ctx.params.items);
+      // Nothing to attach: the clipboard is the whole payload, and the chosen AI opens
+      // straight away — the share sheet would only add a step that changes nothing.
+      if (!imagePath) {
+        const ok = await copyText(text(false));
+        toast(ok ? `Скопировано · открываю ${target.label}` : 'Не удалось скопировать');
+        return openExternally(target.url);
+      }
+
       // When we ship the schema through the intent, tell the model so — otherwise the
       // prompt tells it the picture is missing while the picture is right there.
-      const result = await shareViaIntent(text(!!imagePath), imagePath);
+      const result = await shareViaIntent(text(true), imagePath);
       if (result.mode === 'fallback') {
         toast(result.ok ? `Скопировано · открываю ${result.target.label}` : 'Не удалось скопировать');
       } else if (!result.ok) {
@@ -144,20 +159,25 @@ export const aiPrompt = {
     ).join('');
 
     const attachedStrip = imagePath
-      ? `<div class="ai-attached" role="note"><span class="mono">🖼</span> К вопросу приложена схема — она уйдёт вместе с текстом</div>`
+      ? `<div class="ai-attached" role="note"><span class="mono">🖼</span> Схема уйдёт картинкой вместе с текстом — приложение выберешь в окне «Поделиться»</div>`
       : '';
+
+    // With a schema the target app is picked in Android's own sheet, so a preference here
+    // would be a setting that does nothing.
+    const targets = imagePath ? '' : `
+      <div class="label spaced">Куда открывать</div>
+      <div class="ai-chips">${AI_TARGETS.map(t =>
+        `<button class="pill${(store.profile.aiTarget || AI_TARGETS[0].id) === t.id ? ' on' : ''}" data-target="${t.id}" type="button">${esc(t.label)}</button>`
+      ).join('')}</div>`;
 
     const node = h(`
       <p class="muted lead">${count === 1
-        ? 'Промпт собирается на устройстве. Кнопка «Поделиться» откроет системное окно — выберите ChatGPT, Claude, Telegram, что угодно.'
-        : `В промпт войдут ${count} вопросов, на которые ты ответил неправильно. Схемы вопросов в этот режим не идут — только текст.`}</p>
+        ? 'Промпт собирается на устройстве и работает без интернета.'
+        : `В промпт войдут ${count} вопросов, на которые ты ответил неправильно. Схемы в этот режим не идут — только текст.`}</p>
       <div class="label">Что включить</div>
       <div class="ai-chips">${chips}</div>
       ${attachedStrip}
-      <div class="label spaced">Куда открывать (для «Только скопировать»)</div>
-      <div class="ai-chips">${AI_TARGETS.map(t =>
-        `<button class="pill${(store.profile.aiTarget || AI_TARGETS[0].id) === t.id ? ' on' : ''}" data-target="${t.id}" type="button">${esc(t.label)}</button>`
-      ).join('')}</div>
+      ${targets}
     `);
 
     node.addEventListener('click', e => {

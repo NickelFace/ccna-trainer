@@ -52,6 +52,14 @@ test('an exhibit is flagged as an image that did not come along', () => {
   assert.match(text, /схема — картинка не входит в этот текст/);
 });
 
+// The share sheet sends the exhibit alongside the text, so the same note has to stop
+// saying the picture is missing — the model would otherwise answer around it.
+test('an exhibit that travels with the message is announced as attached', () => {
+  const text = questionToText({ ...mcq, img: 'q365.jpg' }, null, 'IP Connectivity', true);
+  assert.match(text, /приложена картинкой к этому сообщению/);
+  assert.ok(!text.includes('не входит в этот текст'));
+});
+
 test('CLI output is included in place of the exhibit note', () => {
   const text = questionToText({ ...mcq, cli: 'R1#show ip route', img: 'q1.jpg' }, null, 'IP Connectivity');
   assert.match(text, /R1#show ip route/);

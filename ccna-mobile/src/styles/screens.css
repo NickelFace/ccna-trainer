@@ -632,21 +632,6 @@
 
 /* ---------------------------------------------------------- AI prompt */
 .ai-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-.ai-preview {
-  margin-top: 10px;
-  max-height: 320px;
-  overflow: auto;
-  background: var(--surface-alt);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--r-card);
-  padding: 14px 15px;
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-  line-height: 1.75;
-  color: var(--text-2);
-  white-space: pre-wrap;
-  word-break: break-word;
-}
 .ai-bar { padding-bottom: calc(20px + var(--safe-bottom)); }
 .ai-bar .action-bar { padding-bottom: 0; }
 .ai-secondary { display: flex; gap: 10px; padding: 10px var(--pad-screen) 0; }

@@ -325,9 +325,30 @@ function footer(ctx) {
   if (!s) return null;
   const q = currentQuestion(s, ctx.bank);
   const graded = gradesImmediately(s) && answerOf(s, q)?.ok !== undefined;
-  if (graded) return null;                       // the review sheet carries the action
+  // While the review sheet is up it carries the action. Once it is put away the question
+  // is on its own again and needs a bar of its own — without one the screen is a dead end.
+  if (graded) return reviewDismissed ? reviewFooter(ctx, s, q) : null;
 
   return q.y === 'dd' ? matchFooter(ctx, s, q) : choiceFooter(ctx, s, q);
+}
+
+// Shown only after the sheet was dismissed: a way back into the rationale, and the way on.
+function reviewFooter(ctx, s, q) {
+  const last = s.i === s.qs.length - 1;
+  const node = h(`
+    <div class="action-bar">
+      <button class="btn" data-act="review" type="button">Разбор</button>
+      <button class="btn primary grow" data-act="main" type="button">${last ? 'Завершить' : 'Следующий →'}</button>
+    </div>`);
+
+  node.querySelector('[data-act="review"]').addEventListener('click', () => {
+    reviewDismissed = false;
+    els.body?.classList.add('graded');
+    ctx.router.renderFooter();               // the sheet takes the action back
+    openReview(ctx, q, s);
+  });
+  node.querySelector('[data-act="main"]').addEventListener('click', () => last ? finish(ctx) : move(ctx, 1));
+  return node;
 }
 
 function choiceFooter(ctx, s, q) {
@@ -402,13 +423,14 @@ function gradeCurrent(ctx) {
   store.answer(q.n, { given, ok });
   store.recordAnswer(q.n, ok);
   pendingFor = null;
+  reviewDismissed = false;
   ctx.router.render();
 }
 
 // `delta` doubles as the direction the next question enters from, so tapping ← / Дальше
 // animates exactly like the matching swipe does.
 function move(ctx, delta) {
-  closeSheet();
+  closeReview();
   const s = store.session;
   const next = s.i + delta;
   if (next < 0) return;
@@ -420,7 +442,7 @@ function move(ctx, delta) {
 }
 
 function finish(ctx) {
-  closeSheet();
+  closeReview();
   stopTimer();
   const { attempt, result } = finishSession(store.session, ctx.bank);
   store.flush();
@@ -448,16 +470,36 @@ function openReview(ctx, q, s) {
       </div>
     </div>`);
 
+  reviewDismissed = false;
   content.querySelector('[data-act="next"]').addEventListener('click', () => move(ctx, 1));
   content.querySelector('[data-act="ai"]').addEventListener('click', () => {
-    closeSheet();
+    closeReview();
     ctx.router.modal(aiPromptScreen, {
       items: [{ q, answer: given }],
       // "Все ошибки домена" offers the rest of this session's mistakes in the same domain.
       moreItems: sessionMistakes(s, ctx.bank).filter(item => item.q.dom === q.dom),
     });
   });
-  openSheet(content);
+
+  openSheet(content, {
+    // Tapping the dim, or Android back, leaves the question underneath — dimmed and with
+    // no action bar, which is where the screen used to go dead. Undo both.
+    onClose: () => {
+      if (leavingReview) return;             // the screen is on its way out; nothing to restore
+      reviewDismissed = true;
+      els.body?.classList.remove('graded');
+      ctx.router.renderFooter();
+    },
+  });
+}
+
+// Navigation closes the sheet on its way somewhere else — say so, so the dismissal
+// handler above does not mistake it for the user putting the sheet away.
+function closeReview() {
+  leavingReview = true;
+  closeSheet();
+  leavingReview = false;
+  reviewDismissed = false;
 }
 
 // ---------------------------------------------------------------- question grid
@@ -480,7 +522,7 @@ function openGrid(ctx) {
   content.addEventListener('click', e => {
     const cell = e.target.closest('[data-i]');
     if (!cell) return;
-    closeSheet();
+    closeReview();
     const target = +cell.dataset.i;
     enterDir = target === s.i ? 0 : (target > s.i ? 1 : -1);
     store.patchSession({ i: target });
@@ -540,7 +582,7 @@ export const question = {
   unmount() {
     stopTimer();
     releaseScreen();
-    closeSheet();
+    closeReview();
     resetMatch();
     pending = new Set();
     pendingFor = null;
@@ -548,6 +590,7 @@ export const question = {
     enterDir = 0;
     shownPct = null;
     animating = false;
+    reviewDismissed = false;
   },
 
   // Leaving mid-exam is a real decision — the spec asks for a confirmation, and the
