@@ -42,6 +42,17 @@ android {
     }
 
     buildTypes {
+        // A debug build installs next to the app you already use instead of replacing it.
+        // The APK on the phone is signed with the CI keystore and a debug APK is not, so
+        // with a shared applicationId Android refuses the update outright and the only way
+        // in is uninstalling first — which takes the saved progress with it. The suffix
+        // also moves the FileProvider authority (${applicationId}.fileprovider), which two
+        // installed apps may not share.
+        debug {
+            applicationIdSuffix ".test"
+            versionNameSuffix "-test"
+        }
+
         release {
             minifyEnabled true
             shrinkResources true
