@@ -48,11 +48,17 @@ export const defaultParts = () =>
 
 // Plain-text rendering of one question and, if there is one, the answer that was given.
 // Ported from qToAIText() in the web app so both produce the same paste.
-export function questionToText(q, answer, domainName) {
+//
+// `imageAttached` is what the screen knows and the engine cannot: sharing through the
+// system sheet sends the exhibit alongside the text, and telling the model the picture is
+// missing when it is right there sends it guessing.
+export function questionToText(q, answer, domainName, imageAttached = false) {
   const lines = [`Вопрос ${q.n} [${domainName || q.dom}]${q.disp ? ' (спорный ключ)' : ''}`, questionText(q)];
 
   if (q.cli) lines.push('', q.cli);
-  else if (q.img) lines.push('', '[к вопросу приложена схема — картинка не входит в этот текст]');
+  else if (q.img) lines.push('', imageAttached
+    ? '[схема к вопросу приложена картинкой к этому сообщению]'
+    : '[к вопросу приложена схема — картинка не входит в этот текст]');
 
   if (q.y === 'dd' && q.dd) {
     lines.push('', 'Тип: сопоставление', `Элементы: ${q.dd.items.join(', ')}`);
@@ -76,7 +82,9 @@ export function questionToText(q, answer, domainName) {
 
 // items: [{ q, answer }]. One item reads as "я ошибся в таком вопросе"; several read as a
 // batch, which is what "Все ошибки домена" produces.
-export function buildPrompt({ items, parts, profile = {}, weakDomain = null, domainName = () => null }) {
+export function buildPrompt({
+  items, parts, profile = {}, weakDomain = null, domainName = () => null, imagesAttached = false,
+}) {
   const enabled = PROMPT_PARTS.filter(p => parts.has(p.id));
   const steps = enabled.filter(p => p.line);
   const tails = enabled.filter(p => p.tail);
@@ -91,7 +99,9 @@ export function buildPrompt({ items, parts, profile = {}, weakDomain = null, dom
   out.push('', items.length === 1
     ? 'Я ошибся в таком вопросе:'
     : `Ниже ${items.length} вопрос(ов), на которые я ответил неправильно. Разбери каждый.`);
-  out.push('', items.map(({ q, answer }) => questionToText(q, answer, domainName(q.dom))).join('\n\n---\n\n'));
+  out.push('', items
+    .map(({ q, answer }) => questionToText(q, answer, domainName(q.dom), imagesAttached))
+    .join('\n\n---\n\n'));
 
   if (steps.length) {
     out.push('', 'Сделай по порядку:');

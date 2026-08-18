@@ -155,13 +155,20 @@ export { TAB_IDS };
 // The system back gesture must step back through the stack, not close the app — that is
 // the single most visible Android bug in the current Capacitor wrapper, which ships
 // BridgeActivity with no handler at all.
+//
+// If a bottom sheet (openSheet) is up on the current screen, Android back should close
+// the sheet first — otherwise the user would be teleported off the question screen with
+// the review still on their mind. Same reasoning as tap-outside on the sheet backdrop.
 function bindSystemBack(r) {
   const cap = window.Capacitor;
   if (cap?.isNativePlatform?.()) {
-    // @capacitor/app is bundled; its listener suppresses the default "exit" behaviour,
-    // so exitApp() has to be called explicitly once the stack is empty.
     import('@capacitor/app').then(({ App }) => {
-      App.addListener('backButton', () => { if (!r.back()) App.exitApp(); });
+      import('./sheet.js').then(({ sheetIsOpen, closeSheet }) => {
+        App.addListener('backButton', () => {
+          if (sheetIsOpen()) { closeSheet(); return; }
+          if (!r.back()) App.exitApp();
+        });
+      });
     });
     return;
   }

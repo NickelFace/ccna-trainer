@@ -652,6 +652,20 @@
 .ai-secondary { display: flex; gap: 10px; padding: 10px var(--pad-screen) 0; }
 .ai-secondary .btn { flex: 1; }
 
+/* One-line note under the toggles, replaces the heavy preview panel. Shown only when
+   the current single question actually has an attached schema image. */
+.ai-attached {
+  margin-top: 14px;
+  padding: 9px 12px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--r-pill);
+  font-size: var(--fs-caption);
+  color: var(--text-2);
+  display: flex; align-items: center; gap: 8px;
+}
+.ai-attached .mono { color: var(--text-3); }
+
 /* ---------------------------------------------------------- toast */
 .toast {
   position: fixed;

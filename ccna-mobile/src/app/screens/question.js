@@ -42,6 +42,10 @@ let els = {};
 let enterDir = 0;                // +1: the next question slides in from the right, -1: from the left
 let shownPct = null;             // last painted progress width, so the bar can animate to the new one
 let animating = false;           // a hand-off is in flight — ignore new gestures until it lands
+// The review sheet was put away by hand. It carries the only way forward while it is up,
+// so the question has to take that job back — see openReview / reviewFooter.
+let reviewDismissed = false;
+let leavingReview = false;       // the sheet is closing because the screen is leaving, not because the user closed it
 
 const fmtClock = ms => {
   const total = Math.ceil(ms / 1000);
@@ -130,7 +134,7 @@ function render(ctx) {
   // The pane — the node h() wraps everything in anyway — is what the swipe moves and fades.
   // .q-body stays a separate element because it carries its own opacity when graded.
   const node = h(`
-    <div class="q-body${graded ? ' graded' : ''}" style="--q-scale:${scale}">
+    <div class="q-body${graded && !reviewDismissed ? ' graded' : ''}" style="--q-scale:${scale}">
       <div class="q-badges">
         <span class="badge-dom">${esc(domShort(bank, q.dom))}</span>
         <span class="mono q-num">№${q.n}</span>
@@ -168,6 +172,8 @@ function optionsMarkup(q, session, given, graded) {
 }
 
 function wireBody(node, ctx, q, s, graded) {
+  els.body = node.querySelector('.q-body');
+
   node.querySelector('.q-exhibit')?.addEventListener('click', e =>
     openExhibit(e.currentTarget.src, `Схема к вопросу ${q.n}`));
 
@@ -200,7 +206,9 @@ function wireBody(node, ctx, q, s, graded) {
   });
 
   bindSwipe(node, ctx);
-  if (graded) queueMicrotask(() => openReview(ctx, q, s));
+  // Re-rendering a graded question brings the sheet back — unless it was closed on
+  // purpose, in which case reopening it over and over would be arguing with the user.
+  if (graded && !reviewDismissed) queueMicrotask(() => openReview(ctx, q, s));
 }
 
 // Horizontal swipe moves between questions, the same job the ← / → arrows do on the web.
