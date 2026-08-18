@@ -6,6 +6,7 @@ lead: Установка соединения, порядок и подтвер�
 blueprint: ["1.5"]
 minutes: 30
 match:
+  key: ["\\bTCP\\b", "\\bUDP\\b", "three-?way handshake", "window size", "connectionless"]
   re: ["\\bTCP\\b", "\\bUDP\\b", "three-?way handshake", "\\bSYN\\b", "acknowledg", "sequence number", "window size", "flow control", "retransmi", "connectionless", "connection-oriented", "port number", "well-known port", "\\bsocket\\b", "\\bTFTP\\b vs", "voice traffic protocol"]
   not: ["\\bOSPF\\b", "\\bBGP\\b neighbor", "\\bNAT\\b translation table"]
 ---

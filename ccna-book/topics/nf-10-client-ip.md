@@ -6,7 +6,8 @@ lead: ipconfig, ifconfig и ip — где Windows, macOS и Linux показыв
 blueprint: ["1.10"]
 minutes: 25
 match:
-  re: ["ipconfig", "ifconfig", "\\bip addr\\b", "\\ben0\\b", "\\beth0\\b", "networksetup", "windows.*command", "verify.*ip configuration", "nslookup", "\\bipconfig /all\\b", "DHCP enabled", "physical address.*windows", "client operating system"]
+  key: ["ipconfig", "ifconfig", "\\bip addr\\b", "\\ben0\\b", "nslookup"]
+  re: ["ipconfig", "ifconfig", "\\bip addr\\b", "\\ben0\\b", "\\beth0\\b", "networksetup", "verify.*ip configuration", "nslookup", "DHCP enabled", "client operating system", "\\bWindows\\b", "\\bmacOS\\b", "\\bLinux\\b.*(host|command)", "workstation.*(command|configuration)", "\\bPC\\b.*ip (configuration|settings)"]
 ---
 
 ## Три команды на три системы

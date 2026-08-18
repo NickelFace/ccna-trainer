@@ -6,6 +6,7 @@ lead: Магическое число, границы подсети, число
 blueprint: ["1.6"]
 minutes: 60
 match:
+  key: ["\\bVLSM\\b", "how many (usable )?hosts", "how many subnets", "subnet mask", "summar", "wildcard mask"]
   re: ["subnet mask", "which subnet", "subnetting", "\\bVLSM\\b", "how many hosts", "how many subnets", "usable (host|IP)", "broadcast address of", "network address of", "summar", "supernet", "prefix length", "255\\.255\\.255\\.(128|192|224|240|248|252)", "\\/(2[5-9]|30)\\b", "wildcard mask"]
   not: ["IPv6 prefix", "\\bACL\\b permit"]
 ---

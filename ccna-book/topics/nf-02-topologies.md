@@ -6,6 +6,7 @@ lead: Двух- и трёхуровневая иерархия, spine-leaf, WAN,
 blueprint: ["1.2"]
 minutes: 30
 match:
+  key: ["three-tier", "two-tier", "spine-leaf|spine and leaf", "collapsed core", "\\bSOHO\\b", "access layer", "distribution layer"]
   re: ["three-tier", "two-tier", "collapsed core", "spine-leaf", "spine and leaf", "access layer", "distribution layer", "core layer", "campus", "\\bSOHO\\b", "on-premise", "on-premises", "cloud", "topology architecture", "star topology", "full mesh", "partial mesh", "leased line", "\\bWAN\\b design", "data center design", "east-west", "north-south"]
   not: ["ospf", "spanning-tree", "wireless mesh"]
 ---

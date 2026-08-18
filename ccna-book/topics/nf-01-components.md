@@ -6,6 +6,7 @@ lead: Роль каждой коробки в сети — роутер, ком�
 blueprint: ["1.1"]
 minutes: 35
 match:
+  key: ["hypervisor", "\\bPoE\\b", "power over ethernet", "wireless lan controller", "next-generation", "\\bIPS\\b"]
   re: ["role of", "which device", "what device", "firewall", "next-generation", "\\bIPS\\b", "\\bIDS\\b", "hypervisor", "\\bPoE\\b", "power over ethernet", "wireless lan controller", "\\bWLC\\b", "endpoint", "network appliance", "layer 3 switch", "multilayer switch", "role of access points", "purpose of a router", "\\bhub\\b", "repeater", "load balancer"]
   not: ["ospf", "eigrp", "spanning-tree", "etherchannel"]
 ---

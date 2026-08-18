@@ -228,6 +228,10 @@ const haystacks = q => [
 // with an empty alternative — which matches every question in the bank.
 const rx = pat => new RegExp(/^\/.*\/$/.test(pat) ? pat.slice(1, -1) : pat, 'i');
 
+// Two pattern lists, because a chapter about VLANs and a chapter about routing between
+// VLANs both legitimately match the word "VLAN". `key` holds the phrases that only this
+// chapter can own ("router-on-a-stick", "no switchport") and outweighs any pile-up of
+// generic `re` hits; `re` is the supporting evidence.
 export function scoreTopic(topic, q, cache) {
   const m = topic.match || {};
   const nots = cache.not.get(topic.id) || [];
@@ -235,7 +239,10 @@ export function scoreTopic(topic, q, cache) {
   if (nots.some(r => hay.some(([text]) => r.test(text)))) return 0;
 
   let score = 0;
-  if ((m.tp || []).includes(q.tp)) score += 8;
+  if ((m.tp || []).includes(q.tp)) score += 6;
+  for (const r of cache.key.get(topic.id) || []) {
+    for (const [text, weight] of hay) if (r.test(text)) { score += weight * 4; break; }
+  }
   for (const r of cache.re.get(topic.id) || []) {
     for (const [text, weight] of hay) if (r.test(text)) { score += weight; break; }
   }
@@ -246,8 +253,9 @@ export function scoreTopic(topic, q, cache) {
 // or that domain's fallback chapter when nothing matched. A domain with no fallback and
 // an unmatched question is a build error — that is the whole promise of this folder.
 export function mapQuestions(topics, questions) {
-  const cache = { re: new Map(), not: new Map() };
+  const cache = { key: new Map(), re: new Map(), not: new Map() };
   for (const t of topics) {
+    cache.key.set(t.id, (t.match.key || []).map(rx));
     cache.re.set(t.id, (t.match.re || []).map(rx));
     cache.not.set(t.id, (t.match.not || []).map(rx));
   }

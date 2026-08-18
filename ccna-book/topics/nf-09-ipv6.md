@@ -6,6 +6,7 @@ lead: Сокращение записи, типы адресов, link-local и 
 blueprint: ["1.8", "1.9"]
 minutes: 45
 match:
+  key: ["IPv6", "\\bEUI-?64\\b", "\\bSLAAC\\b", "link-?local"]
   re: ["IPv6", "\\bEUI-?64\\b", "\\bSLAAC\\b", "link-?local", "\\bFE80\\b", "\\bFF02\\b", "unique local", "\\bULA\\b", "global unicast", "anycast", "2001:", "2000::/3", "solicited-node", "neighbor discovery", "\\bNDP\\b", "dual-?stack", "abbreviat.*IPv6", "IPv6 prefix"]
 ---
 

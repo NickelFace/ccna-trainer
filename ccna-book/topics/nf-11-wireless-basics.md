@@ -6,6 +6,7 @@ lead: Диапазоны и каналы, неперекрывающиеся 1-6
 blueprint: ["1.11"]
 minutes: 40
 match:
+  key: ["\\bSSID\\b", "nonoverlapping|non-overlapping", "co-?channel", "802\\.11[abgnax]", "2\\.4 ?GHz"]
   re: ["\\bSSID\\b", "nonoverlapping|non-overlapping", "channel", "2\\.4 ?GHz", "5 ?GHz", "802\\.11[abgnax]", "\\bRF\\b", "radio frequency", "wireless.*interference", "co-?channel", "coverage cell", "\\bCSMA/CA\\b", "\\bWi-?Fi\\b", "signal strength", "\\bSNR\\b", "antenna", "wireless.*characteristic", "encryption in wireless"]
   not: ["\\bWLC\\b config", "\\bWPA[23]?\\b", "CAPWAP", "controller"]
 ---
