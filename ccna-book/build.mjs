@@ -222,8 +222,11 @@ const haystacks = q => [
   [`${q.cli || ''} ${q.topo || ''}`, 1],
 ];
 
-const rx = pat => new RegExp(pat.startsWith('/') ? pat.slice(1, pat.lastIndexOf('/')) : escapeRe(pat), 'i');
-const escapeRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+// A pattern is a regex source unless it is wrapped in slashes, in which case the slashes
+// are stripped first. The wrapping must be on BOTH ends: "/25|/30" is a chapter author
+// writing about prefix lengths, and slicing at the first slash there produced a pattern
+// with an empty alternative — which matches every question in the bank.
+const rx = pat => new RegExp(/^\/.*\/$/.test(pat) ? pat.slice(1, -1) : pat, 'i');
 
 export function scoreTopic(topic, q, cache) {
   const m = topic.match || {};
