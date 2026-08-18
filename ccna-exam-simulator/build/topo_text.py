@@ -104,3 +104,20 @@ def topology_to_text(topo):
             f"{z['label']}: {', '.join(z['members'])}" for z in zones))
 
     return '\n'.join(lines)
+
+
+def exhibit_to_text(meta, with_cli=True):
+    """Whole exhibit as text: the diagram, plus the CLI baked into a 'mixed' crop.
+
+    A mixed exhibit is one picture holding both — the question's own `cli` field is left
+    empty on purpose so the web app does not print the same listing twice under the image.
+    That leaves the listing reachable only through the picture, which is exactly what the
+    prompt cannot send, so it belongs here. Pass with_cli=False when the question already
+    carries the listing as text.
+    """
+    meta = meta or {}
+    parts = [topology_to_text(meta.get('topology'))]
+    if with_cli and (meta.get('cli') or '').strip():
+        parts.append(meta['cli'].strip())
+    parts = [p for p in parts if p]
+    return '\n\n'.join(parts) or None

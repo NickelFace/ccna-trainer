@@ -9537,7 +9537,30 @@
     "cli": "10.0.0.0/24 is subsetted, 1 subnets\nC        10.0.0.0 is directly connected, FastEthernet0/1\nC        172.160.0/16 is directly connected, FastEthernet0/0\nD        192.168.0.0/24 [90/30720] via 172.16.0.2, 00:00:03, FastEthernet0/0"
   },
   "438": {
-    "category": "mixed"
+    "category": "mixed",
+    "topology": {
+      "devices": [
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1"
+        },
+        {
+          "id": "R2",
+          "type": "router",
+          "label": "R2"
+        }
+      ],
+      "links": [
+        {
+          "from": "R1",
+          "to": "R2",
+          "label": "Gi1/0",
+          "label2": "Gi2/0"
+        }
+      ]
+    },
+    "cli": "R1#show running-config\nBuilding configuration...\n!\ninterface GigabitEthernet1/0\n mtu 1600\n ip address 192.168.0.1 255.255.255.252\n negotiation auto\n!\nrouter ospf 1\n router-id 1.1.1.1\n passive-interface default\n no passive-interface GigabitEthernet1/0\n network 192.168.0.1 0.0.0.0 area 0\n!\n\nR2#show running-config\nBuilding configuration...\n!\ninterface GigabitEthernet2/0\n ip address 192.168.0.2 255.255.255.252\n negotiation auto\n!\nrouter ospf 1\n router-id 2.2.2.2\n passive-interface default\n no passive-interface GigabitEthernet2/0\n network 192.168.0.2 0.0.0.0 area 0"
   },
   "455": {
     "category": "cli_output",
@@ -13257,129 +13280,2506 @@
     "cli": "100.0.0.0/8 is variably subnetted, 4 subnets, 4 masks\nR    100.0.0.0/8 [120/2] via 192.168.3.1, 00:00:13, Ethernet0/3\nS    100.100.0.0/16 [1/0] via 192.168.4.1\nD    100.100.100.0/24 [90/435200] via 192.168.2.1, 00:00:13, Ethernet0/2\nO    100.100.100.100/32 [110/21] via 192.168.1.1, 00:05:57, Ethernet0/1"
   },
   "132": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "Internet",
+          "type": "internet",
+          "label": "Internet"
+        },
+        {
+          "id": "ISP",
+          "type": "router",
+          "label": "ISP"
+        },
+        {
+          "id": "DC-1",
+          "type": "router",
+          "label": "DC-1"
+        },
+        {
+          "id": "HQ-1",
+          "type": "router",
+          "label": "HQ-1"
+        },
+        {
+          "id": "DC-SW",
+          "type": "sw2",
+          "label": "DC-SW"
+        },
+        {
+          "id": "Firewall",
+          "type": "firewall",
+          "label": "Firewall"
+        },
+        {
+          "id": "HQ-SW1",
+          "type": "sw2",
+          "label": "HQ-SW1"
+        },
+        {
+          "id": "Administrator",
+          "type": "pc",
+          "label": "Administrator"
+        }
+      ],
+      "links": [
+        {
+          "from": "ISP",
+          "to": "Internet"
+        },
+        {
+          "from": "ISP",
+          "to": "DC-1",
+          "label": "Gi1/0",
+          "label2": "Gi1/0"
+        },
+        {
+          "from": "DC-1",
+          "to": "HQ-1",
+          "label": "Gi1/1",
+          "label2": "Gi1/1"
+        },
+        {
+          "from": "DC-1",
+          "to": "DC-SW",
+          "label": "Gi1/2"
+        },
+        {
+          "from": "DC-SW",
+          "to": "Firewall"
+        },
+        {
+          "from": "HQ-1",
+          "to": "HQ-SW1",
+          "label": "Gi1/3"
+        },
+        {
+          "from": "HQ-SW1",
+          "to": "Administrator"
+        }
+      ]
+    }
   },
   "480": {
-    "category": "mixed"
+    "category": "mixed",
+    "topology": {
+      "devices": [
+        {
+          "id": "Internet",
+          "type": "internet",
+          "label": "Internet"
+        },
+        {
+          "id": "MPLS",
+          "type": "internet",
+          "label": "MPLS"
+        },
+        {
+          "id": "Router1",
+          "type": "router",
+          "label": "Router1"
+        },
+        {
+          "id": "Switch1",
+          "type": "sw2",
+          "label": "Switch1"
+        },
+        {
+          "id": "HostA",
+          "type": "pc",
+          "label": "Host A",
+          "note": "10.10.13.214"
+        }
+      ],
+      "links": [
+        {
+          "from": "Internet",
+          "to": "Router1",
+          "label": ".2",
+          "label2": ".1",
+          "note": "10.10.11.0/30"
+        },
+        {
+          "from": "MPLS",
+          "to": "Router1",
+          "label": ".2",
+          "label2": ".1",
+          "note": "10.10.12.0/30"
+        },
+        {
+          "from": "Router1",
+          "to": "Switch1",
+          "label": ".2",
+          "label2": ".1",
+          "note": "10.10.10.0/28"
+        },
+        {
+          "from": "Switch1",
+          "to": "HostA"
+        }
+      ]
+    },
+    "cli": "Router1#show ip route\nGateway of last resort is 10.10.11.2 to network 0.0.0.0\n\n      209.165.200.0/27 is subnetted, 1 subnets\nB        209.165.200.224 [20/0] via 10.10.12.2, 03:22:14\n      209.165.201.0/27 is subnetted, 1 subnets\nB        209.165.201.0 [20/0] via 10.10.12.2, 02:26:33\n      209.165.202.0/27 is subnetted, 1 subnets\nB        209.165.202.128 [20/0] via 10.10.12.2, 02:26:03\n      10.0.0.0/8 is variably subnetted, 8 subnets, 4 masks\nC        10.10.10.0/28 is directly connected, GigabitEthernet0/0\nC        10.10.11.0/30 is directly connected, FastEthernet2/0\nC        10.10.12.0/30 is directly connected, GigabitEthernet0/1\nO        10.10.13.0/25 [110/2] via 10.10.10.1, 00:00:04, GigabitEthernet0/0\nO        10.10.13.128/28 [110/2] via 10.10.10.1, 00:00:04, GigabitEthernet0/0\nO        10.10.13.144/28 [110/2] via 10.10.10.1, 00:00:04, GigabitEthernet0/0\nO        10.10.13.160/29 [110/2] via 10.10.10.1, 00:00:04, GigabitEthernet0/0\nO        10.10.13.208/29 [110/2] via 10.10.10.1, 00:00:04, GigabitEthernet0/0\nS*    0.0.0.0/0 [1/0] via 10.10.11.2"
   },
   "552": {
-    "category": "topology"
+    "category": "mixed",
+    "topology": {
+      "devices": [
+        {
+          "id": "WebServer",
+          "type": "server",
+          "label": "Web server",
+          "note": "172.16.1.2"
+        },
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1"
+        },
+        {
+          "id": "Cloud",
+          "type": "internet",
+          "label": "внешняя сеть"
+        }
+      ],
+      "links": [
+        {
+          "from": "WebServer",
+          "to": "R1",
+          "label2": "e0"
+        },
+        {
+          "from": "R1",
+          "to": "Cloud",
+          "label": "s0"
+        }
+      ]
+    },
+    "cli": "На схеме под топологией — пустые слоты для размещения команд:\ninterface Ethernet0: слоты A, B\ninterface Serial0: слоты C, D\nотдельно (вне интерфейсов): слоты E, F\n\nЗаданная строка ACL: access-list 1 permit 172.16.1.0 0.0.0.255"
   },
   "897": {
-    "category": "mixed"
+    "category": "mixed",
+    "topology": {
+      "devices": [
+        {
+          "id": "MPLS",
+          "type": "internet",
+          "label": "MPLS"
+        },
+        {
+          "id": "Internet",
+          "type": "internet",
+          "label": "Internet"
+        },
+        {
+          "id": "Router1",
+          "type": "router",
+          "label": "Router1"
+        },
+        {
+          "id": "Router2",
+          "type": "router",
+          "label": "Router 2"
+        },
+        {
+          "id": "Router3",
+          "type": "router",
+          "label": "Router 3"
+        },
+        {
+          "id": "Router4",
+          "type": "router",
+          "label": "Router 4"
+        },
+        {
+          "id": "Router5",
+          "type": "router",
+          "label": "Router 5"
+        }
+      ],
+      "links": [
+        {
+          "from": "Router1",
+          "to": "MPLS",
+          "note": "10.10.12.0/30"
+        },
+        {
+          "from": "Router1",
+          "to": "Internet",
+          "note": "10.10.11.0/30"
+        },
+        {
+          "from": "Router1",
+          "to": "Router2",
+          "note": "10.10.10.0/30"
+        },
+        {
+          "from": "Router1",
+          "to": "Router3",
+          "note": "10.10.10.4/30"
+        },
+        {
+          "from": "Router1",
+          "to": "Router4",
+          "note": "10.10.10.8/30"
+        },
+        {
+          "from": "Router1",
+          "to": "Router5",
+          "note": "10.10.10.12/30"
+        }
+      ]
+    },
+    "cli": "Router1#show ip route\nGateway of last resort is 10.10.11.2 to network 0.0.0.0\n      209.165.200.0/27 is subnetted, 1 subnets\nB        209.165.200.224 [20/0] via 10.10.12.2, 03:22:14\n      209.165.201.0/27 is subnetted, 1 subnets\nB        209.165.201.0 [20/0] via 10.10.12.2, 02:26:33\n      209.165.202.0/27 is subnetted, 1 subnets\nB        209.165.202.128 [20/0] via 10.10.12.2, 02:26:03\n      10.0.0.0/8 is variably subnetted, 10 subnets, 4 masks\nO        10.10.13.0/25 [110/2] via 10.10.10.1, 00:00:04, GigabitEthernet0/0\nO        10.10.13.128/28 [110/2] via 10.10.10.5, 00:00:12, GigabitEthernet0/1\nO        10.10.13.144/28 [110/2] via 10.10.10.9, 00:01:57, GigabitEthernet0/2\nO        10.10.13.160/29 [110/2] via 10.10.10.5, 00:00:12, GigabitEthernet0/1\nO        10.10.13.208/29 [110/2] via 10.10.10.13, 00:01:57, GigabitEthernet0/3\nS*    0.0.0.0/0 [1/0] via 10.10.11.2"
   },
   "928": {
-    "category": "mixed"
+    "category": "mixed",
+    "topology": {
+      "devices": [
+        {
+          "id": "SiteB",
+          "type": "internet",
+          "label": "Site B"
+        },
+        {
+          "id": "SiteA",
+          "type": "internet",
+          "label": "Site A"
+        },
+        {
+          "id": "Internet",
+          "type": "internet",
+          "label": "Internet"
+        },
+        {
+          "id": "Router2",
+          "type": "router",
+          "label": "Router2"
+        },
+        {
+          "id": "Router1",
+          "type": "router",
+          "label": "Router1"
+        }
+      ],
+      "links": [
+        {
+          "from": "Router2",
+          "to": "SiteB"
+        },
+        {
+          "from": "Router2",
+          "to": "Internet",
+          "label": "Fa0/4",
+          "note": "10.10.10.12/30"
+        },
+        {
+          "from": "Router2",
+          "to": "Router1",
+          "label": "Fa0/1",
+          "note": "10.10.10.0/30"
+        },
+        {
+          "from": "Router2",
+          "to": "Router1",
+          "label": "Fa0/2",
+          "note": "10.10.10.4/30"
+        },
+        {
+          "from": "Router2",
+          "to": "Router1",
+          "label": "Fa0/3",
+          "note": "10.10.10.8/30"
+        },
+        {
+          "from": "Router1",
+          "to": "SiteA"
+        }
+      ]
+    },
+    "cli": "Router2#show ip route\nGateway of last resort is 10.10.10.13 to network 0.0.0.0\n\n      10.0.0.0/8 is variably subnetted, 6 subnets, 3 masks\nC        10.10.10.8/30 is directly connected, FastEthernet0/3\nC        10.10.10.12/30 is directly connected, FastEthernet0/4\nC        10.10.10.0/30 is directly connected, FastEthernet0/1\nO        10.10.13.0/25 [110/6576] via 10.10.10.9, 00:01:38, FastEthernet0/3\n                      [110/6576] via 10.10.10.5, 00:01:38, FastEthernet0/2\n                      [110/6576] via 10.10.10.1, 00:01:38, FastEthernet0/1\nC        10.10.10.4/30 is directly connected, FastEthernet0/2\nO        10.10.13.144/28 [110/110] via 10.10.10.9, 00:01:39, FastEthernet0/3\n                         [110/110] via 10.10.10.5, 00:01:39, FastEthernet0/2\n                         [110/110] via 10.10.10.1, 00:01:38, FastEthernet0/1\nS*    0.0.0.0/0 [1/0] via 10.10.10.13"
   },
   "938": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "Router1",
+          "type": "router",
+          "label": "Router1"
+        },
+        {
+          "id": "Net",
+          "type": "internet",
+          "label": "10.10.10.0/24"
+        }
+      ],
+      "links": [
+        {
+          "from": "Router1",
+          "to": "Net",
+          "label": "OSPF"
+        },
+        {
+          "from": "Router1",
+          "to": "Net",
+          "label": "eBGP"
+        },
+        {
+          "from": "Router1",
+          "to": "Net",
+          "label": "Static"
+        },
+        {
+          "from": "Router1",
+          "to": "Net",
+          "label": "EIGRP"
+        },
+        {
+          "from": "Router1",
+          "to": "Net",
+          "label": "iBGP"
+        }
+      ]
+    }
   },
   "427": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1"
+        },
+        {
+          "id": "R2",
+          "type": "router",
+          "label": "R2"
+        },
+        {
+          "id": "R3",
+          "type": "router",
+          "label": "R3"
+        },
+        {
+          "id": "LAN",
+          "type": "sw2",
+          "label": "общий Ethernet-сегмент",
+          "note": "все три роутера в одном broadcast-домене"
+        }
+      ],
+      "links": [
+        {
+          "from": "R1",
+          "to": "LAN"
+        },
+        {
+          "from": "R2",
+          "to": "LAN"
+        },
+        {
+          "from": "R3",
+          "to": "LAN"
+        }
+      ],
+      "zones": [
+        {
+          "label": "OSPF Area 0",
+          "members": [
+            "R1",
+            "R2",
+            "R3",
+            "LAN"
+          ]
+        }
+      ]
+    }
   },
   "1041": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "SW1",
+          "type": "sw2",
+          "label": "SW1"
+        },
+        {
+          "id": "SW2",
+          "type": "sw2",
+          "label": "SW2"
+        }
+      ],
+      "links": [
+        {
+          "from": "SW1",
+          "to": "SW2",
+          "label": "e0/0",
+          "label2": "e0/0",
+          "note": "два линка собраны в EtherChannel по LACP"
+        },
+        {
+          "from": "SW1",
+          "to": "SW2",
+          "label": "e0/1",
+          "label2": "e0/1"
+        }
+      ]
+    }
   },
   "1043": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1",
+          "note": "Loopback1 192.168.1.1"
+        },
+        {
+          "id": "R2",
+          "type": "router",
+          "label": "R2",
+          "note": "Loopback1 192.168.2.1"
+        },
+        {
+          "id": "R3",
+          "type": "router",
+          "label": "R3",
+          "note": "Loopback1 192.168.9.1"
+        },
+        {
+          "id": "R4",
+          "type": "router",
+          "label": "R4"
+        }
+      ],
+      "links": [
+        {
+          "from": "R1",
+          "to": "R2",
+          "label": "E0/0 .225",
+          "label2": "E0/0 .226",
+          "note": "209.165.200.224/30"
+        },
+        {
+          "from": "R2",
+          "to": "R3",
+          "label": "E0/1 .229",
+          "label2": "E0/1 .230",
+          "note": "209.165.200.228/30"
+        },
+        {
+          "from": "R2",
+          "to": "R4",
+          "label": "E0/2 .129, 2001:db8:abcd::1",
+          "label2": "E0/2 .130, 2001:db8:abcd::2",
+          "note": "209.165.202.128/27, 2001:db8:abcd::0/64"
+        }
+      ]
+    }
   },
   "1054": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "SW1",
+          "type": "sw2",
+          "label": "SW1"
+        },
+        {
+          "id": "SW2",
+          "type": "sw2",
+          "label": "SW2"
+        },
+        {
+          "id": "Phone",
+          "type": "pc",
+          "label": "IP-телефон",
+          "note": "VLAN 12 и VLAN 34"
+        },
+        {
+          "id": "PC1",
+          "type": "pc",
+          "label": "ПК за телефоном"
+        },
+        {
+          "id": "PC2",
+          "type": "pc",
+          "label": "ПК у SW2",
+          "note": "VLAN \"Available\""
+        }
+      ],
+      "links": [
+        {
+          "from": "SW1",
+          "to": "SW2",
+          "label": "e0/0",
+          "label2": "e0/0",
+          "note": "VLAN 12"
+        },
+        {
+          "from": "SW1",
+          "to": "Phone",
+          "label": "e0/1"
+        },
+        {
+          "from": "Phone",
+          "to": "PC1"
+        },
+        {
+          "from": "SW2",
+          "to": "PC2",
+          "label": "e0/1"
+        }
+      ]
+    }
   },
   "1060": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "Internet",
+          "type": "internet",
+          "label": "Internet"
+        },
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1"
+        },
+        {
+          "id": "Sw101",
+          "type": "sw2",
+          "label": "Sw101"
+        },
+        {
+          "id": "Sw102",
+          "type": "sw2",
+          "label": "Sw102"
+        },
+        {
+          "id": "PC1",
+          "type": "pc",
+          "label": "PC1",
+          "note": "VLAN 100, 192.168.100.10"
+        },
+        {
+          "id": "PC2",
+          "type": "pc",
+          "label": "PC2",
+          "note": "VLAN 200, 192.168.200.10"
+        }
+      ],
+      "links": [
+        {
+          "from": "R1",
+          "to": "Internet",
+          "label": "e0/1",
+          "note": "209.165.201.0/30"
+        },
+        {
+          "from": "R1",
+          "to": "Sw101",
+          "label": "e0/0",
+          "label2": "e0/1",
+          "note": "192.168.3.0/30"
+        },
+        {
+          "from": "Sw101",
+          "to": "Sw102",
+          "label": "e0/2",
+          "label2": "e0/1",
+          "note": "Trunk"
+        },
+        {
+          "from": "Sw101",
+          "to": "PC1",
+          "label": "e0/0",
+          "note": "VLAN 100"
+        },
+        {
+          "from": "Sw102",
+          "to": "PC2",
+          "label": "e0/0",
+          "note": "VLAN 200"
+        }
+      ]
+    }
   },
   "1337": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "Sw101",
+          "type": "sw2",
+          "label": "Sw101"
+        },
+        {
+          "id": "Sw102",
+          "type": "sw2",
+          "label": "Sw102"
+        }
+      ],
+      "links": [
+        {
+          "from": "Sw101",
+          "to": "Sw102",
+          "label": "e0/0",
+          "label2": "e0/0"
+        }
+      ]
+    }
   },
   "1052": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1",
+          "note": "Lo1: 192.168.1.1"
+        },
+        {
+          "id": "R2",
+          "type": "router",
+          "label": "R2",
+          "note": "Lo1: 192.168.2.1"
+        },
+        {
+          "id": "R3",
+          "type": "router",
+          "label": "R3",
+          "note": "Lo1: 192.168.3.1"
+        }
+      ],
+      "links": [
+        {
+          "from": "R1",
+          "to": "R2",
+          "label": "E0/0 10.1.2.1",
+          "label2": "E0/0 10.1.2.2"
+        },
+        {
+          "from": "R1",
+          "to": "R3",
+          "label": "E0/2 10.1.3.1",
+          "label2": "E0/2 10.1.3.11"
+        },
+        {
+          "from": "R2",
+          "to": "R3",
+          "label": "E0/1 10.2.3.2",
+          "label2": "E0/1 10.2.3.3"
+        }
+      ]
+    }
   },
   "1058": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1"
+        },
+        {
+          "id": "R2",
+          "type": "router",
+          "label": "R2"
+        }
+      ],
+      "links": [
+        {
+          "from": "R1",
+          "to": "R2",
+          "label": "e0/1 192.168.180.x/28, 2001:db8:acca::1/64",
+          "label2": "e0/1 192.168.180.x/28, 2001:db8:acca::2/64"
+        }
+      ]
+    }
   },
   "1059": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "Sw1",
+          "type": "sw2",
+          "label": "Sw1"
+        },
+        {
+          "id": "Sw2",
+          "type": "sw2",
+          "label": "Sw2"
+        },
+        {
+          "id": "Sw3",
+          "type": "sw2",
+          "label": "Sw3"
+        },
+        {
+          "id": "PC5",
+          "type": "pc",
+          "label": "PC5",
+          "note": "VLAN 303, 10.10.3.1"
+        },
+        {
+          "id": "PC3",
+          "type": "pc",
+          "label": "PC3",
+          "note": "VLAN 202, 10.10.2.1"
+        },
+        {
+          "id": "PC4",
+          "type": "pc",
+          "label": "PC4",
+          "note": "VLAN 202, 10.10.2.2"
+        },
+        {
+          "id": "PC6",
+          "type": "pc",
+          "label": "PC6",
+          "note": "VLAN 303, 10.10.3.2"
+        }
+      ],
+      "links": [
+        {
+          "from": "Sw1",
+          "to": "Sw2",
+          "label": "e0/2",
+          "label2": "e0/2"
+        },
+        {
+          "from": "Sw2",
+          "to": "Sw3",
+          "label": "e0/3",
+          "label2": "e0/3"
+        },
+        {
+          "from": "Sw1",
+          "to": "PC5",
+          "label": "e0/1"
+        },
+        {
+          "from": "Sw2",
+          "to": "PC3",
+          "label": "e0/1"
+        },
+        {
+          "from": "Sw3",
+          "to": "PC4",
+          "label": "e0/0"
+        },
+        {
+          "from": "Sw3",
+          "to": "PC6",
+          "label": "e0/1"
+        }
+      ]
+    }
   },
   "1061": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "Internet",
+          "type": "internet",
+          "label": "Internet"
+        },
+        {
+          "id": "Gw1",
+          "type": "router",
+          "label": "Gw1",
+          "note": "DHCP Server"
+        },
+        {
+          "id": "Sw3",
+          "type": "sw2",
+          "label": "Sw3"
+        },
+        {
+          "id": "Sw1",
+          "type": "sw2",
+          "label": "Sw1"
+        },
+        {
+          "id": "Sw2",
+          "type": "sw2",
+          "label": "Sw2"
+        },
+        {
+          "id": "HostA",
+          "type": "pc",
+          "label": "HostA",
+          "note": "VLAN 10"
+        },
+        {
+          "id": "HostB",
+          "type": "pc",
+          "label": "HostB",
+          "note": "VLAN 20"
+        },
+        {
+          "id": "HostC",
+          "type": "pc",
+          "label": "HostC",
+          "note": "VLAN 10"
+        },
+        {
+          "id": "HostD",
+          "type": "pc",
+          "label": "HostD",
+          "note": "VLAN 20"
+        }
+      ],
+      "links": [
+        {
+          "from": "Gw1",
+          "to": "Internet",
+          "label": "e0/2",
+          "note": "209.165.201.0/30"
+        },
+        {
+          "from": "Gw1",
+          "to": "Sw3",
+          "label": "e0/0",
+          "label2": "e1/0"
+        },
+        {
+          "from": "Sw3",
+          "to": "HostC",
+          "label": "e0/0",
+          "note": "VLAN 10"
+        },
+        {
+          "from": "Sw3",
+          "to": "HostD",
+          "label": "e0/3",
+          "note": "VLAN 20"
+        },
+        {
+          "from": "Sw3",
+          "to": "Sw1",
+          "label": "e0/2",
+          "label2": "e0/2",
+          "note": "Trunk"
+        },
+        {
+          "from": "Sw3",
+          "to": "Sw2",
+          "label": "e0/1",
+          "label2": "e0/2",
+          "note": "Trunk"
+        },
+        {
+          "from": "Sw1",
+          "to": "Sw2",
+          "label": "e0/1",
+          "label2": "e0/1",
+          "note": "Trunk"
+        },
+        {
+          "from": "Sw1",
+          "to": "HostA",
+          "label": "e0/0",
+          "note": "VLAN 10"
+        },
+        {
+          "from": "Sw2",
+          "to": "HostB",
+          "label": "e0/0",
+          "note": "VLAN 20"
+        }
+      ]
+    }
   },
   "1072": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "Internet",
+          "type": "internet",
+          "label": "Internet",
+          "note": "172.20.20.128/25"
+        },
+        {
+          "id": "R3",
+          "type": "router",
+          "label": "R3"
+        },
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1",
+          "note": "L0: 10.10.1.1/32"
+        },
+        {
+          "id": "R2",
+          "type": "router",
+          "label": "R2"
+        },
+        {
+          "id": "SW1",
+          "type": "sw2",
+          "label": "SW1",
+          "note": "LAN, E0/1: 192.168.0.1/24"
+        }
+      ],
+      "links": [
+        {
+          "from": "Internet",
+          "to": "R3",
+          "label": ".254",
+          "label2": "E0/1 .3",
+          "note": "10.10.254.0/24"
+        },
+        {
+          "from": "R3",
+          "to": "R1",
+          "label": "E0/0 .3",
+          "label2": "E0/0 .1",
+          "note": "10.10.13.0/24"
+        },
+        {
+          "from": "R1",
+          "to": "R2",
+          "label": "E0/2 .129",
+          "label2": "E0/2 .130",
+          "note": "10.10.12.128/25"
+        },
+        {
+          "from": "R1",
+          "to": "R2",
+          "label": "E0/1 .1",
+          "label2": "E0/1 .2",
+          "note": "10.10.12.0/25"
+        },
+        {
+          "from": "R2",
+          "to": "SW1",
+          "label": "E0/0 .2",
+          "label2": "E0/0 .1",
+          "note": "10.10.31.0/24"
+        }
+      ]
+    }
   },
   "1134": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1",
+          "note": "L1: 192.168.1.1/24, L0: 10.10.1.1/32"
+        },
+        {
+          "id": "R2",
+          "type": "router",
+          "label": "R2",
+          "note": "L0: 10.10.2.2/32, L1: 192.168.2.2/24"
+        },
+        {
+          "id": "R3",
+          "type": "router",
+          "label": "R3",
+          "note": "L0: 10.10.3.3/32, L1: 192.168.3.3/24"
+        }
+      ],
+      "links": [
+        {
+          "from": "R1",
+          "to": "R2",
+          "label": "E0/0 .1",
+          "label2": "E0/0 .2",
+          "note": "10.10.12.0/24"
+        },
+        {
+          "from": "R1",
+          "to": "R3",
+          "label": "E0/1 .1",
+          "label2": "E0/1 .3",
+          "note": "10.10.13.0/24"
+        },
+        {
+          "from": "R2",
+          "to": "R3",
+          "label": "E0/2 .2",
+          "label2": "E0/2 .3",
+          "note": "10.10.23.0/24"
+        }
+      ],
+      "zones": [
+        {
+          "label": "OSPF Process ID 1, Area 0",
+          "members": [
+            "R1",
+            "R2",
+            "R3"
+          ]
+        }
+      ]
+    }
   },
   "1175": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1"
+        },
+        {
+          "id": "SW-1",
+          "type": "sw2",
+          "label": "SW-1"
+        },
+        {
+          "id": "SW-2",
+          "type": "sw2",
+          "label": "SW-2"
+        },
+        {
+          "id": "PC1",
+          "type": "pc",
+          "label": "PC1",
+          "note": "VLAN Default, 10.10.1.10"
+        },
+        {
+          "id": "Server1",
+          "type": "server",
+          "label": "Server1",
+          "note": "VLAN 20, 10.20.1.10"
+        },
+        {
+          "id": "PC3",
+          "type": "pc",
+          "label": "PC3",
+          "note": "VLAN 30, 10.30.1.10"
+        }
+      ],
+      "links": [
+        {
+          "from": "R1",
+          "to": "SW-1",
+          "label": "e0/0",
+          "label2": "e0/0"
+        },
+        {
+          "from": "R1",
+          "to": "SW-2",
+          "label": "e0/1",
+          "label2": "e0/0"
+        },
+        {
+          "from": "SW-1",
+          "to": "SW-2",
+          "label": "e0/1",
+          "label2": "e0/1"
+        },
+        {
+          "from": "SW-1",
+          "to": "PC1",
+          "label": "e0/2"
+        },
+        {
+          "from": "SW-2",
+          "to": "Server1",
+          "label": "e0/2"
+        },
+        {
+          "from": "SW-2",
+          "to": "PC3",
+          "label": "e0/3"
+        }
+      ]
+    }
   },
   "1178": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "ISP",
+          "type": "router",
+          "label": "ISP",
+          "note": "e0/0: 209.165.200.225"
+        },
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1"
+        },
+        {
+          "id": "R2",
+          "type": "router",
+          "label": "R2",
+          "note": "e0/2: 209.165.200.226"
+        },
+        {
+          "id": "R3",
+          "type": "router",
+          "label": "R3"
+        },
+        {
+          "id": "R4",
+          "type": "router",
+          "label": "R4"
+        },
+        {
+          "id": "Server",
+          "type": "server",
+          "label": "Server",
+          "note": "e0/0: 10.0.41.10"
+        }
+      ],
+      "links": [
+        {
+          "from": "R2",
+          "to": "ISP",
+          "label": "e0/2",
+          "note": "209.165.200.224/27"
+        },
+        {
+          "from": "R1",
+          "to": "R2",
+          "label": "e0/0",
+          "label2": "e0/0",
+          "note": "10.0.12.0/30"
+        },
+        {
+          "from": "R1",
+          "to": "R3",
+          "label": "e0/1",
+          "label2": "e0/0",
+          "note": "10.0.13.0/27"
+        },
+        {
+          "from": "R2",
+          "to": "R4",
+          "label": "e0/1",
+          "label2": "e0/0",
+          "note": "10.0.24.0/29"
+        },
+        {
+          "from": "R3",
+          "to": "R4",
+          "label": "e0/1",
+          "label2": "e0/1",
+          "note": "10.0.34.0/28"
+        },
+        {
+          "from": "R4",
+          "to": "Server",
+          "label": "e0/2",
+          "note": "10.0.41.0/24"
+        }
+      ]
+    }
   },
   "1182": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "Sw101",
+          "type": "sw2",
+          "label": "Sw101"
+        },
+        {
+          "id": "Sw102",
+          "type": "sw2",
+          "label": "Sw102"
+        }
+      ],
+      "links": [
+        {
+          "from": "Sw101",
+          "to": "Sw102",
+          "label": "e0/0",
+          "label2": "e0/0"
+        }
+      ]
+    }
   },
   "1216": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "ISP",
+          "type": "router",
+          "label": "ISP",
+          "note": "e0/0: 209.165.200.225"
+        },
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1"
+        },
+        {
+          "id": "R2",
+          "type": "router",
+          "label": "R2",
+          "note": "e0/2: 209.165.200.226"
+        },
+        {
+          "id": "R3",
+          "type": "router",
+          "label": "R3"
+        },
+        {
+          "id": "R4",
+          "type": "router",
+          "label": "R4"
+        },
+        {
+          "id": "Server",
+          "type": "server",
+          "label": "Server",
+          "note": "e0/0: 10.0.41.10"
+        }
+      ],
+      "links": [
+        {
+          "from": "R2",
+          "to": "ISP",
+          "label": "e0/2",
+          "note": "209.165.200.224/27"
+        },
+        {
+          "from": "R1",
+          "to": "R2",
+          "label": "e0/0",
+          "label2": "e0/0",
+          "note": "10.0.12.0/30"
+        },
+        {
+          "from": "R1",
+          "to": "R3",
+          "label": "e0/1",
+          "label2": "e0/0",
+          "note": "10.0.13.0/27"
+        },
+        {
+          "from": "R2",
+          "to": "R4",
+          "label": "e0/1",
+          "label2": "e0/0",
+          "note": "10.0.24.0/29"
+        },
+        {
+          "from": "R3",
+          "to": "R4",
+          "label": "e0/1",
+          "label2": "e0/1",
+          "note": "10.0.34.0/28"
+        },
+        {
+          "from": "R4",
+          "to": "Server",
+          "label": "e0/2",
+          "note": "10.0.41.0/24"
+        }
+      ]
+    }
   },
   "1258": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1",
+          "note": "VLAN 15, 172.16.15.1"
+        },
+        {
+          "id": "R2",
+          "type": "router",
+          "label": "R2",
+          "note": "VLAN 66, 192.168.66.1"
+        },
+        {
+          "id": "SW-1",
+          "type": "sw2",
+          "label": "SW-1"
+        },
+        {
+          "id": "SW-2",
+          "type": "sw2",
+          "label": "SW-2"
+        },
+        {
+          "id": "PC1",
+          "type": "pc",
+          "label": "PC1",
+          "note": "VLAN 15, IP 172.16.15.10"
+        },
+        {
+          "id": "PC2",
+          "type": "pc",
+          "label": "PC2",
+          "note": "VLAN 66, IP 192.168.66.50"
+        }
+      ],
+      "links": [
+        {
+          "from": "R1",
+          "to": "SW-1",
+          "label": "e0/0",
+          "label2": "e0/2"
+        },
+        {
+          "from": "R2",
+          "to": "SW-2",
+          "label": "e0/0",
+          "label2": "e0/2"
+        },
+        {
+          "from": "SW-1",
+          "to": "SW-2",
+          "label": "e0/0",
+          "label2": "e0/0"
+        },
+        {
+          "from": "SW-1",
+          "to": "PC1",
+          "label": "e0/1"
+        },
+        {
+          "from": "SW-2",
+          "to": "PC2",
+          "label": "e0/1"
+        }
+      ]
+    }
   },
   "1260": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1",
+          "note": "e0/0.35 VLAN 35: 10.35.1.1; e0/1.39 VLAN 39: 10.39.1.1"
+        },
+        {
+          "id": "SW-1",
+          "type": "sw2",
+          "label": "SW-1"
+        },
+        {
+          "id": "SW-2",
+          "type": "sw2",
+          "label": "SW-2"
+        },
+        {
+          "id": "PC1",
+          "type": "pc",
+          "label": "PC1",
+          "note": "VLAN 35, IP 10.35.1.99"
+        },
+        {
+          "id": "PC2",
+          "type": "pc",
+          "label": "PC2",
+          "note": "VLAN 39, IP 10.39.1.99"
+        }
+      ],
+      "links": [
+        {
+          "from": "R1",
+          "to": "SW-1",
+          "label": "e0/0",
+          "label2": "e0/0"
+        },
+        {
+          "from": "R1",
+          "to": "SW-2",
+          "label": "e0/1",
+          "label2": "e0/0"
+        },
+        {
+          "from": "SW-1",
+          "to": "SW-2",
+          "label": "e0/1",
+          "label2": "e0/1"
+        },
+        {
+          "from": "SW-1",
+          "to": "PC1",
+          "label": "e0/2"
+        },
+        {
+          "from": "SW-2",
+          "to": "PC2",
+          "label": "e0/2"
+        }
+      ]
+    }
   },
   "1266": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "SW-1",
+          "type": "sw2",
+          "label": "SW-1"
+        },
+        {
+          "id": "SW-2",
+          "type": "sw2",
+          "label": "SW-2"
+        },
+        {
+          "id": "SW-3",
+          "type": "sw2",
+          "label": "SW-3"
+        }
+      ],
+      "links": [
+        {
+          "from": "SW-1",
+          "to": "SW-2",
+          "label": "e0/0",
+          "label2": "e0/0",
+          "note": "оба линка в EtherChannel Po12"
+        },
+        {
+          "from": "SW-1",
+          "to": "SW-2",
+          "label": "e0/1",
+          "label2": "e0/1"
+        },
+        {
+          "from": "SW-1",
+          "to": "SW-3",
+          "label": "e0/2",
+          "label2": "e0/0"
+        },
+        {
+          "from": "SW-2",
+          "to": "SW-3",
+          "label": "e0/2",
+          "label2": "e0/1"
+        }
+      ]
+    }
   },
   "1285": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "SW-1",
+          "type": "sw2",
+          "label": "SW-1"
+        },
+        {
+          "id": "SW-2",
+          "type": "sw2",
+          "label": "SW-2"
+        },
+        {
+          "id": "SW-3",
+          "type": "sw2",
+          "label": "SW-3"
+        }
+      ],
+      "links": [
+        {
+          "from": "SW-1",
+          "to": "SW-2",
+          "label": "e0/0",
+          "label2": "e0/0"
+        },
+        {
+          "from": "SW-1",
+          "to": "SW-3",
+          "label": "e0/1",
+          "label2": "e0/0"
+        },
+        {
+          "from": "SW-2",
+          "to": "SW-3",
+          "label": "e0/2",
+          "label2": "e0/2",
+          "note": "оба линка в EtherChannel Po23"
+        },
+        {
+          "from": "SW-2",
+          "to": "SW-3",
+          "label": "e0/3",
+          "label2": "e0/3"
+        }
+      ]
+    }
   },
   "1295": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "Sw101",
+          "type": "sw2",
+          "label": "Sw101"
+        },
+        {
+          "id": "Sw102",
+          "type": "sw2",
+          "label": "Sw102"
+        }
+      ],
+      "links": [
+        {
+          "from": "Sw101",
+          "to": "Sw102",
+          "label": "e0/0",
+          "label2": "e0/0"
+        }
+      ]
+    }
   },
   "1310": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1"
+        },
+        {
+          "id": "SW-1",
+          "type": "sw2",
+          "label": "SW-1"
+        },
+        {
+          "id": "SW-2",
+          "type": "sw2",
+          "label": "SW-2"
+        },
+        {
+          "id": "SW-3",
+          "type": "sw2",
+          "label": "SW-3"
+        },
+        {
+          "id": "SW-4",
+          "type": "sw2",
+          "label": "SW-4"
+        }
+      ],
+      "links": [
+        {
+          "from": "R1",
+          "to": "SW-1",
+          "label": "e0/0",
+          "label2": "e0/0"
+        },
+        {
+          "from": "SW-1",
+          "to": "SW-2",
+          "label": "e0/1",
+          "label2": "e0/1"
+        },
+        {
+          "from": "SW-1",
+          "to": "SW-3",
+          "label": "e0/2",
+          "label2": "e0/2"
+        },
+        {
+          "from": "SW-2",
+          "to": "SW-4",
+          "label": "e0/2",
+          "label2": "e0/2"
+        },
+        {
+          "from": "SW-3",
+          "to": "SW-4",
+          "label": "e0/0",
+          "label2": "e0/0",
+          "note": "оба линка в EtherChannel Po34"
+        },
+        {
+          "from": "SW-3",
+          "to": "SW-4",
+          "label": "e0/1",
+          "label2": "e0/1"
+        }
+      ]
+    }
   },
   "1334": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "Internet",
+          "type": "internet",
+          "label": "Internet"
+        },
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1"
+        },
+        {
+          "id": "Sw103",
+          "type": "sw3",
+          "label": "Sw103"
+        },
+        {
+          "id": "Sw104",
+          "type": "sw3",
+          "label": "Sw104"
+        },
+        {
+          "id": "Sw101",
+          "type": "sw3",
+          "label": "Sw101"
+        },
+        {
+          "id": "Sw102",
+          "type": "sw3",
+          "label": "Sw102"
+        },
+        {
+          "id": "PC1",
+          "type": "pc",
+          "label": "PC1"
+        },
+        {
+          "id": "PC2",
+          "type": "pc",
+          "label": "PC2"
+        }
+      ],
+      "links": [
+        {
+          "from": "R1",
+          "to": "Internet",
+          "label": "e0/1",
+          "note": "209.165.201.0/30"
+        },
+        {
+          "from": "R1",
+          "to": "Sw103",
+          "label": "e0/0",
+          "label2": "e0/1",
+          "note": "172.16.1.16/30"
+        },
+        {
+          "from": "R1",
+          "to": "Sw104",
+          "label": "e0/3",
+          "label2": "e0/3",
+          "note": "172.16.1.20/30"
+        },
+        {
+          "from": "Sw103",
+          "to": "Sw104",
+          "label": "e0/0",
+          "label2": "e0/0",
+          "note": "172.16.1.12/30"
+        },
+        {
+          "from": "Sw103",
+          "to": "Sw101",
+          "label": "e0/2",
+          "label2": "e0/2",
+          "note": "172.16.1.4/30"
+        },
+        {
+          "from": "Sw104",
+          "to": "Sw102",
+          "label": "e0/2",
+          "label2": "e0/2",
+          "note": "172.16.1.8/30"
+        },
+        {
+          "from": "Sw101",
+          "to": "Sw102",
+          "label": "e0/1",
+          "label2": "e0/1",
+          "note": "172.16.1.0/30"
+        },
+        {
+          "from": "Sw101",
+          "to": "PC1",
+          "label": "e0/0",
+          "note": "172.16.101.0/24"
+        },
+        {
+          "from": "Sw102",
+          "to": "PC2",
+          "label": "e0/0",
+          "note": "172.16.102.0/24"
+        }
+      ]
+    }
   },
   "1338": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1"
+        },
+        {
+          "id": "R2",
+          "type": "router",
+          "label": "R2"
+        },
+        {
+          "id": "R3",
+          "type": "router",
+          "label": "R3"
+        },
+        {
+          "id": "R4",
+          "type": "router",
+          "label": "R4"
+        },
+        {
+          "id": "Server1",
+          "type": "server",
+          "label": "Server1",
+          "note": "2001:DB8:41::10"
+        }
+      ],
+      "links": [
+        {
+          "from": "R1",
+          "to": "R2",
+          "label": "e0/0",
+          "label2": "e0/0",
+          "note": "2001:DB8:12::/64"
+        },
+        {
+          "from": "R1",
+          "to": "R3",
+          "label": "e0/1",
+          "label2": "e0/0",
+          "note": "2001:DB8:13::/64"
+        },
+        {
+          "from": "R2",
+          "to": "R4",
+          "label": "e0/1",
+          "label2": "e0/0",
+          "note": "2001:DB8:24::/64"
+        },
+        {
+          "from": "R3",
+          "to": "R4",
+          "label": "e0/1",
+          "label2": "e0/1",
+          "note": "2001:DB8:34::/64"
+        },
+        {
+          "from": "R4",
+          "to": "Server1",
+          "label": "e0/2",
+          "note": "2001:DB8:41::/64"
+        }
+      ]
+    }
   },
   "1344": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1",
+          "note": "VLAN 10, IP 10.10.1.1; VLAN 30, IP 192.168.30.1"
+        },
+        {
+          "id": "SW-1",
+          "type": "sw2",
+          "label": "SW-1"
+        },
+        {
+          "id": "SW-2",
+          "type": "sw2",
+          "label": "SW-2"
+        },
+        {
+          "id": "Phone",
+          "type": "pc",
+          "label": "IP-телефон",
+          "note": "VLAN 11, IP 10.11.1.10"
+        },
+        {
+          "id": "PC1",
+          "type": "pc",
+          "label": "PC1",
+          "note": "VLAN 10, IP 10.10.1.10"
+        },
+        {
+          "id": "PC2",
+          "type": "pc",
+          "label": "PC2",
+          "note": "VLAN 30, IP 192.168.30.10"
+        }
+      ],
+      "links": [
+        {
+          "from": "R1",
+          "to": "SW-1",
+          "label": "e0/0",
+          "label2": "e0/2"
+        },
+        {
+          "from": "SW-1",
+          "to": "SW-2",
+          "label": "e0/0",
+          "label2": "e0/0"
+        },
+        {
+          "from": "SW-1",
+          "to": "Phone",
+          "label": "e0/1"
+        },
+        {
+          "from": "Phone",
+          "to": "PC1"
+        },
+        {
+          "from": "SW-2",
+          "to": "PC2",
+          "label": "e0/1"
+        }
+      ]
+    }
   },
   "1348": {
-    "category": "topology"
+    "category": "mixed",
+    "topology": {
+      "devices": [
+        {
+          "id": "Sw1",
+          "type": "sw2",
+          "label": "Sw1"
+        },
+        {
+          "id": "Sw2",
+          "type": "sw2",
+          "label": "Sw2"
+        }
+      ],
+      "links": [
+        {
+          "from": "Sw1",
+          "to": "Sw2",
+          "label": "e0/0",
+          "label2": "e0/0"
+        }
+      ]
+    },
+    "cli": "Таблица VLAN к схеме:\nVLAN Type   | VLAN | VLAN Name  | SW1       | SW2\nData VLAN   | 77   | User_VLAN  | E0/1 - 3  | E0/1 - 3\nVoice VLAN  | 177  | Voice_VLAN | E0/1 - 3  | E0/1 - 3"
   },
   "1350": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "SW-1",
+          "type": "sw2",
+          "label": "SW-1"
+        },
+        {
+          "id": "SW-2",
+          "type": "sw2",
+          "label": "SW-2"
+        },
+        {
+          "id": "SW-3",
+          "type": "sw2",
+          "label": "SW-3"
+        },
+        {
+          "id": "SW-4",
+          "type": "sw2",
+          "label": "SW-4"
+        }
+      ],
+      "links": [
+        {
+          "from": "SW-1",
+          "to": "SW-2",
+          "label": "e0/0",
+          "label2": "e0/0",
+          "note": "оба линка в EtherChannel Po12"
+        },
+        {
+          "from": "SW-1",
+          "to": "SW-2",
+          "label": "e0/1",
+          "label2": "e0/1"
+        },
+        {
+          "from": "SW-1",
+          "to": "SW-3",
+          "label": "e0/2",
+          "label2": "e0/2"
+        },
+        {
+          "from": "SW-2",
+          "to": "SW-4",
+          "label": "e0/2",
+          "label2": "e0/2"
+        },
+        {
+          "from": "SW-3",
+          "to": "SW-4",
+          "label": "e0/1",
+          "label2": "e0/1"
+        }
+      ]
+    }
   },
   "1351": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "Internet",
+          "type": "internet",
+          "label": "Internet"
+        },
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1"
+        },
+        {
+          "id": "Sw103",
+          "type": "sw2",
+          "label": "Sw103"
+        },
+        {
+          "id": "Sw101",
+          "type": "sw2",
+          "label": "Sw101"
+        },
+        {
+          "id": "Sw102",
+          "type": "sw2",
+          "label": "Sw102"
+        },
+        {
+          "id": "PC1",
+          "type": "pc",
+          "label": "PC1",
+          "note": "Campus 1, VLAN 10, 172.16.10.10"
+        },
+        {
+          "id": "PC2",
+          "type": "pc",
+          "label": "PC2",
+          "note": "Campus 2, VLAN 20, 172.16.20.10"
+        }
+      ],
+      "links": [
+        {
+          "from": "R1",
+          "to": "Internet",
+          "label": "e0/1",
+          "note": "209.165.201.0/30"
+        },
+        {
+          "from": "Sw103",
+          "to": "R1",
+          "label": "e0/0",
+          "label2": "e0/0"
+        },
+        {
+          "from": "Sw103",
+          "to": "Sw101",
+          "label": "e0/2",
+          "label2": "e0/2",
+          "note": "Trunk"
+        },
+        {
+          "from": "Sw103",
+          "to": "Sw102",
+          "label": "e0/1",
+          "label2": "e0/2",
+          "note": "Trunk"
+        },
+        {
+          "from": "Sw101",
+          "to": "Sw102",
+          "label": "e0/1",
+          "label2": "e0/1",
+          "note": "Trunk"
+        },
+        {
+          "from": "Sw101",
+          "to": "PC1",
+          "label": "e0/0"
+        },
+        {
+          "from": "Sw102",
+          "to": "PC2",
+          "label": "e0/0"
+        }
+      ]
+    }
   },
   "1357": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1",
+          "note": "Lo1: 192.168.100.1"
+        },
+        {
+          "id": "R2",
+          "type": "router",
+          "label": "R2",
+          "note": "Lo1: 192.168.200.1"
+        },
+        {
+          "id": "R3",
+          "type": "router",
+          "label": "R3",
+          "note": "Lo1: 192.168.3.1"
+        }
+      ],
+      "links": [
+        {
+          "from": "R1",
+          "to": "R2",
+          "label": "E0/0 10.1.2.1",
+          "label2": "E0/0 10.1.2.2"
+        },
+        {
+          "from": "R1",
+          "to": "R3",
+          "label": "E0/2 10.1.3.1",
+          "label2": "E0/2 10.1.3.11"
+        },
+        {
+          "from": "R2",
+          "to": "R3",
+          "label": "E0/1 10.2.3.2",
+          "label2": "E0/1 10.2.3.3"
+        }
+      ]
+    }
   },
   "1358": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "SW-1",
+          "type": "sw2",
+          "label": "SW-1"
+        },
+        {
+          "id": "SW-2",
+          "type": "sw2",
+          "label": "SW-2"
+        },
+        {
+          "id": "SW-3",
+          "type": "sw2",
+          "label": "SW-3"
+        },
+        {
+          "id": "PC1",
+          "type": "pc",
+          "label": "PC1",
+          "note": "VLAN 99, IP 172.16.99.11"
+        },
+        {
+          "id": "PC2",
+          "type": "pc",
+          "label": "PC2",
+          "note": "VLAN DEFAULT, IP 172.16.10.22"
+        },
+        {
+          "id": "PC3",
+          "type": "pc",
+          "label": "PC3",
+          "note": "VLAN 99, IP 172.16.99.33"
+        }
+      ],
+      "links": [
+        {
+          "from": "SW-1",
+          "to": "PC1",
+          "label": "e0/2"
+        },
+        {
+          "from": "SW-1",
+          "to": "SW-2",
+          "label": "e0/0",
+          "label2": "e0/0"
+        },
+        {
+          "from": "SW-1",
+          "to": "SW-3",
+          "label": "e0/1",
+          "label2": "e0/0"
+        },
+        {
+          "from": "SW-2",
+          "to": "SW-3",
+          "label": "e0/1",
+          "label2": "e0/1"
+        },
+        {
+          "from": "SW-2",
+          "to": "PC2",
+          "label": "e0/2"
+        },
+        {
+          "from": "SW-3",
+          "to": "PC3",
+          "label": "e0/2"
+        }
+      ]
+    }
   },
   "1361": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1"
+        },
+        {
+          "id": "R2",
+          "type": "router",
+          "label": "R2"
+        }
+      ],
+      "links": [
+        {
+          "from": "R1",
+          "to": "R2",
+          "label": "e0/0",
+          "label2": "e0/0",
+          "note": "IPv4 10.0.12.4/30, IPv6 2001:db8:12::/126"
+        }
+      ]
+    }
   },
   "1362": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1"
+        },
+        {
+          "id": "R2",
+          "type": "router",
+          "label": "R2"
+        },
+        {
+          "id": "R3",
+          "type": "router",
+          "label": "R3"
+        },
+        {
+          "id": "R4",
+          "type": "router",
+          "label": "R4"
+        },
+        {
+          "id": "R5",
+          "type": "router",
+          "label": "R5"
+        },
+        {
+          "id": "R6",
+          "type": "router",
+          "label": "R6"
+        }
+      ],
+      "links": [
+        {
+          "from": "R6",
+          "to": "R4",
+          "label": "e0/0 .6",
+          "label2": "e0/2 .4",
+          "note": "10.200.220.0/24"
+        },
+        {
+          "from": "R4",
+          "to": "R2",
+          "label": "e0/0 .4",
+          "label2": "e0/1 .2",
+          "note": "10.240.24.0/29"
+        },
+        {
+          "from": "R4",
+          "to": "R3",
+          "label": "e0/1 .4",
+          "label2": "e0/1 .3",
+          "note": "10.34.34.0/29"
+        },
+        {
+          "from": "R2",
+          "to": "R1",
+          "label": "e0/0 .2",
+          "label2": "e0/0 .1",
+          "note": "10.122.12.0/30"
+        },
+        {
+          "from": "R3",
+          "to": "R1",
+          "label": "e0/0 .3",
+          "label2": "e0/1 .1",
+          "note": "10.133.13.0/28"
+        },
+        {
+          "from": "R5",
+          "to": "R1",
+          "label": "e0/0 .5",
+          "label2": "e0/2 .1",
+          "note": "10.100.110.0/25"
+        }
+      ]
+    }
   },
   "1369": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "Internet",
+          "type": "internet",
+          "label": "Internet"
+        },
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1",
+          "note": "DHCP Server"
+        },
+        {
+          "id": "Sw3",
+          "type": "sw2",
+          "label": "Sw3"
+        },
+        {
+          "id": "Sw1",
+          "type": "sw2",
+          "label": "Sw1"
+        },
+        {
+          "id": "Sw2",
+          "type": "sw2",
+          "label": "Sw2"
+        },
+        {
+          "id": "HostA",
+          "type": "pc",
+          "label": "HostA"
+        },
+        {
+          "id": "HostB",
+          "type": "pc",
+          "label": "HostB"
+        }
+      ],
+      "links": [
+        {
+          "from": "R1",
+          "to": "Internet",
+          "label": "e0/1",
+          "note": "209.165.201.0/30"
+        },
+        {
+          "from": "R1",
+          "to": "Sw3",
+          "label": "e0/0",
+          "label2": "e0/0"
+        },
+        {
+          "from": "Sw3",
+          "to": "Sw1",
+          "label": "e0/2",
+          "label2": "e0/2",
+          "note": "Trunk"
+        },
+        {
+          "from": "Sw3",
+          "to": "Sw2",
+          "label": "e0/1",
+          "label2": "e0/1",
+          "note": "Trunk"
+        },
+        {
+          "from": "Sw1",
+          "to": "HostA",
+          "label": "e0/0"
+        },
+        {
+          "from": "Sw2",
+          "to": "HostB",
+          "label": "e0/0"
+        }
+      ]
+    }
   },
   "1373": {
-    "category": "topology"
+    "category": "mixed",
+    "topology": {
+      "devices": [
+        {
+          "id": "Sw1",
+          "type": "sw2",
+          "label": "Sw1"
+        },
+        {
+          "id": "Sw2",
+          "type": "sw2",
+          "label": "Sw2"
+        },
+        {
+          "id": "PC1",
+          "type": "pc",
+          "label": "PC1",
+          "note": "VLAN 110, 10.2.2.10/24, e0/0"
+        },
+        {
+          "id": "PC2",
+          "type": "pc",
+          "label": "PC2",
+          "note": "VLAN 110, 10.2.2.20/24, e0/0"
+        }
+      ],
+      "links": [
+        {
+          "from": "Sw1",
+          "to": "PC1",
+          "label": "e0/2",
+          "note": "VLAN 110"
+        },
+        {
+          "from": "Sw2",
+          "to": "PC2",
+          "label": "e0/2",
+          "note": "VLAN 110"
+        },
+        {
+          "from": "Sw1",
+          "to": "Sw2",
+          "label": "e0/0",
+          "label2": "e0/0",
+          "note": "оба линка в EtherChannel Po 20"
+        },
+        {
+          "from": "Sw1",
+          "to": "Sw2",
+          "label": "e0/1",
+          "label2": "e0/1"
+        }
+      ]
+    },
+    "cli": "Таблица к схеме:\nName | IP Address    | Interface | VLAN\nPC1  | 10.2.2.10/24  | e0/0      | 110\nPC2  | 10.2.2.20/24  | e0/0      | 110"
   },
   "1376": {
-    "category": "topology"
+    "category": "mixed",
+    "topology": {
+      "devices": [
+        {
+          "id": "Sw1",
+          "type": "sw2",
+          "label": "Sw1"
+        },
+        {
+          "id": "Sw2",
+          "type": "sw2",
+          "label": "Sw2"
+        }
+      ],
+      "links": [
+        {
+          "from": "Sw1",
+          "to": "Sw2",
+          "label": "e0/0",
+          "label2": "e0/0"
+        }
+      ]
+    },
+    "cli": "Таблица VLAN к схеме:\nVLAN Type   | VLAN | VLAN Name      | SW1      | SW2\nData VLAN   | 77   | IT_User_VLAN   | E0/1 - 2 | E0/3\nData VLAN   | 88   | HR_User_VLAN   | E0/3     | E0/1\nVoice VLAN  | 177  | IT_Voice_VLAN  | E0/1     | E0/2\nVoice VLAN  | 188  | HR_Voice_VLAN  | E0/3     | E0/1"
   },
   "1377": {
-    "category": "topology"
+    "category": "topology",
+    "topology": {
+      "devices": [
+        {
+          "id": "R1",
+          "type": "router",
+          "label": "R1"
+        },
+        {
+          "id": "R2",
+          "type": "router",
+          "label": "R2",
+          "note": "Loopback 0: 10.2.2.2/32"
+        },
+        {
+          "id": "R3",
+          "type": "router",
+          "label": "R3",
+          "note": "Loopback 0: 10.3.3.3/32"
+        }
+      ],
+      "links": [
+        {
+          "from": "R1",
+          "to": "R3",
+          "note": "10.0.33.0/29"
+        },
+        {
+          "from": "R1",
+          "to": "R2",
+          "note": "10.0.22.0/30"
+        },
+        {
+          "from": "R3",
+          "to": "R2",
+          "note": "10.0.233.0/28"
+        }
+      ]
+    }
   }
 }
