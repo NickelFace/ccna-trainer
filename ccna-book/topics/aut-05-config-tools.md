@@ -6,8 +6,8 @@ lead: Push против pull, агент или без агента, декла�
 blueprint: ["6.6"]
 minutes: 25
 match:
-  key: ["\\bAnsible\\b", "\\bTerraform\\b", "\\bPuppet\\b", "\\bChef\\b", "playbook", "\\bcookbook\\b", "\\bmanifest\\b", "agent-?less", "configuration management tool"]
-  re: ["push model", "pull model", "idempotent.*configuration", "declarative", "\\bYAML\\b.*playbook", "provisioning tool", "desired state"]
+  key: ["\\bAnsible\\b", "\\bTerraform\\b", "\\bPuppet\\b", "\\bChef\\b", "playbook", "\\bcookbook\\b", "\\bmanifest\\b", "agent-?less", "configuration management tool", "configuration-management technolog", "configuration management term", "technology types.*(puppet|ansible|chef)"]
+  re: ["push model", "pull model", "idempotent.*configuration", "declarative", "\\bYAML\\b.*playbook", "provisioning tool", "desired state", "configuration-management technolog", "configuration management term"]
 ---
 
 ## Что общего

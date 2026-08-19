@@ -6,8 +6,8 @@ lead: Что меняется при переходе от ручной наст
 blueprint: ["6.1", "6.2"]
 minutes: 25
 match:
-  key: ["impact.*automation", "traditional.*(network|management)", "controller-based", "automation.*benefit", "manual configuration", "configuration drift", "\\bIaC\\b|infrastructure as code"]
-  re: ["human error", "consistency.*configuration", "scale.*network.*manage", "device-by-device", "single point of.*management", "network automation"]
+  key: ["impact.*automation", "traditional.*(network|management)", "controller-based", "automation.*benefit", "manual configuration", "configuration drift", "\\bIaC\\b|infrastructure as code", "networking types", "device management", "device-management (technolog|types|deployment)", "automated network management"]
+  re: ["human error", "consistency.*configuration", "scale.*network.*manage", "device-by-device", "single point of.*management", "network automation", "networking types", "device management", "device-management (technolog|types|deployment)", "automated network management", "reduce operational costs"]
 ---
 
 ## Что не так с ручной настройкой

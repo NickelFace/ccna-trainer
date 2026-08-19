@@ -7,7 +7,7 @@ blueprint: ["6.7"]
 minutes: 30
 match:
   key: ["\\bJSON\\b", "\\bYAML\\b", "\\bXML\\b", "data (format|encoding|serialization)", "key.?value pair", "\\barray\\b.*\\bobject\\b", "valid json"]
-  re: ["curly brace", "square bracket", "\\bschema\\b.*data", "parse.*data", "structured data", "within this JSON"]
+  re: ["curly brace", "square bracket", "\\bschema\\b.*data", "parse.*data", "structured data", "within this JSON", "represented beginning with line", "\"[a-z]+\":\\s*[\"\\[{]"]
 ---
 
 ## Зачем форматы данных
