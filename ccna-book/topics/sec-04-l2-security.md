@@ -6,8 +6,8 @@ lead: Port security, DHCP snooping и Dynamic ARP Inspection: три механ�
 blueprint: ["5.7"]
 minutes: 40
 match:
-  key: ["port security", "switchport port-security", "dhcp snooping", "dynamic arp inspection", "\\bDAI\\b", "err-?disable", "sticky", "mac flooding", "rogue dhcp", "arp spoof"]
-  re: ["violation (mode|shutdown|restrict|protect)", "trusted port", "untrusted port", "binding table", "layer 2 attack", "maximum.*mac address"]
+  key: ["port security", "switchport port-security", "dhcp snooping", "dynamic arp inspection", "\\bDAI\\b", "err-?disable", "sticky", "mac flooding", "rogue dhcp", "arp spoof", "ip arp inspection", "unused ports.*default vlan"]
+  re: ["violation (mode|shutdown|restrict|protect)", "trusted port", "untrusted port", "binding table", "layer 2 attack", "maximum.*mac address", "ip arp inspection", "protect unused ports", "administratively shut down the ports"]
 ---
 
 ## Три атаки и три ответа

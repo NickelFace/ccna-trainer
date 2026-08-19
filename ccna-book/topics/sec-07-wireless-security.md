@@ -6,8 +6,8 @@ lead: WEP, WPA, WPA2 и WPA3, personal против enterprise, что тако�
 blueprint: ["5.9", "5.10"]
 minutes: 30
 match:
-  key: ["\\bWPA[23]?\\b", "\\bWEP\\b", "\\bPSK\\b", "\\bSAE\\b", "wireless security", "\\bTKIP\\b", "\\bCCMP\\b", "personal.*enterprise", "wpa2.*psk"]
-  re: ["wireless.*encrypt", "pre-shared key.*wireless", "802\\.11i", "open authentication", "wireless authentication", "guest.*wireless.*secur"]
+  key: ["\\bWPA[23]?\\b", "\\bWEP\\b", "\\bPSK\\b", "\\bSAE\\b", "wireless security", "\\bTKIP\\b", "\\bCCMP\\b", "personal.*enterprise", "wpa2.*psk", "wireless.*controller.*security setting", "management connections to a wireless lan controller"]
+  re: ["wireless.*encrypt", "pre-shared key.*wireless", "802\\.11i", "open authentication", "wireless authentication", "guest.*wireless.*secur", "wireless.*controller.*security", "management connections? to a.*wireless lan controller", "increase security for management"]
 ---
 
 ## Почему в радио всё сложнее
@@ -65,6 +65,14 @@ match:
 
 Настоящие меры: сильный стандарт шифрования, 802.1X там, где есть учётные записи,
 отдельная гостевая VLAN, обнаружение rogue-точек на контроллере.
+
+## Защита самого управления контроллером
+
+Безопасность беспроводной сети не заканчивается на клиентах — сам WLC тоже управляется по
+сети, и та же логика «убрать открытые протоколы», что и для обычного роутера (см. главу
+про доступ к устройству), применяется и к нему: **Telnet и HTTP отключают**, оставляя
+**SSH и HTTPS** — управляющие сессии контроллера ничем не отличаются от любых других в
+плане уязвимости к перехвату открытым текстом.
 
 ## Настройка WPA2-PSK в GUI контроллера
 

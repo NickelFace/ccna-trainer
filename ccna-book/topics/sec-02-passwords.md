@@ -6,8 +6,8 @@ lead: enable secret против enable password, локальные польз�
 blueprint: ["5.3", "5.4"]
 minutes: 30
 match:
-  key: ["enable secret", "enable password", "service password-encryption", "username.*secret", "password policy", "privilege level", "\\bMFA\\b|multifactor", "biometric", "certificate.*authentication", "login block-for"]
-  re: ["local password", "password complexity", "banner motd", "exec-timeout", "device access control", "strong password"]
+  key: ["enable secret", "enable password", "service password-encryption", "username.*secret", "password policy", "privilege level", "\\bMFA\\b|multifactor", "biometric", "certificate.*authentication", "login block-for", "characteristic of rsa", "generate an rsa key", "alternative to password", "encrypted password.*enable"]
+  re: ["local password", "password complexity", "banner motd", "exec-timeout", "device access control", "strong password", "characteristic of rsa", "public-key cryptosystem", "asymmetric encryption algorithm", "generate.*rsa key", "assign a dns domain", "alternative to password", "password protection.*implement", "encrypted password.*enable command", "digital certificate"]
 ---
 
 ## Пароли на устройстве Cisco
@@ -89,6 +89,20 @@ login on-success log
   компрометации.
 - **Централизованная аутентификация** (RADIUS/TACACS+) — учётки живут не на устройстве, и
   уволенного сотрудника достаточно отключить в одном месте.
+
+## RSA и подготовка к генерации ключей SSH
+
+**RSA** — асимметричный алгоритм (public-key cryptosystem): пара ключей, один шифрует,
+другой расшифровывает, общий секрет по сети никогда не передаётся. Это прямой ответ на
+вопрос «what is a characteristic of RSA» — не «использует preshared key» и не «требует
+одинаковых ключей на обеих сторонах» (это было бы описанием симметричного алгоритма).
+
+На этой паре ключей строится и SSH на устройстве Cisco. Прежде чем выполнить
+`crypto key generate rsa`, устройству нужно полное доменное имя — команда вычисляет его из
+`hostname` + `ip domain-name`, и без заданного домена IOS отказывается генерировать ключ
+вовсе. Это тот же порядок, что и в главе про доступ к устройству, здесь важно видеть его
+именно со стороны требований к ключу: **`ip domain-name` — обязательное предварительное
+условие**, а не просто хорошая практика.
 
 ## Ещё несколько обязательных мер
 

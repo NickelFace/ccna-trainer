@@ -7,8 +7,8 @@ blueprint: ["5.1", "5.2"]
 minutes: 35
 fallback: true
 match:
-  key: ["threat", "vulnerabilit", "exploit", "mitigation", "social engineering", "phishing", "\\bDoS\\b|denial of service", "brute.?force", "\\bMITM\\b|man-in-the-middle", "security (program|awareness)", "\\bCIA\\b triad"]
-  re: ["attack", "malware", "ransomware", "spoofing", "security policy", "user training", "physical access control", "least privilege", "defense in depth"]
+  key: ["threat", "vulnerabilit", "exploit", "mitigation", "social engineering", "phishing", "\\bDoS\\b|denial of service", "brute.?force", "\\bMITM\\b|man-in-the-middle", "security (program|awareness)", "\\bCIA\\b triad", "role of a firewall", "function of a firewall", "stateful inspection", "security posture", "proxy caching"]
+  re: ["attack", "malware", "ransomware", "spoofing", "security policy", "user training", "physical access control", "least privilege", "defense in depth", "role of a firewall", "function.*firewall", "stateful inspection", "segregates.*(network|zone)", "separates networks", "security domains", "protects.*internal network", "security posture", "proxy caching", "unused (or unnecessary )?(ports|interfaces|services)"]
 ---
 
 ## Четыре слова, которые различают
@@ -65,6 +65,26 @@ match:
 - **AAA** — кто ты (authentication), что тебе можно (authorization), что ты сделал
   (accounting).
 - **Обновления и инвентаризация** — нельзя защищать то, о чём не знаешь.
+
+## Устройства, которые разделяют сети по доверию
+
+Эта роль детально разбирается в главе про компоненты сети, но экзамен спрашивает про неё и
+в рамках домена безопасности отдельно — держи короткую версию под рукой:
+
+- **Firewall** — устройство, которое **пропускает или блокирует трафик между сегментами
+  разного доверия** (внутренняя сеть ↔ интернет, внутренняя сеть ↔ DMZ), решая по
+  политике, что можно, а что нет. Именно эта формулировка — «determines which packets are
+  allowed to cross from unsecured to secured networks» — правильный ответ на вопрос про
+  роль firewall, а не «блокирует весь трафик» и не «работает как шлюз по умолчанию».
+- **Stateful inspection** — firewall запоминает установленные сессии и пропускает обратный
+  трафик автоматически, не требуя отдельного правила на каждое направление (в отличие от
+  ACL, который смотрит на каждый пакет независимо — подробнее в главе про ACL).
+- Firewall — устройство, которое **сегрегирует сеть на зоны со своей политикой** (та же
+  мысль другими словами: «segregates a network into separate zones», «separates networks
+  by security domains») и тем самым **защищает внутреннюю сеть от интернета**.
+- **Proxy / Web Security Appliance (WSA)** — посредник для веб-запросов: кэширует
+  содержимое (быстрее повторные обращения) и фильтрует по репутации/категории сайта.
+  Кэширование ускоряет именно **веб-трафик**, а не сеть в целом.
 
 ## Аутентификация: три фактора
 

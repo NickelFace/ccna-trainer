@@ -6,8 +6,8 @@ lead: Три «A» по отдельности, чем TACACS+ отличает�
 blueprint: ["5.5"]
 minutes: 30
 match:
-  key: ["\\bAAA\\b", "\\bRADIUS\\b", "\\bTACACS\\+?\\b", "802\\.1X", "authentication.*authorization.*accounting", "supplicant", "authenticator"]
-  re: ["aaa new-model", "authentication server", "identity.*network access", "\\bEAP\\b", "accounting record", "centralized authentication"]
+  key: ["\\bAAA\\b", "\\bRADIUS\\b", "\\bTACACS\\+?\\b", "802\\.1X", "authentication.*authorization.*accounting", "supplicant", "authenticator", "distinguish.*authentication.*(author|accounting)", "authentication.*(differ|distinguish).*(author|accounting)"]
+  re: ["aaa new-model", "authentication server", "identity.*network access", "\\bEAP\\b", "accounting record", "centralized authentication", "distinguish.*authentication", "authentication.*(differ|distinguish)", "logs? ?in.*username and password", "management security process"]
 ---
 
 ## Три «A»
