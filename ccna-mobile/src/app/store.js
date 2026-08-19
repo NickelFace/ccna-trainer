@@ -11,6 +11,7 @@
 import { Preferences } from '@capacitor/preferences';
 import { nextState, pruneGhosts } from '../engine/srs.js';
 import { dayKey, normalizeActivity } from '../engine/stats.js';
+import { isEmptyAnswer } from '../engine/grade.js';
 
 const KEY = {
   profile: 'ccna.profile',
@@ -200,9 +201,12 @@ export const store = {
     return this.session;
   },
 
+  // Emptying an answer removes it rather than storing an empty one — every check for
+  // «has this question been answered» is a check that the entry exists. See isEmptyAnswer.
   answer(qn, value) {
     if (!this.session) return null;
-    this.session.answers[qn] = value;
+    if (isEmptyAnswer(value)) delete this.session.answers[qn];
+    else this.session.answers[qn] = value;
     return this.patchSession({});
   },
 

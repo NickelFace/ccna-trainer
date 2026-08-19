@@ -8,6 +8,20 @@
 // Sorted key letters, so 'CA' and ['C','A'] compare equal.
 const sortedKey = a => String(a || '').split('').sort().join('');
 
+// A stored answer with nothing left in it. Both writers save on every tap, including the
+// tap that clears the last option or pulls the last chip back out of the buckets, and what
+// they hand over then is `{ given: [] }` / `{ placement: {} }`. A session counts a question
+// as answered by the answer merely existing, so storing that would tick the cell in the ☰
+// grid and walk «Остались вопросы без ответа» straight past a question nobody answered.
+//
+// `ok` is the record of having been graded, which is an answer whatever its shape.
+export function isEmptyAnswer(ans) {
+  if (!ans || ans.ok !== undefined) return false;
+  if (Array.isArray(ans.given)) return ans.given.length === 0;
+  if (ans.placement) return Object.keys(ans.placement).length === 0;
+  return false;
+}
+
 export function isCorrect(q, ans) {
   if (!ans) return false;
   if (q.y === 'dd') return ddCorrect(q, ans.placement || {});
@@ -35,6 +49,15 @@ export function ddExpected(q) {
 // excluded, so this can be smaller than items.length.
 export function ddNeeded(q) {
   return q.dd.buckets.reduce((a, b) => a + b.correct.length, 0);
+}
+
+// How many of the needed slots a placement actually fills. A distractor is placed like
+// anything else but belongs in no bucket, so it fills nothing: counting raw placements
+// would call a board finished while required items were still in the bank, and could
+// report more filled slots than there are (the «5 из 4» in the question header).
+export function ddFilled(q, placement) {
+  const expected = ddExpected(q);
+  return Object.keys(placement).filter(i => expected[i] != null).length;
 }
 
 // Correct iff every item sits where it belongs, distractors included: leaving a

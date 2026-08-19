@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { isCorrect, ddCorrect, ddExpected, ddNeeded } from '../src/engine/grade.js';
+import { isCorrect, ddCorrect, ddExpected, ddFilled, ddNeeded, isEmptyAnswer } from '../src/engine/grade.js';
 
 const mc = a => ({ n: 1, y: 'txt', dom: 'NF', a });
 
@@ -57,4 +57,33 @@ test('isCorrect routes drag-and-drop through ddCorrect', () => {
   assert.equal(isCorrect(dd(), { placement: { 0: 1, 1: 0, 2: 0 } }), true);
   assert.equal(isCorrect(dd(), { placement: {} }), false);
   assert.equal(isCorrect(dd(), {}), false);
+});
+
+test('ddFilled counts filled slots, not placed chips', () => {
+  assert.equal(ddFilled(dd(), {}), 0);
+  assert.equal(ddFilled(dd(), { 0: 1, 1: 0, 2: 0 }), 3);
+  // The distractor is on the board but fills nothing, so two of the three slots are still
+  // open — this is the count "Проверить" and the header readout both go by.
+  assert.equal(ddFilled(dd(), { 0: 1, 3: 0 }), 1);
+  // Never more than ddNeeded, however much is piled into the buckets.
+  assert.equal(ddFilled(dd(), { 0: 1, 1: 0, 2: 0, 3: 0 }), ddNeeded(dd()));
+});
+
+test('a slot filled from the wrong bucket is still filled', () => {
+  // Wrong, but finished: the board is complete enough to be checked, and checking it is
+  // how the user finds out it is wrong.
+  assert.equal(ddFilled(dd(), { 0: 0, 1: 1, 2: 1 }), 3);
+  assert.equal(ddCorrect(dd(), { 0: 0, 1: 1, 2: 1 }), false);
+});
+
+test('an answer emptied of its last selection is an empty answer', () => {
+  assert.equal(isEmptyAnswer({ given: [] }), true);
+  assert.equal(isEmptyAnswer({ placement: {} }), true);
+  assert.equal(isEmptyAnswer({ given: ['A'] }), false);
+  assert.equal(isEmptyAnswer({ placement: { 0: 1 } }), false);
+});
+
+test('a graded answer is never empty, whatever its shape', () => {
+  assert.equal(isEmptyAnswer({ given: [], ok: false }), false);
+  assert.equal(isEmptyAnswer({ placement: {}, ok: false }), false);
 });

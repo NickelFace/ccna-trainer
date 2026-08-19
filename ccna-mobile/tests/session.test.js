@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { firstUnansweredIndex, answeredCount } from '../src/app/session.js';
+import { firstUnansweredIndex, answeredCount, finishSession } from '../src/app/session.js';
 
 const session = (qs, ...answered) => ({
   qs,
@@ -29,4 +29,12 @@ test('an untouched session points at its own first question', () => {
   const s = session([10, 20]);
   assert.equal(firstUnansweredIndex(s), 0);
   assert.equal(answeredCount(s), 0);
+});
+
+// The expiring exam clock finishes the run outright. If the user was mid-dialog they can
+// reach finish() again a moment later, on a session the store has already cleared — which
+// used to throw on session.qs rather than simply having nothing left to do.
+test('finishing an already finished session does nothing instead of throwing', () => {
+  assert.equal(finishSession(null, null), null);
+  assert.equal(finishSession(undefined, null), null);
 });

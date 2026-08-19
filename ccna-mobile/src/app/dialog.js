@@ -8,6 +8,12 @@
 // alone» — see tryFinish in the question screen.
 import { esc } from './dom.js';
 
+// Every live dialog, so the app can take one down itself. The exam clock does not stop for
+// a dialog: it can run out while «Остались вопросы без ответа» or «Выйти из экзамена?» is
+// up, and the tap that lands afterwards would be acting on a session that is already
+// scored and filed. See closeDialogs.
+const openDialogs = new Set();
+
 export function confirmDialog({ title, text, ok = 'Да', cancel = 'Отмена' }) {
   return new Promise(resolve => {
     const root = document.createElement('div');
@@ -22,7 +28,10 @@ export function confirmDialog({ title, text, ok = 'Да', cancel = 'Отмена
         </div>
       </div>`;
 
-    const close = answer => { root.remove(); resolve(answer); };
+    const close = answer => { openDialogs.delete(dismiss); root.remove(); resolve(answer); };
+    const dismiss = () => close(null);
+    openDialogs.add(dismiss);
+
     root.addEventListener('click', e => {
       const act = e.target.closest('[data-act]')?.dataset.act;
       if (act) close(act === 'ok');
@@ -30,4 +39,11 @@ export function confirmDialog({ title, text, ok = 'Да', cancel = 'Отмена
     });
     document.getElementById('app').append(root);
   });
+}
+
+// Dismiss whatever is up, as if the user had tapped outside it. `null` is deliberately the
+// same answer that gives, because every caller already reads it as «asked to be left
+// alone» and does nothing — which is exactly right when the question underneath is gone.
+export function closeDialogs() {
+  for (const dismiss of [...openDialogs]) dismiss();
 }

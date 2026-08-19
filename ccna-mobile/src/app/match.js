@@ -6,7 +6,7 @@
 // grading still goes through ddCorrect/ddNeeded from the engine, distractors included.
 import { esc } from './dom.js';
 import { store } from './store.js';
-import { ddCorrect, ddExpected, ddNeeded } from '../engine/grade.js';
+import { ddCorrect, ddExpected, ddFilled, ddNeeded } from '../engine/grade.js';
 import { gradesImmediately } from './session.js';
 
 // { qn, placement: { itemIndex: bucketIndex }, selected: itemIndex | null }
@@ -22,8 +22,13 @@ export function syncMatch(q, session) {
 
 export const resetMatch = () => { state = { qn: null, placement: {}, selected: null }; };
 
+// Two different counts, and the difference is the distractors. «Сброс» asks whether there
+// is anything at all to take back off the board, so it wants the raw number; the progress
+// readout and «Проверить» ask how much of the answer is built, which only the items that
+// belong somewhere can move — see ddFilled.
 export const placedCount = () => Object.keys(state.placement).length;
-export const matchComplete = q => placedCount() >= ddNeeded(q);
+export const filledCount = q => ddFilled(q, state.placement);
+export const matchComplete = q => filledCount(q) >= ddNeeded(q);
 export const selectedItem = q => state.selected === null ? null : q.dd.items[state.selected];
 
 const inBucket = bi => Object.entries(state.placement)

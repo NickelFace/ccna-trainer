@@ -133,7 +133,12 @@ export const firstUnansweredIndex = session =>
   session.qs.findIndex(n => session.answers[n] === undefined);
 
 // Scores the session, files it in the attempt history and clears the active session.
+//
+// Returns null when there is no session to finish. A run can only be scored once, and an
+// expiring exam clock can reach here at the same moment the user does — see finish() in
+// the question screen, which is the caller that has to survive that race.
 export function finishSession(session, bank) {
+  if (!session) return null;
   const questions = sessionQuestions(session, bank);
   const result = scoreAttempt(questions, session.answers, bank.meta.domains);
 

@@ -5,7 +5,7 @@
 //   exam     — tap is the answer and is stored at once, no feedback, timer in the header.
 import { esc, h } from '../dom.js';
 import { store } from '../store.js';
-import { confirmDialog } from '../dialog.js';
+import { confirmDialog, closeDialogs } from '../dialog.js';
 import { openSheet, closeSheet } from '../sheet.js';
 import { openExhibit } from '../exhibit.js';
 import { loadIndex, loadMap } from '../theory.js';
@@ -20,7 +20,7 @@ import {
 } from '../qmarkup.js';
 import {
   syncMatch, resetMatch, matchBody, wireMatch, gradeMatch,
-  matchComplete, placedCount, selectedItem, clearSelection, resetPlacement,
+  matchComplete, placedCount, filledCount, selectedItem, clearSelection, resetPlacement,
 } from '../match.js';
 import { keepScreenOn, releaseScreen } from '../wakelock.js';
 import { result as resultScreen } from './result.js';
@@ -96,7 +96,7 @@ function header(ctx) {
   // question that slot shows how much of the board is filled instead (spec 05).
   const rightSlot = s.endsAt
     ? '<span class="mono q-timer" data-role="timer"></span>'
-    : q.y === 'dd' ? `<span class="mono q-placed">${placedCount()} из ${ddNeeded(q)}</span>` : '<span></span>';
+    : q.y === 'dd' ? `<span class="mono q-placed">${filledCount(q)} из ${ddNeeded(q)}</span>` : '<span></span>';
 
   // The header is rebuilt from scratch on every render, so the bar starts at the width it
   // last had and grows to the new one on the next frame — otherwise it would jump.
@@ -231,8 +231,9 @@ function bindSwipe(node, ctx) {
 
   const width = () => node.offsetWidth || window.innerWidth;
   // Swiping right goes back; there is nothing behind the first question, and the drag
-  // turns into a rubber band that says so.
-  const blocked = d => d > 0 && store.session.i === 0;
+  // turns into a rubber band that says so. A session that ended under the finger — the
+  // exam clock running out mid-drag — has nothing behind it either, and no `i` to read.
+  const blocked = d => d > 0 && (store.session?.i ?? 0) === 0;
 
   const paint = d => {
     node.style.transform = `translate3d(${d.toFixed(1)}px,0,0)`;
@@ -240,7 +241,7 @@ function bindSwipe(node, ctx) {
   };
 
   node.addEventListener('touchstart', e => {
-    if (e.touches.length !== 1 || animating) return;
+    if (e.touches.length !== 1 || animating || !store.session) return;
     // A finger arriving mid-entrance takes over: the keyframes outrank the inline
     // transform the drag is about to write, so the animation has to go first.
     node.classList.remove('in-next', 'in-prev');
@@ -280,7 +281,9 @@ function bindSwipe(node, ctx) {
     // pulling back toward rest is how you cancel, however fast you let go.
     const flick = Math.abs(v) > COMMIT_V && Math.sign(v) === Math.sign(dx) && Math.abs(dx) > FLICK_MIN;
     const far = Math.abs(dx) > width() * COMMIT_RATIO || flick;
-    if (far && !blocked(dx)) handOff(node, ctx, dx < 0 ? 1 : -1);
+    // The session can end between touchstart and here; there is nowhere left to hand off
+    // to, and the pane is about to be replaced by the result screen anyway.
+    if (far && store.session && !blocked(dx)) handOff(node, ctx, dx < 0 ? 1 : -1);
     else settle(node);
   };
   node.addEventListener('touchend', release, { passive: true });
@@ -478,7 +481,13 @@ function tryFinish(ctx) {
   });
 }
 
+// A run is scored once. The exam clock keeps ticking behind a dialog, so the timer can get
+// here while «Остались вопросы без ответа» or «Выйти из экзамена?» is still up; those
+// dialogs come down with it, and whatever the user taps a moment later finds a session
+// that is already over and stops here rather than scoring it a second time.
 function finish(ctx) {
+  if (!store.session) return;
+  closeDialogs();
   closeReview();
   stopTimer();
   const { attempt, result } = finishSession(store.session, ctx.bank);
