@@ -39,9 +39,14 @@ export function dueQueue(srs, now, { limit = Infinity, has = () => true } = {}) 
 export const dueCount = (srs, now, opts = {}) =>
   dueQueue(srs, now, { ...opts, limit: Infinity }).length;
 
-// When the next question falls due, for the "всё повторено" empty state.
-export function nextDueAt(srs) {
-  const times = Object.values(srs).map(s => s.dueAt);
+// When the next question falls due, for the "всё повторено" empty state. Filtered by
+// `has` the same way dueQueue is — otherwise a question dropped from the bank since
+// (build_data.py renumbers or removes one) would pin this to its own dueAt forever, since
+// it can never be answered again to move it along.
+export function nextDueAt(srs, { has = () => true } = {}) {
+  const times = Object.entries(srs)
+    .filter(([qn]) => has(Number(qn)))
+    .map(([, s]) => s.dueAt);
   return times.length ? Math.min(...times) : null;
 }
 
@@ -50,4 +55,13 @@ export function boxHistogram(srs) {
   const bins = Array.from({ length: MAX_BOX }, () => 0);
   for (const state of Object.values(srs)) bins[Math.min(state.box, MAX_BOX) - 1]++;
   return bins;
+}
+
+// Entries for questions no longer in the bank, dropped for good. The filter above keeps
+// a ghost from being offered as "the next repetition"; this is what actually clears it out
+// of storage — called once at boot, when the current bank is known. Returns a fresh object
+// only when something was actually removed, so a caller can skip writing back otherwise.
+export function pruneGhosts(srs, has) {
+  const kept = Object.entries(srs).filter(([qn]) => has(Number(qn)));
+  return kept.length === Object.keys(srs).length ? srs : Object.fromEntries(kept);
 }

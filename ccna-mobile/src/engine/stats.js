@@ -120,12 +120,23 @@ export const answeredOn = (activity, ts = Date.now()) => dayStats(activity, ts).
 export const answeredTotal = activity =>
   Object.values(activity).reduce((sum, d) => sum + (d?.total || 0), 0);
 
+// One calendar day back (or forward) from a timestamp, in local time — not a fixed
+// 86_400_000 ms step. Sydney's DST change makes some real days 23h or 25h long; stepping
+// by a fixed millisecond count walks past (or lands short of) the local midnight on the
+// day the clocks move, which quietly breaks a streak that is actually intact or, further
+// out, drifts the whole activity strip by a day. `setDate` does calendar-field arithmetic
+// instead, so it always lands on the right local date.
+const addDays = (ts, n) => {
+  const d = new Date(ts);
+  d.setDate(d.getDate() + n);
+  return d.getTime();
+};
+
 // The last `days` calendar days ending today, oldest first — what the Progress tab's
 // activity strip draws one bar per.
 export function recentDays(activity, now = Date.now(), days = 14) {
-  const DAY = 86_400_000;
   return Array.from({ length: days }, (_, i) => {
-    const ts = now - (days - 1 - i) * DAY;
+    const ts = addDays(now, -(days - 1 - i));
     return { key: dayKey(ts), ts, ...dayStats(activity, ts) };
   });
 }
@@ -134,10 +145,9 @@ export function recentDays(activity, now = Date.now(), days = 14) {
 // still in progress does not break the streak: if nothing has been answered yet today,
 // the count starts from yesterday.
 export function streakDays(activity, now = Date.now()) {
-  const DAY = 86_400_000;
   let cursor = now;
-  if (!answeredOn(activity, cursor)) cursor -= DAY;
+  if (!answeredOn(activity, cursor)) cursor = addDays(cursor, -1);
   let streak = 0;
-  while (answeredOn(activity, cursor)) { streak++; cursor -= DAY; }
+  while (answeredOn(activity, cursor)) { streak++; cursor = addDays(cursor, -1); }
   return streak;
 }

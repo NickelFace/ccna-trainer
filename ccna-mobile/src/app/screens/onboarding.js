@@ -7,7 +7,7 @@
 // UI. See the note in ANDROID_APP.md terms: it needs an i18n layer first.
 import { esc, h } from '../dom.js';
 import { store } from '../store.js';
-import { DAY_MS } from '../../engine/srs.js';
+import { dayKey } from '../../engine/stats.js';
 
 const STEPS = [
   {
@@ -52,7 +52,13 @@ function commit(ctx) {
   const days = picked.examDate;
   const option = STEPS[1].options.find(o => o.value === (days ?? null));
   patch.dailyGoal = option?.goal ?? 30;
-  patch.examDate = days ? new Date(Date.now() + days * DAY_MS).toISOString().slice(0, 10) : null;
+  // Local calendar date, not `toISOString().slice(0, 10)` — that reads the UTC day, which
+  // east of UTC (Sydney) is already tomorrow in the evening, so "через месяц" landed a day
+  // early. `setDate` adds calendar days, not a fixed 24h step, so a DST change inside the
+  // window can't shift it either.
+  const future = new Date();
+  if (days) future.setDate(future.getDate() + days);
+  patch.examDate = days ? dayKey(future.getTime()) : null;
   patch.onboarded = true;
   store.patchProfile(patch);
   store.flush();

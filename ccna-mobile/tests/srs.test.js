@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  nextState, isDue, dueQueue, dueCount, nextDueAt, boxHistogram,
+  nextState, isDue, dueQueue, dueCount, nextDueAt, boxHistogram, pruneGhosts,
   intervalMs, INTERVAL_DAYS, MAX_BOX, DAY_MS,
 } from '../src/engine/srs.js';
 
@@ -81,7 +81,29 @@ test('nextDueAt finds the soonest, and is null on an empty map', () => {
   assert.equal(nextDueAt({}), null);
 });
 
+test('nextDueAt skips a question missing from the bank, same as dueQueue', () => {
+  // 11 is the soonest overall (NOW - days(2)) but is a "ghost" here — dropped from the
+  // bank since. Without the filter this would keep reporting it as the next repetition
+  // forever, since a ghost can never be answered to move it along.
+  const has = qn => qn !== 11;
+  assert.equal(nextDueAt(SRS, { has }), NOW - days(1));   // qn 10, the next soonest
+  assert.equal(nextDueAt({ 11: SRS[11] }, { has }), null);
+});
+
 test('the histogram counts questions per box', () => {
   assert.deepEqual(boxHistogram(SRS), [2, 1, 1, 0, 1]);
   assert.deepEqual(boxHistogram({}), [0, 0, 0, 0, 0]);
+});
+
+test('pruneGhosts drops entries for questions missing from the bank', () => {
+  const has = qn => qn !== 11 && qn !== 13;
+  const pruned = pruneGhosts(SRS, has);
+  assert.deepEqual(Object.keys(pruned).map(Number).sort(), [10, 12, 14]);
+  assert.equal(pruned[10], SRS[10]);   // surviving entries are untouched, not copied
+});
+
+test('pruneGhosts returns the same reference when nothing was dropped', () => {
+  assert.equal(pruneGhosts(SRS, () => true), SRS);
+  const empty = {};
+  assert.equal(pruneGhosts(empty, () => false), empty);   // vacuously nothing to drop
 });

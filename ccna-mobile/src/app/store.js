@@ -9,7 +9,7 @@
 // flush, so tapping through ten options costs one write, not ten. flush() forces it out
 // when the app is about to go away.
 import { Preferences } from '@capacitor/preferences';
-import { nextState } from '../engine/srs.js';
+import { nextState, pruneGhosts } from '../engine/srs.js';
 import { dayKey, normalizeActivity } from '../engine/stats.js';
 
 const KEY = {
@@ -155,6 +155,18 @@ export const store = {
 
   recordAnswers(pairs, mode, now = Date.now()) {
     for (const [qn, correct] of pairs) this.recordAnswer(qn, correct, mode, now);
+  },
+
+  // Called once at boot, when the current bank is known — drops SRS entries for questions
+  // the bank no longer has (build_data.py renumbers or removes some on a rebuild). Left in
+  // place they're "ghosts": excluded from dueCount already, but still sitting there with a
+  // dueAt that can never be cleared, which is exactly what nextDueAt used to report as the
+  // next repetition.
+  pruneGhostSrs(has) {
+    const pruned = pruneGhosts(this.srs, has);
+    if (pruned === this.srs) return;
+    this.srs = pruned;
+    this._touch('srs');
   },
 
   // Keep the map from growing without bound; a year of history is more than the streak

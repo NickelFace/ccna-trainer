@@ -7,6 +7,10 @@ import {
 } from '../src/engine/stats.js';
 import { DOMAINS } from './helpers.js';
 
+// Pin the zone rather than trusting the runner's own — the streak/recentDays cases below
+// exist specifically to cross a Sydney DST change (Australia/Sydney is UTC+10/+11).
+process.env.TZ = 'Australia/Sydney';
+
 const q = (n, tp, dom = 'NF', a = 'A') => ({ n, tp, dom, y: 'txt', a, o: { A: 'a', B: 'b' } });
 
 const BANK = [
@@ -176,4 +180,49 @@ test('a day that has not been worked yet does not break the streak', () => {
   assert.equal(streakDays(activityFor(1, 2, 3), NOON), 3);
   // Two idle days in a row does break it.
   assert.equal(streakDays(activityFor(2, 3), NOON), 0);
+});
+
+// ------------------------------------------------------- DST (Australia/Sydney) crossing
+// 2026-10-04 is the day Sydney's clocks jump forward (2am -> 3am AEST -> AEDT), so that
+// calendar day is only 23 hours long. Stepping "back one day" by a fixed 86_400_000 ms
+// from just after midnight the day after overshoots past its start entirely — the day
+// gets skipped rather than visited.
+const day = (y, m, d) => `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+const answered = { total: 5, wrong: 1, srs: 2 };
+const activityOct2to5 = {
+  [day(2026, 10, 2)]: answered,
+  [day(2026, 10, 3)]: answered,
+  [day(2026, 10, 4)]: answered,   // the short day itself
+  [day(2026, 10, 5)]: answered,
+};
+const justAfterMidnightOct5 = new Date(2026, 9, 5, 0, 30, 0).getTime();
+
+test('recentDays visits every calendar day across a spring-forward transition, none skipped', () => {
+  const days = recentDays(activityOct2to5, justAfterMidnightOct5, 4);
+  assert.deepEqual(days.map(d => d.key), [day(2026, 10, 2), day(2026, 10, 3), day(2026, 10, 4), day(2026, 10, 5)]);
+  assert.ok(days.every(d => d.total === 5));   // every one of the four days has activity
+});
+
+test('the streak counts all four consecutive days across the same transition', () => {
+  assert.equal(streakDays(activityOct2to5, justAfterMidnightOct5), 4);
+});
+
+// 2026-04-05 is the clock-back day (3am -> 2am AEDT -> AEST), 25 hours long — the failure
+// mode here would be the opposite: landing twice on the same calendar date instead of
+// skipping one.
+const activityApr3to6 = {
+  [day(2026, 4, 3)]: answered,
+  [day(2026, 4, 4)]: answered,
+  [day(2026, 4, 5)]: answered,   // the long day itself
+  [day(2026, 4, 6)]: answered,
+};
+const justAfterMidnightApr6 = new Date(2026, 3, 6, 0, 30, 0).getTime();
+
+test('recentDays does not repeat a date across a fall-back transition', () => {
+  const days = recentDays(activityApr3to6, justAfterMidnightApr6, 4);
+  assert.deepEqual(days.map(d => d.key), [day(2026, 4, 3), day(2026, 4, 4), day(2026, 4, 5), day(2026, 4, 6)]);
+});
+
+test('the streak counts all four consecutive days across the fall-back transition too', () => {
+  assert.equal(streakDays(activityApr3to6, justAfterMidnightApr6), 4);
 });

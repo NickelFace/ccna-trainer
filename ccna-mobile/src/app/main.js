@@ -47,6 +47,11 @@ async function boot() {
       store.clearSession();
     }
 
+    // Same rebuild can also drop or renumber a question that's sitting in the SRS map —
+    // clear those out now, while the current bank is known, rather than letting nextDueAt
+    // report a "ghost" as the next repetition forever.
+    store.pruneGhostSrs(qn => bank.byN.has(qn));
+
     bindPersistOnPause(() => reschedule());
     router.init({ tabs: TABS, ctx: { bank } });
 

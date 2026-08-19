@@ -7,6 +7,7 @@ import { store } from '../store.js';
 import { readiness, readinessDelta } from '../../engine/readiness.js';
 import { dueQueue, dueCount, nextDueAt, DAY_MS } from '../../engine/srs.js';
 import { streakDays, answeredOn, answeredTotal, toneFor } from '../../engine/stats.js';
+import { daysUntil } from '../../engine/localdate.js';
 import { mockState } from '../../engine/plan.js';
 import { remainingMs, isExpired, finishSession, startSrs, startPractice } from '../session.js';
 import { confirmDialog } from '../dialog.js';
@@ -35,17 +36,14 @@ const plural = (n, one, few, many) => {
 
 const groupThousands = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
-const daysUntil = iso => {
-  if (!iso) return null;
-  const diff = new Date(iso).getTime() - Date.now();
-  return diff <= 0 ? 0 : Math.ceil(diff / DAY_MS);
-};
-
 // ---------------------------------------------------------------- readiness
 function readinessBlock(r, delta, profile) {
   const left = daysUntil(profile.examDate);
   const sub = [
-    left === null ? 'дата экзамена не задана' : left === 0 ? 'экзамен сегодня' : `экзамен через ${left} ${plural(left, 'день', 'дня', 'дней')}`,
+    left === null ? 'дата экзамена не задана'
+      : left < 0 ? `дата экзамена прошла, ${-left} ${plural(-left, 'день', 'дня', 'дней')} назад`
+      : left === 0 ? 'экзамен сегодня'
+      : `экзамен через ${left} ${plural(left, 'день', 'дня', 'дней')}`,
     'порог 825',
   ].join(' · ');
 
@@ -189,7 +187,7 @@ export const home = {
 
     const has = qn => bank.byN.has(qn);
     const due = dueCount(store.srs, now, { has });
-    const soonest = nextDueAt(store.srs);
+    const soonest = nextDueAt(store.srs, { has });
     const nextDue = soonest ? Math.max(1, Math.ceil((soonest - now) / DAY_MS)) : null;
 
     // Weakest domain by the same windowed numbers the forecast uses, so the plan and the

@@ -12,7 +12,8 @@
 import { esc, h } from '../dom.js';
 import { store } from '../store.js';
 import { LEVELS } from '../../engine/ai-prompt.js';
-import { DAY_MS } from '../../engine/srs.js';
+import { daysUntil } from '../../engine/localdate.js';
+import { dayKey } from '../../engine/stats.js';
 import { DEFAULT_TIME, requestPermission, reschedule } from '../notify.js';
 
 // The onboarding presets, as a plain list — the pace a learner picks is one of these four
@@ -33,13 +34,10 @@ const plural = (n, one, few, many) => {
   return many;
 };
 
-const today = () => new Date(Date.now()).toISOString().slice(0, 10);
-
-const daysUntil = iso => {
-  if (!iso) return null;
-  const diff = new Date(iso).getTime() - Date.now();
-  return diff <= 0 ? 0 : Math.ceil(diff / DAY_MS);
-};
+// Local date, not `toISOString().slice(0, 10)` — that reads the UTC calendar day, which
+// east of UTC (Sydney) is still yesterday for the first hours of the local day, letting
+// the date-input's `min` reject today's own date.
+const today = () => dayKey(Date.now());
 
 // The one line that answers "по какому плану я иду": the pace, the deadline, and what the
 // two together come out to. Without it the numbers are set in three places and joined
@@ -53,6 +51,7 @@ function planLine(profile) {
   const goal = profile.dailyGoal;
   const perDay = `${goal} ${plural(goal, 'вопрос', 'вопроса', 'вопросов')} в день`;
   if (left === null) return `${perDay}, даты экзамена нет — обратного отсчёта на главной не будет.`;
+  if (left < 0) return `Дата экзамена прошла, ${-left} ${plural(-left, 'день', 'дня', 'дней')} назад — обнови её ниже, если пересдаёшь, или убери. Норма — ${perDay}.`;
   if (left === 0) return `Экзамен сегодня. Норма — ${perDay}.`;
   const days = `${left} ${plural(left, 'день', 'дня', 'дней')} до экзамена`;
   if (left > HORIZON_DAYS) return `${days}, норма — ${perDay}.`;
