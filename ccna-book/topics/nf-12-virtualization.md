@@ -6,8 +6,8 @@ lead: Гипервизор и виртуальные машины, чем кон
 blueprint: ["1.12"]
 minutes: 30
 match:
-  key: ["hypervisor", "virtual machine", "container", "\\bVRF\\b"]
-  re: ["virtual machine", "\\bVM\\b", "hypervisor", "server virtualization", "container", "docker", "\\bVRF\\b", "virtual server", "virtual switch", "vSwitch", "type 1|type 2 hypervisor", "bare.?metal", "virtual environment"]
+  key: ["hypervisor", "virtual machine", "container", "\\bVRF\\b", "virtualization concept"]
+  re: ["virtual machine", "\\bVM\\b", "hypervisor", "server virtualization", "container", "docker", "\\bVRF\\b", "virtual server", "virtual switch", "vSwitch", "type 1|type 2 hypervisor", "bare.?metal", "virtual environment", "virtualization concept", "guest operating system", "host operating system"]
 ---
 
 ## Зачем виртуализируют серверы

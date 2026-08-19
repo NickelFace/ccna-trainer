@@ -6,8 +6,8 @@ lead: Как устроен адрес, откуда берётся маска, 
 blueprint: ["1.6", "1.7"]
 minutes: 35
 match:
-  key: ["private IPv4|private address|RFC 1918", "\\bAPIPA\\b", "169\\.254", "class [ABC] address"]
-  re: ["private IPv4", "private address", "RFC 1918", "public address", "class [ABC] address", "\\bAPIPA\\b", "169\\.254", "loopback address", "127\\.0\\.0\\.1", "default gateway", "\\bdotted decimal\\b", "network address", "broadcast address", "host address", "224\\.", "multicast address", "reserved address", "\\bCIDR\\b"]
+  key: ["private IPv4|private address|RFC 1918", "\\bAPIPA\\b", "169\\.254", "class [ABC] address", "ipv4 private ip space"]
+  re: ["private IPv4", "private address", "RFC 1918", "public address", "class [ABC] address", "\\bAPIPA\\b", "169\\.254", "loopback address", "127\\.0\\.0\\.1", "default gateway", "\\bdotted decimal\\b", "network address", "broadcast address", "host address", "224\\.", "multicast address", "reserved address", "\\bCIDR\\b", "ipv4 private ip space", "intra-enterprise communication", "conserve.*(global )?address space"]
   not: ["IPv6", "subnet mask.*how many", "VLSM"]
 ---
 

@@ -6,8 +6,8 @@ lead: Медь против оптики, одномод против много
 blueprint: ["1.3", "1.4"]
 minutes: 40
 match:
-  key: ["duplex", "fiber", "copper", "crossover", "\\bCRC\\b", "late collision", "auto-?negotiation"]
-  re: ["fiber", "optic", "copper", "cabling", "cable", "single-?mode", "multimode", "\\bUTP\\b", "straight-through", "crossover", "duplex", "half duplex", "full duplex", "speed mismatch", "\\bCRC\\b", "runt", "giant", "late collision", "input errors", "interface counters", "auto-?negotiation", "\\bMDIX\\b", "\\bSFP\\b", "twisted pair", "attenuation", "\\bRJ-?45\\b", "console cable", "\\bEMI\\b"]
+  key: ["duplex", "fiber", "copper", "crossover", "\\bCRC\\b", "late collision", "auto-?negotiation", "excessive collision"]
+  re: ["fiber", "optic", "copper", "cabling", "cable", "single-?mode", "multimode", "\\bUTP\\b", "straight-through", "crossover", "duplex", "half duplex", "full duplex", "speed mismatch", "\\bCRC\\b", "runt", "giant", "late collision", "input errors", "interface counters", "auto-?negotiation", "\\bMDIX\\b", "\\bSFP\\b", "twisted pair", "attenuation", "\\bRJ-?45\\b", "console cable", "\\bEMI\\b", "excessive collision", "16 failed transmission", "signal frequency", "times per minute"]
   not: ["ospf", "\\bACL\\b", "wireless client"]
 ---
 
@@ -289,7 +289,9 @@ SW1# show interfaces gigabitethernet1/0/49 | include error|CRC|input
   ухудшает ситуацию.
 - **EMI** — источники: силовые кабели в одном лотке, люминесцентные лампы, двигатели,
   сварка. Симптом — CRC-ошибки, которые появляются периодически, «по расписанию работы
-  цеха».
+  цеха». Классический источник наводки — сама силовая проводка: переменный ток в розетке
+  имеет частоту **60 Гц** (США/Канада) или 50 Гц (большая часть остального мира), и именно
+  эта частота «звенит» наводкой в незащищённой витой паре, проложенной рядом.
 
 Встроенный тест кабеля на коммутаторах Catalyst:
 

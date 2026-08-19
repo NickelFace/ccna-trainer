@@ -6,8 +6,8 @@ lead: Двух- и трёхуровневая иерархия, spine-leaf, WAN,
 blueprint: ["1.2"]
 minutes: 30
 match:
-  key: ["three-tier", "two-tier", "spine-leaf|spine and leaf", "collapsed core", "\\bSOHO\\b", "access layer", "distribution layer"]
-  re: ["three-tier", "two-tier", "collapsed core", "spine-leaf", "spine and leaf", "access layer", "distribution layer", "core layer", "campus", "\\bSOHO\\b", "on-premise", "on-premises", "cloud", "topology architecture", "star topology", "full mesh", "partial mesh", "leased line", "\\bWAN\\b design", "data center design", "east-west", "north-south"]
+  key: ["three-tier", "two-tier", "spine-leaf|spine and leaf|spine-and-leaf", "collapsed-?core", "\\bSOHO\\b", "access layer", "distribution layer", "access.*(core|distribution).*access"]
+  re: ["three-tier", "two-tier", "collapsed-?core", "spine-leaf", "spine and leaf", "spine-and-leaf", "access layer", "distribution layer", "core layer", "campus", "\\bSOHO\\b", "on-premise", "on-premises", "cloud", "topology architecture", "star topology", "full mesh", "partial mesh", "leased line", "\\bWAN\\b design", "data center design", "east-west", "north-south", "additional access ports", "interconnected.*spine", "point-to-point wan", "wan architecture.*scalab", "bandwidth of a t1", "\\bT1\\b point-to-point"]
   not: ["ospf", "spanning-tree", "wireless mesh"]
 ---
 
@@ -189,7 +189,7 @@ STP не участвует в переключении. Это стандарт
 
 | Технология | Полоса | Гарантии | Где применяют |
 |---|---|---|---|
-| Leased line (E1/T1, оптика) | фиксированная | жёсткие | критичные каналы, дорого |
+| Leased line (**T1** 1,544 Мбит/с, **E1** 2,048 Мбит/с, оптика) | фиксированная | жёсткие | критичные каналы, дорого |
 | **MPLS L3VPN** | по договору | SLA, QoS от провайдера | корпоративные WAN |
 | Metro Ethernet | 10 Мбит/с – 10 Гбит/с | SLA внутри города | площадки в одном городе |
 | Broadband (DSL, кабель, GPON) | асимметричная | нет | филиалы, резерв |

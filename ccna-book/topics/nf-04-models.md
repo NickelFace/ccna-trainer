@@ -7,7 +7,7 @@ blueprint: ["1.0"]
 minutes: 35
 fallback: true
 match:
-  re: ["OSI", "TCP/IP model", "encapsulat", "de-?encapsulat", "layer 2 header", "layer 3 header", "\\bPDU\\b", "frame is", "packet is", "segment", "\\bMTU\\b", "\\bFCS\\b", "physical address", "logical address", "\\bARP\\b", "broadcast domain", "collision domain", "unicast", "multicast", "\\bbroadcast\\b"]
+  re: ["OSI", "TCP/IP model", "encapsulat", "de-?encapsulat", "layer 2 header", "layer 3 header", "\\bPDU\\b", "frame is", "packet is", "segment", "\\bMTU\\b", "\\bFCS\\b", "physical address", "logical address", "\\bARP\\b", "broadcast domain", "collision domain", "unicast", "multicast", "\\bbroadcast\\b", "source and destination mac address", "mac address.*(remain|change).*same", "\\bMAC\\b address(es)?.*correct"]
 ---
 
 ## Зачем модель, если сеть работает и без неё

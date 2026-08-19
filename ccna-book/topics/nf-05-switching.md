@@ -6,8 +6,8 @@ lead: MAC-таблица, обучение, флудинг, старение з�
 blueprint: ["1.13"]
 minutes: 30
 match:
-  key: ["mac address.?table", "unknown unicast", "flood", "store-and-forward", "cut-through"]
-  re: ["mac address table", "mac-address-table", "MAC learning", "flood", "unknown unicast", "aging", "switching concept", "frame switching", "store-and-forward", "cut-through", "\\bCAM\\b", "dynamic MAC", "static MAC", "learns the source"]
+  key: ["mac address.?table", "unknown unicast", "flood", "store-and-forward", "cut-through", "function.*layer 2 switch", "function of store-and.?forward"]
+  re: ["mac address table", "mac-address-table", "MAC learning", "flood", "unknown unicast", "aging", "switching concept", "frame switching", "store-and-forward", "cut-through", "\\bCAM\\b", "dynamic MAC", "static MAC", "learns the source", "sends the packet to all ports", "function.*layer 2 switch", "characteristic of a layer 2 switch", "continue to know a workstation"]
   not: ["port security", "vlan trunk", "spanning-tree"]
 ---
 

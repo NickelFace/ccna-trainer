@@ -251,7 +251,12 @@ export function scoreTopic(topic, q, cache) {
   const m = topic.match || {};
   const nots = cache.not.get(topic.id) || [];
   const hay = haystacks(q);
-  if (nots.some(r => hay.some(([text]) => r.test(text)))) return 0;
+  // `not` reads the question's own topic identity — its stem and tp tag, hay[0] — not the
+  // full haystack. A wrong-answer distractor mentioning another chapter's subject ("which
+  // switching concept... A) frame flooding B) ... C) spanning-tree protocol D) ...") isn't
+  // what the question is about, and vetoing on distractor text silently loses genuine
+  // matches whenever an unrelated wrong option happens to name another chapter's keyword.
+  if (nots.some(r => r.test(hay[0][0]))) return 0;
 
   let score = 0;
   if ((m.tp || []).includes(q.tp)) score += 6;
