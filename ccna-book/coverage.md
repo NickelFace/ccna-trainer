@@ -40,7 +40,7 @@
 | SSH, FTP и TFTP: управление устройством и файлами | IPS | 14 | 576 | 25 |
 | Основные понятия безопасности | SEC | 90 | 1371 | 35 |
 | Пароли и защита доступа к устройству | SEC | 22 | 1294 | 30 |
-| Списки доступа (ACL) | SEC | 15 | 734 | 45 |
+| Списки доступа (ACL) | SEC | 15 | 1628 | 45 |
 | Безопасность второго уровня | SEC | 23 | 1576 | 40 |
 | AAA, RADIUS, TACACS+ и 802.1X | SEC | 4 | 514 | 30 |
 | VPN и IPsec | SEC | 7 | 635 | 30 |
@@ -54,4 +54,4 @@
 
 Мало вопросов (<5): nf-10-client-ip, na-03-intervlan, na-08-wlan-infra, sec-05-aaa, aut-05-config-tools
 Тема блюпринта, которой нет в банке: aut-06-ai-ml
-Короткие главы (<900 слов): ips-01-nat, ips-02-dhcp-dns, ips-03-ntp, ips-04-snmp-syslog, ips-05-qos, ips-06-ssh-files, sec-03-acl, sec-05-aaa, sec-06-vpn, sec-07-wireless-security, aut-01-automation, aut-02-sdn, aut-03-rest-api, aut-04-data-formats, aut-05-config-tools, aut-06-ai-ml
+Короткие главы (<900 слов): ips-01-nat, ips-02-dhcp-dns, ips-03-ntp, ips-04-snmp-syslog, ips-05-qos, ips-06-ssh-files, sec-05-aaa, sec-06-vpn, sec-07-wireless-security, aut-01-automation, aut-02-sdn, aut-03-rest-api, aut-04-data-formats, aut-05-config-tools, aut-06-ai-ml
