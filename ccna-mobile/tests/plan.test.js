@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { atTime, mockState, nextDailyAt, nextMockAt, parseTime, MOCK_EVERY_DAYS } from '../src/engine/plan.js';
+import { atTime, mockState, nextDailyAt, nextMockAt, parseTime, examDatePassed, MOCK_EVERY_DAYS } from '../src/engine/plan.js';
 import { DAY_MS } from '../src/engine/srs.js';
 
 // A fixed local moment to reason from: 2026-08-18, 12:00 local.
@@ -88,4 +88,23 @@ test('a mock due later today rolls to tomorrow once the hour has passed', () => 
   const at = nextMockAt('19:00', evening, state);
   assert.ok(at > evening);
   assert.equal(new Date(at).getDate(), 19);
+});
+
+// ------------------------------------------------------------ examDatePassed
+test('no exam date is never "passed"', () => {
+  assert.equal(examDatePassed(null, NOON), false);
+  assert.equal(examDatePassed(undefined, NOON), false);
+});
+
+test('the exam date itself still counts as today, not passed', () => {
+  assert.equal(examDatePassed('2026-08-18', NOON), false);
+});
+
+test('a future exam date is not passed', () => {
+  assert.equal(examDatePassed('2026-09-01', NOON), false);
+});
+
+test('the day after the exam date is passed', () => {
+  assert.equal(examDatePassed('2026-08-17', NOON), true);
+  assert.equal(examDatePassed('2026-07-01', NOON), true);
 });

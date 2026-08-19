@@ -43,14 +43,21 @@ const DEFAULT_PROFILE = {
   notify: { enabled: false, daily: true, weeklyMock: true, time: '19:00' },
 };
 
+// A restored backup or a hand-edited preference file can carry `dailyGoal: 0`, a negative
+// number, or plain junk (a string, null) — that number is a denominator everywhere it's
+// shown ("N из 0" on the home screen, a divide-by-zero-shaped plan line in Профиль), so
+// anything that isn't a whole number of at least 1 falls back to the default instead.
+const validGoal = n => Number.isInteger(n) && n >= 1;
+
 // `notify` is a nested object, so a plain spread would drop any key a stored profile
 // predates — an older backup has no `notify.weeklyMock`, and shallow-merging it in would
 // leave the field undefined instead of at its default.
-const mergeProfile = (stored) => {
+export const mergeProfile = (stored) => {
   const p = stored && typeof stored === 'object' ? stored : {};
   return {
     ...DEFAULT_PROFILE,
     ...p,
+    dailyGoal: validGoal(p.dailyGoal) ? p.dailyGoal : DEFAULT_PROFILE.dailyGoal,
     notify: { ...DEFAULT_PROFILE.notify, ...(p.notify && typeof p.notify === 'object' ? p.notify : {}) },
   };
 };

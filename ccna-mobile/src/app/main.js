@@ -2,7 +2,7 @@
 // router. Everything is local — no network call happens at any point.
 import { router } from './router.js';
 import { store, bindPersistOnPause } from './store.js';
-import { reschedule } from './notify.js';
+import { reschedule, initNotificationListener } from './notify.js';
 import { scorable } from '../engine/select.js';
 import { sessionIsValid } from './session.js';
 import { home } from './screens/home.js';
@@ -53,6 +53,7 @@ async function boot() {
     store.pruneGhostSrs(qn => bank.byN.has(qn));
 
     bindPersistOnPause(() => reschedule());
+    initNotificationListener();
     router.init({ tabs: TABS, ctx: { bank } });
 
     // Startup is the other moment the reminders can be stale: a day rolled over, or the

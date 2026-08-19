@@ -7,6 +7,7 @@
 // Everything here is pure and takes `now` — the reminders are scheduled from a background
 // callback and tested without one.
 import { DAY_MS } from './srs.js';
+import { daysUntil } from './localdate.js';
 
 export const MOCK_EVERY_DAYS = 7;
 
@@ -55,4 +56,14 @@ export function nextMockAt(time, now, state) {
   if (state.due) return nextDailyAt(time, now);
   const at = atTime(time, now, state.daysLeft);
   return at > now ? at : atTime(time, now, state.daysLeft + 1);
+}
+
+// True once the exam date itself is fully behind you — the day of the exam still counts as
+// "today", not "passed" yet, the same boundary the Профиль countdown uses (both built on
+// daysUntil's local-midnight arithmetic, not a raw UTC-parsed ms gap — see localdate.js for
+// why that distinction matters east of UTC). Once it flips, further "сходи на пробный"
+// nagging is pointless: the real thing already happened.
+export function examDatePassed(examDate, now = Date.now()) {
+  const left = daysUntil(examDate, now);
+  return left !== null && left < 0;
 }
