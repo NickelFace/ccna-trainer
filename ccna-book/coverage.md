@@ -38,7 +38,7 @@
 | SNMP и Syslog | IPS | 10 | 616 | 30 |
 | QoS: классификация, маркировка, очереди | IPS | 18 | 749 | 35 |
 | SSH, FTP и TFTP: управление устройством и файлами | IPS | 14 | 576 | 25 |
-| Основные понятия безопасности | SEC | 90 | 629 | 35 |
+| Основные понятия безопасности | SEC | 90 | 1371 | 35 |
 | Пароли и защита доступа к устройству | SEC | 22 | 567 | 30 |
 | Списки доступа (ACL) | SEC | 15 | 734 | 45 |
 | Безопасность второго уровня | SEC | 23 | 701 | 40 |
@@ -54,4 +54,4 @@
 
 Мало вопросов (<5): nf-10-client-ip, na-03-intervlan, na-08-wlan-infra, sec-05-aaa, aut-05-config-tools
 Тема блюпринта, которой нет в банке: aut-06-ai-ml
-Короткие главы (<900 слов): ips-01-nat, ips-02-dhcp-dns, ips-03-ntp, ips-04-snmp-syslog, ips-05-qos, ips-06-ssh-files, sec-01-concepts, sec-02-passwords, sec-03-acl, sec-04-l2-security, sec-05-aaa, sec-06-vpn, sec-07-wireless-security, aut-01-automation, aut-02-sdn, aut-03-rest-api, aut-04-data-formats, aut-05-config-tools, aut-06-ai-ml
+Короткие главы (<900 слов): ips-01-nat, ips-02-dhcp-dns, ips-03-ntp, ips-04-snmp-syslog, ips-05-qos, ips-06-ssh-files, sec-02-passwords, sec-03-acl, sec-04-l2-security, sec-05-aaa, sec-06-vpn, sec-07-wireless-security, aut-01-automation, aut-02-sdn, aut-03-rest-api, aut-04-data-formats, aut-05-config-tools, aut-06-ai-ml
