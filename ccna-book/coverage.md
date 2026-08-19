@@ -35,7 +35,7 @@
 | NAT и PAT | IPS | 75 | 1711 | 40 |
 | DHCP и DNS | IPS | 33 | 1635 | 35 |
 | NTP и точное время | IPS | 9 | 547 | 20 |
-| SNMP и Syslog | IPS | 10 | 616 | 30 |
+| SNMP и Syslog | IPS | 10 | 1308 | 30 |
 | QoS: классификация, маркировка, очереди | IPS | 18 | 1679 | 35 |
 | SSH, FTP и TFTP: управление устройством и файлами | IPS | 14 | 1365 | 25 |
 | Основные понятия безопасности | SEC | 90 | 1371 | 35 |
@@ -54,4 +54,4 @@
 
 Мало вопросов (<5): nf-10-client-ip, na-03-intervlan, na-08-wlan-infra, sec-05-aaa, aut-05-config-tools
 Тема блюпринта, которой нет в банке: aut-06-ai-ml
-Короткие главы (<900 слов): ips-03-ntp, ips-04-snmp-syslog, aut-01-automation, aut-02-sdn, aut-03-rest-api, aut-04-data-formats, aut-05-config-tools, aut-06-ai-ml
+Короткие главы (<900 слов): ips-03-ntp, aut-01-automation, aut-02-sdn, aut-03-rest-api, aut-04-data-formats, aut-05-config-tools, aut-06-ai-ml
