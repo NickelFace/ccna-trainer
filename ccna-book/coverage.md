@@ -21,7 +21,7 @@
 | Маршрутизация между VLAN | NA | 1 | 750 | 30 |
 | CDP и LLDP | NA | 13 | 650 | 25 |
 | EtherChannel | NA | 27 | 700 | 30 |
-| Spanning Tree и Rapid PVST+ | NA | 61 | 956 | 50 |
+| Spanning Tree и Rapid PVST+ | NA | 61 | 1988 | 50 |
 | Архитектуры Cisco WLAN и режимы точек | NA | 26 | 708 | 35 |
 | Проводная часть беспроводной сети | NA | 3 | 712 | 30 |
 | Настройка WLAN в GUI контроллера | NA | 14 | 651 | 30 |
