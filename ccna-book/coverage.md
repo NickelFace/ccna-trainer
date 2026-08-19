@@ -33,7 +33,7 @@
 | EIGRP и BGP в объёме экзамена | IPC | 8 | 1341 | 35 |
 | FHRP: HSRP, VRRP, GLBP | IPC | 15 | 1426 | 30 |
 | NAT и PAT | IPS | 75 | 1711 | 40 |
-| DHCP и DNS | IPS | 33 | 1635 | 35 |
+| DHCP и DNS | IPS | 33 | 1663 | 35 |
 | NTP и точное время | IPS | 9 | 1186 | 20 |
 | SNMP и Syslog | IPS | 10 | 1308 | 30 |
 | QoS: классификация, маркировка, очереди | IPS | 18 | 1679 | 35 |

@@ -23,7 +23,7 @@ match:
 | Задержка (latency) | ≤ 150 мс | ≤ 200–400 мс |
 | Джиттер | ≤ 30 мс | ≤ 30–50 мс |
 | Потери | ≤ 1 % | ≤ 0,1–1 % |
-| Полоса на звонок | 21–320 кбит/с в зависимости от кодека | зависит от разрешения |
+| Полоса на звонок | 21–110 кбит/с в зависимости от кодека | зависит от разрешения |
 
 ## Модели обслуживания
 
@@ -55,7 +55,7 @@ match:
 |---|---:|---|
 | **EF** (Expedited Forwarding) | 46 | голос |
 | AF41 | 34 | видеоконференция |
-| AF31 | 26 | сигнализация вызовов |
+| **CS3** | 24 | сигнализация вызовов |
 | AF21 | 18 | транзакционные данные |
 | CS0 / default | 0 | всё остальное |
 
@@ -103,7 +103,7 @@ CoS живёт только внутри тега VLAN, поэтому **на ac
 class-map match-all VOICE
  match ip dscp ef
 class-map match-all SIGNALING
- match ip dscp af31
+ match ip dscp cs3
 !
 policy-map WAN-OUT
  class VOICE
@@ -205,10 +205,11 @@ R1# show policy-map interface gi0/0 | include Class|priority
 обслуживается только по факту переполнения:
 
 ```cli
-R1# show policy-map interface gi0/0 | include random-detect|drops
-  Class-map: class-default
-    (no random-detect configured)
+R1# show policy-map interface gi0/0
+  Class-map: class-default (match-any)
+    0 packets
     Total drops: 128340
+    (no random-detect configured)
 ```
 
 **Что нашли.** `random-detect` (WRED) не настроен — очередь работает по принципу

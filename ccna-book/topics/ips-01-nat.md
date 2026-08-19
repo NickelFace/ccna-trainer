@@ -196,7 +196,7 @@ access-list 1 permit 192.168.2.0 0.0.0.255
 
 ```cli
 R1# show ip nat statistics
-Total active translations: 11 (0 static, 11 dynamic; 11 extended)
+Total active translations: 11 (0 static, 11 dynamic; 0 extended)
 Pool OFFICE: netmask 255.255.255.0
         start 203.0.113.10 end 203.0.113.20
         type generic, total addresses 11, allocated 11 (100%), misses 340
