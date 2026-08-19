@@ -116,6 +116,13 @@ export const isExpired = session => remainingMs(session) === 0;
 export const answeredCount = session =>
   session.qs.filter(n => session.answers[n] !== undefined).length;
 
+// Skipping is allowed — a swipe or a jump from the ☰ grid leaves a question untouched —
+// but an unanswered question scores as a wrong one, so finishing on top of a pile of them
+// should not happen by accident. Index, not count, because the useful offer is «take me
+// back to it», and -1 when the session is complete.
+export const firstUnansweredIndex = session =>
+  session.qs.findIndex(n => session.answers[n] === undefined);
+
 // Scores the session, files it in the attempt history and clears the active session.
 export function finishSession(session, bank) {
   const questions = sessionQuestions(session, bank);

@@ -11,7 +11,10 @@ import { openExhibit } from '../exhibit.js';
 import { loadIndex, loadMap } from '../theory.js';
 import { topic as topicScreen } from './topic.js';
 import { isCorrect, ddNeeded } from '../../engine/grade.js';
-import { currentQuestion, remainingMs, finishSession, gradesImmediately } from '../session.js';
+import {
+  currentQuestion, remainingMs, finishSession, gradesImmediately,
+  firstUnansweredIndex, answeredCount,
+} from '../session.js';
 import {
   domShort, questionText, exhibitMarkup, cliMarkup, answerSummary, rationaleBlocks,
 } from '../qmarkup.js';
@@ -349,7 +352,7 @@ function reviewFooter(ctx, s, q) {
     ctx.router.renderFooter();               // the sheet takes the action back
     openReview(ctx, q, s);
   });
-  node.querySelector('[data-act="main"]').addEventListener('click', () => last ? finish(ctx) : move(ctx, 1));
+  node.querySelector('[data-act="main"]').addEventListener('click', () => last ? tryFinish(ctx) : move(ctx, 1));
   return node;
 }
 
@@ -369,7 +372,7 @@ function choiceFooter(ctx, s, q) {
   node.querySelector('[data-act="prev"]').addEventListener('click', () => move(ctx, -1));
   node.querySelector('[data-act="main"]').addEventListener('click', () => {
     if (gradesImmediately(s)) return gradeCurrent(ctx);
-    if (last) return finish(ctx);
+    if (last) return tryFinish(ctx);
     move(ctx, 1);
   });
   return node;
@@ -412,7 +415,7 @@ function matchFooter(ctx, s, q) {
     ctx.router.render();
   });
   node.querySelector('[data-act="prev"]')?.addEventListener('click', () => move(ctx, -1));
-  node.querySelector('[data-act="main"]')?.addEventListener('click', () => last ? finish(ctx) : move(ctx, 1));
+  node.querySelector('[data-act="main"]')?.addEventListener('click', () => last ? tryFinish(ctx) : move(ctx, 1));
   return node;
 }
 
@@ -436,11 +439,40 @@ function move(ctx, delta) {
   const s = store.session;
   const next = s.i + delta;
   if (next < 0) return;
-  if (next >= s.qs.length) return finish(ctx);
+  if (next >= s.qs.length) return tryFinish(ctx);
   store.patchSession({ i: next });
   pendingFor = null;
   enterDir = delta > 0 ? 1 : -1;
   ctx.router.render();
+}
+
+// Everything the user can press to end a run goes through here; only the expiring timer
+// calls finish() outright, because an exam clock that hits zero is not up for discussion.
+//
+// Skipped questions score as wrong, so ending on top of them silently would quietly cost
+// points. It stays the user's call — some skips are deliberate — but it is made a call
+// instead of an accident: named count, a way straight back to the first one, and an
+// outside tap that changes nothing.
+function tryFinish(ctx) {
+  const s = store.session;
+  const gap = firstUnansweredIndex(s);
+  if (gap === -1) return finish(ctx);
+
+  const left = s.qs.length - answeredCount(s);
+  confirmDialog({
+    title: 'Остались вопросы без ответа',
+    text: `Пропущено: ${left} из ${s.qs.length}. Без ответа они засчитаются как неверные.`,
+    ok: `К вопросу ${gap + 1}`,
+    cancel: 'Всё равно завершить',
+  }).then(answer => {
+    if (answer === null) return;                 // dismissed: stay where we are
+    if (answer === false) return finish(ctx);
+    closeReview();
+    enterDir = gap > s.i ? 1 : -1;
+    store.patchSession({ i: gap });
+    pendingFor = null;
+    ctx.router.render();
+  });
 }
 
 function finish(ctx) {
@@ -459,6 +491,9 @@ const sessionMistakes = (session, bank) => session.qs
 // ---------------------------------------------------------------- review sheet
 function openReview(ctx, q, s) {
   const given = answerOf(s, q);
+  // On the last question this button ends the run, so it has to say so — reviewFooter,
+  // which takes over once the sheet is dismissed, already did.
+  const last = s.i === s.qs.length - 1;
   const content = h(`
     <div class="review">
       <div class="review-verdict">
@@ -469,12 +504,12 @@ function openReview(ctx, q, s) {
       <div class="review-theory"></div>
       <div class="review-actions">
         <button class="btn soft" data-act="ai" type="button">Разобрать с ИИ</button>
-        <button class="btn primary grow" data-act="next" type="button">Следующий →</button>
+        <button class="btn primary grow" data-act="next" type="button">${last ? 'Завершить' : 'Следующий →'}</button>
       </div>
     </div>`);
 
   reviewDismissed = false;
-  content.querySelector('[data-act="next"]').addEventListener('click', () => move(ctx, 1));
+  content.querySelector('[data-act="next"]').addEventListener('click', () => (last ? tryFinish(ctx) : move(ctx, 1)));
   content.querySelector('[data-act="ai"]').addEventListener('click', () => {
     closeReview();
     ctx.router.modal(aiPromptScreen, {
