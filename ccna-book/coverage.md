@@ -16,7 +16,7 @@
 | IP на клиентских ОС | NF | 1 | 1486 | 25 |
 | Основы беспроводных сетей | NF | 15 | 1740 | 40 |
 | Виртуализация, контейнеры и VRF | NF | 16 | 1511 | 30 |
-| VLAN и access-порты | NA | 16 | 892 | 35 |
+| VLAN и access-порты | NA | 16 | 1777 | 35 |
 | Транки 802.1Q и native VLAN | NA | 44 | 1740 | 35 |
 | Маршрутизация между VLAN | NA | 1 | 750 | 30 |
 | CDP и LLDP | NA | 13 | 650 | 25 |
@@ -54,4 +54,4 @@
 
 Мало вопросов (<5): nf-10-client-ip, na-03-intervlan, na-08-wlan-infra, sec-05-aaa, aut-05-config-tools
 Тема блюпринта, которой нет в банке: aut-06-ai-ml
-Короткие главы (<900 слов): na-01-vlan, na-03-intervlan, na-04-discovery, na-08-wlan-infra, na-09-wlan-gui, ips-01-nat, ips-02-dhcp-dns, ips-03-ntp, ips-04-snmp-syslog, ips-05-qos, ips-06-ssh-files, sec-01-concepts, sec-02-passwords, sec-03-acl, sec-04-l2-security, sec-05-aaa, sec-06-vpn, sec-07-wireless-security, aut-01-automation, aut-02-sdn, aut-03-rest-api, aut-04-data-formats, aut-05-config-tools, aut-06-ai-ml
+Короткие главы (<900 слов): na-03-intervlan, na-04-discovery, na-08-wlan-infra, na-09-wlan-gui, ips-01-nat, ips-02-dhcp-dns, ips-03-ntp, ips-04-snmp-syslog, ips-05-qos, ips-06-ssh-files, sec-01-concepts, sec-02-passwords, sec-03-acl, sec-04-l2-security, sec-05-aaa, sec-06-vpn, sec-07-wireless-security, aut-01-automation, aut-02-sdn, aut-03-rest-api, aut-04-data-formats, aut-05-config-tools, aut-06-ai-ml
