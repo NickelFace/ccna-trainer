@@ -47,8 +47,10 @@ let els = {};
 let enterDir = 0;                // +1: the next question slides in from the right, -1: from the left
 let shownPct = null;             // last painted progress width, so the bar can animate to the new one
 let animating = false;           // a hand-off is in flight — ignore new gestures until it lands
-// The review sheet was put away by hand. It carries the only way forward while it is up,
-// so the question has to take that job back — see openReview / reviewFooter.
+// The review sheet is not up, or was put away — either by hand, or because navigating to
+// this question is not the same as asking to see its rationale again (see closeReview).
+// It carries the only way forward while it is up, so the question has to take that job
+// back when it is not — see openReview / reviewFooter.
 let reviewDismissed = false;
 let leavingReview = false;       // the sheet is closing because the screen is leaving, not because the user closed it
 
@@ -412,6 +414,7 @@ function matchFooter(ctx, s, q) {
   node.querySelector('[data-act="reset"]')?.addEventListener('click', () => resetPlacement(q, s, () => ctx.router.render()));
   node.querySelector('[data-act="check"]')?.addEventListener('click', () => {
     gradeMatch(q, s);
+    reviewDismissed = false;          // just graded — this is the ask, wireBody may open it
     ctx.router.render();
   });
   node.querySelector('[data-act="prev"]')?.addEventListener('click', () => move(ctx, -1));
@@ -548,11 +551,17 @@ function openReview(ctx, q, s) {
 
 // Navigation closes the sheet on its way somewhere else — say so, so the dismissal
 // handler above does not mistake it for the user putting the sheet away.
-function closeReview() {
+//
+// Landing on a different question is not asking to see its rationale again — only the
+// "Ответить" tap (gradeCurrent) or the matching "Проверить" tap that just graded it counts
+// as that ask, and both set reviewDismissed = false themselves without going through here.
+// So every navigational caller — move, tryFinish, the ☰ grid — gets silence by default:
+// the destination renders its graded colors on the card, not the sheet on top of it.
+function closeReview(silence = true) {
   leavingReview = true;
   closeSheet();
   leavingReview = false;
-  reviewDismissed = false;
+  reviewDismissed = silence;
 }
 
 // ---------------------------------------------------------------- question grid
