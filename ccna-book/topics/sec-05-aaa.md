@@ -90,6 +90,74 @@ interface GigabitEthernet1/0/5
 - Вход администраторов на коммутаторы и роутеры — TACACS+ с покомандной авторизацией.
 - VPN-доступ — RADIUS с MFA.
 
+## Разбор: полный обмен 802.1X от подключения кабеля до доступа в сеть
+
+```txt
+1. Клиент подключает кабель. Порт в состоянии unauthorized — пропускает только EAPOL.
+2. Supplicant → Authenticator: EAPOL-Start (клиент сообщает о готовности аутентифицироваться)
+3. Authenticator → Supplicant: EAP-Request Identity
+4. Supplicant → Authenticator: EAP-Response Identity (например, имя пользователя)
+5. Authenticator упаковывает EAP в RADIUS Access-Request → Authentication Server
+6. Authentication Server и Supplicant обмениваются EAP внутри RADIUS
+   (метод зависит от EAP-типа: EAP-TLS — сертификаты, PEAP — логин/пароль внутри TLS-туннеля)
+7. Authentication Server → Authenticator: RADIUS Access-Accept
+   (может нести VLAN assignment, ACL, время сессии — RADIUS-атрибуты)
+8. Authenticator переводит порт в authorized — обычный трафик пошёл
+```
+
+Ключевая деталь для понимания архитектуры: **authenticator (коммутатор) сам не проверяет
+пароль и не хранит учётные записи** — он только ретранслирует EAP-сообщения между
+supplicant и authentication server, упаковывая их в RADIUS. Вся логика проверки — на
+сервере. Это объясняет, почему замена метода аутентификации (PEAP на EAP-TLS,
+например) требует изменений на клиенте и сервере, но не на самом коммутаторе — он видит
+одни и те же EAP-кадры независимо от их содержимого.
+
+## Диагностика: 802.1X пускает не в ту VLAN
+
+**Симптом.** Устройство успешно проходит 802.1X-аутентификацию (порт переходит в
+authorized), но оказывается не в ожидаемой корпоративной VLAN, а в VLAN по умолчанию для
+порта.
+
+**Что смотрим.** Возвращает ли RADIUS-сервер атрибуты назначения VLAN в Access-Accept, и
+принимает ли их коммутатор:
+
+```cli
+SW1# show authentication sessions interface gi1/0/5
+            Interface:  GigabitEthernet1/0/5
+                 Status:  Authz Success
+                    Vlan:  1
+```
+
+**Что нашли.** Аутентификация прошла успешно (`Authz Success`), но VLAN осталась
+дефолтной — значит, либо RADIUS-сервер не настроен отправлять RADIUS-атрибуты
+`Tunnel-Type`/`Tunnel-Medium-Type`/`Tunnel-Private-Group-ID` (именно они несут номер
+динамической VLAN в Access-Accept), либо коммутатор их получил, но не смог применить
+(например, VLAN с таким номером не существует на этом коммутаторе). Это разделяет
+причину на две стороны: сначала проверяют политику на самом RADIUS-сервере (профиль
+авторизации для этого пользователя/устройства), потом — существование и активность нужной
+VLAN на коммутаторе, точно так же, как в главе про VLAN.
+
+## Диагностика: администратор не может войти, потому что TACACS+ сервер недоступен
+
+**Симптом.** Основной TACACS+-сервер упал (плановые работы или сбой), и ни один
+администратор не может зайти на коммутаторы — даже те, кто раньше заходил без проблем.
+
+**Что смотрим.** Полную строку `aaa authentication login`, а не только факт, что TACACS+
+настроен:
+
+```cli
+SW1# show running-config | include aaa authentication login
+aaa authentication login default group tacacs+
+```
+
+**Что нашли.** В списке методов **нет `local`** в конце — при недоступности группы
+`tacacs+` аутентификация просто проваливается целиком, резервного метода не существует.
+Это ровно та ловушка, о которой предупреждает врезка выше: `group tacacs+ local`
+означало бы «сначала TACACS+, а если сервер недоступен — локальная база», а голый `group
+tacacs+` не оставляет пути назад ни для кого, включая администратора с консольным
+доступом. Исправление — добавить резервный метод, но сделать это можно только имея хотя
+бы один рабочий способ входа (например, через ROMMON, если совсем никак).
+
 ## Что спрашивают
 
 - «Which protocol separates authentication and authorization?» — TACACS+.
@@ -100,6 +168,15 @@ interface GigabitEthernet1/0/5
 - «Which AAA element records what a user did?» — accounting.
 - «What happens if the AAA server is unreachable and no local fallback is configured?» —
   вход становится невозможен.
+- «Does the switch itself validate the user's password during 802.1X?» — нет, коммутатор
+  только упаковывает EAP в RADIUS и ретранслирует между supplicant и сервером; проверка
+  — целиком на authentication server.
+- «A device passes 802.1X authentication but ends up in the default VLAN instead of the
+  expected one. What should be checked?» — отправляет ли RADIUS-сервер атрибуты
+  Tunnel-Type/Tunnel-Private-Group-ID в Access-Accept, и существует ли указанная VLAN на
+  коммутаторе.
+- «Administrators cannot log in to switches after the TACACS+ server goes down. What is
+  misconfigured?» — в `aaa authentication login` не указан резервный метод `local`.
 
 ## Проверь себя
 
@@ -114,4 +191,10 @@ interface GigabitEthernet1/0/5
 !! Через MAB — аутентификацию по MAC-адресу, либо поместить порт в гостевую VLAN.
 ?? Зачем в команде aaa authentication login указывать local последним?
 !! Это резерв: при недоступности сервера можно войти по локальной учётной записи.
+?? Проверяет ли коммутатор сам пароль пользователя при 802.1X?
+!! Нет — он только ретранслирует EAP-сообщения между supplicant и authentication server внутри RADIUS; всю проверку выполняет сервер.
+?? Устройство прошло 802.1X (Authz Success), но осталось в VLAN по умолчанию, а не в ожидаемой. Где искать причину?
+!! Сначала на RADIUS-сервере — отправляет ли он атрибуты Tunnel-Type/Tunnel-Private-Group-ID в Access-Accept; затем на коммутаторе — существует ли указанная VLAN.
+?? TACACS+ сервер упал, и ни один администратор не может зайти на коммутаторы. Что забыли в aaa authentication login?
+!! Резервный метод local в конце списка — без него недоступность сервера блокирует вход всем, включая администраторов.
 ```
