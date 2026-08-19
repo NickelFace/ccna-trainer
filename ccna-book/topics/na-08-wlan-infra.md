@@ -6,8 +6,8 @@ lead: Как включают точки и контроллер: access или 
 blueprint: ["2.7"]
 minutes: 30
 match:
-  key: ["dynamic interface", "distribution system port", "\\bLAG\\b", "service port", "virtual interface"]
-  re: ["management interface", "dynamic interface", "virtual interface", "service port", "\\bLAG\\b", "distribution system port", "switch port.*access point", "access point.*switch port", "trunk.*access point", "wlan.*vlan mapping", "wireless.*vlan.*map", "controller.*port.*configur"]
+  key: ["dynamic interface", "distribution system port", "\\bLAG\\b", "service port", "virtual interface", "wlan component", "multigigabit", "poe mode"]
+  re: ["management interface", "dynamic interface", "virtual interface", "service port", "\\bLAG\\b", "distribution system port", "switch port.*access point", "access point.*switch port", "trunk.*access point", "wlan.*vlan mapping", "wireless.*vlan.*map", "controller.*port.*configur", "wlan component", "multigigabit", "802\\.3bz", "2\\.5.?g(bps|b)|5.?g(bps|b)", "poe mode", "power.?devices? detection", "load-?balancing.*wlc", "switch load-?balancing"]
 ---
 
 ## Как подключают точку доступа
@@ -21,7 +21,12 @@ match:
   **trunk**: клиентские VLAN выходят в сеть прямо здесь.
 
 Плюс питание: точке нужен **PoE** (802.3af для простых, 802.3at/bt для 802.11ac/ax) либо
-внешний инжектор.
+внешний инжектор. Режим согласования питания — **auto** (коммутатор сам обнаруживает
+устройство и после этого гарантирует ему заявленную мощность) — тот же принцип auto/static,
+что разбирался в главе про физические компоненты сети. Для новых точек Wi-Fi 6/6E с
+двумя-тремя радиомодулями и агрегированной скоростью выше гигабита используют не обычный
+Gigabit Ethernet, а **Multigigabit** (802.3bz) — кабель категории 5e/6 тянет 2,5 или 5 Гбит/с
+без замены проводки, только на меньшей длине, чем формальный стандарт для этой категории.
 
 ```cfg
 ! Порт к lightweight-точке в local mode
@@ -55,7 +60,11 @@ interface GigabitEthernet1/0/10
 **LAG** на WLC объединяет физические порты в один логический (аналог EtherChannel). На
 стороне коммутатора это EtherChannel в режиме **`on`** — контроллер не участвует в LACP,
 и это отдельный экзаменационный факт. При включении LAG контроллер требует перезагрузки, а
-все интерфейсы автоматически привязываются к логической группе.
+все интерфейсы автоматически привязываются к логической группе. Рекомендованный режим
+балансировки на самом коммутаторе — **src-dst-ip** (`port-channel load-balance
+src-dst-ip`): для части платформ WLC (устаревшие 4400, WiSM1, 3750G, WiSM2) это не
+рекомендация, а обязательное требование — иначе фрагментированные пакеты CAPWAP могут
+уйти на разные физические линки и не собраться обратно.
 
 ## Интерфейсы контроллера
 

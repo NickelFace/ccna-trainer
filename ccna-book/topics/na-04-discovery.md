@@ -6,8 +6,8 @@ lead: Как устройство узнаёт, кто у него на сосе
 blueprint: ["2.3"]
 minutes: 25
 match:
-  key: ["\\bCDP\\b", "\\bLLDP\\b", "discovery protocol"]
-  re: ["\\bCDP\\b", "\\bLLDP\\b", "cdp neighbor", "lldp neighbor", "discovery protocol", "LLDP-?MED", "show cdp", "show lldp"]
+  key: ["\\bCDP\\b", "\\bLLDP\\b", "discovery protocol", "no cdp (run|enable)", "no lldp"]
+  re: ["\\bCDP\\b", "\\bLLDP\\b", "cdp neighbor", "lldp neighbor", "discovery protocol", "LLDP-?MED", "show cdp", "show lldp", "no cdp (run|enable)", "no lldp (run|receive|transmit)", "\\bTLV\\b", "delay time", "multivendor", "neighbor.*(ip address|hardware platform|software version)", "topology.*mapp?ed"]
 ---
 
 ## Зачем протоколы обнаружения

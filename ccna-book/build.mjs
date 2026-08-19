@@ -40,16 +40,29 @@ function parseFrontmatter(text, file) {
   return { front: out, body };
 }
 
+// Quoted strings here are regex sources, and their authors write them the way anyone
+// writes a regex inside a JSON/YAML double-quoted string: "\\b" meaning "one backslash,
+// then b". Stripping the surrounding quotes without also collapsing that doubled
+// backslash leaves the literal two-character sequence in the string, and a regex built
+// from it requires an actual backslash in the haystack to match — so `\\bCDP\\b` never
+// matches the word "CDP" anywhere, silently. Unescaping `\\` → `\` after unquoting is
+// what makes the escape sequence the author typed actually mean what it looks like.
+function unquote(s) {
+  const quoted = /^"[\s\S]*"$/.test(s) || /^'[\s\S]*'$/.test(s);
+  const stripped = s.replace(/^["']|["']$/g, '');
+  return quoted ? stripped.replace(/\\\\/g, '\\') : stripped;
+}
+
 function parseScalar(s) {
   if (s === 'true') return true;
   if (s === 'false') return false;
   if (/^-?\d+$/.test(s)) return Number(s);
   if (s.startsWith('[')) {
     return s.slice(1, s.lastIndexOf(']')).split(',')
-      .map(x => x.trim().replace(/^["']|["']$/g, ''))
+      .map(x => unquote(x.trim()))
       .filter(Boolean);
   }
-  return s.replace(/^["']|["']$/g, '');
+  return unquote(s);
 }
 
 // ---------------------------------------------------------------- body blocks

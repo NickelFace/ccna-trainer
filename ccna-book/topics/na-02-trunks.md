@@ -6,8 +6,8 @@ lead: Как несколько VLAN живут в одном кабеле, чт
 blueprint: ["2.2"]
 minutes: 35
 match:
-  key: ["trunk", "802\\.1Q", "native vlan", "\\bDTP\\b"]
-  re: ["trunk", "802\\.1Q", "native vlan", "\\bDTP\\b", "dynamic desirable", "dynamic auto", "allowed vlan", "tagg?ed", "encapsulation dot1q", "switchport mode trunk", "show interfaces trunk"]
+  key: ["trunk", "802\\.1Q", "native vlan", "\\bDTP\\b", "\\bVXLAN\\b", "software defined access", "\\bSDA\\b"]
+  re: ["trunk", "802\\.1Q", "native vlan", "\\bDTP\\b", "dynamic desirable", "dynamic auto", "allowed vlan", "tagg?ed", "encapsulation dot1q", "switchport mode trunk", "show interfaces trunk", "third-?party switch", "interswitch vlan", "encapsulates packets for different vlans", "\\bVXLAN\\b", "software defined access", "\\bSDA\\b", "edge nodes"]
   not: ["etherchannel", "spanning-?tree root"]
 ---
 
@@ -124,6 +124,26 @@ Gi0/1       10,20,99
 подынтерфейсы, по одному на VLAN. Об этом отдельная глава, но помни: на стороне
 коммутатора это обычный транк, а на роутере — `encapsulation dot1q <vlan>` в каждом
 подынтерфейсе, причём для native VLAN добавляют ключевое слово `native`.
+
+## Транк со стороны стороннего производителя
+
+Если на другом конце линка не Cisco, а коммутатор другого вендора, договариваться о режиме
+через DTP не с кем — DTP проприетарен. Решение — **настроить транк вручную и статически на
+обеих сторонах**: `switchport mode trunk` (или его аналог в CLI другого вендора) без
+расчёта на автосогласование, и явно совпадающая инкапсуляция `dot1Q` (тот же принцип, что
+и режим `on` в EtherChannel из соседней главы — статика вместо переговоров там, где
+DTP-подобного протокола на другой стороне попросту нет).
+
+## VXLAN: та же идея, но поверх L3
+
+802.1Q решает задачу «несколько VLAN в одном кабеле» внутри одного L2-сегмента. Когда
+сегменты нужно растянуть между разными зданиями или ЦОД через маршрутизируемую сеть,
+тегирование поверх L2 не работает — на помощь приходит **VXLAN**: кадр L2 целиком заворачивается
+в UDP-пакет и передаётся через обычную IP-сеть, как GRE, но с 24-битным идентификатором
+(VNI) вместо 12-битного VLAN ID, поэтому сегментов помещается на порядки больше 4094. Это
+именно тот протокол, который образует **data plane фабрики SD-Access** между edge-узлами
+разных площадок — тема раскрыта подробнее в главе про SDN, здесь достаточно видеть связь:
+VXLAN для L3-сети — почти то же, чем 802.1Q является для одного коммутируемого сегмента.
 
 ## Разбор атаки: double tagging по шагам
 

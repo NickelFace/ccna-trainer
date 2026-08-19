@@ -6,8 +6,8 @@ lead: Autonomous, lightweight и CAPWAP, split-MAC, FlexConnect, embedded и clo
 blueprint: ["2.6"]
 minutes: 35
 match:
-  key: ["\\bCAPWAP\\b", "lightweight", "FlexConnect", "split-?MAC", "autonomous ap", "ap mode"]
-  re: ["\\bCAPWAP\\b", "lightweight", "autonomous ap", "split-?MAC", "FlexConnect", "\\bLWAPP\\b", "ap mode", "local mode", "monitor mode", "sniffer mode", "rogue detector", "bridge mode", "mobility express", "embedded wireless", "cloud-?based.*wireless", "\\bWLC\\b", "controller-based.*wireless", "access point.*controller", "\\bRRM\\b", "join.*controller"]
+  key: ["\\bCAPWAP\\b", "lightweight", "FlexConnect", "split-?MAC", "autonomous ap", "ap mode", "access-?point mode", "reassociation", "fast transition", "802\\.11r", "802\\.11k", "802\\.11v", "neighbor list", "wireless architecture", "essid", "roam"]
+  re: ["\\bCAPWAP\\b", "lightweight", "autonomous ap", "split-?MAC", "FlexConnect", "\\bLWAPP\\b", "ap mode", "local mode", "monitor mode", "sniffer mode", "rogue detector", "bridge mode", "mobility express", "embedded wireless", "cloud-?based.*wireless", "\\bWLC\\b", "controller-based.*wireless", "access point.*controller", "\\bRRM\\b", "join.*controller", "management frame", "association (response|request)", "reassociation", "beacon frame", "channel overlap", "fast transition", "802\\.11r", "802\\.11k", "802\\.11v", "neighbor list", "bss max idle", "wireless architecture", "\\bessid\\b", "cloud-based access point", "wi-?fi client troublesh", "mobility (tunnel|group)", "roam.*(floor|building|access point)", "supports .*802\\.11 and ethernet", "workgroup bridge"]
 ---
 
 ## Три поколения архитектур
@@ -92,6 +92,42 @@ FlexConnect — ответ на вопросы про филиал с тонки
 
 Именно поэтому ответ на «зачем WLC при 50 точках» — не «скорость», а **централизованное
 управление, роуминг и автоматическое радиопланирование**.
+
+## Управляющие кадры 802.11 и роуминг между точками
+
+Три типа кадров 802.11 — **management, control, data**. Ассоциация клиента с точкой живёт
+целиком в **management**-кадрах:
+
+| Кадр | Кто шлёт | Когда |
+|---|---|---|
+| Probe Request / Response | клиент → точка / точка → клиент | клиент ищет доступные сети |
+| Authentication | клиент ↔ точка | первый шаг подключения (открытая или по ключу) |
+| Association Request / **Response** | клиент → точка / точка → клиент | клиент просится в сеть, точка подтверждает |
+| **Reassociation** Request / Response | клиент → новая точка | клиент **переходит** к другой точке той же ESS без разрыва сессии |
+| Deauthentication / Disassociation | любая сторона | явный разрыв |
+
+Ключевая деталь для вопросов про роуминг: клиент, уже подключённый к сети, при переходе к
+другой точке шлёт не Association, а **Reassociation Request** — это и отличает
+первое подключение от роуминга внутри той же ESS.
+
+### Быстрый роуминг: 802.11r/k/v
+
+Обычная реассоциация требует заново пройти полный обмен ключами с новой точкой — заметная
+пауза для голосового трафика или видеозвонка. Три стандарта ускоряют это:
+
+- **802.11r (Fast Transition, FT)** — ключевой материал согласуется заранее, ещё до
+  физического перехода; в GUI контроллера это опция **Fast Transition**, включаемая вместе
+  с методом Key Management (**FT 802.1X** для Enterprise, **FT PSK** для Personal).
+- **802.11k** — точка отдаёт клиенту список соседних точек (Neighbor List), чтобы клиент не
+  сканировал все каналы подряд в поисках, куда переходить.
+- **802.11v** — точка помогает клиенту принять решение о переходе (BSS Transition
+  Management) и управляет его энергосбережением (BSS Max Idle).
+
+> [!key] Запомнить
+> Для минимизации времени переключения между точками у множества разнотипных клиентов
+> (ноутбуки, телефоны, планшеты) правильный ответ — **802.11k** (Neighbor List): именно он
+> не завязан на конкретный метод аутентификации и работает с любым клиентом, который его
+> поддерживает, в отличие от 802.11r, который требует согласованного Fast Transition.
 
 ## Диагностика: новая точка не присоединяется к контроллеру
 

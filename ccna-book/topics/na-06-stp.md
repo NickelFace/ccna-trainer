@@ -6,8 +6,8 @@ lead: Как выбирается корень, порты и их роли, ч�
 blueprint: ["2.5"]
 minutes: 50
 match:
-  key: ["spanning.?tree", "\\bBPDU\\b", "root bridge", "root port", "portfast", "rapid pvst"]
-  re: ["spanning.?tree", "\\bSTP\\b", "\\bRSTP\\b", "rapid pvst", "\\bBPDU\\b", "root bridge", "root port", "designated port", "\\bblocking\\b", "portfast", "bpduguard", "bpdu guard", "root guard", "loop guard", "bridge (id|priority)", "\\bTCN\\b", "path cost", "alternate port"]
+  key: ["spanning.?tree", "\\bBPDU\\b", "root bridge", "root port", "portfast", "rapid pvst", "forwarding loop"]
+  re: ["spanning.?tree", "\\bSTP\\b", "\\bRSTP\\b", "rapid pvst", "\\bBPDU\\b", "root bridge", "root port", "designated port", "\\bblocking\\b", "portfast", "bpduguard", "bpdu guard", "root guard", "loop guard", "bridge (id|priority)", "\\bTCN\\b", "path cost", "alternate port", "forwarding loop", "preferred forwarding interface", "prevents?.*(a )?workstation.*dhcp", "802\\.1w", "learning.*forwarding.*state", "port transition"]
 ---
 
 ## Задача, которую решает STP

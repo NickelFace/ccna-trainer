@@ -6,8 +6,8 @@ lead: Порядок кликов при создании SSID: General, Securit
 blueprint: ["2.9"]
 minutes: 30
 match:
-  key: ["wlan id", "profile name", "QoS profile", "platinum|gold|silver|bronze", "interface/interface group", "layer 2 security"]
-  re: ["\\bWLAN\\b.*(create|configure|GUI)", "wlan id", "profile name", "\\bSSID\\b.*(WLC|controller|GUI)", "interface/interface group", "AAA servers tab", "QoS profile", "platinum|gold|silver|bronze", "layer 2 security", "\\bPSK\\b format", "broadcast ssid", "session timeout", "client exclusion", "band select", "wlan.*enable.*status"]
+  key: ["wlan id", "profile name", "QoS profile", "platinum|gold|silver|bronze", "interface/interface group", "layer 2 security", "p2p block", "mac filtering", "local eap", "aaa override", "ascii.*character"]
+  re: ["\\bWLAN\\b.*(create|configure|GUI)", "wlan id", "profile name", "\\bSSID\\b.*(WLC|controller|GUI)", "interface/interface group", "AAA servers tab", "QoS profile", "platinum|gold|silver|bronze", "layer 2 security", "\\bPSK\\b format", "broadcast ssid", "session timeout", "client exclusion", "band select", "wlan.*enable.*status", "p2p block", "mac filtering", "local eap", "aaa override", "ascii.*character", "lifetime.*second", "authenticate.*local database", "maximum allowed clients", "additional (task|vlan|security polic)"]
 ---
 
 ## Что и в каком порядке заполняют
@@ -49,12 +49,40 @@ Layer 2 — основной выбор:
 | **WPA3 + SAE** | современная сеть, устойчивая к перебору пароля |
 | **None** | только вместе с web auth (гостевой портал) |
 
-Для PSK задают формат ключа (ASCII или HEX) и сам ключ. Для 802.1X во вкладке **AAA
+Для PSK задают формат ключа (ASCII или HEX) и сам ключ: **ASCII — минимум 8 символов**,
+максимум 63; HEX — ровно 64 шестнадцатеричных знака. Для 802.1X во вкладке **AAA
 Servers** выбирают RADIUS-серверы аутентификации и учёта — без этого корпоративный WLAN
-не поднимется.
+не поднимется. Добавленный сервер по умолчанию виден в списке, но не обслуживает вход,
+пока рядом с ним не отмечено **Enabled** — это отдельная галочка, а не факт присутствия
+сервера в списке.
 
 Layer 3 обычно — **Web Policy / Web Authentication**: гость получает адрес, но до входа в
 портал ходит только к DNS и странице авторизации.
+
+### Ограничение доступа на уровне WLAN
+
+Помимо самого пароля Wi-Fi, GUI даёт точечные ограничители, которые часто спрашивают
+отдельно от общей темы Security:
+
+- **MAC Filtering** (Security → Layer 2, рядом с WPA2 Policy) — пускает только клиентов из
+  списка разрешённых MAC, поверх обычной проверки пароля. Вопрос «allow only specific
+  clients to join with WPA2 PSK» — это именно связка **WPA2 Policy + MAC Filtering**, а не
+  один параметр.
+- **P2P Blocking Action** — запрещает клиентам одной WLAN видеть друг друга напрямую;
+  значение **Drop** отбрасывает такой трафик молча, **Forward-UpStream** пересылает его
+  наверх для дальнейшей обработки политикой.
+- **Local EAP** с **Lifetime (seconds) = 0** — локальная база учётных данных на самом
+  контроллере (без внешнего RADIUS) с временем жизни сессии **без ограничения**; ненулевое
+  значение, наоборот, обязывало бы клиента переаутентифицироваться через заданное число
+  секунд.
+- **AAA Override** (Advanced) — разрешает RADIUS/ISE переопределять VLAN клиента по его
+  учётным данным поверх той VLAN, что задана в самом WLAN — это и есть механизм назначения
+  разных VLAN разным пользователям одного SSID.
+
+После первого развёртывания нового WLC к типовому чек-листу «что ещё настроить» относят не
+инфраструктурные мелочи, а **VLAN под разные группы клиентов** и **политики безопасности**
+— сама точка и контроллер уже работают, но без этого трафик пользователей некуда
+раскладывать и нечем защищать.
 
 ## QoS
 

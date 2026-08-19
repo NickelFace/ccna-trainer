@@ -6,8 +6,8 @@ lead: Зачем делить коммутатор на логические с�
 blueprint: ["2.1"]
 minutes: 35
 match:
-  key: ["voice vlan", "switchport access vlan", "default vlan", "vlan database", "access port"]
-  re: ["\\bVLAN\\b", "access port", "voice vlan", "default vlan", "switchport mode access", "switchport access vlan", "vlan database", "\\bSVI\\b", "data vlan", "vlan.*assign", "show vlan"]
+  key: ["voice vlan", "switchport access vlan", "default vlan", "vlan database", "access port", "broadcast domain"]
+  re: ["\\bVLAN\\b", "access port", "voice vlan", "default vlan", "switchport mode access", "switchport access vlan", "vlan database", "\\bSVI\\b", "data vlan", "vlan.*assign", "show vlan", "broadcast domain", "vlan arrangement", "vlan port mode"]
   not: ["spanning-?tree", "\\bWLAN\\b"]
 ---
 

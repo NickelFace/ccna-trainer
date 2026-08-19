@@ -7,8 +7,8 @@ blueprint: ["2.8"]
 minutes: 30
 fallback: true
 match:
-  key: ["line vty", "\\btelnet\\b", "out-?of-?band", "console (port|access|line)", "transport input"]
-  re: ["console (port|access|line)", "\\bvty\\b", "line vty", "\\btelnet\\b", "\\bSSH\\b.*(access|management)", "in-?band", "out-?of-?band", "management access", "\\bAUX\\b", "transport input", "terminal monitor", "remote access to.*device"]
+  key: ["line vty", "\\btelnet\\b", "out-?of-?band", "console (port|access|line)", "transport input", "man-in-the-middle.*(telnet|management|connection)", "unsecured remote.*cli", "secure remote.*cli", "webmode|secureweb"]
+  re: ["console (port|access|line)", "\\bvty\\b", "line vty", "\\btelnet\\b", "\\bSSH\\b.*(access|management)", "in-?band", "out-?of-?band", "management access", "\\bAUX\\b", "transport input", "terminal monitor", "remote access to.*device", "man-in-the-middle", "unsecured.*cli", "secure.*cli access", "ssl certificate.*web administration", "generate.*ssl certificate", "concurrent telnet session", "enables? http access", "without.*(a )?configured ip address"]
 ---
 
 ## Два способа добраться до устройства
@@ -93,6 +93,14 @@ Connection Version Mode Encryption  Hmac   State         Username
 - **Cloud-managed** (Meraki, Catalyst Center/DNA Center) — устройство само поднимает
   туннель к облаку, администратор работает через портал. Плюс: не нужен доступ снаружи
   внутрь. Минус: зависимость от связи с облаком.
+
+На контроллере беспроводной сети та же логика, только команда другая:
+`config network webmode enable` открывает HTTP, а именно включение **HTTPS**
+(`config network secureweb enable`) заставляет WLC самостоятельно сгенерировать локальный
+самоподписанный SSL-сертификат для веб-администрирования — сертификат появляется не сам по
+себе, а как побочный эффект включения именно защищённого протокола. У Telnet и Cisco WLC
+есть и собственные ограничения управления: одновременных Telnet-сессий разрешено не больше
+**пяти**, что регулярно спрашивают как отдельный числовой факт.
 
 ## Что нужно, чтобы удалённый доступ вообще был
 
