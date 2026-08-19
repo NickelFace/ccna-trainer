@@ -50,8 +50,7 @@
 | REST API | AUT | 8 | 1267 | 30 |
 | JSON, XML и YAML | AUT | 18 | 1159 | 30 |
 | Ansible, Terraform, Puppet и Chef | AUT | 2 | 1263 | 25 |
-| ИИ и машинное обучение в сетях | AUT | 0 | 493 | 20 |
+| ИИ и машинное обучение в сетях | AUT | 0 | 1201 | 20 |
 
 Мало вопросов (<5): nf-10-client-ip, na-03-intervlan, na-08-wlan-infra, sec-05-aaa, aut-05-config-tools
 Тема блюпринта, которой нет в банке: aut-06-ai-ml
-Короткие главы (<900 слов): aut-06-ai-ml
