@@ -7,7 +7,7 @@ blueprint: ["2.9"]
 minutes: 30
 match:
   key: ["wlan id", "profile name", "QoS profile", "platinum|gold|silver|bronze", "interface/interface group", "layer 2 security", "p2p block", "mac filtering", "local eap", "aaa override", "ascii.*character"]
-  re: ["\\bWLAN\\b.*(create|configure|GUI)", "wlan id", "profile name", "\\bSSID\\b.*(WLC|controller|GUI)", "interface/interface group", "AAA servers tab", "QoS profile", "platinum|gold|silver|bronze", "layer 2 security", "\\bPSK\\b format", "broadcast ssid", "session timeout", "client exclusion", "band select", "wlan.*enable.*status", "p2p block", "mac filtering", "local eap", "aaa override", "ascii.*character", "lifetime.*second", "authenticate.*local database", "maximum allowed clients", "additional (task|vlan|security polic)"]
+  re: ["\\bWLAN\\b.*(create|configure|GUI)", "wlan id", "profile name", "\\bSSID\\b.*(WLC|controller|GUI)", "interface/interface group", "AAA servers tab", "QoS profile", "platinum|gold|silver|bronze", "layer 2 security", "\\bPSK\\b format", "broadcast ssid", "session timeout", "client exclusion", "band select", "wlan.*enable.*status", "p2p block", "mac filtering", "local eap", "aaa override", "ascii.*character", "lifetime.*second", "authenticate.*local database", "maximum allowed clients", "additional (task|vlan|security polic)", "characteristic.*encryption.*wireless"]
 ---
 
 ## Что и в каком порядке заполняют

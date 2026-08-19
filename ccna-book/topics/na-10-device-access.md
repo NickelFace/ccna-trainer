@@ -7,8 +7,8 @@ blueprint: ["2.8"]
 minutes: 30
 fallback: true
 match:
-  key: ["line vty", "\\btelnet\\b", "out-?of-?band", "console (port|access|line)", "transport input", "man-in-the-middle.*(telnet|management|connection)", "unsecured remote.*cli", "secure remote.*cli", "webmode|secureweb"]
-  re: ["console (port|access|line)", "\\bvty\\b", "line vty", "\\btelnet\\b", "\\bSSH\\b.*(access|management)", "in-?band", "out-?of-?band", "management access", "\\bAUX\\b", "transport input", "terminal monitor", "remote access to.*device", "man-in-the-middle", "unsecured.*cli", "secure.*cli access", "ssl certificate.*web administration", "generate.*ssl certificate", "concurrent telnet session", "enables? http access", "without.*(a )?configured ip address"]
+  key: ["line vty", "\\btelnet\\b", "out-?of-?band", "console (port|access|line)", "transport input", "man-in-the-middle.*(telnet|management|connection)", "unsecured remote.*cli", "secure remote.*cli", "webmode|secureweb", "management connection type"]
+  re: ["console (port|access|line)", "\\bvty\\b", "line vty", "\\btelnet\\b", "\\bSSH\\b.*(access|management)", "in-?band", "out-?of-?band", "management access", "\\bAUX\\b", "transport input", "terminal monitor", "remote access to.*device", "man-in-the-middle", "unsecured.*cli", "secure.*cli access", "ssl certificate.*web administration", "generate.*ssl certificate", "concurrent telnet session", "enables? http access", "without.*(a )?configured ip address", "management connection type"]
 ---
 
 ## Два способа добраться до устройства
