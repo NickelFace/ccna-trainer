@@ -23,6 +23,14 @@ export function scaledDelta(attempts, index = attempts.length - 1) {
 
 export const pointsToPass = attempt => PASS_SCALED - attempt.scaled;
 
+// The 300..1000 score is only meaningful for a sample drawn the way the real exam draws
+// one — by Cisco blueprint weight, not filtered to a domain, a question type, or a "weak
+// domains" pick. Those still get graded internally (the per-domain breakdown is useful
+// regardless of how the questions were chosen) but never claim a comparable score — see
+// the `weighted` flag set in session.js's startExam.
+export const isScored = attempt => !!attempt.weighted;
+export const scoredAttempts = attempts => attempts.filter(isScored);
+
 // "General" is the dump's catch-all for questions that were never tagged, not a subject
 // anyone can go and study — it is aggregated but never offered as something to work on.
 const CATCH_ALL = 'General';
@@ -74,9 +82,13 @@ export const mistakesOf = (attempt, byN) =>
   });
 
 // ---------------------------------------------------------------- daily activity
-// The activity map is { 'YYYY-MM-DD': answers graded that day }. It exists because the
+// The activity map is { 'YYYY-MM-DD': { total, wrong, srs } }. It exists because the
 // streak and the day's quota cannot be derived from attempts alone — a session that was
 // worked on but never finished leaves no attempt behind, yet the work happened.
+//
+// `total` is every graded answer that day; `wrong` is how many of those were incorrect;
+// `srs` is how many came from a repetition session (startSrs) rather than practice or an
+// exam — the three numbers the "Сегодня" card on the Progress tab reports.
 
 // Local midnight, not UTC: a streak should break when the user's day does.
 export const dayKey = (ts = Date.now()) => {
@@ -84,10 +96,39 @@ export const dayKey = (ts = Date.now()) => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
 
-export const answeredOn = (activity, ts = Date.now()) => activity[dayKey(ts)] || 0;
+// Until 2026-08 a day was stored as a bare number (answers graded, nothing else) — this
+// turns whatever load() or restore() read into the current shape. wrong/srs default to 0
+// for a day recorded before they existed; there is no way to recover which answers those
+// were, and 0 is a truthful "unknown, treat as none" rather than a guess.
+export function normalizeActivity(raw) {
+  const obj = raw && typeof raw === 'object' ? raw : {};
+  const out = {};
+  for (const [day, v] of Object.entries(obj)) {
+    out[day] = typeof v === 'number' ? { total: v, wrong: 0, srs: 0 } : v;
+  }
+  return out;
+}
+
+// A single day's counters, defaulting to zero so callers never need an existence check.
+export const dayStats = (activity, ts = Date.now()) => {
+  const d = activity[dayKey(ts)];
+  return { total: d?.total || 0, wrong: d?.wrong || 0, srs: d?.srs || 0 };
+};
+
+export const answeredOn = (activity, ts = Date.now()) => dayStats(activity, ts).total;
 
 export const answeredTotal = activity =>
-  Object.values(activity).reduce((sum, n) => sum + n, 0);
+  Object.values(activity).reduce((sum, d) => sum + (d?.total || 0), 0);
+
+// The last `days` calendar days ending today, oldest first — what the Progress tab's
+// activity strip draws one bar per.
+export function recentDays(activity, now = Date.now(), days = 14) {
+  const DAY = 86_400_000;
+  return Array.from({ length: days }, (_, i) => {
+    const ts = now - (days - 1 - i) * DAY;
+    return { key: dayKey(ts), ts, ...dayStats(activity, ts) };
+  });
+}
 
 // Consecutive days with at least one answer, counting back from today. A day that is
 // still in progress does not break the streak: if nothing has been answered yet today,

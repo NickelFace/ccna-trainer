@@ -4,10 +4,15 @@
 // it before handing over, so a crash on this screen cannot cost the run.
 import { esc, h } from '../dom.js';
 import { PASS_SCALED, SCALE_MIN, SCALE_MAX } from '../../engine/score.js';
-import { toneFor, scoreTone, msPerQuestion, scaledDelta, pointsToPass, weakDomains, mistakesOf } from '../../engine/stats.js';
+import {
+  toneFor, scoreTone, msPerQuestion, scaledDelta, pointsToPass, weakDomains, mistakesOf,
+  isScored, scoredAttempts,
+} from '../../engine/stats.js';
 import { store } from '../store.js';
 import { review as reviewScreen } from './review.js';
 import { aiPrompt as aiPromptScreen } from './ai-prompt.js';
+
+const MODE_LABEL = { practice: 'Тренировка', srs: 'Повторение' };
 
 const scalePct = scaled => ((scaled - SCALE_MIN) / (SCALE_MAX - SCALE_MIN)) * 100;
 
@@ -29,6 +34,49 @@ function gapLine(attempt) {
   if (gap > 0) return `не хватило ${gap} ${plural(gap, 'балла', 'баллов', 'баллов')} до порога ${PASS_SCALED}`;
   if (gap === 0) return `ровно порог ${PASS_SCALED}`;
   return `запас ${-gap} ${plural(-gap, 'балл', 'балла', 'баллов')} над порогом ${PASS_SCALED}`;
+}
+
+// The 300..1000 score, the threshold gap and the scale bar only mean something for a
+// blueprint-weighted attempt (see isScored) — this is what a real exam or "Короткий
+// прогон" gets.
+function scoreCard(attempt, delta) {
+  return `
+    <div class="card score-card">
+      <div class="score mono ${scoreTone(attempt.scaled)}">${attempt.scaled}</div>
+      <div class="muted">${esc(gapLine(attempt))}</div>
+      <div class="scale">
+        <div class="scale-track">
+          <i style="width:${scalePct(attempt.scaled)}%"></i>
+          <span class="scale-mark" style="left:${scalePct(PASS_SCALED)}%"></span>
+        </div>
+        <div class="scale-labels mono">
+          <span>${SCALE_MIN}</span><span>порог ${PASS_SCALED}</span><span>${SCALE_MAX}</span>
+        </div>
+      </div>
+      <div class="score-stats">
+        <div class="stat"><b class="mono">${attempt.ok}/${attempt.total}</b><span>верно</span></div>
+        <div class="stat"><b class="mono">${fmtMinSec(msPerQuestion(attempt))}</b><span>мин / вопрос</span></div>
+        <div class="stat"><b class="mono">${delta === null ? '—' : `${delta > 0 ? '+' : ''}${delta}`}</b><span>к прошлой</span></div>
+      </div>
+    </div>`;
+}
+
+// Practice, repetition and a filtered/weak-domains exam still get graded — the domain
+// breakdown below is useful regardless — but never show a 300..1000 number next to them:
+// it would read as comparable to a real exam while actually being a biased or tiny
+// sample. A plain fraction says exactly as much as is true.
+function plainCard(attempt) {
+  const pct = attempt.total ? Math.round((attempt.ok / attempt.total) * 100) : 0;
+  const label = attempt.mode === 'exam' ? 'Свой экзамен' : (MODE_LABEL[attempt.mode] || 'Тренировка');
+  return `
+    <div class="card score-card plain">
+      <div class="score mono ${toneFor(pct)}">${attempt.ok}/${attempt.total}</div>
+      <div class="muted">${esc(label)} · ${pct}% верно</div>
+      <div class="score-stats">
+        <div class="stat"><b class="mono">${pct}%</b><span>точность</span></div>
+        <div class="stat"><b class="mono">${fmtMinSec(msPerQuestion(attempt))}</b><span>мин / вопрос</span></div>
+      </div>
+    </div>`;
 }
 
 function nextStepCard(attempt, bank, mistakes) {
@@ -100,30 +148,19 @@ export const result = {
     const { attempt } = ctx.params;
     const { bank } = ctx;
     const mistakes = mistakesOf(attempt, bank.byN);
-    // The delta needs the attempt's own position in the history, not the last slot —
-    // the results screen can be reopened from the progress list for an older run.
-    const index = store.attempts.findIndex(a => a.id === attempt.id);
-    const delta = scaledDelta(store.attempts, index);
+    const scored = isScored(attempt);
+
+    // The delta needs the attempt's own position among *scored* attempts, not the raw
+    // history — comparing a real exam's score to whatever practice run happened right
+    // before it would be the same category error scoreCard/plainCard exist to avoid.
+    let delta = null;
+    if (scored) {
+      const scoredList = scoredAttempts(store.attempts);
+      delta = scaledDelta(scoredList, scoredList.findIndex(a => a.id === attempt.id));
+    }
 
     const node = h(`
-      <div class="card score-card">
-        <div class="score mono ${scoreTone(attempt.scaled)}">${attempt.scaled}</div>
-        <div class="muted">${esc(gapLine(attempt))}</div>
-        <div class="scale">
-          <div class="scale-track">
-            <i style="width:${scalePct(attempt.scaled)}%"></i>
-            <span class="scale-mark" style="left:${scalePct(PASS_SCALED)}%"></span>
-          </div>
-          <div class="scale-labels mono">
-            <span>${SCALE_MIN}</span><span>порог ${PASS_SCALED}</span><span>${SCALE_MAX}</span>
-          </div>
-        </div>
-        <div class="score-stats">
-          <div class="stat"><b class="mono">${attempt.ok}/${attempt.total}</b><span>верно</span></div>
-          <div class="stat"><b class="mono">${fmtMinSec(msPerQuestion(attempt))}</b><span>мин / вопрос</span></div>
-          <div class="stat"><b class="mono">${delta === null ? '—' : `${delta > 0 ? '+' : ''}${delta}`}</b><span>к прошлой</span></div>
-        </div>
-      </div>
+      ${scored ? scoreCard(attempt, delta) : plainCard(attempt)}
       ${nextStepCard(attempt, bank, mistakes)}
       <div class="label spaced">По доменам</div>
       <div class="card">${domainRows(attempt, bank.meta.domains)}</div>

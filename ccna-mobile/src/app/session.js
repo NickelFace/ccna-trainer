@@ -25,21 +25,30 @@ export function startExam(bank, preset = 'full', { settings = {}, manual = null,
   const count = manual?.count ?? spec.count;
   const minutes = manual?.minutes ?? spec.minutes;
 
-  let qs;
+  // `weighted` says whether the pool was drawn by Cisco blueprint weight — the only draw
+  // the 300..1000 score is comparable across. A domain filter, a type filter or the "weak
+  // domains" preset all shuffle a narrowed pool instead, and a score off that pool would
+  // read as a real exam result while actually being a biased sample — see isScored in
+  // engine/stats.js, which is what the results screen checks before showing one.
+  let qs, weighted;
   if (manual && (manual.domains.length || manual.types.length)) {
     let pool = bank.pool;
     if (manual.domains.length) pool = pool.filter(q => manual.domains.includes(q.dom));
     if (manual.types.length) pool = pool.filter(q => manual.types.includes(q.y));
     qs = shuffle(pool).slice(0, count);
+    weighted = false;
   } else if (weakDomains) {
     qs = shuffle(bank.pool.filter(q => weakDomains.includes(q.dom))).slice(0, count);
+    weighted = false;
   } else {
     qs = weightedPick(bank.pool, bank.meta.domains, count);
+    weighted = true;
   }
 
   return store.startSession({
     mode: 'exam',
     preset,
+    weighted,
     // Captured at the start: changing a switch mid-exam should not change the rules of
     // the run already in progress.
     instant: !!settings.instant,
@@ -134,7 +143,7 @@ export function finishSession(session, bank) {
   if (session.mode === 'exam' && !session.instant) {
     store.recordAnswers(result.review
       .filter(r => session.answers[r.q.n] !== undefined)
-      .map(r => [r.q.n, r.good]));
+      .map(r => [r.q.n, r.good]), 'exam');
   }
 
   const attempt = {
@@ -142,6 +151,9 @@ export function finishSession(session, bank) {
     date: Date.now(),
     mode: session.mode,
     preset: session.preset || null,
+    // Only an exam session ever sets this, and only when the pool was blueprint-weighted
+    // — see startExam. Practice and repetition are never a comparable score.
+    weighted: session.mode === 'exam' && !!session.weighted,
     scaled: result.scaled,
     pct: result.pct,
     ok: result.ok,

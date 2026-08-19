@@ -37,7 +37,13 @@ function recentAnswers(attempts, byN, window) {
 }
 
 export function readiness(attempts, byN, domains, { window = WINDOW } = {}) {
-  const answers = recentAnswers(attempts, byN, window);
+  // A repetition session (startSrs) deliberately re-serves material already flagged
+  // wrong — that is its whole job. Folding those answers into the forecast would punish
+  // exactly the most disciplined behavior: the more faithfully mistakes get reviewed, the
+  // worse "Готовность" would read on the day it happens. The SRS map itself (store.srs)
+  // still records the outcome regardless — only this forecast window excludes it.
+  const nonSrs = attempts.filter(a => a.mode !== 'srs');
+  const answers = recentAnswers(nonSrs, byN, window);
   if (!answers.length) {
     return { pct: 0, forecast: null, sample: 0, covered: 0, perDomain: {} };
   }

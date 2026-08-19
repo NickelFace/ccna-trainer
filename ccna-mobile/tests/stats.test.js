@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   toneFor, scoreTone, msPerQuestion, scaledDelta, pointsToPass,
-  topicStats, weakTopics, weakDomains, mistakesOf,
-  dayKey, answeredOn, answeredTotal, streakDays,
+  topicStats, weakTopics, weakDomains, mistakesOf, isScored, scoredAttempts,
+  dayKey, normalizeActivity, dayStats, recentDays, answeredOn, answeredTotal, streakDays,
 } from '../src/engine/stats.js';
 import { DOMAINS } from './helpers.js';
 
@@ -64,6 +64,14 @@ test('points to pass is signed — negative once the threshold is cleared', () =
   assert.equal(pointsToPass({ scaled: 900 }), -75);
 });
 
+test('only a blueprint-weighted attempt is scored', () => {
+  assert.equal(isScored({ weighted: true }), true);
+  assert.equal(isScored({ weighted: false }), false);
+  assert.equal(isScored({}), false);                  // practice/srs attempts carry no flag at all
+  const list = [{ id: 'a', weighted: true }, { id: 'b', weighted: false }, { id: 'c', weighted: true }];
+  assert.deepEqual(scoredAttempts(list).map(a => a.id), ['a', 'c']);
+});
+
 test('topic stats aggregate every attempt and sort worst first', () => {
   const rows = topicStats([attempt()], byN);
   const byTopic = Object.fromEntries(rows.map(r => [r.topic, r]));
@@ -114,13 +122,38 @@ const DAY = 86_400_000;
 // and land on the same calendar date twice.
 const NOON = new Date(2026, 7, 17, 12, 0, 0).getTime();
 const activityFor = (...offsets) =>
-  Object.fromEntries(offsets.map(d => [dayKey(NOON - d * DAY), 5]));
+  Object.fromEntries(offsets.map(d => [dayKey(NOON - d * DAY), { total: 5, wrong: 1, srs: 2 }]));
 
 test('the day key follows local midnight', () => {
   const justBefore = new Date(2026, 7, 17, 23, 59, 59).getTime();
   const justAfter = new Date(2026, 7, 18, 0, 0, 1).getTime();
   assert.equal(dayKey(justBefore), '2026-08-17');
   assert.equal(dayKey(justAfter), '2026-08-18');
+});
+
+test('a bare number from before wrong/srs existed migrates to zeros for them', () => {
+  const migrated = normalizeActivity({ '2026-08-10': 5, '2026-08-11': { total: 3, wrong: 1, srs: 0 } });
+  assert.deepEqual(migrated['2026-08-10'], { total: 5, wrong: 0, srs: 0 });
+  assert.deepEqual(migrated['2026-08-11'], { total: 3, wrong: 1, srs: 0 });   // already current shape, untouched
+  assert.deepEqual(normalizeActivity(null), {});
+  assert.deepEqual(normalizeActivity(undefined), {});
+});
+
+test('a single day\'s counters, defaulting to zero on a day with nothing', () => {
+  const activity = activityFor(0);
+  assert.deepEqual(dayStats(activity, NOON), { total: 5, wrong: 1, srs: 2 });
+  assert.deepEqual(dayStats(activity, NOON - DAY), { total: 0, wrong: 0, srs: 0 });
+  assert.deepEqual(dayStats({}, NOON), { total: 0, wrong: 0, srs: 0 });
+});
+
+test('recentDays returns oldest-first over the requested window, zero-filled', () => {
+  const activity = activityFor(0, 2);
+  const days = recentDays(activity, NOON, 3);
+  assert.equal(days.length, 3);
+  assert.deepEqual(days.map(d => d.key), [dayKey(NOON - 2 * DAY), dayKey(NOON - DAY), dayKey(NOON)]);
+  assert.equal(days[0].total, 5);      // 2 days ago
+  assert.equal(days[1].total, 0);      // yesterday, untouched
+  assert.equal(days[2].total, 5);      // today
 });
 
 test('today, and the running total', () => {

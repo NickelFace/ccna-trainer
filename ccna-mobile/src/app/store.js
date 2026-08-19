@@ -10,7 +10,7 @@
 // when the app is about to go away.
 import { Preferences } from '@capacitor/preferences';
 import { nextState } from '../engine/srs.js';
-import { dayKey } from '../engine/stats.js';
+import { dayKey, normalizeActivity } from '../engine/stats.js';
 
 const KEY = {
   profile: 'ccna.profile',
@@ -108,7 +108,7 @@ export const store = {
     this.attempts = attempts;
     this.bookmarks = bookmarks;
     this.srs = srs;
-    this.activity = activity;
+    this.activity = normalizeActivity(activity);
     this.book = mergeBook(book);
     return this;
   },
@@ -136,17 +136,25 @@ export const store = {
   // ---- spaced repetition + activity ----
   // Every graded answer lands here, from practice, from matching, and in bulk when an
   // exam is scored. This is the only place the SRS map is written.
-  recordAnswer(qn, correct, now = Date.now()) {
+  //
+  // `mode` is the session mode the answer was graded under ('exam' | 'practice' | 'srs') —
+  // it only affects the `srs` counter below, not the SRS map itself, which every mode
+  // updates the same way.
+  recordAnswer(qn, correct, mode, now = Date.now()) {
     this.srs[qn] = nextState(this.srs[qn], correct, now);
     const day = dayKey(now);
-    this.activity[day] = (this.activity[day] || 0) + 1;
+    const bucket = this.activity[day] || { total: 0, wrong: 0, srs: 0 };
+    bucket.total++;
+    if (!correct) bucket.wrong++;
+    if (mode === 'srs') bucket.srs++;
+    this.activity[day] = bucket;
     this._pruneActivity();
     this._touch('srs');
     this._touch('activity');
   },
 
-  recordAnswers(pairs, now = Date.now()) {
-    for (const [qn, correct] of pairs) this.recordAnswer(qn, correct, now);
+  recordAnswers(pairs, mode, now = Date.now()) {
+    for (const [qn, correct] of pairs) this.recordAnswer(qn, correct, mode, now);
   },
 
   // Keep the map from growing without bound; a year of history is more than the streak
@@ -242,7 +250,7 @@ export const store = {
     this.attempts = Array.isArray(data.attempts) ? data.attempts : [];
     this.bookmarks = Array.isArray(data.bookmarks) ? data.bookmarks : [];
     this.srs = data.srs && typeof data.srs === 'object' ? data.srs : {};
-    this.activity = data.activity && typeof data.activity === 'object' ? data.activity : {};
+    this.activity = normalizeActivity(data.activity);
     // Backups written before the Теория tab existed simply have no `book` key — the
     // merge turns that into an untouched textbook rather than an error.
     this.book = mergeBook(data.book);

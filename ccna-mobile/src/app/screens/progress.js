@@ -5,7 +5,10 @@
 import { esc, h } from '../dom.js';
 import { store } from '../store.js';
 import { PASS_SCALED, SCALE_MIN, SCALE_MAX } from '../../engine/score.js';
-import { msPerQuestion, scaledDelta, weakTopics, scoreTone } from '../../engine/stats.js';
+import {
+  msPerQuestion, scaledDelta, weakTopics, scoreTone, toneFor,
+  scoredAttempts, dayStats, recentDays,
+} from '../../engine/stats.js';
 import { startPractice } from '../session.js';
 import { confirmDialog } from '../dialog.js';
 import { exportBackup, readBackupFile } from '../backup.js';
@@ -15,6 +18,10 @@ import { result as resultScreen } from './result.js';
 
 const CHART_H = 104;
 const MAX_BARS = 8;
+const STRIP_H = 64;
+const STRIP_DAYS = 14;
+
+const MODE_LABEL = { practice: 'Тренировка', srs: 'Повторение' };
 
 const barHeight = scaled =>
   Math.max(3, Math.round(((scaled - SCALE_MIN) / (SCALE_MAX - SCALE_MIN)) * CHART_H));
@@ -26,6 +33,15 @@ const fmtMinSec = ms => {
 
 const fmtDate = ts => new Date(ts).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
 
+const plural = (n, one, few, many) => {
+  const m10 = n % 10, m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
+  return many;
+};
+
+// Only a blueprint-weighted attempt (see isScored in stats.js) belongs on the score
+// chart — the pass threshold and the 300..1000 scale are calibrated to that sample.
 function chart(attempts) {
   const slice = attempts.slice(-MAX_BARS);
   const last = slice.length - 1;
@@ -49,15 +65,64 @@ function chart(attempts) {
     </div>`;
 }
 
+// "Сегодня" — the direct answer to "сколько прошёл, сколько из них ошибочных, сколько
+// была работа над ошибками", read straight off store.activity rather than derived from
+// attempts (an unfinished session already left marks here, even with no attempt yet).
+function todayCard(activity, goal, now) {
+  const d = dayStats(activity, now);
+  return `
+    <div class="label spaced">Сегодня · ${d.total} из ${goal}</div>
+    <div class="mini-stats">
+      <div class="card mini"><b class="mono">${d.total}</b><span>отвечено</span></div>
+      <div class="card mini"><b class="mono${d.wrong ? ' err' : ''}">${d.wrong}</b><span>${plural(d.wrong, 'ошибка', 'ошибки', 'ошибок')}</span></div>
+      <div class="card mini"><b class="mono">${d.srs}</b><span>работа над ошибками</span></div>
+    </div>`;
+}
+
+// One bar per of the last 14 days: height by volume, tone by whether the daily goal was
+// met — the same "did I follow the plan" question the home screen's quota answers for
+// today alone, over a window long enough to actually see a pattern in.
+function activityStrip(activity, goal, now) {
+  const days = recentDays(activity, now, STRIP_DAYS);
+  const cap = Math.max(goal, ...days.map(d => d.total), 1);
+  const bars = days.map(d => {
+    const height = Math.max(3, Math.round((d.total / cap) * STRIP_H));
+    const tone = d.total === 0 ? '' : d.total >= goal ? 'ok' : 'warn';
+    const title = `${esc(fmtDate(d.ts))}: ${d.total}, ошибок ${d.wrong}`;
+    return `<div class="bar ${tone}" style="height:${height}px" title="${title}"></div>`;
+  }).join('');
+
+  return `
+    <div class="chart" style="--chart-h:${STRIP_H}px">
+      <div class="chart-plot">
+        <div class="chart-threshold" style="bottom:${Math.max(3, Math.round((goal / cap) * STRIP_H))}px">
+          <span class="mono">${goal}</span>
+        </div>
+        <div class="chart-bars">${bars}</div>
+      </div>
+    </div>`;
+}
+
 function historyRows(attempts) {
-  return attempts.slice().reverse().map(a => `
-    <button class="history-row" data-attempt="${esc(a.id)}" type="button">
-      <span class="history-main">
-        <span>${a.mode === 'exam' ? 'Экзамен' : 'Тренировка'} · ${esc(fmtDate(a.date))}</span>
-        <span class="muted">${a.ok}/${a.total} верно · ${fmtMinSec(msPerQuestion(a))} на вопрос</span>
-      </span>
-      <span class="mono ${scoreTone(a.scaled)}">${a.scaled}</span>
-    </button>`).join('');
+  return attempts.slice().reverse().map(a => {
+    const label = a.mode === 'exam'
+      ? (a.weighted ? 'Экзамен' : 'Свой экзамен')
+      : (MODE_LABEL[a.mode] || 'Тренировка');
+    // A weighted attempt shows the 300..1000 score, same as everywhere else it appears;
+    // anything else shows its percentage — never a scaled number that would look
+    // comparable to a real exam result but was drawn from a biased or tiny sample.
+    const value = a.weighted
+      ? `<span class="mono ${scoreTone(a.scaled)}">${a.scaled}</span>`
+      : `<span class="mono ${toneFor(a.pct)}">${a.pct}%</span>`;
+    return `
+      <button class="history-row" data-attempt="${esc(a.id)}" type="button">
+        <span class="history-main">
+          <span>${esc(label)} · ${esc(fmtDate(a.date))}</span>
+          <span class="muted">${a.ok}/${a.total} верно · ${fmtMinSec(msPerQuestion(a))} на вопрос</span>
+        </span>
+        ${value}
+      </button>`;
+  }).join('');
 }
 
 // Progress lives only on this phone; this is the one place in the app that says so and
@@ -95,10 +160,22 @@ export const progress = {
   render(ctx) {
     const attempts = store.attempts;
     const { bank } = ctx;
+    const now = Date.now();
+    const goal = store.profile.dailyGoal;
+
+    // Driven by store.activity, not by attempts — a session still in progress already
+    // left marks here, so this shows up even before the very first attempt exists.
+    const activityBlock = `
+      ${todayCard(store.activity, goal, now)}
+      <div class="card chart-card">
+        <div class="card-head"><span>Активность за ${STRIP_DAYS} дней</span></div>
+        ${activityStrip(store.activity, goal, now)}
+      </div>`;
 
     if (!attempts.length) {
       const node = h(`
         <h1 class="screen-title">Прогресс</h1>
+        ${activityBlock}
         <div class="card empty">
           <p>Здесь появится график баллов, средняя скорость и темы, которые проседают.</p>
           <p class="muted">Пройди первый пробный экзамен — одной попытки уже хватит, чтобы
@@ -109,20 +186,28 @@ export const progress = {
       return node;
     }
 
-    const delta = scaledDelta(attempts);
+    const scored = scoredAttempts(attempts);
+    const delta = scored.length ? scaledDelta(scored) : null;
     const lastAttempt = attempts[attempts.length - 1];
     const avgMs = Math.round(attempts.reduce((sum, a) => sum + msPerQuestion(a), 0) / attempts.length);
     const topics = weakTopics(attempts, bank.byN);
 
     const node = h(`
       <h1 class="screen-title">Прогресс</h1>
-      <div class="card chart-card">
-        <div class="card-head">
-          <span>Баллы за ${attempts.length} ${attempts.length === 1 ? 'попытку' : 'попыток'}</span>
-          ${delta === null ? '' : `<span class="mono ${delta >= 0 ? 'ok' : 'err'}">${delta > 0 ? '+' : ''}${delta}</span>`}
-        </div>
-        ${chart(attempts)}
-      </div>
+      ${activityBlock}
+      ${scored.length ? `
+        <div class="card chart-card">
+          <div class="card-head">
+            <span>Баллы за ${scored.length} ${scored.length === 1 ? 'попытку' : 'попыток'}</span>
+            ${delta === null ? '' : `<span class="mono ${delta >= 0 ? 'ok' : 'err'}">${delta > 0 ? '+' : ''}${delta}</span>`}
+          </div>
+          ${chart(scored)}
+        </div>` : `
+        <div class="card chart-card">
+          <div class="card-head"><span>Баллы</span></div>
+          <p class="muted">Появятся после «Как на экзамене» или «Короткий прогон» — это
+          единственные режимы, взвешенные по блюпринту так же, как настоящий тест.</p>
+        </div>`}
       <div class="mini-stats">
         <div class="card mini"><b class="mono">${fmtMinSec(avgMs)}</b><span>средн. на вопрос</span></div>
         <div class="card mini"><b class="mono">${lastAttempt.pct}%</b><span>в последней попытке</span></div>

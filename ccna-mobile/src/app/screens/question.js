@@ -429,7 +429,7 @@ function gradeCurrent(ctx) {
   const given = [...pending].sort();
   const ok = isCorrect(q, { given });
   store.answer(q.n, { given, ok });
-  store.recordAnswer(q.n, ok);
+  store.recordAnswer(q.n, ok, s.mode);
   pendingFor = null;
   reviewDismissed = false;
   ctx.router.render();

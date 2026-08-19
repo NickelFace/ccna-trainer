@@ -333,6 +333,9 @@
 .score.ok { color: var(--ok); }
 .score.warn { color: var(--warn); }
 .score.err { color: var(--err); }
+/* A practice/repetition result deliberately reads smaller than a real exam score — the
+   size difference is part of saying "this number is not the same kind of thing". */
+.score-card.plain .score { font-size: calc(var(--fs-score) * 0.65); letter-spacing: -1px; }
 .score-stats { display: flex; gap: 10px; margin-top: 16px; }
 .score-stats .stat {
   flex: 1;
@@ -433,6 +436,11 @@
 .bar { flex: 1; border-radius: 5px 5px 0 0; background: #2c3138; }
 .bar.recent { background: var(--primary-strong); }
 .bar.now { background: var(--primary); }
+/* The daily-activity strip reads by goal met, not by recency — a day at or over the
+   quota is ok, a day with some work but short of it is warn, an empty day stays the
+   plain background above. */
+.bar.ok { background: var(--ok); }
+.bar.warn { background: var(--warn); }
 
 /* Drawn across the plot, with its label parked outside the bars on the right. */
 .chart-threshold {

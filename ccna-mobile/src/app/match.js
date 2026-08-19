@@ -136,6 +136,6 @@ export function gradeMatch(q, session) {
   const placement = { ...state.placement };
   const ok = ddCorrect(q, placement);
   store.answer(q.n, { placement, ok });
-  store.recordAnswer(q.n, ok);
+  store.recordAnswer(q.n, ok, session.mode);
   return ok;
 }

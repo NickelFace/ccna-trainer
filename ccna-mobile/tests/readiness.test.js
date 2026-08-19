@@ -83,6 +83,32 @@ test('the window keeps only the most recent answers', () => {
   assert.equal(r.perDomain.NF.pct, 100);
 });
 
+test('a repetition (srs) attempt is excluded from the forecast window', () => {
+  // Repetition deliberately re-serves material already flagged wrong — counting it would
+  // punish the exact behavior spaced repetition asks for.
+  const spec = Object.fromEntries(DOMAINS.map(d => [d.id, { tot: 10, right: 10 }]));
+  const { attempt, byN } = attemptFor(spec);
+  attempt.mode = 'srs';
+  const r = readiness([attempt], byN, DOMAINS);
+  assert.equal(r.forecast, null);      // the only attempt is srs — nothing left in the window
+  assert.equal(r.sample, 0);
+});
+
+test('an srs attempt answered badly does not drag down a good exam forecast', () => {
+  const spec = Object.fromEntries(DOMAINS.map(d => [d.id, { tot: 10, right: 10 }]));
+  const good = attemptFor(spec, { id: 'exam' });
+  good.attempt.mode = 'exam';
+  const bad = attemptFor(spec, { id: 'srs' });
+  bad.attempt.mode = 'srs';
+  bad.attempt.answers = Object.fromEntries(
+    Object.keys(bad.attempt.answers).map(n => [n, { given: ['B'] }]));   // wrong on everything
+  const byN = new Map([...good.byN, ...bad.byN]);
+
+  const r = readiness([good.attempt, bad.attempt], byN, DOMAINS);
+  assert.equal(r.sample, 60);          // only the exam's 60 answers, the srs run is excluded
+  assert.equal(r.pct, 100);
+});
+
 test('no history at all yields no forecast rather than a zero', () => {
   const r = readiness([], new Map(), DOMAINS);
   assert.equal(r.forecast, null);
