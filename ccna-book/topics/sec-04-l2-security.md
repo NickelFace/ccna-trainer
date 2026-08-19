@@ -186,9 +186,12 @@ rogue DHCP, а вместо этого новые клиенты вообще п
 сервера:
 
 ```cli
-SW1# show ip dhcp snooping | include Interface|trusted
+SW1# show ip dhcp snooping
+Switch DHCP snooping is enabled
+DHCP snooping is configured on following VLANs: 10,20
 Interface              Trusted     Rate limit (pps)
-Gi1/0/24                no          unlimited
+------------------------ ------- ----------------
+GigabitEthernet1/0/24    no       unlimited
 ```
 
 **Что нашли.** Аплинк в сторону настоящего DHCP-сервера остался **недоверенным**

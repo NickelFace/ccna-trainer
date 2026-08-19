@@ -161,12 +161,19 @@ login quiet-mode access-class QUIET-EXEMPT
 ```cfg
 privilege exec level 5 show running-config
 privilege exec level 5 configure terminal
+privilege configure level 5 interface        ! без этой строки interface на уровне 5 недоступен
 privilege interface level 5 shutdown
 privilege interface level 5 no shutdown
 !
 enable secret level 5 Level5Pass
 username helpdesk privilege 5 secret Help-Pass
 ```
+
+Легко упустить именно среднюю строку: разрешить `configure terminal` недостаточно, чтобы
+попасть дальше в `interface` — эта команда внутри global config тоже по умолчанию требует
+уровня 15 и должна быть **отдельно** понижена командой `privilege configure level 5
+interface`, иначе `helpdesk` войдёт в режим настройки, но получит `% Invalid input
+detected` уже на попытке набрать `interface Gi1/0/5`, не добравшись до `shutdown`.
 
 Логика назначения: команды `privilege … level 5 …` разрешают **конкретные** команды на
 пятом уровне (по умолчанию доступны только базовые команды уровней 0–1), а `enable secret
