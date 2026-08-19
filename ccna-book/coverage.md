@@ -25,7 +25,7 @@
 | Архитектуры Cisco WLAN и режимы точек | NA | 26 | 708 | 35 |
 | Проводная часть беспроводной сети | NA | 3 | 712 | 30 |
 | Настройка WLAN в GUI контроллера | NA | 14 | 651 | 30 |
-| Доступ к управлению устройством | NA | 91 | 684 | 30 |
+| Доступ к управлению устройством | NA | 91 | 1569 | 30 |
 | Таблица маршрутизации | IPC | 129 | 1718 | 40 |
 | Как принимается решение о пересылке | IPC | 5 | 1406 | 30 |
 | Статическая маршрутизация IPv4 и IPv6 | IPC | 33 | 1449 | 35 |
@@ -54,4 +54,4 @@
 
 Мало вопросов (<5): nf-10-client-ip, na-03-intervlan, na-08-wlan-infra, sec-05-aaa, aut-05-config-tools
 Тема блюпринта, которой нет в банке: aut-06-ai-ml
-Короткие главы (<900 слов): na-01-vlan, na-02-trunks, na-03-intervlan, na-04-discovery, na-05-etherchannel, na-07-wireless-arch, na-08-wlan-infra, na-09-wlan-gui, na-10-device-access, ips-01-nat, ips-02-dhcp-dns, ips-03-ntp, ips-04-snmp-syslog, ips-05-qos, ips-06-ssh-files, sec-01-concepts, sec-02-passwords, sec-03-acl, sec-04-l2-security, sec-05-aaa, sec-06-vpn, sec-07-wireless-security, aut-01-automation, aut-02-sdn, aut-03-rest-api, aut-04-data-formats, aut-05-config-tools, aut-06-ai-ml
+Короткие главы (<900 слов): na-01-vlan, na-02-trunks, na-03-intervlan, na-04-discovery, na-05-etherchannel, na-07-wireless-arch, na-08-wlan-infra, na-09-wlan-gui, ips-01-nat, ips-02-dhcp-dns, ips-03-ntp, ips-04-snmp-syslog, ips-05-qos, ips-06-ssh-files, sec-01-concepts, sec-02-passwords, sec-03-acl, sec-04-l2-security, sec-05-aaa, sec-06-vpn, sec-07-wireless-security, aut-01-automation, aut-02-sdn, aut-03-rest-api, aut-04-data-formats, aut-05-config-tools, aut-06-ai-ml
