@@ -164,11 +164,13 @@ Gi0/1       10,20,99
 **Что смотрим.** Совпадает ли native VLAN на обоих концах транка:
 
 ```cli
-SW1# show interfaces gi0/1 trunk | include Native
-Gi0/1       999
+SW1# show interfaces gi0/1 trunk
+Port        Mode         Encapsulation  Status        Native vlan
+Gi0/1       on           802.1q         trunking      999
 
-SW2# show interfaces gi0/1 trunk | include Native
-Gi0/1       1
+SW2# show interfaces gi0/1 trunk
+Port        Mode         Encapsulation  Status        Native vlan
+Gi0/1       on           802.1q         trunking      1
 
 %CDP-4-NATIVE_VLAN_MISMATCH: Native VLAN mismatch discovered on GigabitEthernet0/1 (999), with SW2 GigabitEthernet0/1 (1).
 ```

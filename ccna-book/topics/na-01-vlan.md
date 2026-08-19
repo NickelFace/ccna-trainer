@@ -150,7 +150,7 @@ SW1# show interfaces gi1/0/15 switchport | include Access Mode VLAN
 Access Mode VLAN: 30 (Inactive)
 
 SW1# show vlan brief | include 30
-30   VLAN0030                         act/lshut
+30   VLAN0030                         act/lshut Gi1/0/15
 ```
 
 **Что нашли.** Порт формально назначен в VLAN 30, но сама VLAN находится в состоянии

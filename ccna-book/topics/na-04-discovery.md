@@ -53,7 +53,8 @@ interface gi0/1
 ```cli
 SW1# show cdp neighbors
 Capability Codes: R - Router, T - Trans Bridge, B - Source Route Bridge
-                  S - Switch, H - Host, I - IGMP, r - Repeater, P - Phone
+                  S - Switch, H - Host, I - IGMP, r - Repeater, P - Phone,
+                  D - Remote, C - CVTA, M - Two-port Mac Relay
 
 Device ID    Local Intrfce   Holdtme  Capability   Platform   Port ID
 R1           Gig 0/1          142        R S I     C9200      Gig 0/0/0
