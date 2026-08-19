@@ -46,7 +46,7 @@
 | VPN и IPsec | SEC | 7 | 1360 | 30 |
 | Безопасность беспроводных сетей | SEC | 12 | 1418 | 30 |
 | Зачем сети автоматизация | AUT | 25 | 540 | 25 |
-| SDN, плоскости и фабрика | AUT | 92 | 572 | 35 |
+| SDN, плоскости и фабрика | AUT | 92 | 1312 | 35 |
 | REST API | AUT | 8 | 570 | 30 |
 | JSON, XML и YAML | AUT | 18 | 514 | 30 |
 | Ansible, Terraform, Puppet и Chef | AUT | 2 | 574 | 25 |
@@ -54,4 +54,4 @@
 
 Мало вопросов (<5): nf-10-client-ip, na-03-intervlan, na-08-wlan-infra, sec-05-aaa, aut-05-config-tools
 Тема блюпринта, которой нет в банке: aut-06-ai-ml
-Короткие главы (<900 слов): aut-01-automation, aut-02-sdn, aut-03-rest-api, aut-04-data-formats, aut-05-config-tools, aut-06-ai-ml
+Короткие главы (<900 слов): aut-01-automation, aut-03-rest-api, aut-04-data-formats, aut-05-config-tools, aut-06-ai-ml
