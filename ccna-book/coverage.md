@@ -48,10 +48,10 @@
 | Зачем сети автоматизация | AUT | 25 | 1051 | 25 |
 | SDN, плоскости и фабрика | AUT | 92 | 1312 | 35 |
 | REST API | AUT | 8 | 570 | 30 |
-| JSON, XML и YAML | AUT | 18 | 514 | 30 |
+| JSON, XML и YAML | AUT | 18 | 1159 | 30 |
 | Ansible, Terraform, Puppet и Chef | AUT | 2 | 574 | 25 |
 | ИИ и машинное обучение в сетях | AUT | 0 | 493 | 20 |
 
 Мало вопросов (<5): nf-10-client-ip, na-03-intervlan, na-08-wlan-infra, sec-05-aaa, aut-05-config-tools
 Тема блюпринта, которой нет в банке: aut-06-ai-ml
-Короткие главы (<900 слов): aut-03-rest-api, aut-04-data-formats, aut-05-config-tools, aut-06-ai-ml
+Короткие главы (<900 слов): aut-03-rest-api, aut-05-config-tools, aut-06-ai-ml
