@@ -7,7 +7,7 @@ blueprint: ["4.8", "4.9"]
 minutes: 25
 match:
   key: ["\\bTFTP\\b", "\\bFTP\\b", "copy (running|startup|tftp|flash)", "\\bIOS\\b image", "\\bSCP\\b", "backup.*configuration", "restore.*configuration"]
-  re: ["\\bSSH\\b.*configur", "crypto key generate", "file transfer", "flash:", "startup-config", "running-config", "boot system", "\\bNVRAM\\b"]
+  re: ["\\bSSH\\b.*configur", "crypto key generate", "file.transfer", "flash:", "startup-config", "running-config", "boot system", "\\bNVRAM\\b"]
 ---
 
 ## SSH: настройка по шагам

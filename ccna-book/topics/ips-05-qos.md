@@ -7,7 +7,7 @@ blueprint: ["4.7"]
 minutes: 35
 match:
   key: ["\\bQoS\\b", "\\bDSCP\\b", "\\bCoS\\b", "polic(ing|er)", "shaping", "per-hop behavior", "\\bPHB\\b", "\\bEF\\b|expedited forwarding", "assured forwarding", "\\bLLQ\\b", "traffic classification", "marking"]
-  re: ["priority queue", "congestion (management|avoidance)", "\\bWRED\\b", "jitter", "voice traffic requirement", "trust boundary", "bandwidth guarantee"]
+  re: ["priority queue", "congestion (management|avoidance)", "\\bWRED\\b", "weighted random early detection", "jitter", "voice traffic requirement", "trust boundary", "bandwidth guarantee"]
 ---
 
 ## Зачем QoS

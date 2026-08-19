@@ -6,8 +6,8 @@ lead: Зачем сети единое время, что такое stratum, к
 blueprint: ["4.2"]
 minutes: 20
 match:
-  key: ["\\bNTP\\b", "stratum", "ntp server", "ntp master", "clock synchron"]
-  re: ["time synchron", "network time protocol", "timestamp.*log", "\\bUTC\\b.*clock", "show ntp"]
+  key: ["\\bNTP\\b", "stratum", "ntp server", "ntp master", "clock synchron", "clock set"]
+  re: ["time synchron", "network time protocol", "timestamp.*log", "\\bUTC\\b.*clock", "show ntp", "clock set", "configuring the date and time"]
 ---
 
 ## Почему время — это инфраструктура
@@ -56,6 +56,18 @@ ntp server 10.0.0.10 key 1
 clock timezone AEST 10 0
 clock summer-time AEDT recurring
 ```
+
+Если NTP по каким-то причинам недоступен, время можно выставить и вручную, прямо в
+привилегированном (EXEC) режиме — не в конфигурации:
+
+```cli
+R1# clock set 00:00:00 1 January 2020
+```
+
+`clock timezone` и `clock summer-time` меняют только то, как время **отображается**;
+`clock set` меняет само системное время. Это ручная, разовая установка — она не
+синхронизируется с другими устройствами и «уплывает» без NTP так же, как любые часы без
+сверки.
 
 Полезная практика, которую спрашивают: устройства держат внутреннее время в **UTC**, а
 часовой пояс применяется только при отображении. Поэтому логи разных площадок сравнимы.
