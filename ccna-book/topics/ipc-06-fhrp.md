@@ -6,7 +6,7 @@ lead: Как два роутера делят один виртуальный ш
 blueprint: ["3.6"]
 minutes: 30
 match:
-  key: ["\\bHSRP\\b", "\\bVRRP\\b", "\\bGLBP\\b", "\\bFHRP\\b", "first hop redundancy", "virtual (ip|mac|router)", "standby \\d"]
+  key: ["\\bHSRP\\b", "\\bVRRP\\b", "\\bGLBP\\b", "\\bFHRP\\b", "first-?hop redundancy", "virtual (ip|mac|router)", "standby \\d"]
   re: ["redundant gateway", "active router", "standby router", "preempt", "virtual gateway", "default gateway.*redundan", "failover.*gateway"]
 ---
 

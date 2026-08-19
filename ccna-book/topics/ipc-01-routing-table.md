@@ -7,8 +7,8 @@ blueprint: ["3.1"]
 minutes: 40
 fallback: true
 match:
-  key: ["administrative distance", "\\bAD\\b value", "show ip route", "gateway of last resort", "routing table", "\\bmetric\\b", "route source", "directly connected"]
-  re: ["administrative distance", "routing table", "show ip route", "gateway of last resort", "\\bmetric\\b", "next hop", "route (code|source)", "\\bO\\b.*\\bOSPF\\b.*route", "candidate default", "connected route", "local route", "/32.*route"]
+  key: ["administrative distance", "\\bAD\\b value", "show ip route", "gateway of last resort", "routing table", "\\bmetric\\b", "route source", "directly connected", "interface is used to send traffic to the destination", "advertise a more specific route"]
+  re: ["administrative distance", "routing table", "show ip route", "gateway of last resort", "\\bmetric\\b", "next hop", "route (code|source)", "\\bO\\b.*\\bOSPF\\b.*route", "candidate default", "connected route", "local route", "/32.*route", "interface is used to send traffic", "advertise a more specific route", "\\[\\d+/\\d+\\] via"]
 ---
 
 ## Что такое таблица маршрутизации
