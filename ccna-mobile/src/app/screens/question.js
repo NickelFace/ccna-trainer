@@ -61,6 +61,10 @@ const fmtClock = ms => {
 
 const answerOf = (session, q) => session.answers[q.n];
 
+// The review sheet earns its interruption on a mistake only — a correct answer gets its
+// green paint and the "Следующий →" bar right away, nothing slides up over it.
+const isWrong = (session, q) => answerOf(session, q)?.ok === false;
+
 // The router paints header and footer before the body, so the per-question scratch state
 // has to be loaded from whoever asks first — otherwise the footer decides whether
 // "Ответить" is enabled using the previous question's selection. Idempotent by design.
@@ -139,9 +143,11 @@ function render(ctx) {
   const scale = store.profile.fontScale;
 
   // The pane — the node h() wraps everything in anyway — is what the swipe moves and fades.
-  // .q-body stays a separate element because it carries its own opacity when graded.
+  // .q-body stays a separate element because it carries its own opacity while the sheet
+  // is up — which, since a correct answer never opens one, only ever happens on a mistake.
+  const showsSheet = isWrong(s, q) && !reviewDismissed;
   const node = h(`
-    <div class="q-body${graded && !reviewDismissed ? ' graded' : ''}" style="--q-scale:${scale}">
+    <div class="q-body${showsSheet ? ' graded' : ''}" style="--q-scale:${scale}">
       <div class="q-badges">
         <span class="badge-dom">${esc(domShort(bank, q.dom))}</span>
         <span class="mono q-num">№${q.n}</span>
@@ -159,7 +165,7 @@ function render(ctx) {
       </div>
     </div>`, 'div', 'q-pane');
 
-  wireBody(node, ctx, q, s, graded);
+  wireBody(node, ctx, q, s, graded, showsSheet);
   return node;
 }
 
@@ -178,7 +184,7 @@ function optionsMarkup(q, session, given, graded) {
   return `<div class="opts">${rows}</div>`;
 }
 
-function wireBody(node, ctx, q, s, graded) {
+function wireBody(node, ctx, q, s, graded, showsSheet) {
   els.body = node.querySelector('.q-body');
 
   node.querySelector('.q-exhibit')?.addEventListener('click', e =>
@@ -213,9 +219,10 @@ function wireBody(node, ctx, q, s, graded) {
   });
 
   bindSwipe(node, ctx);
-  // Re-rendering a graded question brings the sheet back — unless it was closed on
-  // purpose, in which case reopening it over and over would be arguing with the user.
-  if (graded && !reviewDismissed) queueMicrotask(() => openReview(ctx, q, s));
+  // Re-rendering a wrong, still-open question brings the sheet back — unless it was
+  // closed on purpose, in which case reopening it over and over would be arguing with the
+  // user. A correct answer never had a sheet to bring back.
+  if (showsSheet) queueMicrotask(() => openReview(ctx, q, s));
 }
 
 // Horizontal swipe moves between questions, the same job the ← / → arrows do on the web.
@@ -335,9 +342,10 @@ function footer(ctx) {
   if (!s) return null;
   const q = currentQuestion(s, ctx.bank);
   const graded = gradesImmediately(s) && answerOf(s, q)?.ok !== undefined;
-  // While the review sheet is up it carries the action. Once it is put away the question
-  // is on its own again and needs a bar of its own — without one the screen is a dead end.
-  if (graded) return reviewDismissed ? reviewFooter(ctx, s, q) : null;
+  // While the review sheet is up it carries the action. Once it is put away — or never
+  // came up at all, because the answer was right — the question is on its own again and
+  // needs a bar of its own, without one the screen is a dead end.
+  if (graded) return (isWrong(s, q) && !reviewDismissed) ? null : reviewFooter(ctx, s, q);
 
   return q.y === 'dd' ? matchFooter(ctx, s, q) : choiceFooter(ctx, s, q);
 }
