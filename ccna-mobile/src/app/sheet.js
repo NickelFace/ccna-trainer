@@ -1,8 +1,8 @@
 // Bottom sheet — the review panel (screen 04) and the question grid behind ☰ both use it.
-// Slides up in 240ms ease-out, as the spec asks; the backdrop dims what is underneath so
-// the question stays readable but clearly inactive.
+// Slides up in 500ms ease-out; the backdrop dims what is underneath so the question stays
+// readable but clearly inactive.
 
-const EXIT_MS = 240;                       // must match .sheet's transition in screens.css
+const EXIT_MS = 500;                       // must match .sheet's transition in screens.css
 
 let open = null;
 
@@ -28,7 +28,7 @@ export function openSheet(content, { onClose = null, dimBehind = true } = {}) {
   return { close: closeSheet, panel };
 }
 
-// Closing runs the same 240ms in reverse. The node is detached only when the slide is
+// Closing runs the same 500ms in reverse. The node is detached only when the slide is
 // done, and stops taking taps immediately so nothing lands on a sheet that is leaving.
 export function closeSheet() {
   if (!open) return;

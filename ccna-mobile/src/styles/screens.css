@@ -63,8 +63,8 @@
    started on must not sit there shrunk into its pressed state for the whole drag. */
 .q-pane.dragging { will-change: transform; }
 .q-pane.dragging .opt:active, .q-pane.dragging .chip:active { transform: none; }
-.q-body { padding-top: 16px; }
-.q-body.graded { opacity: .5; }         /* the sheet takes over — spec 04 */
+.q-body { padding-top: 16px; transition: opacity 500ms ease-out; }
+.q-body.graded { opacity: .5; }         /* the sheet takes over — spec 04, same timing as .sheet's slide */
 
 .q-badges { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
 .badge-dom {
@@ -221,7 +221,7 @@
 /* ---------------------------------------------------------- bottom sheet */
 .sheet-backdrop { position: fixed; inset: 0; display: flex; align-items: flex-end; z-index: 40; }
 /* The dim fades in with the panel instead of appearing under it in one frame. */
-.sheet-backdrop.dim { background: rgba(0, 0, 0, 0); transition: background-color 240ms ease-out; }
+.sheet-backdrop.dim { background: rgba(0, 0, 0, 0); transition: background-color 500ms ease-out; }
 .sheet-backdrop.dim.in { background: rgba(0, 0, 0, .35); }
 .sheet {
   width: 100%;
@@ -233,7 +233,7 @@
   box-shadow: var(--shadow-sheet);
   padding: 10px var(--pad-screen) calc(20px + var(--safe-bottom));
   transform: translateY(100%);
-  transition: transform 240ms ease-out;
+  transition: transform 500ms ease-out;
 }
 .sheet-backdrop.in .sheet { transform: translateY(0); }
 .sheet-handle { width: 36px; height: 4px; border-radius: 2px; background: #2c3138; margin: 0 auto 14px; }
