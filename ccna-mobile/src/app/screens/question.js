@@ -172,7 +172,7 @@ function optionsMarkup(q, session, given, graded) {
       else if (selected.has(k)) classes.push('wrong');
     } else if (selected.has(k)) classes.push('sel');
     return `<button class="${classes.join(' ')}" data-k="${k}" type="button" ${graded ? 'disabled' : ''}>
-        <span class="k mono">${k}</span><span class="mono">${esc(q.o[k])}</span>
+        <span class="k mono">${k}</span><span class="mono opt-text">${esc(q.o[k])}</span>
       </button>`;
   }).join('');
   return `<div class="opts">${rows}</div>`;

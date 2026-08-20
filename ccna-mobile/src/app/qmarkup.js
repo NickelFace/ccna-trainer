@@ -46,8 +46,10 @@ export function answerSummary(q, given) {
     return `разложено верно ${right} из ${needed}`;
   }
   const keys = String(q.a || '').split('');
-  const text = keys.map(k => q.o?.[k]).filter(Boolean).join(' · ');
-  return `правильный ответ ${keys.join(', ')}${text ? ` · ${text}` : ''}`;
+  const texts = keys.map(k => q.o?.[k]).filter(Boolean);
+  const multiline = texts.some(t => t.includes('\n'));
+  const text = texts.join(multiline ? '\n' : ' · ');
+  return `правильный ответ ${keys.join(', ')}${text ? (multiline ? `\n${text}` : ` · ${text}`) : ''}`;
 }
 
 // The full key laid out per category, ticking what was placed right — the information

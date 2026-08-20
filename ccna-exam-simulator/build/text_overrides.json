@@ -686,7 +686,8 @@
     "cli": "SW1#show run interface fastEthernet 0/1\nswitchport trunk encapsulation dot1q\nswitchport mode trunk\nswitchport trunk allowed vlan 100,200,300\nchannel-group 1 mode active\n\nSW1#show run interface fastEthernet 0/2\nswitchport trunk encapsulation dot1q\nswitchport mode trunk\nswitchport trunk allowed vlan 100,200\nchannel-group 1 mode active\n\nSW2#show run interface fastEthernet 0/1\nswitchport trunk encapsulation dot1q\nswitchport mode trunk\nswitchport trunk allowed vlan 100,200,300\nchannel-group 1 mode active\n\nSW2#show run interface fastEthernet 0/2\nswitchport trunk encapsulation dot1q\nswitchport mode trunk\nswitchport trunk allowed vlan 100,200,300\nchannel-group 1 mode active"
   },
   "965": {
-    "cli": "hostname CPE\nservice password-encryption\n\nip domain name ccna.cisco.com\nip name-server 198.51.100.210\n\ncrypto key generate rsa modulus 1024\n\nusername admin privilege 15 secret s0m3s3cr3t\n\nline vty 0 4\ntransport input ssh\nlogin local"
+    "cli": "hostname CPE\nservice password-encryption\n\nip domain name ccna.cisco.com\nip name-server 198.51.100.210\n\ncrypto key generate rsa modulus 1024\n\nusername admin privilege 15 secret s0m3s3cr3t\n\nline vty 0 4\ntransport input ssh\nlogin local",
+    "t": "Refer to the exhibit. An engineer executed the script and added commands that were not necessary for SSH and now must remove the commands. Which two commands must be executed to correct the configuration? (Choose two.)"
   },
   "1046": {
     "cli": "SW1#show etherchannel\n            Channel-group listing:\n            ----------------------\n\nGroup: 2\n----------\nGroup state = L2\nPorts: 1 Maxports = 8\nPort-channels: 1 Max Portchannels = 1\nProtocol: PAGP"
@@ -1093,5 +1094,23 @@
   },
   "1342": {
     "cli": "R30# show interface fa0/0\nFastEthernet0/0 is up, line protocol is up\n  Hardware is DEC21140, address is ca02.7788.0000 (bia ca02.7788.0000)\n  Description: madrid_subnet\n  Internet address is 10.32.102.2/30\n  MTU 1500 bytes, BW 100000 Kbit/sec, DLY 100 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  Keepalive set (60 sec)\n  Half-duplex, 100 Mb/s, 100BaseTX/FX\n  ARP type: ARPA, ARP Timeout 04:00:00\n  Last input 00:00:01, output 00:00:00, output hang never\n  Last clearing of \"show interface\" counters 00:00:18\n  Input queue: 0/300/0/0 (size/max/drops/flushes); Total output drops: 0\n  Queueing strategy: fifo\n  Output queue: 0/300 (size/max)\n  30 second input rate 0 bits/sec, 0 packets/sec\n  30 second output rate 0 bits/sec, 0 packets/sec\n     7331 packets input, 7101162 bytes\n     Received 267 broadcasts (0 IP multicasts)\n     35 runts, 0 giants, 0 throttles\n     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored\n     0 watchdog\n     0 input packets with dribble condition detected\n     3927 packets output, 1440403 bytes, 0 underruns\n     0 output errors, 480 collisions, 0 interface resets\n     0 unknown protocol drops\n     0 babbles, 0 late collision, 0 deferred\n     0 lost carrier, 0 no carrier\n     0 output buffer failures, 0 output buffers swapped out"
+  },
+  "34": {
+    "t": "A corporate office uses four floors in a building. \n✑ Floor 1 has 24 users. \n✑ Floor 2 has 29 users. \n✑ Floor 3 has 28 users. \n✑ Floor 4 has 22 users. Which subnet summarizes and gives the most efficient distribution of IP addresses for the router configuration?"
+  },
+  "145": {
+    "t": "The address block 192.168.32.0/24 must be subnetted into smaller networks. The engineer must meet these requirements: \n✑ Create 8 new subnets. \n✑ Each subnet must accommodate 30 hosts. \n✑ Interface VLAN 10 must use the last usable IP in the first new subnet. \n✑ A Layer 3 interface is used. Which configuration must be applied to the interface?"
+  },
+  "267": {
+    "t": "A network engineer must configure two new subnets using the address block 10.70.128.0/19 to meet these requirements: \n✑ The first subnet must support 24 hosts. \n✑ The second subnet must support 472 hosts. \n✑ Both subnets must use the longest subnet mask possible from the address block. Which two configurations must be used to configure the new subnets and meet a requirement to use the first available address in each subnet for the router interfaces? (Choose two.)"
+  },
+  "1340": {
+    "o": {
+      "A": "interface range vlan 1 - 4094\nip access-group Management out",
+      "B": "line vty 0 15\naccess-class Management in",
+      "C": "ip access-list standard Management\npermit 203.0.113.0 0.0.0.255",
+      "D": "ip access-list standard Management\npermit 203.0.113.0 255.255.255.0",
+      "E": "ip access-list extended Management\npermit tcp any range 22 23 203.0.113.0 0.0.0.255"
+    }
   }
 }
