@@ -28,6 +28,7 @@ import { aiPrompt as aiPromptScreen } from './ai-prompt.js';
 
 const FONT_STEPS = [1, 1.12, 1.25];
 const LOW_TIME_MS = 120000;      // timer turns red and blinks under two minutes
+const REVEAL_MS = 3000;          // a wrong answer gets this long on screen before the sheet interrupts
 
 // ---- gesture / motion constants (see bindSwipe) ----
 const SLOP = 10;                 // px of travel before the gesture commits to an axis
@@ -53,6 +54,12 @@ let animating = false;           // a hand-off is in flight — ignore new gestu
 // back when it is not — see openReview / reviewFooter.
 let reviewDismissed = false;
 let leavingReview = false;       // the sheet is closing because the screen is leaving, not because the user closed it
+// A wrong answer doesn't show the sheet at once — REVEAL_MS gives the colored options a
+// moment on their own first. `revealed` is whether that wait is over (sheet shown at
+// least once) for the current wrong-and-undismissed answer; `revealTimer` is the pending
+// setTimeout id, cancelled the instant the question is left (see closeReview).
+let revealed = false;
+let revealTimer = null;
 
 const fmtClock = ms => {
   const total = Math.ceil(ms / 1000);
@@ -60,10 +67,16 @@ const fmtClock = ms => {
 };
 
 const answerOf = (session, q) => session.answers[q.n];
-
-// The review sheet earns its interruption on a mistake only — a correct answer gets its
-// green paint and the "Следующий →" bar right away, nothing slides up over it.
 const isWrong = (session, q) => answerOf(session, q)?.ok === false;
+
+// True exactly while the sheet is covering the question — a wrong, undismissed answer
+// that has already had its reveal. render() (body dimming) and footer() (hides the action
+// bar) both call this instead of each keeping their own copy of the same decision.
+const showsSheet = (s, q) => isWrong(s, q) && revealed && !reviewDismissed;
+
+function cancelReveal() {
+  if (revealTimer) { clearTimeout(revealTimer); revealTimer = null; }
+}
 
 // The router paints header and footer before the body, so the per-question scratch state
 // has to be loaded from whoever asks first — otherwise the footer decides whether
@@ -144,10 +157,10 @@ function render(ctx) {
 
   // The pane — the node h() wraps everything in anyway — is what the swipe moves and fades.
   // .q-body stays a separate element because it carries its own opacity while the sheet
-  // is up — which, since a correct answer never opens one, only ever happens on a mistake.
-  const showsSheet = isWrong(s, q) && !reviewDismissed;
+  // is up — which, since a correct answer never opens one, only ever happens on a mistake,
+  // and even then only once REVEAL_MS has given the colored options their moment alone.
   const node = h(`
-    <div class="q-body${showsSheet ? ' graded' : ''}" style="--q-scale:${scale}">
+    <div class="q-body${showsSheet(s, q) ? ' graded' : ''}" style="--q-scale:${scale}">
       <div class="q-badges">
         <span class="badge-dom">${esc(domShort(bank, q.dom))}</span>
         <span class="mono q-num">№${q.n}</span>
@@ -165,26 +178,35 @@ function render(ctx) {
       </div>
     </div>`, 'div', 'q-pane');
 
-  wireBody(node, ctx, q, s, graded, showsSheet);
+  wireBody(node, ctx, q, s, graded);
   return node;
 }
 
+// Color says right or wrong; a tag says whose pick this was — the two can't collapse into
+// one channel, because a multi-answer question can have one of each: a correct guess and
+// a wrong one, side by side, plus a correct option the learner never touched at all.
 function optionsMarkup(q, session, given, graded) {
   const selected = new Set(graded ? (given?.given || []) : pending);
   const rows = Object.keys(q.o).map(k => {
+    const isCorrect = q.a.includes(k);
+    const isPicked = selected.has(k);
     const classes = ['opt'];
+    let tag = '';
     if (graded) {
-      if (q.a.includes(k)) classes.push('correct');
-      else if (selected.has(k)) classes.push('wrong');
-    } else if (selected.has(k)) classes.push('sel');
+      if (isCorrect && isPicked) { classes.push('correct', 'picked'); tag = '✓ твой'; }
+      else if (isCorrect) { classes.push('correct'); tag = 'пропущен'; }
+      else if (isPicked) { classes.push('wrong'); tag = '✗ твой'; }
+      else classes.push('muted');
+    } else if (isPicked) classes.push('sel');
     return `<button class="${classes.join(' ')}" data-k="${k}" type="button" ${graded ? 'disabled' : ''}>
         <span class="k mono">${k}</span><span class="mono opt-text">${esc(q.o[k])}</span>
+        ${tag ? `<span class="opt-tag ${isCorrect ? 'ok' : 'err'}">${tag}</span>` : ''}
       </button>`;
   }).join('');
   return `<div class="opts">${rows}</div>`;
 }
 
-function wireBody(node, ctx, q, s, graded, showsSheet) {
+function wireBody(node, ctx, q, s, graded) {
   els.body = node.querySelector('.q-body');
 
   node.querySelector('.q-exhibit')?.addEventListener('click', e =>
@@ -219,10 +241,20 @@ function wireBody(node, ctx, q, s, graded, showsSheet) {
   });
 
   bindSwipe(node, ctx);
-  // Re-rendering a wrong, still-open question brings the sheet back — unless it was
-  // closed on purpose, in which case reopening it over and over would be arguing with the
-  // user. A correct answer never had a sheet to bring back.
-  if (showsSheet) queueMicrotask(() => openReview(ctx, q, s));
+
+  // A fresh wrong answer gets REVEAL_MS on its own before the sheet interrupts. Anything
+  // that already had its reveal — a dismissed sheet, or a correct answer — has nothing
+  // left to schedule here; cancelReveal() on every way out of the question (closeReview)
+  // is what stops this from ever firing on a question the user has since left.
+  if (isWrong(s, q) && !reviewDismissed && !revealed) {
+    revealTimer = setTimeout(() => {
+      revealTimer = null;
+      revealed = true;
+      els.body?.classList.add('graded');
+      ctx.router.renderFooter();
+      openReview(ctx, q, s);
+    }, REVEAL_MS);
+  }
 }
 
 // Horizontal swipe moves between questions, the same job the ← / → arrows do on the web.
@@ -343,9 +375,11 @@ function footer(ctx) {
   const q = currentQuestion(s, ctx.bank);
   const graded = gradesImmediately(s) && answerOf(s, q)?.ok !== undefined;
   // While the review sheet is up it carries the action. Once it is put away — or never
-  // came up at all, because the answer was right — the question is on its own again and
-  // needs a bar of its own, without one the screen is a dead end.
-  if (graded) return (isWrong(s, q) && !reviewDismissed) ? null : reviewFooter(ctx, s, q);
+  // came up at all, because the answer was right, or the reveal is still pending — the
+  // question is on its own again and needs a bar of its own, without one the screen is a
+  // dead end. During the REVEAL_MS wait this is exactly what lets the user jump ahead of
+  // the timer instead of staring at an untouchable screen.
+  if (graded) return showsSheet(s, q) ? null : reviewFooter(ctx, s, q);
 
   return q.y === 'dd' ? matchFooter(ctx, s, q) : choiceFooter(ctx, s, q);
 }
@@ -360,6 +394,8 @@ function reviewFooter(ctx, s, q) {
     </div>`);
 
   node.querySelector('[data-act="review"]').addEventListener('click', () => {
+    cancelReveal();                           // jumping ahead of the REVEAL_MS wait, if any
+    revealed = true;
     reviewDismissed = false;
     els.body?.classList.add('graded');
     ctx.router.renderFooter();               // the sheet takes the action back
@@ -426,6 +462,7 @@ function matchFooter(ctx, s, q) {
   node.querySelector('[data-act="check"]')?.addEventListener('click', () => {
     gradeMatch(q, s);
     reviewDismissed = false;          // just graded — this is the ask, wireBody may open it
+    revealed = false;
     ctx.router.render();
   });
   node.querySelector('[data-act="prev"]')?.addEventListener('click', () => move(ctx, -1));
@@ -443,6 +480,7 @@ function gradeCurrent(ctx) {
   store.recordAnswer(q.n, ok, s.mode);
   pendingFor = null;
   reviewDismissed = false;
+  revealed = false;
   ctx.router.render();
 }
 
@@ -575,6 +613,7 @@ function openReview(ctx, q, s) {
 // So every navigational caller — move, tryFinish, the ☰ grid — gets silence by default:
 // the destination renders its graded colors on the card, not the sheet on top of it.
 function closeReview(silence = true) {
+  cancelReveal();
   leavingReview = true;
   closeSheet();
   leavingReview = false;
@@ -670,6 +709,7 @@ export const question = {
     shownPct = null;
     animating = false;
     reviewDismissed = false;
+    revealed = false;
   },
 
   // Leaving mid-exam is a real decision — the spec asks for a confirmation, and the
