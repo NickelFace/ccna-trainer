@@ -219,7 +219,7 @@
 .q-hint { margin-left: auto; font-size: var(--fs-label); color: var(--text-disabled); }
 
 /* ---------------------------------------------------------- bottom sheet */
-.sheet-backdrop { position: fixed; inset: 0; display: flex; align-items: flex-end; z-index: 40; }
+.sheet-backdrop { position: fixed; inset: 0; display: flex; align-items: flex-end; z-index: 40; touch-action: pan-y; }
 /* The dim fades in with the panel instead of appearing under it in one frame. */
 .sheet-backdrop.dim { background: rgba(0, 0, 0, 0); transition: background-color 500ms ease-out; }
 .sheet-backdrop.dim.in { background: rgba(0, 0, 0, .35); }

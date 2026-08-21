@@ -60,6 +60,7 @@ let leavingReview = false;       // the sheet is closing because the screen is l
 // setTimeout id, cancelled the instant the question is left (see closeReview).
 let revealed = false;
 let revealTimer = null;
+let settleToken = 0;             // see settle(): invalidates a pending inline-style cleanup
 
 const fmtClock = ms => {
   const total = Math.ceil(ms / 1000);
@@ -135,6 +136,7 @@ function header(ctx) {
   node.querySelector('[data-act="close"]').addEventListener('click', () => ctx.router.back());
   node.querySelector('[data-act="grid"]').addEventListener('click', () => openGrid(ctx));
   els.timer = node.querySelector('[data-role="timer"]');
+  els.placed = node.querySelector('.q-placed');
 
   els.bar = node.querySelector('.q-progress i');
   els.barTo = pct;
@@ -208,11 +210,24 @@ function optionsMarkup(q, session, given, graded) {
 
 function wireBody(node, ctx, q, s, graded) {
   els.body = node.querySelector('.q-body');
+  els.repaintMatch = null;
 
   node.querySelector('.q-exhibit')?.addEventListener('click', e =>
     openExhibit(e.currentTarget.src, `Схема к вопросу ${q.n}`));
 
-  if (q.y === 'dd' && !graded) wireMatch(node.querySelector('.match'), q, s, () => ctx.router.render());
+  // The matching board repaints itself, for the same reason the options below do — and
+  // more so: a full render() re-collapses the <details> holding the CLI output and, since
+  // the question screen is a modal, drops the scroll back to the top on every single tap.
+  // The .match node itself is kept, so the delegated listener wireMatch put on it lives on.
+  if (q.y === 'dd' && !graded) {
+    const board = node.querySelector('.match');
+    els.repaintMatch = () => {
+      board.replaceChildren(...h(matchBody(q, false)).firstElementChild.childNodes);
+      if (els.placed) els.placed.textContent = `${filledCount(q)} из ${ddNeeded(q)}`;
+      ctx.router.renderFooter();
+    };
+    wireMatch(board, q, s, els.repaintMatch);
+  }
 
   // Tapping an option repaints the option row and the footer, never the whole body:
   // a full rebuild re-inserts the exhibit <img> and the screen visibly blinks on every tap.
@@ -265,30 +280,31 @@ function wireBody(node, ctx, q, s, graded) {
 // after SLOP px of travel, and never revisited within the same touch. `touch-action: pan-y`
 // on the pane leaves vertical scrolling to the browser, which is why every listener here
 // can stay passive.
-function bindSwipe(node, ctx) {
+function bindSwipe(node, ctx, mover = node) {
   let x0 = 0, y0 = 0, dx = 0, v = 0, lastX = 0, lastT = 0, axis = null, live = false;
 
-  const width = () => node.offsetWidth || window.innerWidth;
+  const width = () => mover.offsetWidth || window.innerWidth;
   // Swiping right goes back; there is nothing behind the first question, and the drag
   // turns into a rubber band that says so. A session that ended under the finger — the
   // exam clock running out mid-drag — has nothing behind it either, and no `i` to read.
   const blocked = d => d > 0 && (store.session?.i ?? 0) === 0;
 
   const paint = d => {
-    node.style.transform = `translate3d(${d.toFixed(1)}px,0,0)`;
-    node.style.opacity = String(1 - Math.min(Math.abs(d) / width(), 0.5));
+    mover.style.transform = `translate3d(${d.toFixed(1)}px,0,0)`;
+    mover.style.opacity = String(1 - Math.min(Math.abs(d) / width(), 0.5));
   };
 
   node.addEventListener('touchstart', e => {
     if (e.touches.length !== 1 || animating || !store.session) return;
     // A finger arriving mid-entrance takes over: the keyframes outrank the inline
     // transform the drag is about to write, so the animation has to go first.
-    node.classList.remove('in-next', 'in-prev');
+    mover.classList.remove('in-next', 'in-prev');
+    settleToken++;                 // a pending style cleanup must not land on this drag
     x0 = lastX = e.touches[0].clientX;
     y0 = e.touches[0].clientY;
     lastT = e.timeStamp;
     dx = 0; v = 0; axis = null; live = true;
-    node.style.transition = 'none';
+    mover.style.transition = 'none';
   }, { passive: true });
 
   node.addEventListener('touchmove', e => {
@@ -300,7 +316,7 @@ function bindSwipe(node, ctx) {
       if (Math.abs(mx) < SLOP && Math.abs(my) < SLOP) return;
       axis = Math.abs(mx) > Math.abs(my) ? 'x' : 'y';
       if (axis === 'y') { live = false; return; }
-      node.classList.add('dragging');
+      mover.classList.add('dragging');
     }
     // Smoothed instantaneous velocity: a short flick has to count as much as a long drag.
     const dt = e.timeStamp - lastT;
@@ -314,19 +330,31 @@ function bindSwipe(node, ctx) {
   const release = () => {
     if (!live) return;
     live = false;
-    node.classList.remove('dragging');
+    mover.classList.remove('dragging');
     if (axis !== 'x') return;
+    if (Math.abs(dx) > SLOP) swallowClick();   // the drag is not also a tap on what it started over
     // A flick only counts when it is still travelling the way the pane was dragged —
     // pulling back toward rest is how you cancel, however fast you let go.
     const flick = Math.abs(v) > COMMIT_V && Math.sign(v) === Math.sign(dx) && Math.abs(dx) > FLICK_MIN;
     const far = Math.abs(dx) > width() * COMMIT_RATIO || flick;
     // The session can end between touchstart and here; there is nowhere left to hand off
     // to, and the pane is about to be replaced by the result screen anyway.
-    if (far && store.session && !blocked(dx)) handOff(node, ctx, dx < 0 ? 1 : -1);
-    else settle(node);
+    if (far && store.session && !blocked(dx)) handOff(mover, ctx, dx < 0 ? 1 : -1);
+    else settle(mover);
   };
   node.addEventListener('touchend', release, { passive: true });
   node.addEventListener('touchcancel', release, { passive: true });
+}
+
+// A horizontal drag still ends in a synthesised click on whatever was under the finger,
+// and on the review sheet that is the backdrop, whose click means "put me away". Eat the
+// next click, capture-phase, so it never reaches the handler that would act on it.
+function swallowClick() {
+  const eat = e => { e.stopPropagation(); e.preventDefault(); };
+  // The synthesised click lands within a frame or two of touchend, so the window stays
+  // short: a real tap a moment later must not be eaten as well.
+  document.addEventListener('click', eat, { capture: true, once: true });
+  setTimeout(() => document.removeEventListener('click', eat, true), 150);
 }
 
 // Released short of the threshold: back to rest.
@@ -334,6 +362,9 @@ function settle(node) {
   node.style.transition = `transform 260ms ${EASE}, opacity 200ms ease-out`;
   node.style.transform = 'translate3d(0,0,0)';
   node.style.opacity = '1';
+  // The token is what keeps this from wiping a drag that started in the meantime.
+  const mine = ++settleToken;
+  setTimeout(() => { if (mine === settleToken) node.style.cssText = ''; }, 300);
 }
 
 // Released past it: carry the pane the rest of the way out, then swap in the next question,
@@ -457,8 +488,9 @@ function matchFooter(ctx, s, q) {
       <div class="action-bar">${buttons}</div>
     </div>`);
 
-  node.querySelector('[data-act="cancel"]')?.addEventListener('click', () => clearSelection(() => ctx.router.render()));
-  node.querySelector('[data-act="reset"]')?.addEventListener('click', () => resetPlacement(q, s, () => ctx.router.render()));
+  const repaint = () => (els.repaintMatch || ctx.router.render.bind(ctx.router))();
+  node.querySelector('[data-act="cancel"]')?.addEventListener('click', () => clearSelection(repaint));
+  node.querySelector('[data-act="reset"]')?.addEventListener('click', () => resetPlacement(q, s, repaint));
   node.querySelector('[data-act="check"]')?.addEventListener('click', () => {
     gradeMatch(q, s);
     reviewDismissed = false;          // just graded — this is the ask, wireBody may open it
@@ -592,7 +624,7 @@ function openReview(ctx, q, s) {
     });
   }).catch(() => {});
 
-  openSheet(content, {
+  const { panel } = openSheet(content, {
     // Tapping the dim, or Android back, leaves the question underneath — dimmed and with
     // no action bar, which is where the screen used to go dead. Undo both.
     onClose: () => {
@@ -602,6 +634,13 @@ function openReview(ctx, q, s) {
       ctx.router.renderFooter();
     },
   });
+
+  // The sheet's backdrop covers the whole screen, so once it is up the pane never hears a
+  // finger again — «свайп → далее» stopped being true the moment an answer was graded,
+  // leaving the button as the only way on. The same gesture, on the sheet itself: the
+  // panel follows the finger and hands off to the next question, which closes the sheet
+  // on its way (move -> closeReview).
+  bindSwipe(panel.parentElement, ctx, panel);
 }
 
 // Navigation closes the sheet on its way somewhere else — say so, so the dismissal
