@@ -92,6 +92,9 @@ const I18N = {
     cfg_jump_placeholder: 'Введите любой номер вопроса: 1 – {0}',
     cfg_time_label: 'Время (минут)',
     cfg_no_timer: 'без таймера',
+    cfg_matching: 'Под фильтры подходит {0} вопр.',
+    cfg_matching_none: 'Под выбранные фильтры не подходит ни один вопрос',
+    type_sim_note: 'не оцениваются, только читаются',
     cfg_start_exam: 'Старт →',
     cfg_start_practice: 'Начать →',
     practice_no_question: 'Вопроса {0} нет в банке',
@@ -210,6 +213,9 @@ const I18N = {
     cfg_jump_placeholder: 'Enter any question number: 1 – {0}',
     cfg_time_label: 'Time (minutes)',
     cfg_no_timer: 'no timer',
+    cfg_matching: '{0} questions match these filters',
+    cfg_matching_none: 'No question matches the selected filters',
+    type_sim_note: 'reference only, not scored',
     cfg_start_exam: 'Start →',
     cfg_start_practice: 'Begin →',
     practice_no_question: 'Question {0} is not in the bank',
@@ -460,11 +466,13 @@ function typeChips(mode) {
   const types = mode === 'practice' ? QTYPES.concat([{ id: 'sim', labelKey: 'type_sim' }]) : QTYPES;
   return `<div class="row">` + types.map(ty => {
     const n = (ty.id === 'sim' ? DATA : POOL).filter(q => q.y === ty.id).length;
-    return `<span class="chip ${selTypes.has(ty.id) ? 'on' : ''}" data-ty="${ty.id}" onclick="tglType('${ty.id}')">${esc(t(ty.labelKey))}<span class="c">${n}</span></span>`;
+    // Simulations are reference cards: scorable() rejects them, so the chip says so too.
+    const sim = ty.id === 'sim' ? ' sim' : '';
+    return `<span class="chip${sim} ${selTypes.has(ty.id) ? 'on' : ''}" data-ty="${ty.id}" onclick="tglType('${ty.id}')">${esc(t(ty.labelKey))}<span class="c">${n}</span></span>`;
   }).join('') + `</div>`;
 }
-function tglDom(id) { selDoms.has(id) ? selDoms.delete(id) : selDoms.add(id); const el = document.querySelector(`[data-d="${id}"]`); if (el) el.classList.toggle('on'); }
-function tglType(id) { selTypes.has(id) ? selTypes.delete(id) : selTypes.add(id); const el = document.querySelector(`[data-ty="${id}"]`); if (el) el.classList.toggle('on'); }
+function tglDom(id) { selDoms.has(id) ? selDoms.delete(id) : selDoms.add(id); const el = document.querySelector(`[data-d="${id}"]`); if (el) el.classList.toggle('on'); cfgCount(); }
+function tglType(id) { selTypes.has(id) ? selTypes.delete(id) : selTypes.add(id); const el = document.querySelector(`[data-ty="${id}"]`); if (el) el.classList.toggle('on'); cfgCount(); }
 function domPool(includeSims) {
   // Base pool is scorable questions; in practice, fold in sim reference cards when
   // 'sim' is explicitly picked or no type filter is set ("пусто = все").
@@ -477,6 +485,38 @@ function domPool(includeSims) {
   if (selTypes.size) p = p.filter(q => selTypes.has(q.y));
   return p;
 }
+
+// A segmented control where a <select> used to be. Three or four options do not deserve a
+// dropdown — that is an extra tap and a different widget on every platform. The value still
+// lives in an element with the same id, so startCustomExam/startPractice read it unchanged.
+function segmented(id, opts, def) {
+  return `<input type="hidden" id="${id}" value="${def}">
+  <div class="seg" data-for="${id}">` + opts.map(o =>
+    `<button type="button" class="seg-b${o.v === def ? ' on' : ''}" data-v="${o.v}"
+       onclick="segPick('${id}', this)">${esc(o.label)}</button>`).join('') + `</div>`;
+}
+function segPick(id, el) {
+  $('#' + id).value = el.dataset.v;
+  el.parentElement.querySelectorAll('.seg-b').forEach(b => b.classList.toggle('on', b === el));
+  cfgCount();
+}
+function segSet(id, v) {
+  const box = document.querySelector(`.seg[data-for="${id}"]`);
+  if (!box) return;
+  const b = box.querySelector(`.seg-b[data-v="${v}"]`);
+  if (b) segPick(id, b);
+}
+
+// How many questions the current filters actually leave. domPool() already computes it; the
+// only place it used to surface was an alert after pressing Start.
+function cfgCount() {
+  const el = $('#cfgcount'); if (!el) return;
+  const n = domPool(cfgMode === 'practice').length;
+  el.textContent = n ? t('cfg_matching', n) : t('cfg_matching_none');
+  el.classList.toggle('empty', n === 0);
+  const go = $('#cfggo'); if (go) go.disabled = n === 0;
+}
+let cfgMode = 'exam';
 
 // `keep` is set only when replaying the screen after a language change: the chips the
 // user has already ticked are part of the screen, not something to reset under them.
@@ -492,32 +532,51 @@ function cfg(mode, keep) {
       shuffled: $('#shf') && $('#shf').classList.contains('on'),
     };
     cfg(mode, true);
-    if (was.cnt && $('#cnt')) $('#cnt').value = was.cnt;
-    if (was.min && $('#min')) $('#min').value = was.min;
+    if (was.cnt !== null && was.cnt !== undefined) segSet('cnt', was.cnt);
+    if (was.min !== null && was.min !== undefined) segSet('min', was.min);
     if (was.jump && $('#qstart')) $('#qstart').value = was.jump;
     if ($('#shf')) $('#shf').classList.toggle('on', was.shuffled);
   };
   if (!keep) { selDoms = new Set(); selTypes = new Set(); }
   const isEx = mode === 'exam';
+  cfgMode = mode;
+  const counts = isEx
+    ? [30, 60, 100].map(c => ({ v: c, label: String(c) }))
+    : [20, 50, 100, 0].map(c => ({ v: c, label: c ? String(c) : t('all_option') }));
+  const times = [30, 90, 120, 0].map(m => ({ v: m, label: m ? String(m) : t('cfg_no_timer') }));
+
   app().innerHTML = `
   <h1>${isEx ? t('label_custom_exam') : t('label_practice')}</h1>
   <div class="card">
     <div class="lbl">${t('cfg_domains_label')}</div>${domChips()}
+
     <div class="lbl">${t('cfg_types_label')}${isEx ? '' : t('cfg_types_sim_note')})</div>${typeChips(mode)}
+    ${isEx ? '' : `<div class="hint">${t('type_sim_note')}</div>`}
+
     <div class="lbl">${t('cfg_count_label')}</div>
     <div class="row">
-      <select id="cnt">${(isEx ? [30, 60, 100] : [20, 50, 100, 0]).map(c => `<option value="${c}"${c === (isEx ? 60 : 20) ? ' selected' : ''}>${c || t('all_option')}</option>`).join('')}</select>
+      ${segmented('cnt', counts, isEx ? 60 : 20)}
       ${isEx ? '' : `<label class="chip on" id="shf" onclick="this.classList.toggle('on')">${t('cfg_shuffle')}</label>`}
     </div>
-    ${isEx ? '' : `<div class="lbl">${t('cfg_jump_label')}</div>
-    <div class="row"><input class="qstart" id="qstart" type="number" min="1" max="${maxQN()}"
-      placeholder="${t('cfg_jump_placeholder', maxQN())}"
-      onkeydown="if(event.key==='Enter')startPractice()"></div>`}
+
     ${isEx ? `<div class="lbl">${t('cfg_time_label')}</div>
-    <div class="row"><select id="min"><option>30</option><option selected>90</option><option>120</option><option value="0">${t('cfg_no_timer')}</option></select></div>` : ''}
-    <div class="nav"><button class="btn" onclick="home()">${t('nav_back')}</button><div class="spacer"></div>
-      <button class="btn primary" onclick="${isEx ? 'startCustomExam()' : 'startPractice()'}">${isEx ? t('cfg_start_exam') : t('cfg_start_practice')}</button></div>
+    <div class="row">${segmented('min', times, 90)}</div>` : ''}
+
+    ${isEx ? '' : `<div class="jump">
+      <div class="lbl">${t('cfg_jump_label')}</div>
+      <input class="qstart" id="qstart" type="number" min="1" max="${maxQN()}"
+        placeholder="${t('cfg_jump_placeholder', maxQN())}"
+        onkeydown="if(event.key==='Enter')startPractice()">
+    </div>`}
+
+    <div class="nav">
+      <button class="btn" onclick="home()">${t('nav_back')}</button>
+      <span class="cfg-count" id="cfgcount"></span>
+      <div class="spacer"></div>
+      <button class="btn primary" id="cfggo" onclick="${isEx ? 'startCustomExam()' : 'startPractice()'}">${isEx ? t('cfg_start_exam') : t('cfg_start_practice')}</button>
+    </div>
   </div>`;
+  cfgCount();
 }
 
 // ============================ SELECTION ============================
@@ -1139,5 +1198,5 @@ document.addEventListener('keydown', e => {
 });
 
 // expose for inline onclick
-Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter, setLang, applyLang, openMode });
+Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter, setLang, applyLang, openMode, segPick });
 window.addEventListener('DOMContentLoaded', route);

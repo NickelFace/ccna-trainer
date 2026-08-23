@@ -127,6 +127,32 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--ink);outline-of
 .chip .c{color:var(--grey);margin-left:6px;font-family:var(--num);font-weight:700}
 .chip.on .c{color:var(--gold)}
 
+/* A chip for something the app will show but never mark: dashed, so it does not read as an
+   equal member of the set. */
+.chip.sim{border-style:dashed}
+.chip.sim.on{border-style:dashed;background:rgba(22,24,29,.07);color:var(--ink)}
+.chip.sim.on .c{color:var(--grey-text)}
+.hint{font-size:12px;color:var(--grey);margin-top:-8px}
+
+/* Segmented control — three or four options, all visible, one tap. */
+.seg{display:inline-flex;padding:3px;background:var(--cream-warm);border-radius:999px;gap:2px}
+.seg-b{
+  border:0;background:none;cursor:pointer;border-radius:999px;
+  padding:8px 16px;font-family:var(--num);font-size:14px;font-weight:700;color:var(--grey-text);
+  transition:background .12s,color .12s;
+}
+.seg-b:hover{color:var(--ink)}
+.seg-b.on{background:var(--ink);color:var(--cream-light)}
+
+/* How many questions the filters leave, said before Start rather than in an alert after. */
+.cfg-count{font-size:13px;font-weight:600;color:var(--grey-text)}
+.cfg-count.empty{color:var(--red)}
+
+/* The jump-by-number field ignores every filter above it, so it sits on its own ground. */
+.jump{background:var(--cream-warm);border-radius:13px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.jump .lbl{margin:0}
+.jump .qstart{background:var(--cream)}
+
 /* Language switch — fixed, outside #trainer so it survives every SPA re-render.
    The selected segment is filled, not tinted: a near-white pill on a 6% track separates the
    two states by about 1.1:1, which is not enough to see which language is on. */
