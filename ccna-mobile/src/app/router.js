@@ -119,11 +119,21 @@ export const router = {
       btn.setAttribute('aria-selected', String(!inModal && btn.dataset.tab === this.activeTab));
     }
 
-    // Tab switches restore where the user was; pushes and modals start at the top.
-    this.els.scroll.scrollTop = inModal || this.stacks[this.activeTab].length > 1
+    // Tab switches restore where the user was; pushes and modals start at the top. A screen
+    // repainting itself in place asks to be left alone — see keepScroll().
+    if (this._keepScroll) this._keepScroll = false;
+    else this.els.scroll.scrollTop = inModal || this.stacks[this.activeTab].length > 1
       ? 0
       : (this.scrollTops[this.activeTab] || 0);
   },
+
+  // Hold the scroll position through the next render. For a screen that rebuilds itself
+  // without changing what it is showing — grading the answer you just gave, placing a chip —
+  // the reset is wrong: a question with an exhibit is taller than the screen, so answering
+  // near the bottom threw the reader back up to the diagram and lost their place. Anything
+  // that genuinely changes the content (the next question, another tab) still starts at
+  // the top, so this is opt-in and lasts exactly one render.
+  keepScroll() { this._keepScroll = true; },
 
   // Repaint just the action bar. Screens use this when a tap changes what the primary
   // button may do but nothing in the body's structure — rebuilding the body instead would

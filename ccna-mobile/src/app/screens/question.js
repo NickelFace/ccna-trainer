@@ -16,7 +16,8 @@ import {
   firstUnansweredIndex, answeredCount,
 } from '../session.js';
 import {
-  domShort, questionText, exhibitMarkup, cliMarkup, answerSummary, rationaleBlocks,
+  domShort, questionText, exhibitMarkup, cliMarkup, setCliOpen, forgetCliOpen,
+  answerSummary, rationaleBlocks,
 } from '../qmarkup.js';
 import {
   syncMatch, resetMatch, matchBody, wireMatch, gradeMatch,
@@ -171,7 +172,7 @@ function render(ctx) {
       </div>
       ${exhibitMarkup(q)}
       <div class="q-text">${esc(questionText(q))}</div>
-      ${cliMarkup(q.cli)}
+      ${cliMarkup(q.cli, q.n)}
       ${q.y === 'dd' ? matchBody(q, graded) : optionsMarkup(q, s, given, graded)}
       <div class="q-tools">
         <button class="q-tool" data-act="bookmark" type="button">${isFlagged(s, q) ? '★ Отложен' : '☆ Отложить'}</button>
@@ -214,6 +215,9 @@ function wireBody(node, ctx, q, s, graded) {
 
   node.querySelector('.q-exhibit')?.addEventListener('click', e =>
     openExhibit(e.currentTarget.src, `Схема к вопросу ${q.n}`));
+
+  node.querySelector('details.cli')?.addEventListener('toggle', e =>
+    setCliOpen(q.n, e.currentTarget.open));
 
   // The matching board repaints itself, for the same reason the options below do — and
   // more so: a full render() re-collapses the <details> holding the CLI output and, since
@@ -495,13 +499,19 @@ function matchFooter(ctx, s, q) {
       <div class="action-bar">${buttons}</div>
     </div>`);
 
-  const repaint = () => (els.repaintMatch || ctx.router.render.bind(ctx.router))();
+  // Placing, picking and checking all rebuild this screen without changing the question, so
+  // none of them should move the reader — see router.keepScroll().
+  const repaint = () => {
+    ctx.router.keepScroll();
+    return (els.repaintMatch || ctx.router.render.bind(ctx.router))();
+  };
   node.querySelector('[data-act="cancel"]')?.addEventListener('click', () => clearSelection(repaint));
   node.querySelector('[data-act="reset"]')?.addEventListener('click', () => resetPlacement(q, s, repaint));
   node.querySelector('[data-act="check"]')?.addEventListener('click', () => {
     gradeMatch(q, s);
     reviewDismissed = false;          // just graded — this is the ask, wireBody may open it
     revealed = false;
+    ctx.router.keepScroll();
     ctx.router.render();
   });
   node.querySelector('[data-act="prev"]')?.addEventListener('click', () => move(ctx, -1));
@@ -520,6 +530,7 @@ function gradeCurrent(ctx) {
   pendingFor = null;
   reviewDismissed = false;
   revealed = false;
+  ctx.router.keepScroll();
   ctx.router.render();
 }
 
@@ -748,6 +759,7 @@ export const question = {
     releaseScreen();
     closeReview();
     resetMatch();
+    forgetCliOpen();
     pending = new Set();
     pendingFor = null;
     els = {};

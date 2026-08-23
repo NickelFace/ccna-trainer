@@ -17,11 +17,19 @@ export const exhibitMarkup = q => q.img
   ? `<img class="q-exhibit" src="images/exhibits/${esc(q.img)}" alt="Схема к вопросу ${q.n}" loading="lazy">`
   : '';
 
-export function cliMarkup(text) {
+// Whether the reader has the command output open. A screen that rebuilds itself — grading
+// the answer, placing a chip — would otherwise hand back a collapsed block: the page gets
+// shorter, the scroll position it was holding no longer exists, and the whole thing reads
+// as a reload. Keyed by question, cleared when the run ends.
+const cliOpen = new Set();
+export const setCliOpen = (qn, open) => open ? cliOpen.add(qn) : cliOpen.delete(qn);
+export const forgetCliOpen = () => cliOpen.clear();
+
+export function cliMarkup(text, qn) {
   const cli = parseCli(text);
   if (!cli) return '';
   return cli.long
-    ? `<details class="cli"><summary>Показать вывод команды (${cli.lines.length} стр.)</summary><pre>${esc(cli.text)}</pre></details>`
+    ? `<details class="cli"${cliOpen.has(qn) ? ' open' : ''}><summary>Показать вывод команды (${cli.lines.length} стр.)</summary><pre>${esc(cli.text)}</pre></details>`
     : `<pre class="cli plain">${esc(cli.text)}</pre>`;
 }
 
