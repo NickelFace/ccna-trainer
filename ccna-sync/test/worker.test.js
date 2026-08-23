@@ -1,35 +1,8 @@
-// The sync server, run against a real SQLite so the SQL is the thing under test — the
-// compare-and-set on `rev` is the whole point of this Worker, and a hand-written stub that
-// just remembers the last value would pass while the statement was wrong.
-//
-// node:sqlite is experimental in Node 22, hence the flag in the test script.
+// The sync server, run against a real SQLite so the SQL is the thing under test.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { DatabaseSync } from 'node:sqlite';
 import { handle } from '../src/worker.js';
-
-const HERE = dirname(fileURLToPath(import.meta.url));
-
-// The slice of the D1 client API this Worker uses: prepare().bind().first() / .run().
-const d1 = () => {
-  const db = new DatabaseSync(':memory:');
-  db.exec(readFileSync(join(HERE, '..', 'migrations', '0001_state.sql'), 'utf8'));
-  return {
-    prepare(sql) {
-      const stmt = db.prepare(sql);
-      let args = [];
-      const api = {
-        bind(...values) { args = values; return api; },
-        async first() { return stmt.get(...args) ?? null; },
-        async run() { const r = stmt.run(...args); return { success: true, meta: { changes: r.changes } }; },
-      };
-      return api;
-    },
-  };
-};
+import { d1 } from './d1.js';
 
 const KEY = 'Zm9vYmFyLXRlc3Qta2V5LTMyLWJ5dGVzLWJhc2U2NHVy';
 const KEY2 = 'c2Vjb25kLWtleS0zMi1ieXRlcy1sb25nLWJhc2U2NHVybA';

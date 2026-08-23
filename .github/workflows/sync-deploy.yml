@@ -9,10 +9,14 @@ on:
     branches: ["main"]
     paths:
       - "ccna-sync/**"
+      # The round-trip test drives the real client against the real Worker, so a change to
+      # the shared rules can break this suite without touching a file in ccna-sync/.
+      - "ccna-exam-simulator/assets/js/shared/**"
       - ".github/workflows/sync-deploy.yml"
   pull_request:
     paths:
       - "ccna-sync/**"
+      - "ccna-exam-simulator/assets/js/shared/**"
   workflow_dispatch: {}
 
 jobs:

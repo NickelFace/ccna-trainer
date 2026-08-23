@@ -5,7 +5,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --experimental-sqlite --test",
+    "test": "node --experimental-sqlite --test \"test/*.test.js\"",
     "dev": "wrangler dev",
     "migrate:local": "wrangler d1 migrations apply ccna-sync --local",
     "migrate:remote": "wrangler d1 migrations apply ccna-sync --remote",
