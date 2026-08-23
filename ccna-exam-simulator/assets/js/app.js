@@ -134,6 +134,9 @@ const I18N = {
     flag_on: '★ снять метку',
     flag_off: '☆ на потом',
     nav_finish_exam: 'Завершить',
+    grid_answered: 'отвечено',
+    grid_flagged: 'на потом',
+    grid_unanswered: 'не отвечено',
     dd_elements: 'Элементы',
     dd_categories: 'Категории',
     dd_check: 'Проверить',
@@ -249,6 +252,9 @@ const I18N = {
     flag_on: '★ unflag',
     flag_off: '☆ flag for later',
     nav_finish_exam: 'Finish',
+    grid_answered: 'answered',
+    grid_flagged: 'for later',
+    grid_unanswered: 'unanswered',
     dd_elements: 'Items',
     dd_categories: 'Categories',
     dd_check: 'Check',
@@ -558,6 +564,38 @@ function startPractice() {
   renderPractice();
 }
 
+// ============================ CHROME ============================
+// One strip at the top of every attempt screen, and its colour is the mode: the exam is dark
+// and carries a timer, practice is light and carries the running score. That is worth more
+// than a label — you can tell which one you are in before reading anything.
+const CLOCK_ICON =
+  `<svg class="ico-clock" width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+     <circle cx="12" cy="13" r="8" stroke="currentColor" stroke-width="2"/>
+     <path d="M12 9.5V13l2.5 1.5M9 3h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+
+function chrome(dark, inner) {
+  return `<div class="chrome${dark ? ' dark' : ''}">${inner}</div>`;
+}
+
+// Progress through the attempt: a bar and the same numbers spelled out, because a bar alone
+// cannot say 14 of 100.
+function chromeProgress(i, total) {
+  return `<div class="chrome-progress">
+    <div class="chrome-bar"><i style="width:${Math.round((i + 1) / total * 100)}%"></i></div>
+    <span class="chrome-pos">${i + 1}/${total}</span></div>`;
+}
+
+// The grid's colours mean nothing on their own. This says what they mean and counts them.
+function gridLegend() {
+  const answered = S.qs.filter(q => S.ans[q.n] !== undefined).length;
+  const flagged = S.flags ? S.flags.size : 0;
+  const rest = S.qs.length - answered;
+  return `<div class="legend">
+    <span><i class="sw answered"></i>${t('grid_answered')} ${answered}</span>
+    <span><i class="sw flagged"></i>${t('grid_flagged')} ${flagged}</span>
+    <span><i class="sw"></i>${t('grid_unanswered')} ${rest}</span></div>`;
+}
+
 // ============================ QUESTION RENDER HELPERS ============================
 function qBadges(q, extra = '') {
   const multi = q.y !== 'dd' && q.a.length > 1;
@@ -710,14 +748,15 @@ function renderPractice() {
   SCREEN = renderPractice;
   const q = S.qs[S.i]; if (!q) return home();
   const st = S.ans[q.n];
-  let h = `<div class="row"><button class="btn" onclick="home()">${t('nav_exit')}</button>
+  let h = chrome(false, `<button class="chrome-x" onclick="home()">✕</button>
+    ${chromeProgress(S.i, S.qs.length)}
+    <span class="chrome-score"><span class="ok">${S.ok}</span>✓ <span class="bad">${S.done - S.ok}</span>✗</span>`)
+    + `<div class="row">
     ${S.done ? `<button class="btn" onclick="finishPractice()">${t('practice_review_btn')}</button>` : ''}
     <div class="spacer"></div>
     <input class="qjump" id="qjump" type="number" placeholder="№" title="${t('jump_title')}"
       onkeydown="if(event.key==='Enter')pGoto()">
-    <button class="btn" onclick="pGoto()">→</button>
-    <div class="stat">${S.i + 1}/${S.qs.length}</div>
-    <div class="stat"><span class="ok">${S.ok}</span>✓ <span class="bad">${S.done - S.ok}</span>✗</div></div>`;
+    <button class="btn sm" onclick="pGoto()">→</button></div>`;
   h += `<div class="card">${qBadges(q)}${exhibit(q)}${q.y === 'sim' ? '' : `<div class="qtext">${esc(q.t)}</div>`}${cliBlock(q.cli)}`;
 
   if (q.y === 'dd') {
@@ -928,15 +967,15 @@ function tick() {
   let ms = S.end - Date.now();
   if (ms <= 0) { clearInterval(S.tid); return finishExam(); }
   const m = Math.floor(ms / 60000), s = Math.floor(ms % 60000 / 1000);
-  el.textContent = `${m}:${String(s).padStart(2, '0')}`;
+  el.lastElementChild.textContent = `${m}:${String(s).padStart(2, '0')}`;
   el.classList.toggle('low', ms < 120000);
 }
 function renderExam() {
   SCREEN = renderExam;
   const q = S.qs[S.i], multi = q.y !== 'dd' && q.a.length > 1, cur = S.ans[q.n];
-  let h = `<div class="row"><button class="btn" onclick="if(confirm('${t('exit_confirm')}'))home()">✕</button>
-    <div class="spacer"></div>${S.end ? `<span class="timer" id="timer">--:--</span>` : ''}
-    <div class="stat">${S.i + 1}/${S.qs.length}</div></div>`;
+  let h = chrome(true, `<button class="chrome-x" onclick="if(confirm('${t('exit_confirm')}'))home()">✕</button>
+    ${chromeProgress(S.i, S.qs.length)}
+    ${S.end ? `<span class="timer" id="timer">${CLOCK_ICON}<span>--:--</span></span>` : ''}`);
   h += `<div class="card">${qBadges(q)}${exhibit(q)}<div class="qtext">${esc(q.t)}</div>${cliBlock(q.cli)}`;
 
   if (q.y === 'dd') {
@@ -957,7 +996,7 @@ function renderExam() {
   h += `<div class="grid">` + S.qs.map((qq, idx) => {
     let c = 'cell'; if (idx === S.i) c += ' cur'; if (S.ans[qq.n] !== undefined) c += ' answered'; if (S.flags.has(qq.n)) c += ' flagged';
     return `<div class="${c}" onclick="eGo(${idx})">${idx + 1}</div>`;
-  }).join('') + `</div></div>`;
+  }).join('') + `</div>${gridLegend()}</div>`;
   app().innerHTML = h;
   if (S.end) tick();
 
