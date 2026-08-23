@@ -530,6 +530,30 @@
   font-family: var(--font-mono); font-size: 13px; letter-spacing: .02em;
 }
 .sync-status { margin: 12px 0 0; }
+.sync-more { margin-top: 10px; }
+
+/* The code itself: white quiet zone included, because a dark surround is what makes half
+   of scanners give up. Capped so it stays a comfortable arm's length on any screen. */
+.sync-qr { margin: 14px 0 10px; display: flex; justify-content: center; }
+.sync-qr svg { width: 100%; max-width: 240px; height: auto; border-radius: 8px; }
+
+/* Camera over the app while scanning. */
+.scan-backdrop {
+  position: fixed; inset: 0; z-index: 60;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0, 0, 0, .82); padding: 20px;
+}
+.scan { position: relative; display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; max-width: 340px; }
+.scan-view {
+  width: 100%; aspect-ratio: 1; object-fit: cover;
+  border-radius: 14px; background: #000;
+}
+/* The frame is drawn over the video rather than around it: a viewfinder people aim with. */
+.scan-frame {
+  position: absolute; width: min(60vw, 200px); aspect-ratio: 1;
+  border: 2px solid var(--primary); border-radius: 12px; pointer-events: none;
+}
+.scan-hint { color: var(--text-2); font-size: 14px; text-align: center; margin: 0; }
 
 /* ---------------------------------------------------------- home: readiness */
 .readiness { padding: 22px 0 4px; }

@@ -195,6 +195,9 @@ const I18N = {
     sync_key_ph: 'ключ синхронизации',
     sync_new: 'Создать ключ',
     sync_copy: 'Скопировать',
+    sync_qr_show: 'Показать QR',
+    sync_qr_hide: 'Скрыть QR',
+    sync_qr_note: 'Наведи камеру телефона: Прогресс → Синхронизация → «Сканировать QR». Кто видит этот код — видит и прогресс.',
     sync_copied: 'Ключ скопирован — введи его на телефоне.',
     sync_created: 'Ключ создан. Введи его в приложении: Прогресс → Синхронизация.',
     sync_go: 'Синхронизировать',
@@ -361,6 +364,9 @@ const I18N = {
     sync_key_ph: 'sync key',
     sync_new: 'Make a key',
     sync_copy: 'Copy',
+    sync_qr_show: 'Show QR',
+    sync_qr_hide: 'Hide QR',
+    sync_qr_note: 'Point the phone at it: Progress → Sync → "Scan QR". Whoever can see this code can see the progress.',
     sync_copied: 'Key copied — type it into the phone.',
     sync_created: 'Key created. Enter it in the app: Progress → Sync.',
     sync_go: 'Sync now',
@@ -1103,6 +1109,10 @@ const SYNC_ERR = {
   server: 'sync_err_server', corrupt: 'sync_err_corrupt', conflict: 'sync_err_conflict',
 };
 
+// The QR is the key in a form anyone across the table can photograph, so it stays behind a
+// tap rather than sitting on the screen next to the history.
+let SYNC_QR = false;
+
 const syncStatus = () => {
   const st = P();
   const at = st && st.sync.syncedAt;
@@ -1129,8 +1139,11 @@ function syncSectionHTML() {
       <button class="btn sm" onclick="runSync()">${t('sync_go')}</button>
       <button class="btn sm" onclick="makeSyncKey()">${t('sync_new')}</button>
       ${key ? `<button class="btn sm" onclick="copySyncKey()">${t('sync_copy')}</button>
+      <button class="btn sm" onclick="toggleSyncQr()">${t(SYNC_QR ? 'sync_qr_hide' : 'sync_qr_show')}</button>
       <button class="btn sm" onclick="forgetSyncKey()">${t('sync_forget')}</button>` : ''}
     </div>
+    ${key && SYNC_QR ? `<div class="sync-qr">${st.qrSvg(key)}</div>
+    <div class="exp muted">${t('sync_qr_note')}</div>` : ''}
     <div class="exp muted" id="syncmsg">${syncStatus()}</div>
   </div>`;
 }
@@ -1141,6 +1154,11 @@ function makeSyncKey() {
   const st = P(); if (!st) return;
   st.setSync({ key: st.newSyncKey() });
   historyScreen(t('sync_created'));
+}
+
+function toggleSyncQr() {
+  SYNC_QR = !SYNC_QR;
+  historyScreen();
 }
 
 function copySyncKey() {
@@ -1154,6 +1172,7 @@ function copySyncKey() {
 function forgetSyncKey() {
   const st = P(); if (!st) return;
   if (!confirm(t('sync_forget_confirm'))) return;
+  SYNC_QR = false;
   st.setSync({ key: null, syncedAt: 0, rev: 0 });
   historyScreen();
 }
@@ -1691,7 +1710,7 @@ document.addEventListener('keydown', e => {
 });
 
 // expose for inline onclick
-Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter, setLang, applyLang, openMode, segPick, historyScreen, openAttempt, exportProgress, importProgress, runSync, makeSyncKey, copySyncKey, forgetSyncKey });
+Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter, setLang, applyLang, openMode, segPick, historyScreen, openAttempt, exportProgress, importProgress, runSync, makeSyncKey, copySyncKey, forgetSyncKey, toggleSyncQr });
 // An automatic sync that changed the history redraws the screen showing it — and only
 // that screen: pulling the ground out from under someone mid-question would be worse than
 // a stale list.
