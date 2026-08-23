@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { isCorrect, ddCorrect, ddExpected, ddFilled, ddNeeded, isEmptyAnswer } from '../src/engine/grade.js';
+import { isCorrect, ddCorrect, ddExpected, ddFilled, ddNeeded, isEmptyAnswer,
+         ddPositional, ddItemRight } from '../src/engine/grade.js';
+import { loadBank } from './helpers.js';
 
 const mc = a => ({ n: 1, y: 'txt', dom: 'NF', a });
 
@@ -86,4 +88,77 @@ test('an answer emptied of its last selection is an empty answer', () => {
 test('a graded answer is never empty, whatever its shape', () => {
   assert.equal(isEmptyAnswer({ given: [], ok: false }), false);
   assert.equal(isEmptyAnswer({ placement: {}, ok: false }), false);
+});
+
+// A few questions number their targets and say the arrangement is free — "drag the
+// characteristics onto any position on the right" (#1001, #592) — or repeat one word across
+// every target (#261). Marking those on the mapping fails an answer that has all four right
+// characteristics simply because they went in a different order.
+const positional = () => ({
+  n: 1001,
+  t: 'Drag and drop the characteristics of northbound APIs from the left onto any position on the right. Not all characteristics are used.',
+  dd: {
+    items: ['a', 'b', 'x', 'c', 'y', 'd', 'z'],
+    buckets: [
+      { label: '1', correct: ['a'] }, { label: '2', correct: ['b'] },
+      { label: '3', correct: ['c'] }, { label: '4', correct: ['d'] },
+    ],
+  },
+});
+
+// #383 numbers its targets too, but asks for administrative distance "beginning with the
+// lowest and ending with the highest". There the numbers are the answer.
+const ordered = () => ({
+  n: 383,
+  t: 'Drag each route source from the left to the numbers on the right. Beginning with the lowest and ending with the highest administrative distance.',
+  dd: {
+    items: ['a', 'b'],
+    buckets: [{ label: '1', correct: ['a'] }, { label: '2', correct: ['b'] }],
+  },
+});
+
+test('interchangeable targets are marked on the set, not the arrangement', () => {
+  const q = positional();
+  assert.equal(ddPositional(q), true);
+  // Every right characteristic placed, all four in the "wrong" positions.
+  assert.equal(ddCorrect(q, { 0: 2, 1: 0, 3: 3, 5: 1 }), true);
+  // Same arrangement freedom does not excuse a distractor taking a position.
+  assert.equal(ddCorrect(q, { 0: 0, 1: 1, 2: 2, 5: 3 }), false);
+  // Nor leaving a position empty.
+  assert.equal(ddCorrect(q, { 0: 0, 1: 1, 3: 2 }), false);
+});
+
+test('a stem that asks for an order still wants that order', () => {
+  const q = ordered();
+  assert.equal(ddPositional(q), false);
+  assert.equal(ddCorrect(q, { 0: 0, 1: 1 }), true);
+  assert.equal(ddCorrect(q, { 0: 1, 1: 0 }), false);
+});
+
+test('the review does not cross out a right item sitting in another position', () => {
+  const q = positional();
+  const placement = { 0: 2, 1: 0, 3: 3, 5: 1 };
+  assert.equal(ddItemRight(q, placement, 0), true);
+  assert.equal(ddItemRight(q, placement, 2), false, 'a distractor is never right');
+});
+
+// The whole bank, as a guard: every question's own answer key must still grade correct, and
+// a rotation of it must still fail wherever the targets are not interchangeable.
+test('the set rule loosens three questions and nothing else', () => {
+  const { questions } = loadBank();
+  const dd = questions.filter(q => q.y === 'dd' && q.dd);
+  const positional = dd.filter(ddPositional).map(q => q.n);
+  assert.deepEqual(positional, [261, 592, 1001]);
+
+  for (const q of dd) {
+    const key = {};
+    q.dd.buckets.forEach((b, bi) => b.correct.forEach(txt => {
+      const i = q.dd.items.indexOf(txt); if (i >= 0) key[i] = bi;
+    }));
+    assert.equal(ddCorrect(q, key), true, `#${q.n}: its own key stopped grading`);
+    if (q.dd.buckets.length < 2 || ddPositional(q)) continue;
+    const rotated = {};
+    for (const [i, bi] of Object.entries(key)) rotated[i] = (+bi + 1) % q.dd.buckets.length;
+    assert.equal(ddCorrect(q, rotated), false, `#${q.n}: an ordered question went soft`);
+  }
 });

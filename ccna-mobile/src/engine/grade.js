@@ -60,10 +60,53 @@ export function ddFilled(q, placement) {
   return Object.keys(placement).filter(i => expected[i] != null).length;
 }
 
+// Most matching questions have named targets — "TCP" against "UDP", one state against
+// another — and putting an item under the wrong name is simply wrong. A handful number their
+// targets instead, or repeat one word across all of them, and say so in the stem: "drag the
+// characteristics onto any position on the right". There the four right characteristics are
+// right in any arrangement, and Cisco marks them on the set, not on the mapping.
+//
+// Ordering language is the exception to the exception: #383 numbers its targets too, but
+// asks for them "beginning with the lowest and ending with the highest administrative
+// distance", and #665 says "onto the sequence on the right". Those numbers are a real order.
+//
+// In this bank the rule picks out 261, 592 and 1001, and leaves the other 156 alone.
+const ANY_POSITION = /any (of the )?positions?\b/i;
+const ORDERED = /\bsequence\b|\bin order\b|beginning with|lowest[\s\S]*highest|first[\s\S]*then/i;
+
+export function ddPositional(q) {
+  const stem = q.t || '';
+  if (ORDERED.test(stem)) return false;
+  const labels = q.dd.buckets.map(b => String(b.label).trim().toLowerCase());
+  // A single target is trivially "all the same"; the interesting case is several of them.
+  return (labels.length > 1 && new Set(labels).size === 1) || ANY_POSITION.test(stem);
+}
+
 // Correct iff every item sits where it belongs, distractors included: leaving a
-// distractor in the bank is part of the right answer.
+// distractor in the bank is part of the right answer. When the targets are interchangeable
+// the same test applies to the set instead — the right items, one per position, in any
+// arrangement.
 export function ddCorrect(q, placement) {
   const expected = ddExpected(q);
+  if (ddPositional(q)) {
+    const perBucket = q.dd.buckets.map(() => 0);
+    for (const bi of Object.values(placement)) {
+      if (perBucket[bi] === undefined) return false;
+      perBucket[bi]++;
+    }
+    if (!q.dd.buckets.every((b, bi) => perBucket[bi] === b.correct.length)) return false;
+    const placed = Object.keys(placement).map(Number).sort((a, b) => a - b);
+    const belongs = expected.map((v, i) => (v === null ? -1 : i)).filter(i => i >= 0).sort((a, b) => a - b);
+    return placed.length === belongs.length && placed.every((v, k) => v === belongs[k]);
+  }
   return q.dd.items.every((_, i) =>
     (placement[i] === undefined ? null : placement[i]) === expected[i]);
+}
+
+// Where a placed item counts as right. Under interchangeable targets that is any bucket at
+// all, so the review must not put a red cross on a correct characteristic in position 3.
+export function ddItemRight(q, placement, i) {
+  const expected = ddExpected(q);
+  if (placement[i] === undefined) return false;
+  return ddPositional(q) ? expected[i] !== null : expected[i] === placement[i];
 }

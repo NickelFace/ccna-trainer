@@ -961,8 +961,7 @@ function ddMarkup(q, st) {
     h += `<div class="dd-bucket"><div class="bl">${esc(b.label)}</div><div class="dd-slot" data-bucket="${bi}">`;
     dd.items.forEach((t, i) => {
       if (st ? placed[i] === bi : false) {
-        const good = b.correct.includes(t);
-        h += ddItemHTML(t, i, good ? 'correct' : 'wrong');
+        h += ddItemHTML(t, i, ddItemRight(q, placed, i) ? 'correct' : 'wrong');
       }
     });
     h += `</div></div>`;
@@ -1041,8 +1040,45 @@ function ddFilledCount(q, placement) {
   const exp = ddExpected(q);
   return Object.keys(placement).filter(i => exp[i] != null).length;
 }
+// Most matching questions have named targets — "TCP" against "UDP" — and putting an item
+// under the wrong name is simply wrong. A handful number their targets instead, or repeat one
+// word across all of them, and say so in the stem: "drag the characteristics onto any
+// position on the right". There the right items are right in any arrangement, and Cisco marks
+// them on the set, not on the mapping.
+//
+// Ordering language is the exception to the exception: #383 numbers its targets too but asks
+// for administrative distance "beginning with the lowest", and #665 says "onto the sequence
+// on the right". Those numbers are a real order. The rule picks out 261, 592 and 1001 and
+// leaves the other 156 alone. Kept in step with ccna-mobile/src/engine/grade.js.
+const DD_ANY_POSITION = /any (of the )?positions?\b/i;
+const DD_ORDERED = /\bsequence\b|\bin order\b|beginning with|lowest[\s\S]*highest|first[\s\S]*then/i;
+function ddPositional(q) {
+  const stem = q.t || '';
+  if (DD_ORDERED.test(stem)) return false;
+  const labels = q.dd.buckets.map(b => String(b.label).trim().toLowerCase());
+  // A single target is trivially "all the same"; the interesting case is several of them.
+  return (labels.length > 1 && new Set(labels).size === 1) || DD_ANY_POSITION.test(stem);
+}
+// Whether one placed item counts as right — any bucket will do when the targets are
+// interchangeable, so the review does not cross out a correct item sitting in position 3.
+function ddItemRight(q, placement, i) {
+  if (placement[i] === undefined) return false;
+  const exp = ddExpected(q);
+  return ddPositional(q) ? exp[i] !== null : exp[i] === placement[i];
+}
 function ddCorrect(q, placement) {
   const exp = ddExpected(q);
+  if (ddPositional(q)) {
+    const per = q.dd.buckets.map(() => 0);
+    for (const bi of Object.values(placement)) {
+      if (per[bi] === undefined) return false;
+      per[bi]++;
+    }
+    if (!q.dd.buckets.every((b, bi) => per[bi] === b.correct.length)) return false;
+    const placed = Object.keys(placement).map(Number).sort((a, b) => a - b);
+    const belongs = exp.map((v, i) => (v === null ? -1 : i)).filter(i => i >= 0).sort((a, b) => a - b);
+    return placed.length === belongs.length && placed.every((v, k) => v === belongs[k]);
+  }
   return q.dd.items.every((t, i) => (placement[i] === undefined ? null : placement[i]) === exp[i]);
 }
 
@@ -1226,7 +1262,7 @@ function ddReview(q, ans) {
     // show correct answer set, mark what the user placed
     b.correct.forEach(t => {
       const i = q.dd.items.indexOf(t);
-      const userRight = placed[i] === bi;
+      const userRight = ddItemRight(q, placed, i);
       h += `<div class="dd-item ${userRight ? 'correct' : ''}">${esc(t)}${userRight ? ' ✓' : ''}</div>`;
     });
     h += `</div></div>`;

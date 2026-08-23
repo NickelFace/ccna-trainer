@@ -6,7 +6,7 @@
 // grading still goes through ddCorrect/ddNeeded from the engine, distractors included.
 import { esc } from './dom.js';
 import { store } from './store.js';
-import { ddCorrect, ddExpected, ddFilled, ddNeeded } from '../engine/grade.js';
+import { ddCorrect, ddFilled, ddItemRight, ddNeeded } from '../engine/grade.js';
 import { gradesImmediately } from './session.js';
 
 // { qn, placement: { itemIndex: bucketIndex }, selected: itemIndex | null }
@@ -61,7 +61,6 @@ const inBucket = bi => Object.entries(state.placement)
 
 // ---------------------------------------------------------------- markup
 export function matchBody(q, graded) {
-  const expected = graded ? ddExpected(q) : null;
 
   const bank = q.dd.items.map((text, i) => {
     const cls = ['chip'];
@@ -75,7 +74,9 @@ export function matchBody(q, graded) {
     const free = b.correct.length - items.length;
     const chips = items.map(i => {
       const cls = ['placed-chip'];
-      if (graded) cls.push(expected[i] === bi ? 'correct' : 'wrong');
+      // Under interchangeable targets a right characteristic is right wherever it sits, so
+      // the mark comes from ddItemRight rather than from this bucket's index.
+      if (graded) cls.push(ddItemRight(q, state.placement, i) ? 'correct' : 'wrong');
       return `<span class="${cls.join(' ')}">${esc(q.dd.items[i])}${graded ? '' : `<button class="chip-x" data-unplace="${i}" type="button" aria-label="Убрать">✕</button>`}</span>`;
     }).join('');
 
