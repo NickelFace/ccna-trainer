@@ -425,6 +425,17 @@ function footer() {
 // ============================ MOUNT ============================
 const root = () => document.getElementById('landing');
 
+// <html lang> has to name the language of the text actually on screen, not the position of
+// the switch. The two differ: the trainer is translated in full, while the landing keeps
+// painting Russian copy until COPY.en is filled in — which is exactly what render() already
+// works out for the heading face. Claiming the wrong one makes Chrome offer to translate a
+// page that is already in the reader's language, and makes a screen reader read it with the
+// wrong phonemes.
+function syncDocLang() {
+  const el = root();
+  document.documentElement.lang = el.hidden ? locale : (el.dataset.copy || locale);
+}
+
 function render() {
   const el = root();
   el.dataset.locale = locale;
@@ -434,6 +445,7 @@ function render() {
   // headlines to a Georgia fallback. This flips to 'en' by itself once COPY.en is filled in.
   el.dataset.copy = Object.keys(COPY[locale]).length ? locale : 'ru';
   el.innerHTML = header() + hero() + modes() + domains() + how() + appSection() + footer();
+  syncDocLang();
 }
 
 function showLanding() {
@@ -447,6 +459,7 @@ function hideLanding() {
   document.body.classList.remove('np-on');
   root().hidden = true;
   document.getElementById('trainer').hidden = false;
+  syncDocLang();
 }
 
 // One locale for the whole page: the same key the trainer reads, so the two can never
@@ -460,6 +473,7 @@ function setLocale(next) {
   const y = window.scrollY;
   if (!root().hidden) render();
   if (typeof applyLang === 'function') applyLang(next);
+  syncDocLang();
   window.scrollTo(0, y);
 }
 
