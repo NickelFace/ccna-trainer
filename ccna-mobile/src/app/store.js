@@ -283,7 +283,14 @@ export const store = {
   },
 
   // ---- persistence ----
+  // `profile` and `book` are the two branches merge() cannot combine field by field — an
+  // exam date from one device beside a daily goal from the other is a plan nobody made —
+  // so they carry the time they were last written. Stamping here rather than in each
+  // mutator means no new setting can be added and quietly miss it.
   _touch(key) {
+    if ((key === 'profile' || key === 'book') && this[key] && typeof this[key] === 'object') {
+      this[key].updatedAt = Date.now();
+    }
     this._dirty.add(key);
     if (this._timer) return;
     this._timer = setTimeout(() => { this._timer = null; this.flush(); }, FLUSH_MS);
