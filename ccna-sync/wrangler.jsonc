@@ -11,6 +11,16 @@
   // needs no DNS record and no certificate work.
   "routes": [{ "pattern": "sync.maks.top", "custom_domain": true }],
 
+  // Who may use this server. Empty means anyone with a well-formed key, which for a public
+  // site means anyone at all — see README.md, "Who may use it".
+  //
+  // A plain variable rather than a secret, deliberately: these are SHA-256 hashes, the same
+  // ones the database already stores, and a 192-bit key cannot be recovered from one. In
+  // the repository they are deployed by CI and reviewable in a diff, which beats a value
+  // that exists only in a dashboard and that nobody can check without logging in.
+  // Do not also set a secret of this name — a secret and a var with one name fight.
+  "vars": { "ALLOWED_KEY_HASHES": "" },
+
   // database_id comes from `npx wrangler d1 create ccna-sync` — see README.md, "Setup".
   // Local development (`npm run dev`) ignores it and uses a database under .wrangler/.
   "d1_databases": [

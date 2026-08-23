@@ -38,8 +38,18 @@ can make one. Two environment settings decide who actually gets in:
 
 | setting | effect |
 |---|---|
-| `ALLOWED_KEY_HASHES` | whitespace- or comma-separated SHA-256 hex. Set it and only those keys work. This is the lock. |
+| `ALLOWED_KEY_HASHES` | whitespace- or comma-separated SHA-256 hex, in `wrangler.jsonc` under `vars`. Set it and only those keys work. This is the lock. |
 | `MAX_KEYS` | how many distinct keys may ever be created (default 8). A backstop for the window before the allowlist is set, not a way to choose who gets in. |
+
+To lock the server to your own key:
+
+```bash
+npm run keyhash        # type the key; it is not echoed and never leaves the process
+```
+
+Put the 64-character hash it prints into `vars.ALLOWED_KEY_HASHES` and push — CI deploys it.
+Several keys go in one string, separated by spaces or commas. The hash is safe to commit:
+it is what the table already holds, and the key cannot be worked back out of it.
 
 A key that is not on the list gets the same 401 a wrong key gets, so a stranger cannot tell
 a list exists. The cap only ever refuses to *create* a key; an existing one keeps working.
