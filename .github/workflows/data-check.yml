@@ -11,6 +11,7 @@ on:
     paths:
       - "ccna-exam-simulator/data/**"
       - "ccna-exam-simulator/images/exhibits/**"
+      - "ccna-exam-simulator/assets/js/**"
       - "ccna-mobile/src/engine/**"
       - "ccna-mobile/tests/**"
       - "ccna-book/**"
@@ -19,6 +20,7 @@ on:
     paths:
       - "ccna-exam-simulator/data/**"
       - "ccna-exam-simulator/images/exhibits/**"
+      - "ccna-exam-simulator/assets/js/**"
       - "ccna-mobile/**"
       - "ccna-book/**"
   workflow_dispatch: {}

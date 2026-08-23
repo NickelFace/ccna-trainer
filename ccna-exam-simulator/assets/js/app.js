@@ -3,7 +3,7 @@
 'use strict';
 
 const $ = s => document.querySelector(s);
-const app = () => document.getElementById('app');
+const app = () => document.getElementById('trainer');
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; };
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0;[a[i], a[j]] = [a[j], a[i]]; } return a; };
 const ASSET_V = '11';                        // bump when exhibits are regenerated (cache-bust)
@@ -28,6 +28,7 @@ function setLang(lang) {
 }
 const I18N = {
   ru: {
+    boot_loading: 'Загрузка банка вопросов…',
     home_stats: '{0} оцениваемых вопросов · {1} со схемами · {2} с пояснениями',
     home_verified_note: 'Банк проверен онлайн (418/418 картиночных), ключ исправлен: #151, #986, #787, #1045, #1320.',
     home_full_title: 'Полный экзамен',
@@ -138,6 +139,7 @@ const I18N = {
     badge_wrong: 'ошибка',
   },
   en: {
+    boot_loading: 'Loading the question bank…',
     home_stats: '{0} scored questions · {1} with exhibits · {2} with rationale',
     home_verified_note: 'Bank verified online (418/418 image questions), key fixed: #151, #986, #787, #1045, #1320.',
     home_full_title: 'Full Exam',
@@ -261,7 +263,6 @@ async function boot() {
   DATA = q; META = m;
   META.domains.forEach(d => DOM[d.id] = d);
   POOL = DATA.filter(scorable);
-  home();
 }
 function scorable(q) {
   if (q.y === 'txt' || q.y === 'ex') return q.a && q.a.length > 0;
@@ -270,6 +271,33 @@ function scorable(q) {
 }
 const domName = id => (DOM[id] ? DOM[id].name : id);
 const domShort = id => domName(id).replace(/^\d+\.\d+\s+/, '');
+
+// ============================ ENTRY ============================
+// The landing is the site's first screen and has to paint immediately, so the 3 MB bank is
+// fetched only when a mode is actually entered — and only once. A deep link
+// (?mode=exam|custom|practice) skips the landing and opens that mode directly; the mode
+// CTAs on the landing are ordinary links to those same URLs, so middle-click and
+// "copy link address" behave the way they look.
+let booting = null;
+const ensureBooted = () => booting || (booting = boot());
+
+const MODE_ENTRY = {
+  exam: startFullExam,          // straight into the weighted 100-question attempt
+  custom: () => cfg('exam'),    // the configure screen for a self-built exam
+  practice: () => cfg('practice'),
+};
+
+function route() {
+  const mode = new URLSearchParams(location.search).get('mode');
+  if (mode && MODE_ENTRY[mode]) return openMode(mode);
+  NetPath.showLanding();
+}
+
+function openMode(mode) {
+  NetPath.hideLanding();
+  app().innerHTML = `<h1>${esc(NetPath.CONFIG.brandName)}</h1><div class="sub">${t('boot_loading')}</div>`;
+  ensureBooted().then(MODE_ENTRY[mode]);
+}
 
 // ============================ HOME ============================
 function home() {
@@ -999,5 +1027,5 @@ document.addEventListener('keydown', e => {
 });
 
 // expose for inline onclick
-Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter, setLang });
-window.addEventListener('DOMContentLoaded', boot);
+Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter, setLang, openMode });
+window.addEventListener('DOMContentLoaded', route);

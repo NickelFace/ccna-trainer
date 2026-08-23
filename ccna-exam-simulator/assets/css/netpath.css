@@ -1,0 +1,234 @@
+@font-face{font-family:'Manrope';font-style:normal;font-weight:400 800;font-display:swap;
+  src:url('../fonts/manrope-cyrillic-ext.woff2') format('woff2');
+  unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F}
+@font-face{font-family:'Manrope';font-style:normal;font-weight:400 800;font-display:swap;
+  src:url('../fonts/manrope-cyrillic.woff2') format('woff2');
+  unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
+@font-face{font-family:'Manrope';font-style:normal;font-weight:400 800;font-display:swap;
+  src:url('../fonts/manrope-latin-ext.woff2') format('woff2');
+  unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:'Manrope';font-style:normal;font-weight:400 800;font-display:swap;
+  src:url('../fonts/manrope-latin.woff2') format('woff2');
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Playfair Display';font-style:normal;font-weight:400 500;font-display:swap;
+  src:url('../fonts/playfair-display-cyrillic.woff2') format('woff2');
+  unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
+@font-face{font-family:'Playfair Display';font-style:normal;font-weight:400 500;font-display:swap;
+  src:url('../fonts/playfair-display-latin-ext.woff2') format('woff2');
+  unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:'Playfair Display';font-style:normal;font-weight:400 500;font-display:swap;
+  src:url('../fonts/playfair-display-latin.woff2') format('woff2');
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Instrument Serif';font-style:normal;font-weight:400;font-display:swap;
+  src:url('../fonts/instrument-serif-latin-ext.woff2') format('woff2');
+  unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:'Instrument Serif';font-style:normal;font-weight:400;font-display:swap;
+  src:url('../fonts/instrument-serif-latin.woff2') format('woff2');
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Space Grotesk';font-style:normal;font-weight:500 700;font-display:swap;
+  src:url('../fonts/space-grotesk-latin-ext.woff2') format('woff2');
+  unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:'Space Grotesk';font-style:normal;font-weight:500 700;font-display:swap;
+  src:url('../fonts/space-grotesk-latin.woff2') format('woff2');
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+
+/* ============================================================================
+   NetPath landing.
+
+   Everything here is scoped under .np. The trainer that lives on the same page
+   is a dark terminal theme with its own global h1/h2/.card/.btn rules, so an
+   unscoped rule would leak straight into it (and vice versa) — that is why the
+   landing uses np- prefixed class names throughout rather than reusing .card.
+
+   Values come from design_handoff_netpath/README.md → Design Tokens. Nothing
+   here should hardcode a hex that is not a var below.
+   ========================================================================= */
+
+.np{
+  /* palette */
+  --ink:#16181D; --cream:#FCFAF6; --cream-warm:#F4F0E8; --cream-light:#F7F4EE;
+  --gold:#C9A24A; --teal:#2E7D6F; --grey:#8A8578; --grey-text:#5C5850;
+
+  /* Headings switch face with the locale: Instrument Serif has no Cyrillic, so
+     Russian sets Playfair Display and takes its slightly looser metrics with it.
+     See design_handoff_netpath/Type Cyrillic Test.dc.html for the comparison. */
+  --serif:'Playfair Display',Georgia,'Times New Roman',serif;
+  --h1-lh:1.04; --h1-ls:-.015em;
+
+  --ui:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --num:'Space Grotesk','Manrope',system-ui,sans-serif;
+
+  --shell:1200px;      /* content width, gutters sit outside it */
+  --gutter:40px;
+
+  font-family:var(--ui);
+  color:var(--ink);
+  background:var(--cream);
+  font-size:16px;
+  /* `normal`, not a number: the spec gives a line-height per prose role (lead 1.6, body
+     1.65, caption 1.55) and none for UI — buttons, badges, labels and numbers size to their
+     own font metrics. Inheriting 1.65 into them inflated every control by several pixels
+     and pushed the whole page out of register with the mockup. */
+  line-height:normal;
+  -webkit-font-smoothing:antialiased;
+}
+.np[data-copy="en"]{
+  --serif:'Instrument Serif',Georgia,'Times New Roman',serif;
+  --h1-lh:1.02; --h1-ls:-.02em;
+}
+
+/* The trainer paints the body near-black with a grid overlay. While the landing
+   is the visible screen the page has to be cream instead, and the browser must
+   not "helpfully" invert it under a dark system theme. */
+body.np-on{background:#FCFAF6;background-image:none;color:#16181D}
+body.np-on .lang-switch{display:none}          /* the landing header carries its own */
+.np ::selection{background:rgba(201,162,74,.28)}
+
+.np-shell{max-width:calc(var(--shell) + var(--gutter) * 2);margin:0 auto;padding:0 var(--gutter)}
+.np h1,.np h2,.np h3{font-family:var(--ui);color:var(--ink);text-shadow:none;
+  letter-spacing:normal;text-transform:none;margin:0}
+.np a{text-decoration:none;color:inherit}
+/* Button colours must outrank the `.np a` reset above — hence the .np prefix. */
+.np button{font-family:inherit}
+
+/* Anchor targets have to clear the sticky header. */
+.np section{scroll-margin-top:88px}
+
+/* ------------------------------------------------------------------ mark -- */
+.np-mark{display:block;flex:none}
+.np-lockup{display:flex;align-items:center;gap:10px}
+.np-lockup .np-name{font-size:19px;font-weight:800;letter-spacing:-.02em;color:var(--ink)}
+
+/* ---------------------------------------------------------------- header -- */
+.np-header{
+  position:sticky;top:0;z-index:20;
+  background:rgba(252,250,246,.88);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(22,24,29,.08);
+}
+.np-header .np-shell{display:flex;align-items:center;gap:var(--gutter);padding:18px var(--gutter)}
+.np-nav{display:flex;gap:28px}
+.np-nav a{font-size:14px;font-weight:600;color:var(--grey-text);transition:color .15s}
+.np-nav a:hover{color:var(--gold)}
+.np-header-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+
+.np-langs{display:flex;padding:3px;background:rgba(22,24,29,.06);border-radius:999px}
+.np-langs button{
+  padding:6px 12px;border:0;border-radius:999px;background:none;cursor:pointer;
+  font-size:12px;font-weight:700;color:var(--grey);transition:.15s;
+}
+.np-langs button[aria-pressed="true"]{background:var(--cream);color:var(--ink);box-shadow:0 1px 3px rgba(22,24,29,.12)}
+
+/* --------------------------------------------------------------- buttons -- */
+.np-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  /* No placeholder border: only the ghost and outline variants have one in the mockup,
+     and a transparent 1px on the solid buttons made every one of them 2px too tall. */
+  border:0;border-radius:999px;cursor:pointer;
+  font-family:var(--ui);font-weight:700;text-align:center;
+  transition:background .15s,border-color .15s,color .15s,box-shadow .15s,transform .15s;
+}
+.np .np-btn-ink{background:var(--ink);color:var(--cream);padding:11px 22px;font-size:14px}
+.np .np-btn-ink:hover{background:#0d0f13}                       /* ~6% darker */
+.np .np-btn-gold{background:var(--gold);color:var(--ink);padding:16px 30px;font-size:16px}
+.np .np-btn-gold:hover{background:#bd9642}
+.np .np-btn-ghost{background:none;color:var(--cream-light);border:1px solid rgba(247,244,238,.25);padding:16px 30px;font-size:16px}
+.np .np-btn-ghost:hover{border-color:rgba(247,244,238,.5)}
+.np .np-btn-outline{background:none;color:var(--ink);border:1px solid rgba(22,24,29,.2);padding:14px 24px;font-size:14px}
+.np .np-btn-outline:hover{border-color:var(--ink)}
+.np :focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:999px}
+
+/* ------------------------------------------------------------------ hero -- */
+.np-hero{background:var(--ink);color:var(--cream-light);padding:104px 0 112px}
+.np-hero .np-shell{display:grid;grid-template-columns:1.05fr .95fr;gap:72px;align-items:center}
+.np-hero-copy{display:flex;flex-direction:column;gap:30px}
+.np-badge{
+  align-self:flex-start;padding:7px 15px;border-radius:999px;
+  border:1px solid rgba(201,162,74,.45);color:var(--gold);
+  font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+}
+.np-hero h1{
+  font-family:var(--serif);font-size:76px;font-weight:400;
+  line-height:var(--h1-lh);letter-spacing:var(--h1-ls);
+  color:var(--cream-light);text-wrap:balance;
+}
+.np-hero-lead{font-size:19px;line-height:1.6;color:rgba(247,244,238,.72);max-width:480px;text-wrap:pretty}
+.np-hero-actions{display:flex;gap:14px;flex-wrap:wrap}
+.np-metrics{display:flex;gap:36px;padding-top:8px;flex-wrap:wrap}
+.np-metric b{display:block;font-family:var(--num);font-size:28px;font-weight:700;color:var(--cream-light)}
+.np-metric span{font-size:13px;color:rgba(247,244,238,.55)}
+
+/* Hero mockup — an illustration of the trainer, deliberately inert: no hover,
+   no cursor change, aria-hidden. It must not read as a live control. */
+.np-mock{
+  background:var(--cream);border-radius:22px;padding:26px;color:var(--ink);
+  box-shadow:0 40px 80px -30px rgba(0,0,0,.6);user-select:none;
+}
+.np-mock-head{display:flex;justify-content:space-between;align-items:center;padding-bottom:18px;border-bottom:1px solid rgba(22,24,29,.08)}
+.np-mock-head .l{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--grey)}
+.np-mock-head .r{font-family:var(--num);font-size:13px;font-weight:700;color:var(--gold)}
+.np-mock-track{height:4px;border-radius:2px;background:rgba(22,24,29,.08);margin:14px 0 22px;overflow:hidden}
+.np-mock-track i{display:block;height:100%;width:23%;background:var(--gold)}
+.np-mock-dom{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--teal)}
+.np-mock-q{font-size:17px;font-weight:600;line-height:1.5;color:var(--ink);text-wrap:pretty;margin-top:8px}
+.np-mock-slots{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.np-slot{padding:13px 14px;border-radius:12px;font-size:13px;font-weight:600;border:1px solid transparent}
+.np-slot.empty{border:1px dashed rgba(22,24,29,.22);background:var(--cream-warm);color:var(--grey-text)}
+.np-slot.filled{background:var(--ink);color:var(--cream-light);border-color:var(--ink)}
+.np-slot.lit{border-color:rgba(201,162,74,.6);background:rgba(201,162,74,.16);color:var(--ink)}
+.np-mock-foot{display:flex;justify-content:space-between;align-items:center;margin-top:22px}
+.np-mock-foot .hint{font-size:13px;font-weight:600;color:var(--grey)}
+.np-mock-foot .next{padding:10px 20px;border-radius:999px;background:var(--gold);color:var(--ink);font-size:13px;font-weight:700}
+
+/* ----------------------------------------------------------------- modes -- */
+.np-modes{padding:104px 0 0}
+.np-sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--gutter);flex-wrap:wrap}
+.np-sec-head h2{font-family:var(--serif);font-size:46px;font-weight:400;line-height:1.08;max-width:520px}
+.np-sec-lead{font-size:16px;line-height:1.65;color:var(--grey-text);max-width:380px;text-wrap:pretty}
+
+.np-mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:40px}
+.np-mode{
+  border-radius:20px;padding:32px;min-height:340px;
+  display:flex;flex-direction:column;gap:20px;
+  background:var(--cream);border:1px solid rgba(22,24,29,.1);
+  transition:box-shadow .18s,transform .18s;
+}
+.np-mode:hover{box-shadow:0 18px 40px -22px rgba(22,24,29,.45);transform:translateY(-2px)}
+.np-mode.feature{background:var(--ink);color:var(--cream-light);border-color:var(--ink)}
+.np-mode-top{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.np-tag{padding:6px 13px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em}
+.np-tag.gold{background:rgba(201,162,74,.18);color:var(--gold)}
+.np-tag.teal{background:rgba(46,125,111,.12);color:var(--teal)}
+.np-tag.mute{background:rgba(22,24,29,.07);color:var(--grey-text)}
+.np-mode h3{font-size:26px;font-weight:800;letter-spacing:-.02em}
+.np-mode.feature h3{color:var(--cream-light)}
+/* Same .np prefix as the button rules above, so this padding still wins. */
+.np .np-mode-cta{margin-top:auto;width:100%;padding:14px 24px;font-size:14px}
+
+/* spec list on the featured card */
+.np-specs{display:flex;flex-direction:column}
+.np-specs div{display:flex;justify-content:space-between;gap:14px;font-size:14px}
+.np-specs div:not(:last-child){padding-bottom:11px;margin-bottom:11px;border-bottom:1px solid rgba(247,244,238,.1)}
+.np-specs .k{color:rgba(247,244,238,.6)}
+.np-specs .v{font-weight:700}
+.np-specs .v.gold{color:var(--gold)}
+
+/* "build your own" card internals */
+.np-field-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--grey);margin-bottom:8px}
+.np-chips{display:flex;flex-wrap:wrap;gap:6px}
+.np-chip{padding:6px 11px;border-radius:999px;font-size:12px;font-weight:600}
+.np-chip.on{background:var(--ink);color:var(--cream-light)}
+.np-chip.off{border:1px solid rgba(22,24,29,.18);color:var(--grey)}
+.np-fields{display:flex;gap:10px}
+.np-fields > div{flex:1}
+.np-field-value{padding:9px 12px;border-radius:10px;background:var(--cream-warm);font-family:var(--num);font-size:15px;font-weight:700;color:var(--ink)}
+.np-note{font-size:13px;line-height:1.55;color:var(--grey-text)}
+
+/* "practice" card internals */
+.np-plate{padding:13px 15px;border-radius:12px;display:flex;justify-content:space-between;align-items:center}
+.np-plate.ok{border:1px solid rgba(46,125,111,.35);background:rgba(46,125,111,.09)}
+.np-plate.ok .k{font-size:13px;font-weight:700;color:var(--ink)}
+.np-plate.ok .v{font-size:12px;font-weight:700;color:var(--teal)}
+.np-plate.warm{background:var(--cream-warm);display:block;font-size:13px;line-height:1.55;color:var(--grey-text)}
+.np-steps{display:flex;gap:6px}
+.np-steps i{flex:1;height:6px;border-radius:3px}

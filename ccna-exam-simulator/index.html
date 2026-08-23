@@ -3,8 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CCNA 200-301 · Симулятор экзамена</title>
-<meta name="description" content="Интерактивный симулятор экзамена Cisco CCNA 200-301: взвешивание по 6 официальным доменам, drag-and-drop, отчёт по доменам.">
+<title>NetPath · тренажёр для экзамена 200-301</title>
+<meta name="description" content="Независимый тренажёр для подготовки к экзамену 200-301: попытки взвешены по шести официальным доменам, drag-and-drop, отчёт по доменам.">
+<!-- The landing paints before the question bank is fetched, so its heading and UI faces
+     are the only render-blocking assets worth preloading. Cyrillic first: the site is
+     Russian by default and the Latin subsets are only pulled in for EN. -->
+<link rel="preload" href="assets/fonts/manrope-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/playfair-display-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/netpath.css?v=1">
 <link rel="stylesheet" href="assets/css/styles.css?v=12">
 </head>
 <body>
@@ -12,10 +18,12 @@
   <span class="lang-opt" data-lang="ru" onclick="setLang('ru')">RU</span>
   <span class="lang-opt" data-lang="en" onclick="setLang('en')">EN</span>
 </div>
-<div class="wrap" id="app">
+<div class="np" id="landing" hidden></div>
+<div class="wrap" id="trainer" hidden>
   <h1>CCNA 200-301</h1>
   <div class="sub">Загрузка банка вопросов…</div>
 </div>
-<script src="assets/js/app.js?v=25"></script>
+<script src="assets/js/landing.js?v=1"></script>
+<script src="assets/js/app.js?v=26"></script>
 </body>
 </html>
