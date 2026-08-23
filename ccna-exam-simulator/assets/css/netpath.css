@@ -48,6 +48,12 @@
   /* palette */
   --ink:#16181D; --cream:#FCFAF6; --cream-warm:#F4F0E8; --cream-light:#F7F4EE;
   --gold:#C9A24A; --teal:#2E7D6F; --grey:#8A8578; --grey-text:#5C5850;
+  /* Gold and teal are accent *fills*, and neither is readable as text on a light ground:
+     #C9A24A measures 2.30:1 on cream, #2E7D6F only 4.04:1 once it sits on its own 12% tint.
+     These two are the same hues walked down to the lightest value that clears 4.5:1 with a
+     little headroom on every ground they land on — cream, cream-warm, and the teal tints.
+     Text only: the fills keep the palette above, and the mark keeps its gold. */
+  --gold-text:#846827; --teal-text:#2A7266;
 
   /* Headings switch face with the locale: Instrument Serif has no Cyrillic, so
      Russian sets Playfair Display and takes its slightly looser metrics with it.
@@ -110,15 +116,22 @@ body.np-on .lang-switch{display:none}          /* the landing header carries its
 .np-header .np-shell{display:flex;align-items:center;gap:var(--gutter);padding:18px var(--gutter)}
 .np-nav{display:flex;gap:28px}
 .np-nav a{font-size:14px;font-weight:600;color:var(--grey-text);transition:color .15s}
-.np-nav a:hover{color:var(--gold)}
+.np-nav a:hover{color:var(--gold-text)}
 .np-header-right{margin-left:auto;display:flex;align-items:center;gap:14px}
 
 .np-langs{display:flex;padding:3px;background:rgba(22,24,29,.06);border-radius:999px}
 .np-langs button{
   padding:6px 12px;border:0;border-radius:999px;background:none;cursor:pointer;
-  font-size:12px;font-weight:700;color:var(--grey-text);transition:.15s;
+  font-size:12px;font-weight:700;color:var(--grey-text);
+  transition:background-color .15s,color .15s;
 }
-.np-langs button[aria-pressed="true"]{background:var(--cream);color:var(--ink);box-shadow:0 1px 3px rgba(22,24,29,.12)}
+/* Which language is selected is a component state, and the spec's header treatment —
+   a near-white pill on a 6% track — separates it from the unselected one by 1.13:1,
+   with only 2.51:1 between the two labels. Neither reaches the 3:1 that identifying a
+   state needs. The ink fill is the mockup's own alternative for this same control (it
+   is what How card 03 draws), it clears 15:1, and using it in both places keeps the two
+   switches identical — which is the point, since they are one piece of state. */
+.np-langs button[aria-pressed="true"]{background:var(--ink);color:var(--cream-light)}
 
 /* --------------------------------------------------------------- buttons -- */
 .np-btn{
@@ -169,10 +182,10 @@ body.np-on .lang-switch{display:none}          /* the landing header carries its
 }
 .np-mock-head{display:flex;justify-content:space-between;align-items:center;padding-bottom:18px;border-bottom:1px solid rgba(22,24,29,.08)}
 .np-mock-head .l{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--grey-text)}
-.np-mock-head .r{font-family:var(--num);font-size:13px;font-weight:700;color:var(--gold)}
+.np-mock-head .r{font-family:var(--num);font-size:13px;font-weight:700;color:var(--gold-text)}
 .np-mock-track{height:4px;border-radius:2px;background:rgba(22,24,29,.08);margin:14px 0 22px;overflow:hidden}
 .np-mock-track i{display:block;height:100%;width:23%;background:var(--gold)}
-.np-mock-dom{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--teal)}
+.np-mock-dom{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--teal-text)}
 .np-mock-q{font-size:17px;font-weight:600;line-height:1.5;color:var(--ink);text-wrap:pretty;margin-top:8px}
 .np-mock-slots{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
 .np-slot{padding:13px 14px;border-radius:12px;font-size:13px;font-weight:600;border:1px solid transparent}
@@ -206,7 +219,7 @@ body.np-on .lang-switch{display:none}          /* the landing header carries its
 .np-mode-body.tight{gap:10px}
 .np-tag{padding:6px 13px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em}
 .np-tag.gold{background:rgba(201,162,74,.18);color:var(--gold)}
-.np-tag.teal{background:rgba(46,125,111,.12);color:var(--teal)}
+.np-tag.teal{background:rgba(46,125,111,.12);color:var(--teal-text)}
 .np-tag.mute{background:rgba(22,24,29,.07);color:var(--grey-text)}
 .np-mode h3{font-size:26px;font-weight:800;letter-spacing:-.02em}
 .np-mode.feature h3{color:var(--cream-light)}
@@ -237,7 +250,7 @@ body.np-on .lang-switch{display:none}          /* the landing header carries its
 .np-plate{padding:13px 15px;border-radius:12px;display:flex;justify-content:space-between;align-items:center}
 .np-plate.ok{border:1px solid rgba(46,125,111,.35);background:rgba(46,125,111,.09)}
 .np-plate.ok .k{font-size:13px;font-weight:700;color:var(--ink)}
-.np-plate.ok .v{font-size:12px;font-weight:700;color:var(--teal)}
+.np-plate.ok .v{font-size:12px;font-weight:700;color:var(--teal-text)}
 .np-plate.warm{background:var(--cream-warm);display:block;font-size:13px;line-height:1.55;color:var(--grey-text)}
 .np-steps{display:flex;gap:6px;padding-top:2px}
 .np-steps i{flex:1;height:6px;border-radius:3px}
@@ -252,8 +265,8 @@ body.np-on .lang-switch{display:none}          /* the landing header carries its
 .np-bar{display:flex;flex-direction:column;gap:9px}
 .np-bar .np-bar-top{display:flex;justify-content:space-between;align-items:baseline;gap:14px}
 .np-bar .nm{font-size:16px;font-weight:700;color:var(--ink)}
-.np-bar .pc{font-family:var(--num);font-size:16px;font-weight:700;color:var(--grey)}
-.np-bar .pc.accent{color:var(--gold)}
+.np-bar .pc{font-family:var(--num);font-size:16px;font-weight:700;color:var(--grey-text)}
+.np-bar .pc.accent{color:var(--gold-text)}
 .np-bar .track{height:10px;border-radius:5px;background:rgba(22,24,29,.07);overflow:hidden}
 .np-bar .track i{display:block;height:100%;border-radius:5px}
 .np-bar .track i.ink{background:var(--ink)}
@@ -265,7 +278,7 @@ body.np-on .lang-switch{display:none}          /* the landing header carries its
 .np-how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
 .np-how-card{background:var(--cream);border:1px solid rgba(22,24,29,.08);border-radius:18px;padding:30px;
   min-height:calc(240px + 60px + 2px);display:flex;flex-direction:column;gap:14px}
-.np-how-card .num{font-family:var(--num);font-size:13px;font-weight:700;color:var(--gold)}
+.np-how-card .num{font-family:var(--num);font-size:13px;font-weight:700;color:var(--gold-text)}
 .np-how-card h3{font-size:21px;font-weight:800;letter-spacing:-.01em}
 .np-how-card p{font-size:15px;line-height:1.6;color:var(--grey-text)}
 .np-how-visual{margin-top:auto}
@@ -316,11 +329,11 @@ body.np-on .lang-switch{display:none}          /* the landing header carries its
 /* ---------------------------------------------------------------- footer -- */
 .np-footer{border-top:1px solid rgba(22,24,29,.08)}
 .np-footer .np-shell{display:flex;align-items:center;gap:24px;flex-wrap:wrap;padding:40px}
-.np-footer .np-lockup .np-name{font-size:15px;font-weight:700;color:var(--grey);letter-spacing:normal}
+.np-footer .np-lockup .np-name{font-size:15px;font-weight:700;color:var(--grey-text);letter-spacing:normal}
 .np-disclaimer{font-size:13px;line-height:1.55;color:var(--grey-text);max-width:560px}
 .np-footer-links{margin-left:auto;display:flex;gap:22px}
 .np-footer-links a{font-size:13px;font-weight:600;color:var(--grey-text);transition:color .15s}
-.np-footer-links a:hover{color:var(--gold)}
+.np-footer-links a:hover{color:var(--gold-text)}
 
 /* ============================================================================
    Responsive.

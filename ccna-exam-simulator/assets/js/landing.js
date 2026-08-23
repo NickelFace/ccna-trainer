@@ -142,7 +142,7 @@ const PAINT = {
   light: ['#16181D', '#16181D', '#C9A24A'],
   dark:  ['#F7F4EE', '#F7F4EE', '#C9A24A'],
   muted: ['rgba(247,244,238,.3)', 'rgba(247,244,238,.3)', '#C9A24A'],
-  mono:  ['#8A8578', '#8A8578', '#8A8578'],
+  mono:  ['#5C5850', '#5C5850', '#5C5850'],   // footer lockup, one grey with its wordmark
   solid: ['#16181D', '#16181D', '#16181D'],   // on the gold app tile: all three steps ink
 };
 const mark = (size, tone = 'light') =>
