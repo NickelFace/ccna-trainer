@@ -121,7 +121,17 @@ const COPY = {
   en: {},
 };
 
-let locale = localStorage.getItem('ccna_lang') === 'en' ? 'en' : 'ru';
+// Stored choice first, then what the browser asks for, then Russian. There is no server to
+// read Accept-Language from — the site is static — so navigator.languages is the client-side
+// equivalent of the same header.
+function initialLocale() {
+  const saved = localStorage.getItem('ccna_lang');
+  if (saved === 'ru' || saved === 'en') return saved;
+  const asked = navigator.languages && navigator.languages.length
+    ? navigator.languages : [navigator.language || ''];
+  return asked.some(l => /^en\b/i.test(l)) ? 'en' : 'ru';
+}
+let locale = initialLocale();
 const T = key => (COPY[locale][key] != null ? COPY[locale][key] : COPY.ru[key]);
 
 // ============================ MARK ============================
@@ -440,14 +450,30 @@ function hideLanding() {
 // One locale for the whole page: the same key the trainer reads, so the two can never
 // disagree. Re-renders in place instead of reloading — the scroll position is the point.
 function setLocale(next) {
-  if (next === locale) return;
+  if ((next !== 'ru' && next !== 'en') || next === locale) return;
   locale = next;
   localStorage.setItem('ccna_lang', next);
-  if (typeof LANG !== 'undefined') LANG = next;
+  // Both halves of the page redraw in place around a held scroll position — the landing is
+  // long enough that losing it is the whole reason not to reload.
   const y = window.scrollY;
-  render();
+  if (!root().hidden) render();
+  if (typeof applyLang === 'function') applyLang(next);
   window.scrollTo(0, y);
 }
+
+// A mode CTA is a real link to ?mode=… so middle-click, "open in new tab" and copying the
+// address all do what they look like they do. A plain left click should not reload the page
+// and re-fetch everything, though: swap the screen in place and rewrite the address to match.
+document.addEventListener('click', e => {
+  if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  const a = e.target.closest && e.target.closest('a[href^="?mode="]');
+  if (!a || typeof openMode !== 'function') return;
+  const mode = new URLSearchParams(a.getAttribute('href')).get('mode');
+  if (!mode) return;
+  e.preventDefault();
+  history.replaceState(null, '', a.getAttribute('href'));
+  openMode(mode);
+});
 
 window.NetPath = { CONFIG, showLanding, hideLanding, setLocale, mark, get locale() { return locale; } };
 })();

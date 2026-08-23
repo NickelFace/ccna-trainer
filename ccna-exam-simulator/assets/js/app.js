@@ -20,12 +20,29 @@ let S = {};                                // active session state
 // The question bank's own explanations (`why`/`exp`) exist only in Russian (~1200
 // entries) — translating them is out of scope, so EN mode simply hides that prose
 // instead of mixing languages; see rationale() below.
-let LANG = localStorage.getItem('ccna_lang') || 'ru';
-function setLang(lang) {
+// Resolved once, by the landing (stored choice → Accept-Language → Russian). Reading
+// storage again here would disagree with it on a first visit from an English browser.
+let LANG = NetPath.locale;
+
+// The landing owns the locale — it is the same choice, offered in three places (its header,
+// its How card, and the fixed switch above). This one delegates so all three stay in step.
+function setLang(lang) { NetPath.setLocale(lang); }
+
+// Applied by NetPath.setLocale; redraws the screen in place. Reloading would be simpler but
+// costs the scroll position and, mid-attempt, would drop the session.
+function applyLang(lang) {
   if (lang === LANG) return;
-  localStorage.setItem('ccna_lang', lang);
-  location.reload();
+  LANG = lang;
+  markLangSwitch();
+  if (SCREEN) SCREEN();
 }
+const markLangSwitch = () =>
+  document.querySelectorAll('.lang-opt')
+    .forEach(el => el.classList.toggle('on', el.dataset.lang === LANG));
+
+// How to redraw whatever is on screen after a language change. Every screen entry point
+// records itself here; each one renders from state it does not own, so replaying it is safe.
+let SCREEN = null;
 const I18N = {
   ru: {
     boot_loading: 'Загрузка банка вопросов…',
@@ -252,6 +269,7 @@ const I18N = {
 };
 const fmt = (s, ...vals) => s.replace(/\{(\d+)\}/g, (_, i) => vals[i] ?? '');
 const t = (k, ...vals) => fmt((I18N[LANG] && I18N[LANG][k]) || I18N.ru[k] || k, ...vals);
+markLangSwitch();   // the fixed switch reflects the locale the landing resolved
 document.querySelectorAll('.lang-opt').forEach(el => el.classList.toggle('on', el.dataset.lang === LANG));
 
 // ---- load ----
@@ -294,6 +312,7 @@ function route() {
 }
 
 function openMode(mode) {
+  if (!MODE_ENTRY[mode]) return NetPath.showLanding();
   NetPath.hideLanding();
   app().innerHTML = `<h1>${esc(NetPath.CONFIG.brandName)}</h1><div class="sub">${t('boot_loading')}</div>`;
   ensureBooted().then(MODE_ENTRY[mode]);
@@ -301,6 +320,7 @@ function openMode(mode) {
 
 // ============================ HOME ============================
 function home() {
+  SCREEN = home;
   const ex = DATA.filter(q => q.y === 'ex').length;
   const ddReady = META.dd_ready, ddTotal = META.dd_total;
   app().innerHTML = `
@@ -389,6 +409,7 @@ function formatSimAnswer(text) {
 }
 
 function browseSims() {
+  SCREEN = browseSims;
   const sims = DATA.filter(q => q.y === 'sim');
   let h = `<div class="row"><button class="btn" onclick="home()">${t('nav_back')}</button></div>
     <h1>${t('sim_page_title')}</h1>
@@ -439,9 +460,26 @@ function domPool(includeSims) {
   return p;
 }
 
-function cfg(mode) {
-  selDoms = new Set();
-  selTypes = new Set();
+// `keep` is set only when replaying the screen after a language change: the chips the
+// user has already ticked are part of the screen, not something to reset under them.
+function cfg(mode, keep) {
+  // Replaying this screen after a language change must not reset what the user has already
+  // set up. The chips live in selDoms/selTypes and survive on their own; the controls are
+  // plain DOM, so their values are carried across the re-render by hand.
+  SCREEN = () => {
+    const was = {
+      cnt: $('#cnt') && $('#cnt').value,
+      min: $('#min') && $('#min').value,
+      jump: $('#qstart') && $('#qstart').value,
+      shuffled: $('#shf') && $('#shf').classList.contains('on'),
+    };
+    cfg(mode, true);
+    if (was.cnt && $('#cnt')) $('#cnt').value = was.cnt;
+    if (was.min && $('#min')) $('#min').value = was.min;
+    if (was.jump && $('#qstart')) $('#qstart').value = was.jump;
+    if ($('#shf')) $('#shf').classList.toggle('on', was.shuffled);
+  };
+  if (!keep) { selDoms = new Set(); selTypes = new Set(); }
   const isEx = mode === 'exam';
   app().innerHTML = `
   <h1>${isEx ? t('label_custom_exam') : t('label_practice')}</h1>
@@ -657,6 +695,7 @@ function copyMistakes(btn) {
 
 // ============================ PRACTICE ============================
 function renderPractice() {
+  SCREEN = renderPractice;
   const q = S.qs[S.i]; if (!q) return home();
   const st = S.ans[q.n];
   let h = `<div class="row"><button class="btn" onclick="home()">${t('nav_exit')}</button>
@@ -730,6 +769,7 @@ function finishPractice() {
   renderPracticeResults();
 }
 function renderPracticeResults() {
+  SCREEN = renderPracticeResults;
   const { rev, ok } = S.result;
   const nBad = rev.filter(r => !r.good).length, nOk = rev.length - nBad;
   const pct = rev.length ? Math.round(ok / rev.length * 100) : 0;
@@ -861,6 +901,7 @@ function tick() {
   el.classList.toggle('low', ms < 120000);
 }
 function renderExam() {
+  SCREEN = renderExam;
   const q = S.qs[S.i], multi = q.y !== 'dd' && q.a.length > 1, cur = S.ans[q.n];
   let h = `<div class="row"><button class="btn" onclick="if(confirm('${t('exit_confirm')}'))home()">✕</button>
     <div class="spacer"></div>${S.end ? `<span class="timer" id="timer">--:--</span>` : ''}
@@ -960,6 +1001,7 @@ function finishExam() {
 }
 function setReviewFilter(mode) { S.reviewFilter = mode; (S.mode === 'pr-done' ? renderPracticeResults : renderResults)(); }
 function renderResults() {
+  SCREEN = renderResults;
   const { rev, perDom, ok, pct, scaled, pass } = S.result;
   const nBad = rev.filter(r => !r.good).length, nOk = rev.length - nBad;
 
@@ -1027,5 +1069,5 @@ document.addEventListener('keydown', e => {
 });
 
 // expose for inline onclick
-Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter, setLang, openMode });
+Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter, setLang, applyLang, openMode });
 window.addEventListener('DOMContentLoaded', route);
