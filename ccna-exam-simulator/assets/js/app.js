@@ -329,6 +329,13 @@ const MODE_ENTRY = {
   exam: startFullExam,          // straight into the weighted 100-question attempt
   custom: () => cfg('exam'),    // the configure screen for a self-built exam
   practice: () => cfg('practice'),
+  // Not a mode the bank knows about — a fourth stop for the query param, the trainer's own
+  // home() screen. The header's "Тренажёр" button uses this rather than modeExamUrl: README
+  // §2.1 specs it going straight into the full exam, but that means one click on a generic
+  // "trainer" label drops a first-time visitor into a 120-minute timed attempt with no way
+  // to see the other two modes first. Deliberate deviation, not an oversight — the mode
+  // cards on the landing (and "Начать экзамен" on this screen) still go straight to exam.
+  home,
 };
 
 function route() {

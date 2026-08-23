@@ -178,7 +178,7 @@ function header() {
       <nav class="np-nav">${NAV.map(([k, href]) => `<a href="${href}">${T(k)}</a>`).join('')}</nav>
       <div class="np-header-right">
         ${langSwitch()}
-        <a class="np-btn np-btn-ink" href="${modeUrl(CONFIG.modes[0].mode)}">${T('nav_cta')}</a>
+        <a class="np-btn np-btn-ink" href="${modeUrl('home')}">${T('nav_cta')}</a>
       </div>
     </div>
   </header>`;
