@@ -29,6 +29,30 @@ export const resetMatch = () => { state = { qn: null, placement: {}, selected: n
 export const placedCount = () => Object.keys(state.placement).length;
 export const filledCount = q => ddFilled(q, state.placement);
 export const matchComplete = q => filledCount(q) >= ddNeeded(q);
+
+// «Проверить» used to wait for matchComplete, and on a question with distractors that could
+// not be satisfied at all. filledCount ignores a chip that belongs nowhere, so parking a
+// distractor in a bucket fills the slot on screen without moving the count: every bucket
+// full, board visibly finished, button still grey, and nothing on screen saying which of
+// the seven chips was the wrong one to place. Question 132 is the worst of them — four
+// slots, seven chips, three of which belong nowhere.
+//
+// So the gate is now only "is there anything to grade". Nothing about marking changes:
+// ddCorrect still demands every chip sit exactly where it belongs and every distractor stay
+// in the bank, so an unfinished board is graded wrong — which is the answer the learner
+// asked for, and infinitely better than a dead button.
+export const canCheck = () => placedCount() > 0;
+
+// Shown above the button. Deliberately the filled count and not the raw one: it reports how
+// much of the *answer* is built, which is the thing worth knowing, and an earlier fix moved
+// the readout here precisely so it could not run past the number of slots. A count that
+// sits still while chips go down is only confusing without the line below it, so both are
+// shown together — how much of the answer stands, and how many chips belong nowhere.
+export const matchProgress = q => ({
+  filled: filledCount(q),
+  needed: ddNeeded(q),
+  extra: q.dd.items.length - ddNeeded(q),
+});
 export const selectedItem = q => state.selected === null ? null : q.dd.items[state.selected];
 
 const inBucket = bi => Object.entries(state.placement)

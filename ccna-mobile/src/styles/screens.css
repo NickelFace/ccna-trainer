@@ -213,6 +213,10 @@
 }
 .match-status b { color: var(--primary); font-weight: 500; }
 .match-cancel { min-height: var(--tap-sm); font-size: var(--fs-caption); color: var(--primary-text); }
+/* Why «Проверить» is still grey: how much of the answer is built, and how many items
+   are meant to stay in the bank. */
+.match-status b { font-variant-numeric: tabular-nums; }
+.match-extra { color: var(--text-3); }
 
 .q-tools { display: flex; align-items: center; gap: 14px; padding: 16px 0 4px; }
 .q-tool { min-height: var(--tap-sm); font-size: var(--fs-caption); color: var(--text-2); }

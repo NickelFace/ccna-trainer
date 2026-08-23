@@ -20,7 +20,7 @@ import {
 } from '../qmarkup.js';
 import {
   syncMatch, resetMatch, matchBody, wireMatch, gradeMatch,
-  matchComplete, placedCount, filledCount, selectedItem, clearSelection, resetPlacement,
+  canCheck, matchProgress, placedCount, filledCount, selectedItem, clearSelection, resetPlacement,
 } from '../match.js';
 import { keepScreenOn, releaseScreen } from '../wakelock.js';
 import { result as resultScreen } from './result.js';
@@ -470,13 +470,15 @@ function matchFooter(ctx, s, q) {
   syncPending(q, s);
   const picked = selectedItem(q);
   const last = s.i === s.qs.length - 1;
-  const complete = matchComplete(q);
+  const canGrade = canCheck();
 
   const buttons = gradesImmediately(s)
     ? `<button class="btn" data-act="reset" type="button" ${placedCount() ? '' : 'disabled'}>Сброс</button>
-       <button class="btn primary grow" data-act="check" type="button" ${complete ? '' : 'disabled'}>Проверить</button>`
+       <button class="btn primary grow" data-act="check" type="button" ${canGrade ? '' : 'disabled'}>Проверить</button>`
     : `<button class="btn icon" data-act="prev" type="button" ${s.i === 0 ? 'disabled' : ''}>←</button>
        <button class="btn primary grow" data-act="main" type="button">${last ? 'Завершить' : 'Дальше'}</button>`;
+
+  const { filled, needed, extra } = matchProgress(q);
 
   const node = h(`
     <div class="match-bar">
@@ -484,6 +486,11 @@ function matchFooter(ctx, s, q) {
         <div class="match-status">
           <span><b class="mono">${esc(shorten(picked))}</b> выбран — выбери категорию</span>
           <button class="match-cancel" data-act="cancel" type="button">Отменить</button>
+        </div>`
+      : gradesImmediately(s) ? `
+        <div class="match-status">
+          <span>Разложено <b>${filled}</b> из <b>${needed}</b></span>
+          ${extra > 0 ? `<span class="match-extra">${extra === 1 ? 'один элемент лишний' : `лишних элементов: ${extra}`}</span>` : ''}
         </div>` : ''}
       <div class="action-bar">${buttons}</div>
     </div>`);

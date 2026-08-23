@@ -5,7 +5,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { ddNeeded } from '../src/engine/grade.js';
-import { syncMatch, resetMatch, placedCount, filledCount, matchComplete } from '../src/app/match.js';
+import { syncMatch, resetMatch, placedCount, filledCount, matchComplete, canCheck } from '../src/app/match.js';
 
 // Four items with a home, two distractors — the shape of question 132 (7 items, 4 slots).
 const q = () => ({
@@ -56,4 +56,22 @@ test('the readout never runs past the number of slots', () => {
   assert.equal(placedCount(), 6);                       // «Сброс» still has work to do
   assert.equal(filledCount(question), ddNeeded(question));
   assert.equal(ddNeeded(question), 4);
+});
+
+// Regression: a board full of chips must always be gradeable.
+//
+// The gate used to be matchComplete, which counts only the chips that belong somewhere.
+// Park a distractor in a slot and it fills that slot on screen without moving the count, so
+// on question 132 (four slots, seven chips, three belonging nowhere) every bucket could be
+// full with «Проверить» still disabled and no move left that would satisfy it.
+test('a board full of distractors can still be checked', () => {
+  const question = board({ 4: 0, 5: 1 });      // both distractors placed, nothing else
+  assert.equal(filledCount(question), 0, 'neither distractor counts toward the answer');
+  assert.equal(matchComplete(question), false, 'and the answer is indeed not complete');
+  assert.equal(canCheck(), true, 'but there is something to grade, so the button is live');
+});
+
+test('an untouched board has nothing to grade', () => {
+  board({});
+  assert.equal(canCheck(), false);
 });
