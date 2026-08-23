@@ -22,16 +22,18 @@ const CONFIG = {
   appUrl: 'https://github.com/NickelFace/ccna-trainer/releases/latest',
 
   // Blueprint domains. Bar widths are derived from weight (largest weight = full track),
-  // never written as percentages by hand. Weights must match ccna-exam-simulator/data/
+  // never written as percentages by hand. Every bar is the same ink: length already carries
+  // the weight, and a second colour would read as a split into "important" and "secondary"
+  // domains that the exam blueprint does not make. Weights must match ccna-exam-simulator/data/
   // meta.json — tests/landing-config.test.mjs fails the build if they drift.
   domains: [
     // `short` is what fits on a chip; `label` is the blueprint name the Domains bars use.
     { id: 'IPC', label: 'IP Connectivity',              short: 'IP Connectivity', weight: 0.25, fill: 'ink',  accent: true  },
     { id: 'NF',  label: 'Network Fundamentals',         short: 'Fundamentals',    weight: 0.20, fill: 'ink',  accent: false },
     { id: 'NA',  label: 'Network Access',               short: 'Access',          weight: 0.20, fill: 'ink',  accent: false },
-    { id: 'SEC', label: 'Security Fundamentals',        short: 'Security',        weight: 0.15, fill: 'teal', accent: false },
-    { id: 'IPS', label: 'IP Services',                  short: 'IP Services',     weight: 0.10, fill: 'teal', accent: false },
-    { id: 'AUT', label: 'Automation & Programmability', short: 'Automation',      weight: 0.10, fill: 'teal', accent: false },
+    { id: 'SEC', label: 'Security Fundamentals',        short: 'Security',        weight: 0.15, fill: 'ink',  accent: false },
+    { id: 'IPS', label: 'IP Services',                  short: 'IP Services',     weight: 0.10, fill: 'ink',  accent: false },
+    { id: 'AUT', label: 'Automation & Programmability', short: 'Automation',      weight: 0.10, fill: 'ink',  accent: false },
   ],
 
   // The three trainer modes. `mode` is the query parameter the engine reads on load, so a
@@ -53,7 +55,7 @@ const modeUrl = mode => `?mode=${mode}`;
 const COPY = {
   ru: {
     nav_modes: 'Режимы', nav_domains: 'Домены', nav_how: 'Как устроено', nav_app: 'Приложение',
-    nav_cta: 'Начать тест',
+    nav_cta: 'Тренажёр',
 
     hero_badge: 'Экзамен 200-301',
     hero_h1: 'Симулятор экзамена, а не ещё один банк вопросов',
@@ -176,7 +178,7 @@ function header() {
       <nav class="np-nav">${NAV.map(([k, href]) => `<a href="${href}">${T(k)}</a>`).join('')}</nav>
       <div class="np-header-right">
         ${langSwitch()}
-        <a class="np-btn np-btn-ink" href="#modes">${T('nav_cta')}</a>
+        <a class="np-btn np-btn-ink" href="${modeUrl(CONFIG.modes[0].mode)}">${T('nav_cta')}</a>
       </div>
     </div>
   </header>`;

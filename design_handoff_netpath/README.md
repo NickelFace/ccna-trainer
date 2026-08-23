@@ -90,7 +90,7 @@ HTML-прототипы используют собственный runtime-сл
 - Навигация: `display: flex; gap: 28px`, 14px / 600 / `#5C5850`. Пункты: **Режимы** → `#modes`, **Домены** → `#domains`, **Как устроено** → `#how`, **Приложение** → `#app`. Hover: `#C9A24A`.
 - Справа (`margin-left: auto`, `gap: 14px`):
   - Переключатель языка: контейнер `padding: 3px`, `background: rgba(22,24,29,.06)`, `border-radius: 999px`. Активный сегмент — `padding: 6px 12px`, `border-radius: 999px`, `background: #FCFAF6`, `color: #16181D`, `box-shadow: 0 1px 3px rgba(22,24,29,.12)`. Неактивный — `color: #8A8578`, без фона. Размер 12px/700.
-  - Кнопка: «Начать тест», `padding: 11px 22px`, `border-radius: 999px`, `background: #16181D`, `color: #FCFAF6`, 14px/700.
+  - Кнопка: «Тренажёр» → `modeExamUrl`, `padding: 11px 22px`, `border-radius: 999px`, `background: #16181D`, `color: #FCFAF6`, 14px/700.
 
 **Важно:** переключатель RU/EN в прототипе нарисован, но не подключён. Функциональность требуется — см. Interactions.
 
@@ -176,9 +176,11 @@ HTML-прототипы используют собственный runtime-сл
 | IP Connectivity | 25% | 100% | `#16181D` | `#C9A24A` |
 | Network Fundamentals | 20% | 80% | `#16181D` | `#8A8578` |
 | Network Access | 20% | 80% | `#16181D` | `#8A8578` |
-| Security Fundamentals | 15% | 60% | `#2E7D6F` | `#8A8578` |
-| IP Services | 10% | 40% | `#2E7D6F` | `#8A8578` |
-| Automation & Programmability | 10% | 40% | `#2E7D6F` | `#8A8578` |
+| Security Fundamentals | 15% | 60% | `#16181D` | `#8A8578` |
+| IP Services | 10% | 40% | `#16181D` | `#8A8578` |
+| Automation & Programmability | 10% | 40% | `#16181D` | `#8A8578` |
+
+Все полосы одного цвета: разницу показывает длина, второй цвет добавлял бы ложное деление домена на «важные» и «второстепенные».
 
 #### 2.5 How (`id="how"`)
 
