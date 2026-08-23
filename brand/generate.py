@@ -9,6 +9,7 @@ the geometry is a change in one place:
     ccna-mobile/.../drawable/       adaptive-icon foreground, monochrome and splash layers
     ccna-mobile/.../mipmap-*dpi/    legacy raster launcher icons, square and round
     brand/play-store-512.png        store listing icon
+    ccna-exam-simulator/assets/icons/   the site's favicon and iOS home-screen icon
 
 Run `python3 brand/generate.py` from the repo root after editing anything here.
 Needs cairosvg (rasterising) — everything else is stdlib.
@@ -21,6 +22,7 @@ import cairosvg
 ROOT = Path(__file__).resolve().parent.parent
 BRAND = ROOT / "brand"
 RES = ROOT / "ccna-mobile" / "android" / "app" / "src" / "main" / "res"
+SITE_ICONS = ROOT / "ccna-exam-simulator" / "assets" / "icons"
 
 # ---------------------------------------------------------------- geometry --
 # Design-spec coordinates, viewBox 0 0 86 86 (design_handoff_netpath/README.md).
@@ -46,6 +48,11 @@ INSET = 0.20
 # 44.5, so its outer corners were being cut off: the first step lost its left edge and the
 # third its right. At 28% the half-diagonal is 32.7 and the whole mark clears the circle.
 SPLASH_INSET = 0.28
+
+# Nothing masks a favicon, and at 16px the launcher's 20% margin throws away a quarter of
+# the width the glyph has to work with — the three bars blur into one smudge. 14% keeps a
+# visible plate edge while leaving iOS room to round the home-screen icon's corners.
+FAVICON_INSET = 0.14
 
 
 def rounded_rect_path(x, y, w, h, r):
@@ -106,9 +113,9 @@ def mark_svg(colors, size=VIEWBOX):
     )
 
 
-def icon_svg(size, corner_ratio=None, circle=False, background=INK):
+def icon_svg(size, corner_ratio=None, circle=False, background=INK, inset=INSET):
     """Full launcher icon: background plate plus the inset glyph."""
-    steps = fitted_steps(canvas=size)
+    steps = fitted_steps(canvas=size, inset=inset)
     if circle:
         plate = f'<circle cx="{size / 2}" cy="{size / 2}" r="{size / 2}" fill="{background}"/>'
     elif corner_ratio:
@@ -209,10 +216,23 @@ def main():
     # Store listing: full-bleed square, no transparency, no baked rounding.
     png(icon_svg(512), BRAND / "play-store-512.png", 512)
 
+    # Site icons. These live under assets/ rather than the site root because the Pages
+    # workflow publishes index.html plus assets/, data/ and images/ and nothing else —
+    # index.html points at them explicitly, so their location is nobody's business but its.
+    favicon = icon_svg(64, corner_ratio=12 / 64, inset=FAVICON_INSET)
+    (SITE_ICONS / "favicon.svg").parent.mkdir(parents=True, exist_ok=True)
+    (SITE_ICONS / "favicon.svg").write_text(favicon)
+    # Fallback for the browsers that still ignore an SVG favicon (Safari, and anything
+    # older than 2020). 32px is the size Windows and retina tabs actually ask for.
+    png(favicon, SITE_ICONS / "favicon-32.png", 32)
+    # iOS home screen: no transparency, no rounding of our own — the system rounds it.
+    png(icon_svg(180, inset=FAVICON_INSET), SITE_ICONS / "apple-touch-icon.png", 180)
+
     # Legibility check at the documented 20px floor.
     png(mark_svg([INK, INK, GOLD]), BRAND / "checks" / "mark-20px.png", 20)
     png(icon_svg(176, corner_ratio=46 / 176), BRAND / "checks" / "icon-176.png", 176)
     png(icon_svg(176, circle=True), BRAND / "checks" / "icon-round-176.png", 176)
+    png(favicon, BRAND / "checks" / "favicon-16.png", 16)
 
     print("brand assets regenerated")
 
