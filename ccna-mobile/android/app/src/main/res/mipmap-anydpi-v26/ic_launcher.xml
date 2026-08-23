@@ -2,6 +2,7 @@
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@color/ic_launcher_background"/>
     <foreground android:drawable="@drawable/ic_launcher_foreground"/>
-    <!-- Themed icon on Android 13+: the launcher recolours this silhouette itself. -->
-    <monochrome android:drawable="@drawable/ic_launcher_foreground"/>
+    <!-- Themed icon on Android 13+: the launcher recolours this silhouette itself,
+         so it needs its own single-colour layer — the gold accent must not survive. -->
+    <monochrome android:drawable="@drawable/ic_launcher_monochrome"/>
 </adaptive-icon>

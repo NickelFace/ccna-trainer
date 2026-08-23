@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<!-- Overrides the names of the debug build only, so the launcher shows which of the two
-     installed apps is the test one. Same reason as applicationIdSuffix in build.gradle. -->
-<resources>
-    <string name="app_name">CCNA Trainer (test)</string>
-    <string name="title_activity_main">CCNA Trainer (test)</string>
-</resources>

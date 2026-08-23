@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- The app's page background, so the icon sits in the same palette as the app. -->
-    <color name="ic_launcher_background">#0e1013</color>
+    <!-- NetPath ink. Kept a flat colour layer of its own so no launcher mask
+         can slice into the mark sitting on top of it. -->
+    <color name="ic_launcher_background">#16181D</color>
 </resources>

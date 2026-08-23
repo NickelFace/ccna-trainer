@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
+<!-- app_name and title_activity_main are generated from appName in
+     capacitor.config.json — see resValue in app/build.gradle. -->
 <resources>
-    <string name="app_name">CCNA Trainer</string>
-    <string name="title_activity_main">CCNA Trainer</string>
     <string name="package_name">com.nickelface.ccnatrainer</string>
     <string name="custom_url_scheme">com.nickelface.ccnatrainer</string>
 </resources>
