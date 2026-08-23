@@ -12,6 +12,8 @@ import { Preferences } from '@capacitor/preferences';
 import { nextState, pruneGhosts } from '../engine/srs.js';
 import { dayKey, normalizeActivity } from '../engine/stats.js';
 import { isEmptyAnswer } from '../engine/grade.js';
+import { ACTIVITY_DAYS, bumpActivity, pruneActivity } from '../../../ccna-exam-simulator/assets/js/shared/activity.js';
+import { packBackup, isBackup } from '../../../ccna-exam-simulator/assets/js/shared/backup.js';
 
 const KEY = {
   profile: 'ccna.profile',
@@ -86,8 +88,6 @@ const read = async (key, fallback) => {
   }
 };
 
-const ACTIVITY_DAYS = 400;
-
 export const store = {
   profile: { ...DEFAULT_PROFILE },
   session: null,
@@ -150,13 +150,8 @@ export const store = {
   // updates the same way.
   recordAnswer(qn, correct, mode, now = Date.now()) {
     this.srs[qn] = nextState(this.srs[qn], correct, now);
-    const day = dayKey(now);
-    const bucket = this.activity[day] || { total: 0, wrong: 0, srs: 0 };
-    bucket.total++;
-    if (!correct) bucket.wrong++;
-    if (mode === 'srs') bucket.srs++;
-    this.activity[day] = bucket;
-    this._pruneActivity();
+    bumpActivity(this.activity, dayKey(now), correct, mode);
+    pruneActivity(this.activity, ACTIVITY_DAYS);
     this._touch('srs');
     this._touch('activity');
   },
@@ -175,14 +170,6 @@ export const store = {
     if (pruned === this.srs) return;
     this.srs = pruned;
     this._touch('srs');
-  },
-
-  // Keep the map from growing without bound; a year of history is more than the streak
-  // and the totals ever look at.
-  _pruneActivity() {
-    const keys = Object.keys(this.activity);
-    if (keys.length <= ACTIVITY_DAYS) return;
-    for (const k of keys.sort().slice(0, keys.length - ACTIVITY_DAYS)) delete this.activity[k];
   },
 
   // ---- session ----
@@ -248,24 +235,16 @@ export const store = {
   // and allowBackup is off, so SharedPreferences does not survive that on its own.
   // Everything the store owns goes in; restoring is meant to put the phone back exactly
   // where the export left it, onboarding included.
+  // The branch list is the shared `v:1` format (shared/backup.js) — the web trainer writes
+  // and reads the same file, so neither side may add a branch on its own.
   toBackup() {
-    return {
-      v: 1,
-      exportedAt: new Date().toISOString(),
-      profile: this.profile,
-      session: this.session,
-      attempts: this.attempts,
-      bookmarks: this.bookmarks,
-      srs: this.srs,
-      activity: this.activity,
-      book: this.book,
-    };
+    return packBackup(this);
   },
 
   // Defensive about shape, not just the version tag — a hand-edited or partially copied
   // file is a real way this arrives (the clipboard fallback exists for exactly that path).
   async restore(data) {
-    if (!data || typeof data !== 'object' || data.v !== 1) {
+    if (!isBackup(data)) {
       throw new Error('Файл не похож на резервную копию CCNA Trainer.');
     }
     this.profile = mergeProfile(data.profile);

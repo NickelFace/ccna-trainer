@@ -22,6 +22,9 @@ on:
       - "ccna-book/**"
       - "ccna-exam-simulator/data/**"
       - "ccna-exam-simulator/images/exhibits/**"
+      # The app bundles the rules it shares with the web trainer (srs, scale, activity,
+      # save format) straight from there — a fix in one of those files changes the APK.
+      - "ccna-exam-simulator/assets/js/shared/**"
       - ".github/workflows/android-release.yml"
   workflow_dispatch: {}
 

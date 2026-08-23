@@ -1,16 +1,12 @@
 // Scoring — lifted from finishExam() in app.js.
 //
-// Cisco reports 300..1000 with 825 to pass; the map from raw percentage is linear. The
-// rounding order matters and is preserved exactly: the percentage is rounded to a whole
-// number FIRST, and the scaled score is computed from that rounded value. 73/100 gives
-// pct 73 and scaled 811 — computing from the unrounded ratio would drift by a point.
+// The scale itself is shared with the web trainer (see the import below): both clients
+// file attempts into the same history, so a score computed on the phone and one computed
+// in the browser have to come out of the same formula.
 import { isCorrect } from './grade.js';
+import { PASS_SCALED, SCALE_MIN, SCALE_MAX, toScaled } from '../../../ccna-exam-simulator/assets/js/shared/score.js';
 
-export const PASS_SCALED = 825;
-export const SCALE_MIN = 300;
-export const SCALE_MAX = 1000;
-
-export const toScaled = pct => Math.round(SCALE_MIN + (pct / 100) * (SCALE_MAX - SCALE_MIN));
+export { PASS_SCALED, SCALE_MIN, SCALE_MAX, toScaled };
 
 // questions: the asked set. answers: { [q.n]: storedAnswer }. domains: meta.domains.
 // Returns { ok, pct, scaled, pass, perDomain, review } — review keeps the asked order so

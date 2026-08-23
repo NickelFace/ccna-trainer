@@ -5,6 +5,11 @@
 // instead of freezing yesterday's verdict into the history.
 import { isCorrect } from './grade.js';
 import { PASS_SCALED } from './score.js';
+import { dayKey, normalizeActivity } from '../../../ccna-exam-simulator/assets/js/shared/activity.js';
+
+// The day key and the day bucket are shared with the web trainer, which writes the same
+// activity map — see the shared module for the shape.
+export { dayKey, normalizeActivity };
 
 // Two different scales, two different thresholds — mixing them up paints a passing score
 // amber. Domain bars go by percentage (>=82 ok, 60..81 warn); the score itself goes by
@@ -89,25 +94,6 @@ export const mistakesOf = (attempt, byN) =>
 // `total` is every graded answer that day; `wrong` is how many of those were incorrect;
 // `srs` is how many came from a repetition session (startSrs) rather than practice or an
 // exam — the three numbers the "Сегодня" card on the Progress tab reports.
-
-// Local midnight, not UTC: a streak should break when the user's day does.
-export const dayKey = (ts = Date.now()) => {
-  const d = new Date(ts);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-};
-
-// Until 2026-08 a day was stored as a bare number (answers graded, nothing else) — this
-// turns whatever load() or restore() read into the current shape. wrong/srs default to 0
-// for a day recorded before they existed; there is no way to recover which answers those
-// were, and 0 is a truthful "unknown, treat as none" rather than a guess.
-export function normalizeActivity(raw) {
-  const obj = raw && typeof raw === 'object' ? raw : {};
-  const out = {};
-  for (const [day, v] of Object.entries(obj)) {
-    out[day] = typeof v === 'number' ? { total: v, wrong: 0, srs: 0 } : v;
-  }
-  return out;
-}
 
 // A single day's counters, defaulting to zero so callers never need an existence check.
 export const dayStats = (activity, ts = Date.now()) => {

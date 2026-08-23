@@ -2,8 +2,8 @@
 
 A self-contained, offline-first web app that simulates the Cisco **CCNA 200-301**
 certification exam using a verified 1395-question bank (1401 in the source dump,
-minus duplicates). No backend — static files
-only. [Russian version](README.ru.md).
+minus duplicates). No backend — static files only; progress is kept in the browser and
+moves between devices as a file. [Russian version](README.ru.md).
 
 ## Features
 
@@ -26,6 +26,13 @@ only. [Russian version](README.ru.md).
 - **Custom Exam** — filter by domain and question type (text / exhibit / drag-and-drop),
   pick question count and timer.
 - **Practice** — one question at a time, instant feedback.
+- **Progress** — every finished run is kept in `localStorage`: the attempt history is on
+  the home screen and on its own screen, and any attempt can be re-opened with its full
+  review. Graded answers also feed a spaced-repetition map and a daily counter, which is
+  what the Android app schedules repetitions from.
+- **Transfer** — export/import of the whole progress as one `v:1` JSON file, the same
+  format the [Android app](../ccna-mobile) reads and writes: export in the browser, open
+  it on the phone (Progress → Backup) — or the other way round. No account, no server.
 - **Per-option rationale** — every question with answer choices (1201/1201) explains
   why each option is right or wrong, not just the correct one. For multi-select
   ("choose N") questions, only the options where you actually erred (a wrong pick,
@@ -67,7 +74,10 @@ ccna-exam-simulator/
 ├── index.html
 ├── assets/
 │   ├── css/styles.css
-│   └── js/app.js               # engine: modes, rendering, drag-drop, rationale, scoring
+│   ├── js/app.js               # engine: modes, rendering, drag-drop, rationale, scoring
+│   ├── js/store.js             # progress in localStorage + the export/import file
+│   └── js/shared/              # the rules both clients share — the Android app imports
+│                               # these files directly (srs, activity, score, backup)
 ├── data/
 │   ├── questions.json          # question bank (exhibit images referenced by filename)
 │   └── meta.json                # domain blueprint + counts
@@ -127,6 +137,20 @@ Each question in `questions.json`:
   "dd": { "items": [...], "buckets": [{"label","correct":[...]}] } // drag-drop
 }
 ```
+
+## Progress and the shared rules
+
+`assets/js/shared/` holds what the browser and the phone must agree on: the Leitner
+intervals, the day counters, the 300..1000 scale, and the branch list of the save file.
+The web trainer loads them as ES modules; `ccna-mobile/src/engine/*` re-exports them and
+esbuild bundles them into the APK, so there is one implementation, not two copies that
+drift. `ccna-mobile/tests/interop.test.js` drives both stores and asserts each can restore
+what the other exported.
+
+Storage keys (`ccna.profile`, `ccna.attempts`, `ccna.srs`, `ccna.activity`, …) and the
+shape of an attempt are the Android app's, key for key. Branches this app has no screen
+for — bookmarks, textbook progress — are still carried through an import/export round trip
+untouched.
 
 ## Known follow-up work
 

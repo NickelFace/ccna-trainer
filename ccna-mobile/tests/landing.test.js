@@ -54,7 +54,7 @@ test('every mode CTA points at a mode the engine knows', () => {
 test('the advertised full exam matches what the engine actually starts', () => {
   const app = readFileSync(
     join(HERE, '..', '..', 'ccna-exam-simulator', 'assets', 'js', 'app.js'), 'utf8');
-  const call = app.match(/function startFullExam\(\)\s*\{[^}]*weightedPick\((\d+)\)[^}]*beginExam\(qs,\s*(\d+)\)/);
+  const call = app.match(/function startFullExam\(\)\s*\{[^}]*weightedPick\((\d+)\)[^}]*beginExam\(qs,\s*(\d+)[,)]/);
   assert.ok(call, 'startFullExam no longer looks the way this test reads it');
   assert.equal(exam.questions, Number(call[1]));
   assert.equal(exam.minutes, Number(call[2]));

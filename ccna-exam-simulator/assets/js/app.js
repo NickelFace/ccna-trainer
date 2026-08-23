@@ -13,6 +13,15 @@ const DATA_V = '9';                        // bump whenever questions.json/meta.
 let DATA = [], META = null, DOM = {};      // DOM: id -> {name,weight}
 let POOL = [];                             // scorable (txt/ex, + dd that are ready)
 let S = {};                                // active session state
+let BY_N = null;                           // question number -> question, built on first use
+
+// The progress store is an ES module (assets/js/store.js) — it has to be, it imports the
+// rules shared with the Android app — and this file is a classic script, so the two meet
+// on `window`. Every call goes through this handle rather than a bare global: with modules
+// or storage unavailable (an old browser, a file:// open) the trainer still runs, it just
+// forgets what happened.
+const P = () => window.Store || null;
+const byN = () => BY_N || (BY_N = new Map(DATA.map(q => [q.n, q])));
 
 // ============================ I18N ============================
 // UI-chrome translation. Default stays Russian (existing behaviour, untouched) —
@@ -168,6 +177,24 @@ const I18N = {
     by_domain: 'По доменам',
     badge_ok: 'верно',
     badge_wrong: 'ошибка',
+    hist_home_title: 'Мой прогресс',
+    hist_title: 'История попыток',
+    hist_none: 'Пока нет ни одной завершённой попытки. Пройди экзамен или тренировку — результат сохранится здесь, в этом браузере.',
+    hist_all: 'Вся история · {0}',
+    hist_open: 'разбор',
+    hist_delete: 'удалить',
+    hist_delete_confirm: 'Удалить эту попытку из истории?',
+    hist_mode_exam: 'Экзамен',
+    hist_mode_practice: 'Тренировка',
+    hist_unscored: 'без шкалы',
+    hist_minutes: '{0} мин',
+    hist_replay_note: 'Сохранённая попытка · {0}',
+    hist_export: 'Выгрузить прогресс',
+    hist_import: 'Загрузить из файла',
+    hist_transfer_note: 'Прогресс хранится в этом браузере. Файл выгрузки — тот же формат, что читает и пишет Android-приложение: выгрузи здесь, открой на телефоне (Прогресс → Резервная копия) — и наоборот.',
+    hist_import_replace: 'Импорт заменит весь прогресс в этом браузере: {0} попыток. Продолжить?',
+    hist_import_bad: 'Файл не похож на резервную копию CCNA Trainer.',
+    hist_imported: 'Прогресс загружен: попыток — {0}.',
   },
   en: {
     boot_loading: 'Loading the question bank…',
@@ -293,6 +320,24 @@ const I18N = {
     by_domain: 'By Domain',
     badge_ok: 'correct',
     badge_wrong: 'wrong',
+    hist_home_title: 'My progress',
+    hist_title: 'Attempt history',
+    hist_none: 'No finished attempts yet. Take an exam or a practice run — the result is kept here, in this browser.',
+    hist_all: 'Full history · {0}',
+    hist_open: 'review',
+    hist_delete: 'delete',
+    hist_delete_confirm: 'Delete this attempt from the history?',
+    hist_mode_exam: 'Exam',
+    hist_mode_practice: 'Practice',
+    hist_unscored: 'unscored',
+    hist_minutes: '{0} min',
+    hist_replay_note: 'Saved attempt · {0}',
+    hist_export: 'Export progress',
+    hist_import: 'Import from a file',
+    hist_transfer_note: 'Progress lives in this browser. The export file is the format the Android app reads and writes: export here, open it on the phone (Progress → Backup) — and the other way round.',
+    hist_import_replace: 'Importing replaces all progress in this browser: {0} attempts. Continue?',
+    hist_import_bad: 'That file is not a CCNA Trainer backup.',
+    hist_imported: 'Progress imported: {0} attempts.',
   },
 };
 const fmt = (s, ...vals) => s.replace(/\{(\d+)\}/g, (_, i) => vals[i] ?? '');
@@ -389,6 +434,8 @@ function home() {
     </button>
   </div>
 
+  ${homeProgressHTML()}
+
   <div class="sec">
     <h2>${t('home_domains_title')}</h2>
     ${META.domains.map(d => `
@@ -399,6 +446,7 @@ function home() {
   </div>
   <div class="sub">${t('home_dd_note', ddReady, ddTotal, META.sim_total)}<a class="link" href="#" onclick="browseSims();return false;">${t('home_sims_link')}</a>.</div>
   <div class="foot">${t('home_footer')}</div>`;
+  wireHistory(home);
 }
 
 // ============================ LAB SIMULATIONS (reference only) ============================
@@ -615,12 +663,15 @@ function weightedPick(total) {
 
 function startFullExam() {
   const qs = weightedPick(100);
-  beginExam(qs, 120);
+  beginExam(qs, 120, { preset: 'full', weighted: true });
 }
 function startCustomExam() {
   const n = +$('#cnt').value, mins = +$('#min').value;
   const qs = shuffle(domPool(false)).slice(0, n);
-  beginExam(qs, mins);
+  // Not `weighted`: a hand-picked pool is not the sample the 300..1000 scale describes, so
+  // the attempt is filed as one the score cannot be compared across. Same rule as startExam
+  // in the Android app.
+  beginExam(qs, mins, { preset: 'custom', weighted: false });
 }
 const maxQN = () => DATA.reduce((m, q) => Math.max(m, q.n), 0);
 
@@ -631,13 +682,13 @@ function startPractice() {
     const all = DATA.slice().sort((a, b) => a.n - b.n);
     const i = all.findIndex(q => q.n === jn);
     if (i < 0) { $('#qstart').value = ''; $('#qstart').placeholder = t('practice_no_question', jn); return; }
-    S = { mode: 'pr', qs: all, i, ans: {}, ok: 0, done: 0 };
+    S = { mode: 'pr', qs: all, i, ans: {}, ok: 0, done: 0, ...practiceRun() };
     return renderPractice();
   }
   let p = domPool(true);
   if ($('#shf').classList.contains('on')) p = shuffle(p);
   const c = +$('#cnt').value; if (c) p = p.slice(0, c);
-  S = { mode: 'pr', qs: p, i: 0, ans: {}, ok: 0, done: 0 };
+  S = { mode: 'pr', qs: p, i: 0, ans: {}, ok: 0, done: 0, ...practiceRun() };
   renderPractice();
 }
 
@@ -789,6 +840,212 @@ function rationale(q, given) {
   return h;
 }
 
+// ============================ PROGRESS & HISTORY ============================
+// Everything a finished run leaves behind. The store (assets/js/store.js) keeps it in the
+// same seven branches, under the same names and in the same shapes, as the Android app —
+// which is what makes the exported file interchangeable between the two.
+//
+// Nothing in here is allowed to break a run: if the store did not load, every call is a
+// no-op and the trainer behaves exactly as it did before it existed.
+
+// Cisco's 300..1000 scale, from the shared module when it is there. The fallback is the
+// same formula, kept only so a storeless page still prints a score.
+const toScaled = pct => { const st = P(); return st ? st.toScaled(pct) : Math.round(300 + (pct / 100) * 700); };
+const passMark = () => { const st = P(); return st ? st.PASS_SCALED : 825; };
+
+const attemptId = startedAt => { const st = P(); return st ? st.attemptId(startedAt) : `local-${startedAt}`; };
+
+// The two fields every practice run needs to be filed as an attempt later.
+const practiceRun = () => { const startedAt = Date.now(); return { startedAt, attemptId: attemptId(startedAt) }; };
+
+function recordAnswer(qn, ok, mode) {
+  const st = P();
+  if (st && !S.replay) st.recordAnswer(qn, ok, mode);
+}
+
+// Attempts carry the raw answers, not just the totals: the statistics on both clients are
+// recomputed from them, so a fix to the bank or to the grading rules reaches old attempts
+// instead of freezing yesterday's verdict into the history.
+function saveExamAttempt(rev, perDom, ok, pct, scaled) {
+  const st = P();
+  if (!st || S.replay) return;
+  // An exam withholds feedback until the end, so this is the first moment its answers can
+  // reach the repetition map. Unanswered questions score as wrong but were never seen, so
+  // they are not scheduled for repetition.
+  st.recordAnswers(rev.filter(r => S.ans[r.q.n] !== undefined).map(r => [r.q.n, r.good]), 'exam');
+  st.saveAttempt({
+    id: S.attemptId, date: Date.now(), mode: 'exam', preset: S.preset || null,
+    weighted: !!S.weighted, scaled, pct, ok, total: S.qs.length, perDomain: perDom,
+    durationMs: Date.now() - S.startedAt, answers: S.ans, qs: S.qs.map(q => q.n),
+  });
+}
+
+// Practice files only what was actually answered. The run can be the whole 1395-question
+// bank, and the unanswered rest are not wrong answers — counting them as such would drag
+// every topic statistic on both devices down to nothing.
+function savePracticeAttempt(rev) {
+  const st = P();
+  if (!st || S.replay || !rev.length) return;
+  const perDomain = {};
+  META.domains.forEach(d => perDomain[d.id] = { ok: 0, tot: 0 });
+  for (const { q, good } of rev) {
+    const d = perDomain[q.dom];
+    if (!d) continue;
+    d.tot++; if (good) d.ok++;
+  }
+  const ok = rev.filter(r => r.good).length;
+  const pct = Math.round(ok / rev.length * 100);
+  const answers = {};
+  for (const { q } of rev) answers[q.n] = S.ans[q.n];
+  // Same id every time: the review sheet is reachable mid-run, so finishing twice has to
+  // update one attempt rather than file a second one.
+  st.saveAttempt({
+    id: S.attemptId, date: Date.now(), mode: 'practice', preset: null, weighted: false,
+    scaled: toScaled(pct), pct, ok, total: rev.length, perDomain,
+    durationMs: Date.now() - S.startedAt, answers, qs: rev.map(r => r.q.n),
+  });
+}
+
+// ---- history ----
+const attrEsc = v => esc(v).replace(/"/g, '&quot;');
+
+const stampFull = ts => {
+  const d = new Date(ts);
+  const p2 = n => String(n).padStart(2, '0');
+  return `${p2(d.getDate())}.${p2(d.getMonth() + 1)}.${d.getFullYear()} ${p2(d.getHours())}:${p2(d.getMinutes())}`;
+};
+
+// The scale is only meaningful for a blueprint-weighted exam — see startCustomExam. Every
+// other attempt shows what it honestly has: how many were right.
+const attemptScore = a => a.weighted
+  ? `<span class="hs-val">${a.scaled}</span><span class="hs-of">/ 1000</span>`
+  : `<span class="hs-val">${a.pct}%</span><span class="hs-of">${t('hist_unscored')}</span>`;
+
+function attemptRowHTML(a) {
+  const mins = Math.max(1, Math.round((a.durationMs || 0) / 60000));
+  const kind = a.mode === 'practice' ? t('hist_mode_practice') : t('hist_mode_exam');
+  return `<div class="hist-row">
+    <div class="hist-when">${esc(stampFull(a.date))}</div>
+    <div class="hist-what">${esc(kind)} · ${t('correct_pct', a.ok, a.total, a.pct)} · ${t('hist_minutes', mins)}</div>
+    <div class="hist-score ${a.weighted && a.scaled >= passMark() ? 'pass' : ''}">${attemptScore(a)}</div>
+    <button class="btn sm" data-open="${attrEsc(a.id)}">${t('hist_open')}</button>
+    <button class="btn sm" data-del="${attrEsc(a.id)}" title="${t('hist_delete')}" aria-label="${t('hist_delete')}">✕</button>
+  </div>`;
+}
+
+// Wired after innerHTML rather than through inline onclick: an attempt id can come from an
+// imported file, and nothing that arrives in a file belongs in an HTML attribute handler.
+function wireHistory(rerender) {
+  document.querySelectorAll('[data-open]').forEach(b => b.onclick = () => openAttempt(b.dataset.open));
+  document.querySelectorAll('[data-del]').forEach(b => b.onclick = () => {
+    if (!confirm(t('hist_delete_confirm'))) return;
+    const st = P(); if (st) st.deleteAttempt(b.dataset.del);
+    rerender();
+  });
+}
+
+const transferRowHTML = () => `<div class="row">
+  <button class="btn sm" onclick="exportProgress()">${t('hist_export')}</button>
+  <button class="btn sm" onclick="importProgress()">${t('hist_import')}</button>
+</div>`;
+
+// The home screen shows the three most recent attempts; the rest are one click away.
+function homeProgressHTML() {
+  const st = P();
+  if (!st) return '';
+  const all = st.recentAttempts();
+  return `<div class="sec">
+    <h2>${t('hist_home_title')}</h2>
+    ${all.length ? `<div class="hist">${all.slice(0, 3).map(attemptRowHTML).join('')}</div>` : `<div class="exp muted">${t('hist_none')}</div>`}
+    <div class="row">
+      ${all.length > 3 ? `<button class="btn sm" onclick="historyScreen()">${t('hist_all', all.length)}</button>` : ''}
+      <button class="btn sm" onclick="exportProgress()">${t('hist_export')}</button>
+      <button class="btn sm" onclick="importProgress()">${t('hist_import')}</button>
+    </div>
+  </div>`;
+}
+
+function historyScreen() {
+  SCREEN = historyScreen;
+  const st = P();
+  const all = st ? st.recentAttempts() : [];
+  app().innerHTML = `<h1>${t('hist_title')}</h1>
+    <div class="sub">${t('hist_transfer_note')}</div>
+    ${transferRowHTML()}
+    <div class="sec">${all.length ? `<div class="hist">${all.map(attemptRowHTML).join('')}</div>` : `<div class="exp muted">${t('hist_none')}</div>`}</div>
+    <div class="nav"><button class="btn" onclick="home()">${t('nav_home')}</button></div>`;
+  wireHistory(historyScreen);
+  window.scrollTo(0, 0);
+}
+
+// Re-open a stored attempt on the screen it was first shown on. Questions the bank no
+// longer has (or never had — the file may come from a phone on another build) drop out of
+// the review; the totals in the header stay the ones the attempt was scored with.
+function openAttempt(id) {
+  const st = P();
+  const a = st ? st.attemptById(id) : null;
+  if (!a) return;
+  const qs = (a.qs || []).map(n => byN().get(n)).filter(Boolean);
+  // A copy: `S.ans` is what the answer handlers write into, and nothing looking at an old
+  // result may edit the stored attempt. `ex-done` for the same reason — it is not `ex`, so
+  // the arrow keys cannot walk a finished attempt back into the exam screen.
+  const ans = { ...(a.answers || {}) };
+  const rev = qs.map(q => ({ q, good: isCorrect(q, ans[q.n]) }));
+  S = { mode: a.mode === 'practice' ? 'pr-done' : 'ex-done', qs, i: 0, ans, flags: new Set(),
+    replay: true, attempt: a, reviewFilter: rev.some(r => !r.good) ? 'bad' : 'all' };
+  if (a.mode === 'practice') {
+    S.result = { rev, ok: rev.filter(r => r.good).length };
+    renderPracticeResults();
+  } else {
+    S.result = { rev, perDom: a.perDomain || {}, ok: a.ok, pct: a.pct, scaled: a.scaled,
+      pass: a.scaled >= passMark(), total: a.total };
+    renderResults();
+  }
+}
+
+const replayNote = () => S.replay && S.attempt
+  ? `<div class="exp muted">${t('hist_replay_note', esc(stampFull(S.attempt.date)))}</div>` : '';
+
+// ---- transfer ----
+// A plain download and a plain file picker: the same v:1 JSON the phone hands to the
+// Android share sheet, no server in between. That is variant A of the sync plan, and it
+// already answers "I passed a test on the site and want it on my phone".
+function exportProgress() {
+  const st = P(); if (!st) return;
+  const json = JSON.stringify(st.toBackup(), null, 2);
+  const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `ccna-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function importProgress() {
+  const st = P(); if (!st) return;
+  if (st.attempts.length && !confirm(t('hist_import_replace', st.attempts.length))) return;
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'application/json,.json';
+  input.onchange = () => {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      let data;
+      try { data = JSON.parse(reader.result); } catch { alert(t('hist_import_bad')); return; }
+      try { st.restore(data); } catch { alert(t('hist_import_bad')); return; }
+      alert(t('hist_imported', st.attempts.length));
+      historyScreen();
+    };
+    reader.onerror = () => alert(t('hist_import_bad'));
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
 // ============================ SHARE FOR AI ============================
 // Plain-text rendering of a question (+ the user's answer, if any) — meant to be
 // pasted into an AI chat to get an independent explanation. Deliberately omits
@@ -902,11 +1159,15 @@ function renderPractice() {
 }
 function grade(q, given) {
   const ok = given.join('') === q.a.split('').sort().join('');
-  S.ans[q.n] = { given, ok }; S.done++; if (ok) S.ok++; renderPractice();
+  S.ans[q.n] = { given, ok }; S.done++; if (ok) S.ok++;
+  recordAnswer(q.n, ok, 'practice');
+  renderPractice();
 }
 function gradeDD(q, placement) {
   const ok = ddCorrect(q, placement);
-  S.ans[q.n] = { placement, ok }; S.done++; if (ok) S.ok++; renderPractice();
+  S.ans[q.n] = { placement, ok }; S.done++; if (ok) S.ok++;
+  recordAnswer(q.n, ok, 'practice');
+  renderPractice();
 }
 function pMove(d) {
   const n = S.i + d;
@@ -920,6 +1181,7 @@ function finishPractice() {
   S.result = { rev, ok: rev.filter(r => r.good).length };
   S.reviewFilter = rev.some(r => !r.good) ? 'bad' : 'all';
   S.mode = 'pr-done';
+  savePracticeAttempt(rev);
   renderPracticeResults();
 }
 function renderPracticeResults() {
@@ -927,10 +1189,10 @@ function renderPracticeResults() {
   const { rev, ok } = S.result;
   const nBad = rev.filter(r => !r.good).length, nOk = rev.length - nBad;
   const pct = rev.length ? Math.round(ok / rev.length * 100) : 0;
-  let h = `<h1>${t('practice_results_title')}</h1><div class="card">
+  let h = `<h1>${t('practice_results_title')}</h1>${replayNote()}<div class="card">
     <div class="center sub">${t('answered_pct', ok, rev.length, pct)}</div>
     <div class="nav center" style="justify-content:center"><button class="btn" onclick="home()">${t('nav_home')}</button>
-      <button class="btn primary" onclick="S.i=S.qs.findIndex(q=>S.ans[q.n]===undefined);if(S.i<0)S.i=0;renderPractice()">${t('continue_practice')}</button></div>
+      ${S.replay ? '' : `<button class="btn primary" onclick="S.i=S.qs.findIndex(q=>S.ans[q.n]===undefined);if(S.i<0)S.i=0;renderPractice()">${t('continue_practice')}</button>`}</div>
   </div>
   <div class="sec"><h2>${t('review_title')}</h2><div class="row">
     <span class="chip ${S.reviewFilter === 'bad' ? 'on' : ''}" onclick="setReviewFilter('bad')">${t('filter_errors')}<span class="c">${nBad}</span></span>
@@ -1095,9 +1357,11 @@ function ddCorrect(q, placement) {
 }
 
 // ============================ EXAM ============================
-function beginExam(qs, mins) {
+function beginExam(qs, mins, { preset = 'custom', weighted = false } = {}) {
   if (!qs.length) { alert(t('no_questions_filtered')); return; }
-  S = { mode: 'ex', qs, i: 0, ans: {}, flags: new Set(), end: mins ? Date.now() + mins * 60000 : 0, tid: null };
+  const startedAt = Date.now();
+  S = { mode: 'ex', qs, i: 0, ans: {}, flags: new Set(), end: mins ? startedAt + mins * 60000 : 0, tid: null,
+    preset, weighted, startedAt, attemptId: attemptId(startedAt) };
   if (S.end) S.tid = setInterval(tick, 1000);
   renderExam();
 }
@@ -1201,10 +1465,12 @@ function finishExam() {
     rev.push({ q, good });
   }
   const pct = Math.round(ok / S.qs.length * 100);
-  // Cisco scales 300..1000, pass 825. Approximate linear map from raw %.
-  const scaled = Math.round(300 + (pct / 100) * 700);
-  const pass = scaled >= 825;
-  S.result = { rev, perDom, ok, pct, scaled, pass };
+  // Cisco scales 300..1000, pass 825. The map lives in shared/score.js so the phone and the
+  // browser cannot report two different scores for the same answers.
+  const scaled = toScaled(pct);
+  const pass = scaled >= passMark();
+  S.result = { rev, perDom, ok, pct, scaled, pass, total: S.qs.length };
+  saveExamAttempt(rev, perDom, ok, pct, scaled);
   // Default to "работа над ошибками" — jump straight to what needs fixing.
   S.reviewFilter = rev.some(r => !r.good) ? 'bad' : 'all';
   renderResults();
@@ -1214,8 +1480,11 @@ function renderResults() {
   SCREEN = renderResults;
   const { rev, perDom, ok, pct, scaled, pass } = S.result;
   const nBad = rev.filter(r => !r.good).length, nOk = rev.length - nBad;
+  // A replayed attempt can have fewer questions on screen than it was scored on — the bank
+  // may have dropped one since, or the file came from a phone on another build.
+  const total = S.result.total || rev.length;
 
-  let h = `<div class="score-panel">
+  let h = `${replayNote()}<div class="score-panel">
     <div class="score-main">
       <span class="score-kicker">${t('results_kicker')}</span>
       <div class="score-line"><span class="big-score">${scaled}</span><span class="score-of">${t('results_of')}</span></div>
@@ -1223,7 +1492,7 @@ function renderResults() {
     </div>
     <div class="score-side">
       <span class="score-badge ${pass ? 'pass' : 'fail'}">${pass ? t('pass_badge') : t('fail_badge')}</span>
-      <span class="score-pct">${t('correct_pct', ok, rev.length, pct)}</span>
+      <span class="score-pct">${t('correct_pct', ok, total, pct)}</span>
     </div>
   </div>
   <div class="nav"><button class="btn" onclick="home()">${t('nav_home')}</button>
@@ -1231,7 +1500,7 @@ function renderResults() {
     <button class="btn primary" onclick="startFullExam()">${t('another_exam')}</button></div>
   <div class="sec"><h2>${t('by_domain')}</h2>`;
   META.domains.forEach(d => {
-    const p = perDom[d.id]; if (!p.tot) return;
+    const p = perDom[d.id]; if (!p || !p.tot) return;
     const pc = Math.round(p.ok / p.tot * 100);
     // The one place a bar's colour means something: it is about your result, not about how
     // much the domain weighs. 80 and 60 are the thresholds the spec names.
@@ -1295,5 +1564,5 @@ document.addEventListener('keydown', e => {
 });
 
 // expose for inline onclick
-Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter, setLang, applyLang, openMode, segPick });
+Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter, setLang, applyLang, openMode, segPick, historyScreen, openAttempt, exportProgress, importProgress });
 window.addEventListener('DOMContentLoaded', route);

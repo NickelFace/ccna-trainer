@@ -441,6 +441,29 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .sim-guide-b p{margin:4px 0;color:var(--grey-text);font-size:13px}
 .sim-guide-b li{color:var(--grey-text);font-size:12.5px}
 
+/* attempt history — one row per finished run, on the home screen and its own screen */
+.hist{display:flex;flex-direction:column;gap:9px}
+.hist-row{display:grid;grid-template-columns:auto 1fr auto auto auto;align-items:center;gap:12px;
+  background:var(--cream);border:1px solid var(--edge);border-radius:13px;padding:12px 15px}
+.hist-row:hover{border-color:var(--edge-strong)}
+.hist-when{font-family:var(--num);font-size:13px;font-weight:700;color:var(--ink);white-space:nowrap}
+.hist-what{font-size:13px;font-weight:600;color:var(--grey-text)}
+.hist-score{display:flex;align-items:baseline;gap:5px;white-space:nowrap}
+.hist-score .hs-val{font-family:var(--num);font-size:19px;font-weight:700;color:var(--ink)}
+.hist-score.pass .hs-val{color:var(--teal-text)}
+.hist-score .hs-of{font-size:11px;font-weight:600;color:var(--grey-text)}
+
+@media(max-width:640px){
+  /* Three lines instead of five columns: the date and the score, then what the run was,
+     then the buttons — with "delete" pushed to the far edge, away from "review". */
+  .hist-row{display:flex;flex-wrap:wrap;gap:9px 12px}
+  .hist-when{order:1}
+  .hist-score{order:2;margin-left:auto}
+  .hist-what{order:3;flex:1 1 100%}
+  .hist-row .btn.sm{order:4}
+  .hist-row .btn.sm:last-child{margin-left:auto}
+}
+
 /* The language pill has nowhere to float that is not on top of the sticky strip once the
    window is narrower than the column plus its margins. Let it scroll away with the page. */
 @media (max-width:900px){
