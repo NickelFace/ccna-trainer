@@ -174,7 +174,8 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--ink);outline-of
    The strip at the top of an attempt. Dark means exam (there is a timer, nothing is
    explained yet); light means practice (there is a score, every answer is explained). */
 .chrome{
-  display:flex;align-items:center;gap:18px;
+  position:sticky;top:0;z-index:20;
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
   padding:13px 22px;border-radius:14px;background:var(--cream-warm);color:var(--ink);
 }
 .chrome.dark{background:var(--ink);color:var(--cream-light)}
@@ -188,7 +189,8 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--ink);outline-of
 .chrome-x:hover{background:rgba(22,24,29,.14)}
 .chrome.dark .chrome-x:hover{background:rgba(247,244,238,.18)}
 
-.chrome-progress{flex:1;display:flex;align-items:center;gap:11px}
+.chrome-exit{flex:none;white-space:nowrap}
+.chrome-progress{flex:1;min-width:120px;display:flex;align-items:center;gap:11px}
 .chrome-bar{flex:1;height:5px;border-radius:3px;background:rgba(22,24,29,.12);overflow:hidden}
 .chrome.dark .chrome-bar{background:rgba(247,244,238,.14)}
 .chrome-bar i{display:block;height:100%;background:var(--gold);transition:width .3s ease}
@@ -388,7 +390,6 @@ details.cli-wrap summary:hover{color:var(--ink)}
   font-family:var(--mono);font-size:13px;color:var(--ink);cursor:grab;user-select:none;
   overflow-wrap:anywhere;
   transition:border-color .12s,box-shadow .12s,transform .12s}
-.dd-bank .dd-item:first-child{transform:rotate(-1.2deg);box-shadow:0 8px 18px -12px rgba(22,24,29,.5)}
 .dd-item:hover{border-color:var(--edge-strong)}
 .dd-item.dragging{opacity:.4}
 /* Tap-to-place on a phone: pick the element, then the slot. The picked state has to be
@@ -428,11 +429,14 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .sim-guide-b p{margin:4px 0;color:var(--grey-text);font-size:13px}
 .sim-guide-b li{color:var(--grey-text);font-size:12.5px}
 
-@media (max-width:560px){
-  /* On a phone the language switch has nowhere to float that is not on top of something —
-     it was sitting over the timer. Let it scroll away with the page instead, and start the
-     content below it. */
+/* The language pill has nowhere to float that is not on top of the sticky strip once the
+   window is narrower than the column plus its margins. Let it scroll away with the page. */
+@media (max-width:900px){
   .lang-switch{position:absolute}
+  .wrap{padding-top:64px}
+}
+
+@media (max-width:560px){
   .wrap{padding:64px 16px 72px;gap:22px}
   h1{font-size:32px}
   h2{font-size:26px}

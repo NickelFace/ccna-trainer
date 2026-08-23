@@ -846,7 +846,7 @@ function renderPractice() {
   SCREEN = renderPractice;
   const q = S.qs[S.i]; if (!q) return home();
   const st = S.ans[q.n];
-  let h = chrome(false, `<button class="chrome-x" onclick="home()">✕</button>
+  let h = chrome(false, `<button class="btn sm chrome-exit" onclick="home()">${t('nav_exit')}</button>
     ${chromeProgress(S.i, S.qs.length)}
     <span class="chrome-score"><span class="ok">${S.ok}</span>✓ <span class="bad">${S.done - S.ok}</span>✗</span>`)
     + `<div class="row">
@@ -1107,7 +1107,8 @@ function tick() {
 function renderExam() {
   SCREEN = renderExam;
   const q = S.qs[S.i], multi = q.y !== 'dd' && q.a.length > 1, cur = S.ans[q.n];
-  let h = chrome(true, `<button class="chrome-x" onclick="if(confirm('${t('exit_confirm')}'))home()">✕</button>
+  let h = chrome(true, `<button class="chrome-x" onclick="if(confirm('${t('exit_confirm')}'))home()"
+      title="${t('nav_exit')}" aria-label="${t('nav_exit')}">✕</button>
     ${chromeProgress(S.i, S.qs.length)}
     ${S.end ? `<span class="timer" id="timer">${CLOCK_ICON}<span>--:--</span></span>` : ''}`);
   h += `<div class="card">${qBadges(q)}${exhibit(q)}<div class="qtext">${esc(q.t)}</div>${cliBlock(q.cli)}`;
