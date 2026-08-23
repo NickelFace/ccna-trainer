@@ -155,6 +155,9 @@ const I18N = {
     no_errors: 'Ошибок нет — можно выдохнуть 🎉',
     no_questions: 'Нет вопросов.',
     no_correct: 'Верных ответов нет.',
+    dd_no_why: 'Для вопросов на сопоставление пояснений в банке нет — здесь только правильное распределение.',
+    results_kicker: 'Результат',
+    results_of: '/ 1000',
     results_title: 'Результат',
     scale_note: 'шкала 300–1000 · порог 825',
     correct_pct: '{0} из {1} верно ({2}%)',
@@ -276,6 +279,9 @@ const I18N = {
     no_errors: 'No errors — nice work 🎉',
     no_questions: 'No questions.',
     no_correct: 'No correct answers.',
+    dd_no_why: 'The bank carries no rationale for matching questions — this is the correct placement, nothing more.',
+    results_kicker: 'Result',
+    results_of: '/ 1000',
     results_title: 'Result',
     scale_note: 'scale 300–1000 · pass 825',
     correct_pct: '{0} of {1} correct ({2}%)',
@@ -623,6 +629,32 @@ function startPractice() {
   renderPractice();
 }
 
+// An answer option is set in the monospace face only when it actually is a command. In this
+// bank 1172 of the 5000 options are — a pasted prompt, a multi-line config block, or a
+// lowercase config line — and the other 3828 are English sentences that read worse in mono.
+// Strong marks (a prompt, a mode banner, a line break) settle it on their own; otherwise the
+// text also has to not look like a sentence.
+const CMD_STRONG = /\n|#|\(config/;
+const CMD_WEAK = /\b\d{1,3}(\.\d{1,3}){3}\b|\/\d{1,2}\b/;
+const CMD_HEAD = /^(ip|ipv6|interface|router|switchport|no|show|access-list|line|spanning-tree|standby|vlan|username|crypto|snmp-server|ntp|banner|enable|service|channel-group|description|duplex|speed|shutdown|hostname|logging|aaa|clock|key|password|permit|deny|network|encapsulation|passive-interface|default-gateway)\s/;
+const isCommand = txt => {
+  const v = String(txt || '').trim();
+  return CMD_STRONG.test(v) ||
+    (!/^[A-Z][a-z]/.test(v) && !/[.!?]$/.test(v) && (CMD_WEAK.test(v) || CMD_HEAD.test(v)));
+};
+
+// The letter in the circle becomes a verdict once the question is graded.
+const TICK = `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const CROSS = `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/></svg>`;
+
+// One answer option, in whichever of its four states applies.
+function optHTML(k, text, { cls = '', disabled = false } = {}) {
+  const mark = cls.includes('correct') ? TICK : cls.includes('wrong') ? CROSS : esc(k);
+  return `<button class="opt ${cls}" data-k="${k}"${disabled ? ' disabled' : ''}>` +
+    `<span class="k">${mark}</span>` +
+    `<span class="${isCommand(text) ? 'cmd' : ''}">${esc(text)}</span></button>`;
+}
+
 // ============================ CHROME ============================
 // One strip at the top of every attempt screen, and its colour is the mode: the exam is dark
 // and carries a timer, practice is light and carries the running score. That is worth more
@@ -827,9 +859,9 @@ function renderPractice() {
     const multi = q.a.length > 1;
     h += `<div class="opts">`;
     for (const k of Object.keys(q.o)) {
-      let cls = 'opt', dis = '';
-      if (st) { dis = 'disabled'; if (q.a.includes(k)) cls += ' correct'; else if (st.given.includes(k)) cls += ' wrong'; }
-      h += `<button class="${cls}" data-k="${k}" ${dis}><span class="k">${k}</span><span>${esc(q.o[k])}</span></button>`;
+      let cls = '';
+      if (st) { if (q.a.includes(k)) cls = 'correct'; else if (st.given.includes(k)) cls = 'wrong'; }
+      h += optHTML(k, q.o[k], { cls, disabled: !!st });
     }
     h += `</div>`;
     if (multi && !st) h += `<button class="btn primary" id="chk" style="margin-top:12px">${t('dd_check')}</button>`;
@@ -888,14 +920,14 @@ function renderPracticeResults() {
     <div class="nav center" style="justify-content:center"><button class="btn" onclick="home()">${t('nav_home')}</button>
       <button class="btn primary" onclick="S.i=S.qs.findIndex(q=>S.ans[q.n]===undefined);if(S.i<0)S.i=0;renderPractice()">${t('continue_practice')}</button></div>
   </div>
-  <h2>${t('review_title')}</h2><div class="row" style="margin-bottom:14px">
+  <div class="sec"><h2>${t('review_title')}</h2><div class="row">
     <span class="chip ${S.reviewFilter === 'bad' ? 'on' : ''}" onclick="setReviewFilter('bad')">${t('filter_errors')}<span class="c">${nBad}</span></span>
     <span class="chip ${S.reviewFilter === 'all' ? 'on' : ''}" onclick="setReviewFilter('all')">${t('filter_all')}<span class="c">${rev.length}</span></span>
     <span class="chip ${S.reviewFilter === 'ok' ? 'on' : ''}" onclick="setReviewFilter('ok')">${t('filter_correct')}<span class="c">${nOk}</span></span>
     ${nBad ? `<div class="spacer"></div><button class="btn" onclick="copyMistakes(this)">${t('copy_mistakes')}</button>` : ''}
-  </div>`;
+  </div></div>`;
   const shown = rev.filter(r => S.reviewFilter === 'all' || (S.reviewFilter === 'bad' ? !r.good : r.good));
-  if (!shown.length) h += `<div class="exp muted">${S.reviewFilter === 'bad' ? t('no_errors') : t('no_questions')}</div>`;
+  if (!shown.length) h += emptyReview();
   for (const { q, good } of shown) h += reviewItemHTML(q, good, S.ans[q.n]);
   app().innerHTML = h; window.scrollTo(0, 0);
 }
@@ -1043,7 +1075,7 @@ function renderExam() {
     const sel = cur && cur.given ? cur.given : [];
     h += `<div class="opts">`;
     for (const k of Object.keys(q.o))
-      h += `<button class="opt ${sel.includes(k) ? 'sel' : ''}" data-k="${k}"><span class="k">${k}</span><span>${esc(q.o[k])}</span></button>`;
+      h += optHTML(k, q.o[k], { cls: sel.includes(k) ? 'sel' : '' });
     h += `</div>`;
   }
 
@@ -1134,22 +1166,31 @@ function renderResults() {
   const { rev, perDom, ok, pct, scaled, pass } = S.result;
   const nBad = rev.filter(r => !r.good).length, nOk = rev.length - nBad;
 
-  let h = `<h1>${t('results_title')}</h1><div class="card">
-    <div class="big-score ${pass ? 'pass' : 'fail'}">${scaled}</div>
-    <div class="scaled">${t('scale_note')}</div>
-    <div class="center sub">${t('correct_pct', ok, rev.length, pct)} · ${pass ? `<span class="pass">${t('pass_badge')}</span>` : `<span class="fail">${t('fail_badge')}</span>`}</div>
-    <div class="nav center" style="justify-content:center"><button class="btn" onclick="home()">${t('nav_home')}</button>
-      <button class="btn primary" onclick="startFullExam()">${t('another_exam')}</button></div>
+  let h = `<div class="score-panel">
+    <div class="score-main">
+      <span class="score-kicker">${t('results_kicker')}</span>
+      <div class="score-line"><span class="big-score">${scaled}</span><span class="score-of">${t('results_of')}</span></div>
+      <span class="scaled">${t('scale_note')}</span>
+    </div>
+    <div class="score-side">
+      <span class="score-badge ${pass ? 'pass' : 'fail'}">${pass ? t('pass_badge') : t('fail_badge')}</span>
+      <span class="score-pct">${t('correct_pct', ok, rev.length, pct)}</span>
+    </div>
   </div>
-  <h2>${t('by_domain')}</h2><div class="card">`;
+  <div class="nav"><button class="btn" onclick="home()">${t('nav_home')}</button>
+    <div class="spacer"></div>
+    <button class="btn primary" onclick="startFullExam()">${t('another_exam')}</button></div>
+  <div class="sec"><h2>${t('by_domain')}</h2>`;
   META.domains.forEach(d => {
     const p = perDom[d.id]; if (!p.tot) return;
     const pc = Math.round(p.ok / p.tot * 100);
-    const cls = pc >= 82 ? 'g' : pc >= 60 ? 'a' : 'r';
-    h += `<div class="dbar"><div class="top"><span class="nm">${esc(domShort(d.id))}</span><span class="vl">${p.ok}/${p.tot} · ${pc}%</span></div>
+    // The one place a bar's colour means something: it is about your result, not about how
+    // much the domain weighs. 80 and 60 are the thresholds the spec names.
+    const cls = pc >= 80 ? 'g' : pc >= 60 ? 'a' : 'r';
+    h += `<div class="dbar"><div class="top"><span class="nm">${esc(domShort(d.id))}</span><span class="vl ${cls}">${p.ok} / ${p.tot} · ${pc}%</span></div>
       <div class="track"><div class="fill ${cls}" style="width:${pc}%"></div></div></div>`;
   });
-  h += `</div><h2>${t('review_title')}</h2><div class="row" style="margin-bottom:14px">
+  h += `</div><div class="sec"><h2>${t('review_title')}</h2><div class="row">
     <span class="chip ${S.reviewFilter === 'bad' ? 'on' : ''}" onclick="setReviewFilter('bad')">${t('filter_errors')}<span class="c">${nBad}</span></span>
     <span class="chip ${S.reviewFilter === 'all' ? 'on' : ''}" onclick="setReviewFilter('all')">${t('filter_all')}<span class="c">${rev.length}</span></span>
     <span class="chip ${S.reviewFilter === 'ok' ? 'on' : ''}" onclick="setReviewFilter('ok')">${t('filter_correct')}<span class="c">${nOk}</span></span>
@@ -1157,10 +1198,17 @@ function renderResults() {
   </div>`;
 
   const shown = rev.filter(r => S.reviewFilter === 'all' || (S.reviewFilter === 'bad' ? !r.good : r.good));
-  if (!shown.length) h += `<div class="exp muted">${S.reviewFilter === 'bad' ? t('no_errors') : t('no_correct')}</div>`;
+  if (!shown.length) h += emptyReview();
   for (const { q, good } of shown) h += reviewItemHTML(q, good, S.ans[q.n]);
   app().innerHTML = h; window.scrollTo(0, 0);
 }
+// Each filter deserves the sentence that fits it: "no errors" is good news, "no correct
+// answers" is not, and "no questions" is neither.
+function emptyReview() {
+  const k = S.reviewFilter === 'bad' ? 'no_errors' : S.reviewFilter === 'ok' ? 'no_correct' : 'no_questions';
+  return `<div class="exp muted">${t(k)}</div>`;
+}
+
 // Shared by exam results and practice results: one reviewed question, with a
 // per-question "copy for AI" button alongside the built-in rationale.
 function reviewItemHTML(q, good, ans) {
@@ -1183,7 +1231,7 @@ function ddReview(q, ans) {
     });
     h += `</div></div>`;
   });
-  return h + `</div></div>`;
+  return h + `</div></div><div class="exp muted">${t('dd_no_why')}</div>`;
 }
 
 // Arrow keys move between questions in practice/exam, matching the on-screen ← пред / след → buttons.

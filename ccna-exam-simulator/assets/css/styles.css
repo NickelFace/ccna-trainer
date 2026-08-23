@@ -30,6 +30,8 @@
 
   /* Accent hues walked down until they read as text on a light ground — see netpath.css. */
   --gold-text:#846827; --teal-text:#2A7266;
+  /* And the mirror image: teal and red are too dark to read on the ink panel. */
+  --teal-on-dark:#7FD4C1; --red-on-dark:#E4B2AD;
 
   --serif:'Playfair Display',Georgia,'Times New Roman',serif;
   --ui:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
@@ -244,15 +246,21 @@ details.cli-wrap summary:hover{color:var(--ink)}
   border:1.5px solid var(--edge-strong);color:var(--grey);
   font-family:var(--num);font-size:12px;font-weight:700;
 }
-.opt span:last-child{white-space:pre-wrap;font-family:var(--mono);font-size:14px;color:var(--grey-text)}
+.opt span:last-child{white-space:pre-wrap;font-size:15px;color:var(--grey-text)}
+.opt span.cmd{font-family:var(--mono);font-size:14px}
+.opt .k svg{width:12px;height:12px}
 .opt.sel{background:var(--ink);border-color:var(--ink)}
 .opt.sel .k{background:var(--gold);border-color:var(--gold);color:var(--ink)}
 .opt.sel span:last-child{color:var(--cream-light)}
 .opt.correct{border-color:var(--teal);background:rgba(46,125,111,.09)}
-.opt.correct .k{background:var(--teal);border-color:var(--teal);color:var(--cream-light)}
+.opt.correct{border-width:1.5px}
+.opt.correct .k{background:var(--teal);border-color:var(--teal);color:var(--cream)}
+.opt.correct span:last-child{font-weight:700}
 .opt.correct span:last-child{color:var(--ink)}
 .opt.wrong{border-color:var(--red);background:rgba(179,69,58,.08)}
-.opt.wrong .k{background:var(--red);border-color:var(--red);color:var(--cream-light)}
+.opt.wrong{border-width:1.5px}
+.opt.wrong .k{background:var(--red);border-color:var(--red);color:var(--cream)}
+.opt.wrong span:last-child{font-weight:600}
 .opt.wrong span:last-child{color:var(--ink)}
 .opt:disabled{cursor:default}
 .opt:disabled:not(.sel):not(.correct):not(.wrong){opacity:.5}
@@ -324,9 +332,23 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .cell.flagged{background:rgba(201,162,74,.22);border-color:rgba(201,162,74,.6);color:var(--ink)}
 .cell.cur{background:var(--gold);border-color:var(--gold);color:var(--ink);box-shadow:0 0 0 2px rgba(201,162,74,.35)}
 
-/* score report */
-.big-score{font-family:var(--num);font-size:68px;font-weight:700;text-align:center;margin:8px 0 2px;color:var(--gold)}
-.scaled{text-align:center;font-size:13px;color:var(--grey);margin-bottom:6px}
+/* score report — the one panel that is dark on a light screen, because the number on it is
+   the whole point of the attempt. */
+.score-panel{
+  display:flex;align-items:center;gap:40px;flex-wrap:wrap;
+  padding:40px;border-radius:20px;background:var(--ink);color:var(--cream-light);
+}
+.score-main{flex:1;display:flex;flex-direction:column;gap:12px;min-width:240px}
+.score-kicker{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(247,244,238,.5)}
+.score-line{display:flex;align-items:baseline;gap:14px}
+.big-score{font-family:var(--num);font-size:68px;font-weight:700;line-height:1;color:var(--gold)}
+.score-of{font-size:18px;font-weight:600;color:rgba(247,244,238,.5)}
+.scaled{font-size:13px;color:rgba(247,244,238,.5)}
+.score-side{display:flex;flex-direction:column;gap:14px;align-items:flex-start}
+.score-badge{padding:9px 18px;border-radius:999px;font-size:14px;font-weight:700}
+.score-badge.pass{background:rgba(46,125,111,.26);color:var(--teal-on-dark)}
+.score-badge.fail{background:rgba(179,69,58,.26);color:var(--red-on-dark)}
+.score-pct{font-size:15px;font-weight:600;color:var(--on-dark)}
 .pass{color:var(--teal-text);font-weight:700}
 .fail{color:var(--red);font-weight:700}
 .review-item{background:var(--cream);border:1px solid var(--edge);border-left:4px solid var(--edge-strong);
@@ -341,6 +363,11 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .dbar .top .nm{color:var(--ink);font-weight:700}
 .dbar .top .nm .dn{font-family:var(--num);font-weight:500;color:var(--grey)}
 .dbar .top .vl{color:var(--grey);font-size:13px;font-weight:600;white-space:nowrap}
+/* In the report the value is coloured like its bar — same fact, said twice. */
+.dbar .top .vl.g,.dbar .top .vl.a,.dbar .top .vl.r{font-family:var(--num);font-size:14px;font-weight:700}
+.dbar .top .vl.g{color:var(--teal-text)}
+.dbar .top .vl.a{color:var(--gold-text)}
+.dbar .top .vl.r{color:var(--red)}
 .track{height:9px;background:rgba(22,24,29,.07);border-radius:5px;overflow:hidden;position:relative}
 .fill{height:100%;border-radius:5px;background:var(--ink);transition:width .6s ease}
 .fill.g{background:var(--teal)}
@@ -356,6 +383,7 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .dd-item{background:var(--cream);border:1px solid var(--edge);border-radius:11px;padding:12px 14px;
   font-family:var(--mono);font-size:13px;color:var(--ink);cursor:grab;user-select:none;
   transition:border-color .12s,box-shadow .12s,transform .12s}
+.dd-bank .dd-item:first-child{transform:rotate(-1.2deg);box-shadow:0 8px 18px -12px rgba(22,24,29,.5)}
 .dd-item:hover{border-color:var(--edge-strong)}
 .dd-item.dragging{opacity:.4}
 /* Tap-to-place on a phone: pick the element, then the slot. The picked state has to be
