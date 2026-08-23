@@ -152,6 +152,24 @@ shape of an attempt are the Android app's, key for key. Branches this app has no
 for — bookmarks, textbook progress — are still carried through an import/export round trip
 untouched.
 
+`shared/merge.js` is what makes two devices one history: attempts union by id, a day keeps
+each device's own count, an SRS entry goes to whichever grading happened later. It is a
+pure function, tested for the properties the sync loop needs — merging with yourself is a
+no-op, and both devices reach the same answer from either side.
+
+## Sync
+
+Progress → make a key → type the same key into the Android app, and one button reconciles
+both devices through `sync.maks.top` (the Worker in `ccna-sync/`). The server stores an
+opaque blob and a revision number and never parses either: everything about what progress
+means stays in `shared/`.
+
+The key is the only secret — there are no accounts and no passwords, and the server keeps
+only its SHA-256. It lives in its own storage entry, outside the seven branches, so it is
+neither in the exported file nor in the blob that goes to the server. An exam in progress
+is never uploaded: a running clock and a half-written answer sheet belong to the device
+they were started on.
+
 ## Known follow-up work
 
 - 37 of the 194 drag-and-drop questions have no reconstructed `dd` data and are
