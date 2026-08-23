@@ -1,3 +1,16 @@
+/* CCNA 200-301 trainer — NetPath theme.
+   Spec: design_handoff_netpath/TRAINER.md, mockup: Trainer Screens.dc.html.
+
+   Every class name here is generated as a template string in assets/js/app.js. Renaming one
+   breaks a screen silently — the markup keeps building, it just stops being styled. So this
+   file replaces values, not selectors: the selector set matches what app.js emits.
+
+   The landing (assets/css/netpath.css) declares Playfair Display, Manrope and Space Grotesk
+   and is loaded on the same page, so only JetBrains Mono is declared here. It is not
+   decoration: answer options in the bank are frequently Cisco commands
+   (`ip route 10.2.2.2 255.255.255.255 …`) and a proportional face makes them harder to read.
+*/
+
 @font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400 700;font-display:swap;
   src:url('../fonts/jetbrains-mono-cyrillic-ext.woff2') format('woff2');
   unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}
@@ -7,211 +20,327 @@
 @font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400 700;font-display:swap;
   src:url('../fonts/jetbrains-mono-latin.woff2') format('woff2');
   unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:'Unbounded';font-style:normal;font-weight:600;font-display:swap;
-  src:url('../fonts/unbounded-cyrillic-ext.woff2') format('woff2');
-  unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}
-@font-face{font-family:'Unbounded';font-style:normal;font-weight:600;font-display:swap;
-  src:url('../fonts/unbounded-cyrillic.woff2') format('woff2');
-  unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
-@font-face{font-family:'Unbounded';font-style:normal;font-weight:600;font-display:swap;
-  src:url('../fonts/unbounded-latin.woff2') format('woff2');
-  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+
 :root{
-  --bg:#0a0e17;--panel:#0e1421;--panel2:#131a2b;--panel3:#0b1120;
-  --border:#1c2740;--border2:#26324f;
-  --cyan:#00d4ff;--purple:#7c3aed;--green:#10b981;--red:#ef4444;--amber:#f59e0b;--blue:#3b82f6;
-  --text:#d1d9e6;--muted:#5b6b85;--dim:#3a4763;
+  --ink:#16181D; --cream:#FCFAF6; --cream-warm:#F4F0E8; --cream-light:#F7F4EE;
+  --gold:#C9A24A; --teal:#2E7D6F; --grey:#8A8578; --grey-text:#5C5850;
+  /* Only ever the verdict of a wrong answer. Deliberately muted so it does not shout over
+     a palette that has no other red in it. */
+  --red:#B3453A;
+
+  /* Accent hues walked down until they read as text on a light ground — see netpath.css. */
+  --gold-text:#846827; --teal-text:#2A7266;
+
+  --serif:'Playfair Display',Georgia,'Times New Roman',serif;
+  --ui:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --num:'Space Grotesk','Manrope',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+
+  --line:rgba(22,24,29,.08);      /* hairline separators */
+  --edge:rgba(22,24,29,.12);      /* card and control borders */
+  --edge-strong:rgba(22,24,29,.2);
+  --on-dark:rgba(247,244,238,.7);
+  color-scheme:light;
 }
+
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
-  background:var(--bg);color:var(--text);
-  font-family:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
-  font-size:15px;line-height:1.55;min-height:100vh;
-  background-image:linear-gradient(rgba(0,212,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.03) 1px,transparent 1px);
-  background-size:32px 32px;
+  background:var(--cream);color:var(--ink);
+  font-family:var(--ui);font-size:15px;line-height:1.55;min-height:100vh;
+  -webkit-font-smoothing:antialiased;
 }
-.wrap{max-width:920px;margin:0 auto;padding:22px 16px 96px}
-h1{font-family:'Unbounded',sans-serif;font-size:24px;color:var(--cyan);text-shadow:0 0 18px rgba(0,212,255,.35);letter-spacing:.5px}
-h2{font-family:'Unbounded',sans-serif;font-size:17px;color:var(--text);margin:18px 0 12px}
-h3{font-family:'Unbounded',sans-serif;font-size:13px;color:var(--muted);margin:0 0 8px;text-transform:uppercase;letter-spacing:1px}
-.sub{color:var(--muted);font-size:12.5px;margin-bottom:20px;line-height:1.7}
-a.link{color:var(--cyan);text-decoration:none}
+.wrap{max-width:880px;margin:0 auto;padding:32px 20px 96px;display:flex;flex-direction:column;gap:30px}
+
+/* h1 titles a screen; h2 and h3 label a section inside one. app.js already uses them that
+   way, so the split is by role, not by size alone. */
+h1{font-family:var(--serif);font-size:34px;font-weight:400;line-height:1.08;color:var(--ink)}
+h1.home{font-size:42px;line-height:1.05}
+h2,h3{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--grey)}
+.sub{color:var(--grey-text);font-size:14px;font-weight:600;line-height:1.55}
+a.link{color:var(--teal-text);text-decoration:none;font-weight:600}
+a.link:hover{color:var(--ink)}
 
 /* cards & buttons */
-.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:0 0 24px rgba(0,212,255,.05);margin-bottom:16px}
+.card{background:var(--cream);border:1px solid var(--edge);border-radius:16px;padding:26px;display:flex;flex-direction:column;gap:18px}
 button{font-family:inherit;font-size:14px;cursor:pointer}
-.btn{background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:9px;padding:10px 16px;transition:.15s}
-.btn:hover{border-color:var(--cyan);box-shadow:0 0 10px rgba(0,212,255,.25)}
-.btn:disabled{opacity:.4;cursor:not-allowed}
-.btn.primary{border-color:var(--cyan);color:var(--cyan)}
-.btn.sm{padding:6px 12px;font-size:12px}
-.btn.big{font-size:16px;padding:18px 20px;width:100%;text-align:left;display:flex;gap:16px;align-items:center}
-.btn.big .ico{font-size:26px;line-height:1}
-.btn.big .tx b{display:block;font-family:'Unbounded',sans-serif;color:var(--cyan);margin-bottom:4px;font-size:16px}
-.btn.big .tx span{color:var(--muted);font-size:12px;font-family:'JetBrains Mono'}
-.btn.big.pu{ }
-.btn.big.pu .tx b{color:var(--purple)}
-.btn.big.gr .tx b{color:var(--green)}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  background:none;border:1px solid var(--edge-strong);color:var(--ink);
+  border-radius:999px;padding:12px 20px;font-size:13px;font-weight:700;
+  transition:background .15s,border-color .15s,color .15s;
+}
+.btn:hover:not(:disabled){border-color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--gold);border-color:var(--gold);color:var(--ink);padding:13px 26px}
+.btn.primary:hover:not(:disabled){background:#BD9846;border-color:#BD9846}
+.btn.sm{padding:8px 14px;font-size:12px}
+
+/* Mode cards on the home screen: title and blurb on the left, the action as a pill on the
+   right. `.ico` is gone — the emoji it held rendered differently on every platform and was
+   not in the palette. */
+/* The full exam is the main path, so the first card carries the weight: it is the plain
+   .btn.big, and the two configurable modes (.pu, .gr — historic names app.js already emits)
+   are the light ones. */
+.btn.big{
+  width:100%;text-align:left;justify-content:flex-start;gap:20px;
+  padding:24px 26px;border-radius:16px;
+  background:var(--ink);border-color:var(--ink);
+}
+.btn.big .tx{flex:1;display:flex;flex-direction:column;gap:5px}
+.btn.big .tx b{font-size:21px;font-weight:800;letter-spacing:-.02em;color:var(--cream-light)}
+.btn.big .tx span{font-size:13px;font-weight:400;line-height:1.5;color:rgba(247,244,238,.66)}
+.btn.big .go{flex:none;padding:13px 26px;border-radius:999px;font-size:14px;font-weight:700;
+  background:var(--gold);color:var(--ink)}
+.btn.big:hover{box-shadow:0 16px 34px -22px rgba(22,24,29,.6)}
+
+.btn.big.pu,.btn.big.gr{background:none;border-color:var(--edge);padding:22px 26px}
+.btn.big.pu:hover,.btn.big.gr:hover{border-color:var(--edge-strong);box-shadow:0 14px 30px -22px rgba(22,24,29,.45)}
+.btn.big.pu .tx b,.btn.big.gr .tx b{color:var(--ink);font-size:19px}
+.btn.big.pu .tx span,.btn.big.gr .tx span{color:var(--grey-text)}
+.btn.big.pu .go{background:var(--ink);color:var(--cream);padding:12px 24px}
+.btn.big.gr .go{background:none;border:1px solid var(--edge-strong);color:var(--ink);padding:12px 24px}
 
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .spacer{flex:1}
-.lbl{color:var(--muted);font-size:12px;margin:16px 0 7px;text-transform:uppercase;letter-spacing:.5px}
-select,input{font-family:inherit;font-size:14px;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:9px 12px}
+.lbl{color:var(--grey);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em}
+select,input{
+  font-family:inherit;font-size:14px;font-weight:600;
+  background:var(--cream-warm);border:1px solid transparent;color:var(--ink);
+  border-radius:10px;padding:10px 13px;
+}
+select:focus-visible,input:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+/* Groupings the screens build with: a stack of mode cards, and a labelled section. */
+.modes{display:flex;flex-direction:column;gap:11px}
+.sec{display:flex;flex-direction:column;gap:16px}
+.sec .dbar{margin:0}
 
 /* chips */
-.chip{border:1px solid var(--border);border-radius:20px;padding:6px 13px;font-size:12px;color:var(--muted);cursor:pointer;user-select:none;transition:.12s}
-.chip:hover{border-color:var(--border2)}
-.chip.on{border-color:var(--purple);color:var(--text);box-shadow:0 0 8px rgba(124,58,237,.3)}
-.chip .c{color:var(--dim);margin-left:6px}
-.chip.on .c{color:var(--purple)}
+.chip{
+  border:1px solid var(--edge-strong);border-radius:999px;padding:7px 14px;
+  font-size:12px;font-weight:600;color:var(--grey-text);cursor:pointer;user-select:none;
+  transition:background .12s,border-color .12s,color .12s;
+}
+.chip:hover{border-color:var(--ink)}
+.chip.on{background:var(--ink);border-color:var(--ink);color:var(--cream-light)}
+.chip .c{color:var(--grey);margin-left:6px;font-family:var(--num);font-weight:700}
+.chip.on .c{color:var(--gold)}
 
-/* Language switch — fixed, outside #app so it survives every SPA re-render. */
-.lang-switch{position:fixed;top:12px;right:12px;z-index:50;display:flex;gap:2px;background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:3px;box-shadow:0 0 16px rgba(0,0,0,.35)}
-.lang-opt{padding:5px 11px;font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:.5px;color:var(--muted);border-radius:16px;cursor:pointer;user-select:none;transition:.12s}
-.lang-opt:hover{color:var(--text)}
-.lang-opt.on{background:var(--panel2);border:1px solid var(--cyan);color:var(--cyan);box-shadow:0 0 8px rgba(0,212,255,.3)}
-@media (max-width:480px){.lang-switch{top:8px;right:8px}.lang-opt{padding:4px 9px;font-size:10px}}
+/* Language switch — fixed, outside #trainer so it survives every SPA re-render.
+   The selected segment is filled, not tinted: a near-white pill on a 6% track separates the
+   two states by about 1.1:1, which is not enough to see which language is on. */
+.lang-switch{position:fixed;top:14px;right:14px;z-index:50;display:flex;padding:3px;
+  background:rgba(22,24,29,.06);border-radius:999px}
+.lang-opt{padding:6px 12px;font-size:12px;font-weight:700;color:var(--grey-text);
+  border-radius:999px;cursor:pointer;user-select:none;transition:background .12s,color .12s}
+.lang-opt:hover{color:var(--ink)}
+.lang-opt.on{background:var(--ink);color:var(--cream-light)}
+@media (max-width:480px){.lang-switch{top:8px;right:8px}.lang-opt{padding:5px 10px;font-size:11px}}
 
 /* badges */
-.badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;align-items:center}
-.badge{font-size:11px;padding:2px 9px;border-radius:6px;border:1px solid;white-space:nowrap}
-.b-dom{color:var(--cyan);border-color:var(--border2)}
-.b-ex{color:var(--amber);border-color:var(--amber)}
-.b-dd{color:var(--blue);border-color:var(--blue)}
-.b-multi{color:var(--purple);border-color:var(--purple)}
-.b-disp{color:var(--red);border-color:var(--red)}
-.b-ok{color:var(--green);border-color:var(--green)}
-.qnum{color:var(--muted);font-size:12px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
+.badge{font-size:11px;font-weight:700;letter-spacing:.06em;padding:5px 12px;border-radius:999px;
+  border:1px solid transparent;white-space:nowrap;text-transform:uppercase}
+.b-dom{background:rgba(46,125,111,.12);color:var(--teal-text)}
+.b-ex{background:rgba(22,24,29,.07);color:var(--grey-text)}
+.b-dd{background:rgba(22,24,29,.07);color:var(--grey-text)}
+.b-multi{border-color:rgba(201,162,74,.55);color:var(--gold-text)}
+.b-disp{border-color:rgba(179,69,58,.5);color:var(--red)}
+.b-ok{background:rgba(46,125,111,.12);color:var(--teal-text)}
+.qnum{font-family:var(--num);font-size:12px;font-weight:700;color:var(--grey-text)}
 
 /* question */
-.qtext{margin:8px 0 14px;white-space:pre-wrap;font-size:15px}
-.eximg{max-width:100%;border:1px solid var(--border);border-radius:8px;margin-bottom:14px;background:#fff;display:block}
-.eximg.svgex{background:#0a0e17}
+.qtext{margin:0 0 4px;white-space:pre-wrap;font-size:20px;font-weight:600;line-height:1.45;text-wrap:pretty}
+.eximg{max-width:100%;border:1px solid var(--edge);border-radius:13px;margin-bottom:14px;background:#fff;display:block}
+.eximg.svgex{background:var(--ink)}
 
-/* CLI / config / show-command output blocks */
+/* CLI / config / show-command output blocks. Real selectable text, never a screenshot. */
 .cli-wrap{margin:0 0 14px}
-.cli{background:var(--panel3);border:1px solid var(--border2);border-radius:8px;padding:11px 13px;font-size:12.5px;line-height:1.6;color:#a8f0c6;white-space:pre-wrap;overflow-x:auto;margin:0}
-details.cli-wrap{border:1px solid var(--border2);border-radius:8px;overflow:hidden}
-details.cli-wrap .cli{border:none;border-radius:0;border-top:1px solid var(--border2);margin:0}
-details.cli-wrap summary{cursor:pointer;padding:9px 13px;font-size:12.5px;color:var(--cyan);user-select:none;background:var(--panel2)}
+.cli{background:var(--ink);border:none;border-radius:13px;padding:18px 20px;
+  font-family:var(--mono);font-size:13px;line-height:1.7;color:var(--cream-light);
+  white-space:pre-wrap;overflow-x:auto;margin:0}
+details.cli-wrap{border:1px solid var(--edge);border-radius:13px;overflow:hidden}
+details.cli-wrap .cli{border-radius:0;margin:0}
+details.cli-wrap summary{cursor:pointer;padding:11px 16px;font-size:12px;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--grey-text);user-select:none;background:var(--cream-warm)}
 details.cli-wrap summary::-webkit-details-marker{display:none}
-details.cli-wrap summary:before{content:'▸ ';color:var(--muted)}
+details.cli-wrap summary:before{content:'▸ ';color:var(--grey)}
 details.cli-wrap[open] summary:before{content:'▾ '}
-details.cli-wrap summary:hover{color:#fff}
-.opts{display:flex;flex-direction:column;gap:8px}
-.opt{display:flex;gap:10px;text-align:left;background:transparent;border:1px solid var(--border);border-radius:9px;padding:11px 13px;color:var(--text);width:100%;transition:.12s}
-.opt:hover:not(:disabled){border-color:var(--cyan)}
-.opt .k{color:var(--cyan);font-weight:700;min-width:18px}
-.opt span:last-child{white-space:pre-wrap}
-.opt.sel{border-color:var(--purple);box-shadow:0 0 8px rgba(124,58,237,.3)}
-.opt.correct{border-color:var(--green);box-shadow:0 0 10px rgba(16,185,129,.30)}
-.opt.wrong{border-color:var(--red);box-shadow:0 0 10px rgba(239,68,68,.30)}
-.opt:disabled{cursor:default;opacity:.95}
+details.cli-wrap summary:hover{color:var(--ink)}
+
+/* answer options */
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{
+  display:flex;gap:14px;align-items:center;text-align:left;
+  background:none;border:1px solid var(--edge);border-radius:13px;padding:15px 18px;
+  color:var(--ink);width:100%;transition:border-color .12s,background .12s;
+}
+.opt:hover:not(:disabled){border-color:var(--edge-strong)}
+.opt .k{
+  flex:none;width:25px;height:25px;border-radius:999px;
+  display:flex;align-items:center;justify-content:center;
+  border:1.5px solid var(--edge-strong);color:var(--grey);
+  font-family:var(--num);font-size:12px;font-weight:700;
+}
+.opt span:last-child{white-space:pre-wrap;font-family:var(--mono);font-size:14px;color:var(--grey-text)}
+.opt.sel{background:var(--ink);border-color:var(--ink)}
+.opt.sel .k{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+.opt.sel span:last-child{color:var(--cream-light)}
+.opt.correct{border-color:var(--teal);background:rgba(46,125,111,.09)}
+.opt.correct .k{background:var(--teal);border-color:var(--teal);color:var(--cream-light)}
+.opt.correct span:last-child{color:var(--ink)}
+.opt.wrong{border-color:var(--red);background:rgba(179,69,58,.08)}
+.opt.wrong .k{background:var(--red);border-color:var(--red);color:var(--cream-light)}
+.opt.wrong span:last-child{color:var(--ink)}
+.opt:disabled{cursor:default}
+.opt:disabled:not(.sel):not(.correct):not(.wrong){opacity:.5}
 
 /* verdict + explanation */
-.verdict{margin-top:14px;font-size:14px;font-weight:700}
-.verdict.ok{color:var(--green)}.verdict.bad{color:var(--red)}
-.exp{margin-top:10px;background:var(--panel2);border-left:3px solid var(--cyan);border-radius:6px;padding:11px 13px;font-size:13px;color:var(--text)}
-.exp.disp{border-left-color:var(--amber)}
-.exp.muted{border-left-color:var(--dim);color:var(--muted);font-style:italic}
-.exp b{color:var(--cyan)}
+.verdict{margin-top:14px;font-size:14px;font-weight:700;padding:12px 16px;border-radius:12px}
+.verdict.ok{color:var(--teal-text);background:rgba(46,125,111,.1)}
+.verdict.bad{color:var(--red);background:rgba(179,69,58,.09)}
+.exp{margin-top:12px;background:var(--cream-warm);border-left:3px solid var(--teal);border-radius:12px;
+  padding:14px 16px;font-size:13px;line-height:1.6;color:var(--grey-text)}
+.exp.disp{border-left-color:var(--gold)}
+.exp.muted{border-left-color:var(--edge-strong);color:var(--grey);font-style:italic}
+.exp b{color:var(--ink)}
 
 /* readable multi-line explanations + collapse-with-scroll toggle */
 .exp p,.rtext p{margin:0 0 7px}
 .exp p:last-child,.rtext p:last-child{margin-bottom:0}
-.exp-toggle{margin-top:7px}
-.exp-toggle>summary{cursor:pointer;color:var(--cyan);font-size:12px;user-select:none;list-style:none}
+.exp-toggle{margin-top:8px}
+.exp-toggle>summary{cursor:pointer;color:var(--teal-text);font-size:12px;font-weight:700;user-select:none;list-style:none}
 .exp-toggle>summary::-webkit-details-marker{display:none}
 .exp-toggle>summary:before{content:'▾ '}
 .exp-toggle[open]>summary:before{content:'▴ '}
-.exp-toggle[open]>summary{color:var(--muted)}
-.exp-toggle>summary:hover{color:#fff}
-.exp-scroll{max-height:200px;overflow-y:auto;margin-top:7px;padding-right:8px}
+.exp-toggle[open]>summary{color:var(--grey)}
+.exp-toggle>summary:hover{color:var(--ink)}
+.exp-scroll{max-height:200px;overflow-y:auto;margin-top:8px;padding-right:8px}
 .exp-scroll::-webkit-scrollbar{width:7px}
-.exp-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+.exp-scroll::-webkit-scrollbar-thumb{background:var(--edge-strong);border-radius:4px}
 
 /* per-option rationale (why each answer is right/wrong) */
-.rationale{margin-top:12px;display:flex;flex-direction:column;gap:8px}
-.ropt{border-radius:9px;padding:10px 12px;background:var(--panel2);border-left:3px solid var(--border2)}
-.ropt.ok{border-left-color:var(--green)}
-.ropt.bad{border-left-color:var(--red)}
-.ropt .rhead{font-size:13.5px;white-space:pre-wrap}
-.ropt .rhead b{color:var(--text)}
-.ropt.ok .tag{color:var(--green);font-size:11px;font-weight:700;margin-left:4px}
+.rationale{margin-top:14px;display:flex;flex-direction:column;gap:9px}
+.ropt{border-radius:12px;padding:13px 15px;background:var(--cream-warm);border-left:3px solid var(--edge-strong)}
+.ropt.ok{border-left-color:var(--teal);background:rgba(46,125,111,.08)}
+.ropt.bad{border-left-color:var(--red);background:rgba(179,69,58,.07)}
+.ropt .rhead{font-size:13.5px;white-space:pre-wrap;color:var(--ink)}
+.ropt .rhead b{color:var(--ink);font-family:var(--num)}
+.ropt.ok .tag{color:var(--teal-text);font-size:11px;font-weight:700;margin-left:4px}
 .ropt.bad .tag{color:var(--red);font-size:11px;font-weight:700;margin-left:4px}
-.ropt .rtext{margin-top:5px;font-size:12.5px;color:var(--muted);line-height:1.5}
-.ropt.quiet{padding:7px 12px;opacity:.6}
+.ropt .rtext{margin-top:6px;font-size:13px;color:var(--grey-text);line-height:1.55}
+.ropt.quiet{padding:9px 15px;opacity:.75}
 .ropt.quiet .rhead{font-size:12.5px}
 
 /* nav */
-.nav{display:flex;gap:10px;align-items:center;margin-top:18px;flex-wrap:wrap}
-.stat{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:13px}
-.stat b{color:var(--cyan)}.stat .ok{color:var(--green)}.stat .bad{color:var(--red)}
-.qjump{width:74px;padding:6px 8px;font-size:13px;text-align:center}
+.nav{display:flex;gap:9px;align-items:center;margin-top:4px;flex-wrap:wrap}
+.stat{background:var(--cream-warm);border-radius:999px;padding:8px 14px;font-size:13px;font-weight:600;color:var(--grey-text)}
+.stat b{color:var(--ink);font-family:var(--num)}
+.stat .ok{color:var(--teal-text);font-family:var(--num);font-weight:700}
+.stat .bad{color:var(--red);font-family:var(--num);font-weight:700}
+.qjump{width:74px;padding:8px;font-size:13px;text-align:center;font-family:var(--num)}
 .qstart{width:100%;max-width:420px}
-.timer{font-family:'Unbounded';font-size:19px;color:var(--amber)}
-.timer.low{color:var(--red);animation:pulse 1s infinite}
-@keyframes pulse{50%{opacity:.5}}
+.timer{font-family:var(--num);font-size:15px;font-weight:700}
+.timer.low{color:var(--red)}
 
-/* nav grid */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:6px;margin-top:16px}
-.cell{border:1px solid var(--border);border-radius:6px;padding:6px 0;text-align:center;font-size:12px;cursor:pointer;color:var(--muted);transition:.1s}
-.cell:hover{border-color:var(--border2)}
-.cell.answered{border-color:var(--cyan);color:var(--cyan)}
-.cell.flagged{border-color:var(--amber);color:var(--amber)}
-.cell.cur{background:var(--panel2);color:var(--text);outline:1px solid var(--cyan)}
+/* question grid — stays under the answers, not in a sidebar: there is no sidebar on a phone
+   and the grid is wanted in both views. */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(34px,1fr));gap:5px;margin-top:4px}
+.cell{
+  aspect-ratio:1;border:1px solid var(--edge);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--num);font-size:10px;font-weight:700;color:var(--grey);
+  cursor:pointer;transition:border-color .1s,background .1s;
+}
+.cell:hover{border-color:var(--edge-strong)}
+.cell.answered{background:var(--ink);border-color:var(--ink);color:var(--cream-light)}
+.cell.flagged{background:rgba(201,162,74,.22);border-color:rgba(201,162,74,.6);color:var(--ink)}
+.cell.cur{background:var(--gold);border-color:var(--gold);color:var(--ink);box-shadow:0 0 0 2px rgba(201,162,74,.35)}
 
 /* score report */
-.big-score{font-family:'Unbounded';font-size:52px;text-align:center;margin:8px 0 2px}
-.scaled{text-align:center;font-size:14px;color:var(--muted);margin-bottom:4px}
-.pass{color:var(--green)}.fail{color:var(--red)}
-.review-item{background:var(--panel);border:1px solid var(--border2);border-left:4px solid var(--border2);border-radius:14px;padding:18px;margin-bottom:30px;box-shadow:0 0 24px rgba(0,212,255,.05)}
+.big-score{font-family:var(--num);font-size:68px;font-weight:700;text-align:center;margin:8px 0 2px;color:var(--gold)}
+.scaled{text-align:center;font-size:13px;color:var(--grey);margin-bottom:6px}
+.pass{color:var(--teal-text);font-weight:700}
+.fail{color:var(--red);font-weight:700}
+.review-item{background:var(--cream);border:1px solid var(--edge);border-left:4px solid var(--edge-strong);
+  border-radius:16px;padding:22px;margin-bottom:20px}
 .review-item.bad{border-left-color:var(--red)}
-.review-item.ok{border-left-color:var(--green)}
+.review-item.ok{border-left-color:var(--teal)}
 
-/* domain report bars */
-.dbar{margin:10px 0}
-.dbar .top{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px}
-.dbar .top .nm{color:var(--text)}
-.dbar .top .vl{color:var(--muted)}
-.track{height:9px;background:var(--panel3);border:1px solid var(--border);border-radius:6px;overflow:hidden;position:relative}
-.fill{height:100%;border-radius:5px;transition:width .6s ease}
-.fill.g{background:linear-gradient(90deg,#0f766e,var(--green))}
-.fill.r{background:linear-gradient(90deg,#7f1d1d,var(--red))}
-.fill.a{background:linear-gradient(90deg,#78350f,var(--amber))}
+/* domain bars — on the home screen they show blueprint weight, in the report they show your
+   result. Only in the report does the colour mean anything. */
+.dbar{display:flex;flex-direction:column;gap:7px;margin:0 0 15px}
+.dbar .top{display:flex;justify-content:space-between;align-items:baseline;gap:14px;font-size:15px}
+.dbar .top .nm{color:var(--ink);font-weight:700}
+.dbar .top .nm .dn{font-family:var(--num);font-weight:500;color:var(--grey)}
+.dbar .top .vl{color:var(--grey);font-size:13px;font-weight:600;white-space:nowrap}
+.track{height:9px;background:rgba(22,24,29,.07);border-radius:5px;overflow:hidden;position:relative}
+.fill{height:100%;border-radius:5px;background:var(--ink);transition:width .6s ease}
+.fill.g{background:var(--teal)}
+.fill.r{background:var(--red)}
+.fill.a{background:var(--gold)}
 
 /* drag & drop */
 .dd-wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:6px 0 4px}
 @media(max-width:640px){.dd-wrap{grid-template-columns:1fr}}
 .dd-col h3{margin-bottom:10px}
-.dd-bank{display:flex;flex-direction:column;gap:8px;min-height:40px;padding:8px;border:1px dashed var(--border);border-radius:9px}
-.dd-item{background:var(--panel2);border:1px solid var(--border2);border-radius:8px;padding:10px 12px;font-size:13px;cursor:grab;user-select:none;transition:.12s}
-.dd-item:hover{border-color:var(--cyan)}
+.dd-bank{display:flex;flex-direction:column;gap:9px;min-height:44px;padding:12px;
+  background:var(--cream-warm);border-radius:13px}
+.dd-item{background:var(--cream);border:1px solid var(--edge);border-radius:11px;padding:12px 14px;
+  font-family:var(--mono);font-size:13px;color:var(--ink);cursor:grab;user-select:none;
+  transition:border-color .12s,box-shadow .12s,transform .12s}
+.dd-item:hover{border-color:var(--edge-strong)}
 .dd-item.dragging{opacity:.4}
-.dd-item.correct{border-color:var(--green);box-shadow:0 0 8px rgba(16,185,129,.3)}
-.dd-item.wrong{border-color:var(--red);box-shadow:0 0 8px rgba(239,68,68,.3)}
-.dd-bucket{border:1px solid var(--border);border-radius:9px;padding:10px;margin-bottom:10px;background:var(--panel3)}
-.dd-bucket .bl{font-size:12px;color:var(--amber);margin-bottom:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
-.dd-slot{display:flex;flex-direction:column;gap:8px;min-height:44px;border:1px dashed var(--border);border-radius:8px;padding:8px;transition:.12s}
-.dd-slot.over{border-color:var(--cyan);background:rgba(0,212,255,.06)}
-.dd-note{font-size:12px;color:var(--muted);margin-top:8px}
+/* Tap-to-place on a phone: pick the element, then the slot. The picked state has to be
+   obvious — it is the only feedback between the two taps. */
+.dd-item.sel{border-color:var(--gold);background:rgba(201,162,74,.16);box-shadow:0 0 0 2px rgba(201,162,74,.35)}
+.dd-item.correct{border-color:var(--teal);background:rgba(46,125,111,.09)}
+.dd-item.wrong{border-color:var(--red);background:rgba(179,69,58,.08)}
+.dd-bucket{border:1px solid var(--edge);border-radius:13px;padding:14px;margin-bottom:10px;background:var(--cream)}
+.dd-bucket .bl{font-size:11px;color:var(--grey-text);margin-bottom:9px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em}
+.dd-slot{display:flex;flex-direction:column;gap:9px;min-height:48px;
+  border:1px dashed rgba(22,24,29,.26);border-radius:11px;padding:9px;transition:border-color .12s,background .12s}
+.dd-slot.over{border:1.5px dashed var(--gold);background:rgba(201,162,74,.12)}
+.dd-note{font-size:12px;color:var(--grey-text);margin-top:8px}
+/* Under the board: how much of the answer stands, and how many items belong nowhere. */
+.dd-foot{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:12px}
+.dd-count{font-size:12px;font-weight:600;color:var(--grey-text)}
+.dd-count b{font-family:var(--num);color:var(--ink)}
 
 .hidden{display:none}
 .center{text-align:center}
-.foot{margin-top:40px;text-align:center;color:var(--dim);font-size:11px}
-.kbd{border:1px solid var(--border2);border-radius:4px;padding:1px 6px;font-size:11px;color:var(--muted)}
+.foot{margin-top:24px;text-align:center;color:var(--grey);font-size:12px;line-height:1.6}
+.kbd{border:1px solid var(--edge-strong);border-radius:5px;padding:1px 6px;font-size:11px;
+  font-family:var(--num);color:var(--grey-text)}
 
 /* Lab simulation reference view */
-.sim-body{font-size:14.5px}
-.sim-body p{margin:7px 0;line-height:1.55}
-.sim-body ul,.sim-body ol{margin:6px 0 12px 22px;line-height:1.55}
+.sim-body{font-size:14.5px;color:var(--grey-text)}
+.sim-body p{margin:7px 0;line-height:1.6}
+.sim-body ul,.sim-body ol{margin:6px 0 12px 22px;line-height:1.6}
 .sim-body li{margin:4px 0}
-.sim-h{font-weight:700;font-size:15px;color:var(--cyan);margin:14px 0 6px}
-.sim-task{font-weight:600;margin:10px 0 2px;color:var(--text)}
+.sim-h{font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--grey);margin:16px 0 6px}
+.sim-task{font-weight:700;margin:10px 0 2px;color:var(--ink)}
 .sim-guide{margin:8px 0 12px}
 .sim-answer{margin:12px 0 0}
-.sim-answer summary{color:var(--green)}
+.sim-answer summary{color:var(--teal-text);font-weight:700}
 .sim-guide-b{padding:8px 13px 10px}
-.sim-guide-b p{margin:4px 0;color:var(--muted);font-size:13px}
-.sim-guide-b li{color:var(--muted);font-size:12.5px}
+.sim-guide-b p{margin:4px 0;color:var(--grey-text);font-size:13px}
+.sim-guide-b li{color:var(--grey-text);font-size:12.5px}
+
+@media (max-width:560px){
+  .wrap{padding:20px 16px 72px;gap:22px}
+  h1{font-size:32px}
+  h2{font-size:26px}
+  .qtext{font-size:17px}
+  .card{padding:18px;border-radius:14px}
+  .btn.big{padding:18px;gap:14px;flex-wrap:wrap}
+  .btn.big .go{width:100%;text-align:center}
+  .nav{gap:7px}
+  .nav .btn{flex:1 1 auto}
+  /* 44px is the smallest comfortable tap target, and these are the two the finger has to
+     hit repeatedly. */
+  .grid{grid-template-columns:repeat(auto-fill,minmax(44px,1fr))}
+  .dd-item{padding:14px}
+}

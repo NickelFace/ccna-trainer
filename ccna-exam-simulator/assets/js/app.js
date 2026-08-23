@@ -48,6 +48,8 @@ const I18N = {
     boot_loading: 'Загрузка банка вопросов…',
     home_stats: '{0} оцениваемых вопросов · {1} со схемами · {2} с пояснениями',
     home_verified_note: 'Банк проверен онлайн (418/418 картиночных), ключ исправлен: #151, #986, #787, #1045, #1320.',
+    home_go_start: 'Старт',
+    home_go_config: 'Настроить',
     home_full_title: 'Полный экзамен',
     home_full_desc: '100 вопросов · 120 мин · взвешено по 6 доменам Cisco · порог 825/1000 · отчёт по доменам',
     home_custom_title: 'Свой экзамен',
@@ -135,6 +137,8 @@ const I18N = {
     dd_elements: 'Элементы',
     dd_categories: 'Категории',
     dd_check: 'Проверить',
+    dd_placed: 'Разложено {0} из {1}',
+    dd_extra: 'лишних элементов: {0}',
     practice_results_title: 'Итоги тренировки',
     answered_pct: '{0} из {1} отвечено верно ({2}%)',
     continue_practice: 'Продолжить тренировку',
@@ -159,6 +163,8 @@ const I18N = {
     boot_loading: 'Loading the question bank…',
     home_stats: '{0} scored questions · {1} with exhibits · {2} with rationale',
     home_verified_note: 'Bank verified online (418/418 image questions), key fixed: #151, #986, #787, #1045, #1320.',
+    home_go_start: 'Start',
+    home_go_config: 'Configure',
     home_full_title: 'Full Exam',
     home_full_desc: '100 questions · 120 min · weighted across 6 Cisco domains · pass 825/1000 · per-domain report',
     home_custom_title: 'Custom Exam',
@@ -246,6 +252,8 @@ const I18N = {
     dd_elements: 'Items',
     dd_categories: 'Categories',
     dd_check: 'Check',
+    dd_placed: 'Placed {0} of {1}',
+    dd_extra: 'extra items: {0}',
     practice_results_title: 'Practice Results',
     answered_pct: '{0} of {1} answered correctly ({2}%)',
     continue_practice: 'Continue practice',
@@ -323,39 +331,43 @@ function home() {
   SCREEN = home;
   const ex = DATA.filter(q => q.y === 'ex').length;
   const ddReady = META.dd_ready, ddTotal = META.dd_total;
+  // Bars are read against the heaviest domain, so the widest one is full width. The old
+  // fixed multiplier left every bar short of the track for no reason.
+  const maxWeight = Math.max(...META.domains.map(d => d.weight));
+  // "1.0 Network Fundamentals" — the blueprint number is set apart from the name.
+  const domName = name => {
+    const m = name.match(/^(\d+\.\d+)\s+(.*)$/);
+    return m ? `<span class="dn">${esc(m[1])}</span> ${esc(m[2])}` : esc(name);
+  };
   app().innerHTML = `
-  <h1>CCNA 200-301</h1>
+  <h1 class="home">CCNA 200-301</h1>
   <div class="sub">${t('home_stats', POOL.length, ex, META.with_exp)}<br>
   ${t('home_verified_note')}</div>
 
-  <div class="card">
+  <div class="modes">
     <button class="btn big" onclick="startFullExam()">
-      <span class="ico">🎯</span>
       <span class="tx"><b>${t('home_full_title')}</b><span>${t('home_full_desc')}</span></span>
+      <span class="go">${t('home_go_start')}</span>
     </button>
-  </div>
-  <div class="card">
     <button class="btn big pu" onclick="cfg('exam')">
-      <span class="ico">⚙️</span>
       <span class="tx"><b>${t('home_custom_title')}</b><span>${t('home_custom_desc')}</span></span>
+      <span class="go">${t('home_go_config')}</span>
     </button>
-  </div>
-  <div class="card">
     <button class="btn big gr" onclick="cfg('practice')">
-      <span class="ico">📚</span>
       <span class="tx"><b>${t('home_practice_title')}</b><span>${t('home_practice_desc')}</span></span>
+      <span class="go">${t('home_go_config')}</span>
     </button>
   </div>
 
-  <h2>${t('home_domains_title')}</h2>
-  <div class="card">
+  <div class="sec">
+    <h2>${t('home_domains_title')}</h2>
     ${META.domains.map(d => `
       <div class="dbar">
-        <div class="top"><span class="nm">${esc(d.name)}</span><span class="vl">${t('home_domain_weight', Math.round(d.weight*100), d.count)}</span></div>
-        <div class="track"><div class="fill g" style="width:${Math.round(d.weight*100*2.2)}%"></div></div>
+        <div class="top"><span class="nm">${domName(d.name)}</span><span class="vl">${t('home_domain_weight', Math.round(d.weight*100), d.count)}</span></div>
+        <div class="track"><div class="fill" style="width:${Math.round(d.weight / maxWeight * 100)}%"></div></div>
       </div>`).join('')}
   </div>
-  <div class="sub">${t('home_dd_note', ddReady, ddTotal, META.sim_total)}<a href="#" onclick="browseSims();return false;">${t('home_sims_link')}</a>.</div>
+  <div class="sub">${t('home_dd_note', ddReady, ddTotal, META.sim_total)}<a class="link" href="#" onclick="browseSims();return false;">${t('home_sims_link')}</a>.</div>
   <div class="foot">${t('home_footer')}</div>`;
 }
 
@@ -827,7 +839,8 @@ function ddMarkup(q, st) {
   });
   h += `</div></div>`;
   if (dd.note && st) h += `<div class="dd-note">${esc(dd.note)}</div>`;
-  if (!st) h += `<button class="btn primary" id="ddchk" style="margin-top:6px" disabled>${t('dd_check')}</button>`;
+  if (!st) h += `<div class="dd-foot"><span class="dd-count" id="ddcount"></span>
+    <button class="btn primary" id="ddchk" disabled>${t('dd_check')}</button></div>`;
   return h;
 }
 function ddItemHTML(t, i, cls = '') { return `<div class="dd-item ${cls}" draggable="${cls ? 'false' : 'true'}" data-i="${i}">${esc(t)}</div>`; }
@@ -837,7 +850,18 @@ function wireDD(q, done) {
   const needed = ddNeeded(q);               // slots to fill (may be < items: distractors)
   let dragEl = null;
   const chk = $('#ddchk');
-  const refresh = () => { chk.disabled = Object.keys(placement).length < needed; };
+  const count = $('#ddcount');
+  const extra = q.dd.items.length - needed;
+  // The button waits only for something to grade, never for a complete board. Questions
+  // like #592 say so themselves — "Not all functions are used" — and gating on a full
+  // board there means a learner who leaves an item out, rightly or wrongly, has no move
+  // left. Marking is unchanged: ddCorrect still wants every item exactly where it belongs.
+  const refresh = () => {
+    const placed = Object.keys(placement).length;
+    chk.disabled = placed === 0;
+    count.innerHTML = t('dd_placed', ddFilledCount(q, placement), needed) +
+      (extra > 0 ? ` · ${t('dd_extra', extra)}` : '');
+  };
 
   document.querySelectorAll('.dd-item').forEach(el => {
     el.addEventListener('dragstart', e => { dragEl = el; el.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; });
@@ -869,6 +893,7 @@ function wireDD(q, done) {
     sel.classList.remove('sel'); sel = null; refresh();
   }));
   chk.onclick = () => done(placement);
+  refresh();          // paint the counter before the first tap
 }
 // Correct iff every item sits where it belongs. Items that belong to no bucket
 // (distractors) must stay in the bank (expected = null).
@@ -880,6 +905,12 @@ function ddExpected(q) {
   return exp;
 }
 function ddNeeded(q) { return q.dd.buckets.reduce((a, b) => a + b.correct.length, 0); }
+// How much of the answer is actually built: a distractor sitting in a bucket fills a slot on
+// screen but is not part of the answer, so it must not count as progress.
+function ddFilledCount(q, placement) {
+  const exp = ddExpected(q);
+  return Object.keys(placement).filter(i => exp[i] != null).length;
+}
 function ddCorrect(q, placement) {
   const exp = ddExpected(q);
   return q.dd.items.every((t, i) => (placement[i] === undefined ? null : placement[i]) === exp[i]);
