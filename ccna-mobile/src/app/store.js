@@ -31,6 +31,12 @@ const DEFAULT_BOOK = { read: {}, pos: {}, open: {}, last: null, scale: 1 };
 
 const FLUSH_MS = 200;
 
+// Attempt ids and activity counters carry the device that wrote them: two devices merging
+// their histories match attempts by id and count a shared day per device, and a bare
+// timestamp from two clocks is a collision waiting to happen. The web trainer generates
+// the same thing with a `web-` prefix.
+const newDeviceId = () => 'and-' + Math.random().toString(36).slice(2, 8);
+
 const DEFAULT_PROFILE = {
   level: null,          // 'first' | 'again' | 'retake' — set in onboarding (step 7)
   examDate: null,
@@ -112,14 +118,26 @@ export const store = {
       read(KEY.book, {}),
     ]);
     this.profile = mergeProfile(profile);
+    if (!this.profile.deviceId) {
+      this.profile.deviceId = newDeviceId();
+      this._touch('profile');
+    }
     this.session = session;
     this.attempts = attempts;
     this.bookmarks = bookmarks;
     this.srs = srs;
-    this.activity = normalizeActivity(activity);
+    // Days recorded before the activity map was split by device belong to this phone —
+    // it is the only device that ever wrote this store.
+    this.activity = normalizeActivity(activity, this.profile.deviceId);
     this.book = mergeBook(book);
     return this;
   },
+
+  get deviceId() { return this.profile.deviceId; },
+
+  // An attempt is identified by the run it came from, prefixed with the device, so two
+  // histories can be merged by id without a timestamp collision passing for the same run.
+  attemptId(startedAt) { return `${this.deviceId}-${startedAt}`; },
 
   // ---- textbook ----
   markRead(topicId, on = true) {
@@ -150,7 +168,7 @@ export const store = {
   // updates the same way.
   recordAnswer(qn, correct, mode, now = Date.now()) {
     this.srs[qn] = nextState(this.srs[qn], correct, now);
-    bumpActivity(this.activity, dayKey(now), correct, mode);
+    bumpActivity(this.activity, dayKey(now), correct, mode, this.deviceId);
     pruneActivity(this.activity, ACTIVITY_DAYS);
     this._touch('srs');
     this._touch('activity');
@@ -252,10 +270,14 @@ export const store = {
     this.attempts = Array.isArray(data.attempts) ? data.attempts : [];
     this.bookmarks = Array.isArray(data.bookmarks) ? data.bookmarks : [];
     this.srs = data.srs && typeof data.srs === 'object' ? data.srs : {};
-    this.activity = normalizeActivity(data.activity);
+    // Un-attributed days in the file were graded on whatever device exported it, not here.
+    this.activity = normalizeActivity(data.activity, data.profile?.deviceId);
     // Backups written before the Теория tab existed simply have no `book` key — the
     // merge turns that into an untouched textbook rather than an error.
     this.book = mergeBook(data.book);
+    // A file written by the other device carries its device id; keeping it would make both
+    // devices write attempts and activity under one name and merge them into each other.
+    this.profile.deviceId = newDeviceId();
     for (const key of Object.keys(KEY)) this._touch(key);
     await this.flush();
   },

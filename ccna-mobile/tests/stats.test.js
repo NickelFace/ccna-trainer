@@ -126,7 +126,7 @@ const DAY = 86_400_000;
 // and land on the same calendar date twice.
 const NOON = new Date(2026, 7, 17, 12, 0, 0).getTime();
 const activityFor = (...offsets) =>
-  Object.fromEntries(offsets.map(d => [dayKey(NOON - d * DAY), { total: 5, wrong: 1, srs: 2 }]));
+  Object.fromEntries(offsets.map(d => [dayKey(NOON - d * DAY), { 'and-test': { total: 5, wrong: 1, srs: 2 } }]));
 
 test('the day key follows local midnight', () => {
   const justBefore = new Date(2026, 7, 17, 23, 59, 59).getTime();
@@ -136,9 +136,24 @@ test('the day key follows local midnight', () => {
 });
 
 test('a bare number from before wrong/srs existed migrates to zeros for them', () => {
-  const migrated = normalizeActivity({ '2026-08-10': 5, '2026-08-11': { total: 3, wrong: 1, srs: 0 } });
-  assert.deepEqual(migrated['2026-08-10'], { total: 5, wrong: 0, srs: 0 });
-  assert.deepEqual(migrated['2026-08-11'], { total: 3, wrong: 1, srs: 0 });   // already current shape, untouched
+  const migrated = normalizeActivity({ '2026-08-10': 5, '2026-08-11': { total: 3, wrong: 1, srs: 0 } }, 'and-test');
+  // Both generations end up attributed to the device that owned the store they came out of.
+  assert.deepEqual(migrated['2026-08-10'], { 'and-test': { total: 5, wrong: 0, srs: 0 } });
+  assert.deepEqual(migrated['2026-08-11'], { 'and-test': { total: 3, wrong: 1, srs: 0 } });
+});
+
+test('a day split between two devices is reported as their sum', () => {
+  const day = dayKey(NOON);
+  const activity = { [day]: { 'and-test': { total: 5, wrong: 1, srs: 2 }, 'web-test': { total: 7, wrong: 0, srs: 0 } } };
+  assert.deepEqual(dayStats(activity, NOON), { total: 12, wrong: 1, srs: 2 });
+  assert.equal(answeredTotal(activity), 12);
+});
+
+test('an un-split day still counts, rather than reading as an empty one', () => {
+  // No device names: a map that never went through normalizeActivity.
+  const activity = { [dayKey(NOON)]: { total: 4, wrong: 2, srs: 1 } };
+  assert.deepEqual(dayStats(activity, NOON), { total: 4, wrong: 2, srs: 1 });
+  assert.equal(streakDays(activity, NOON), 1);
   assert.deepEqual(normalizeActivity(null), {});
   assert.deepEqual(normalizeActivity(undefined), {});
 });
@@ -188,7 +203,7 @@ test('a day that has not been worked yet does not break the streak', () => {
 // from just after midnight the day after overshoots past its start entirely — the day
 // gets skipped rather than visited.
 const day = (y, m, d) => `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-const answered = { total: 5, wrong: 1, srs: 2 };
+const answered = { 'and-test': { total: 5, wrong: 1, srs: 2 } };
 const activityOct2to5 = {
   [day(2026, 10, 2)]: answered,
   [day(2026, 10, 3)]: answered,

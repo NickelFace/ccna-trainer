@@ -152,7 +152,7 @@ export function finishSession(session, bank) {
   }
 
   const attempt = {
-    id: `${session.startedAt}`,
+    id: store.attemptId(session.startedAt),
     date: Date.now(),
     mode: session.mode,
     preset: session.preset || null,

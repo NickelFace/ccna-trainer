@@ -16,7 +16,7 @@ const profile = (over = {}) => ({
   notify: { enabled: true, daily: true, weeklyMock: true, time: '19:00', ...(over.notify || {}) },
 });
 
-const activityOf = (n, ts = NOON) => ({ [dayKey(ts)]: { total: n, wrong: 0, srs: 0 } });
+const activityOf = (n, ts = NOON) => ({ [dayKey(ts)]: { 'and-test': { total: n, wrong: 0, srs: 0 } } });
 
 // ---------------------------------------------------------------- enabled
 test('the master switch off schedules nothing, regardless of the two sub-switches', () => {

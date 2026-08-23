@@ -5,11 +5,11 @@
 // instead of freezing yesterday's verdict into the history.
 import { isCorrect } from './grade.js';
 import { PASS_SCALED } from './score.js';
-import { dayKey, normalizeActivity } from '../../../ccna-exam-simulator/assets/js/shared/activity.js';
+import { daySum, dayKey, normalizeActivity } from '../../../ccna-exam-simulator/assets/js/shared/activity.js';
 
 // The day key and the day bucket are shared with the web trainer, which writes the same
 // activity map — see the shared module for the shape.
-export { dayKey, normalizeActivity };
+export { dayKey, normalizeActivity, daySum };
 
 // Two different scales, two different thresholds — mixing them up paints a passing score
 // amber. Domain bars go by percentage (>=82 ok, 60..81 warn); the score itself goes by
@@ -87,7 +87,7 @@ export const mistakesOf = (attempt, byN) =>
   });
 
 // ---------------------------------------------------------------- daily activity
-// The activity map is { 'YYYY-MM-DD': { total, wrong, srs } }. It exists because the
+// The activity map is { 'YYYY-MM-DD': { [deviceId]: { total, wrong, srs } } }. It exists because the
 // streak and the day's quota cannot be derived from attempts alone — a session that was
 // worked on but never finished leaves no attempt behind, yet the work happened.
 //
@@ -95,16 +95,14 @@ export const mistakesOf = (attempt, byN) =>
 // `srs` is how many came from a repetition session (startSrs) rather than practice or an
 // exam — the three numbers the "Сегодня" card on the Progress tab reports.
 
-// A single day's counters, defaulting to zero so callers never need an existence check.
-export const dayStats = (activity, ts = Date.now()) => {
-  const d = activity[dayKey(ts)];
-  return { total: d?.total || 0, wrong: d?.wrong || 0, srs: d?.srs || 0 };
-};
+// A single day's counters — every device that worked that day, added up — defaulting to
+// zero so callers never need an existence check.
+export const dayStats = (activity, ts = Date.now()) => daySum(activity, dayKey(ts));
 
 export const answeredOn = (activity, ts = Date.now()) => dayStats(activity, ts).total;
 
 export const answeredTotal = activity =>
-  Object.values(activity).reduce((sum, d) => sum + (d?.total || 0), 0);
+  Object.keys(activity).reduce((sum, day) => sum + daySum(activity, day).total, 0);
 
 // One calendar day back (or forward) from a timestamp, in local time — not a fixed
 // 86_400_000 ms step. Sydney's DST change makes some real days 23h or 25h long; stepping

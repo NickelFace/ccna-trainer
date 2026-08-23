@@ -40,8 +40,9 @@ const read = (key, fallback) => {
   }
 };
 
-// Attempt ids carry the device that wrote them: two devices merging their histories match
-// attempts by id, and a bare timestamp from two clocks is a collision waiting to happen.
+// Attempt ids and activity counters carry the device that wrote them: two devices merging
+// their histories match attempts by id and count a shared day per device, and a bare
+// timestamp from two clocks is a collision waiting to happen.
 const newDeviceId = () => 'web-' + Math.random().toString(36).slice(2, 8);
 
 const Store = {
@@ -67,12 +68,14 @@ const Store = {
     this.attempts = read(KEY.attempts, []) || [];
     this.bookmarks = read(KEY.bookmarks, []) || [];
     this.srs = read(KEY.srs, {}) || {};
-    this.activity = normalizeActivity(read(KEY.activity, {}));
     this.book = read(KEY.book, {}) || {};
     if (!this.profile.deviceId) {
       this.profile.deviceId = newDeviceId();
       this._touch('profile');
     }
+    // Days recorded before the activity map was split by device belong to this browser —
+    // it is the only device that ever wrote this store.
+    this.activity = normalizeActivity(read(KEY.activity, {}), this.profile.deviceId);
     return this;
   },
 
@@ -86,7 +89,7 @@ const Store = {
   // ---- spaced repetition + activity ----
   recordAnswer(qn, correct, mode, now = Date.now()) {
     this.srs[qn] = nextState(this.srs[qn], correct, now);
-    bumpActivity(this.activity, dayKey(now), correct, mode);
+    bumpActivity(this.activity, dayKey(now), correct, mode, this.deviceId);
     pruneActivity(this.activity, ACTIVITY_DAYS);
     this._touch('srs');
     this._touch('activity');
@@ -133,7 +136,8 @@ const Store = {
     this.attempts = Array.isArray(data.attempts) ? data.attempts : [];
     this.bookmarks = Array.isArray(data.bookmarks) ? data.bookmarks : [];
     this.srs = data.srs && typeof data.srs === 'object' ? data.srs : {};
-    this.activity = normalizeActivity(data.activity);
+    // Un-attributed days in the file were graded on whatever device exported it, not here.
+    this.activity = normalizeActivity(data.activity, data.profile?.deviceId);
     this.book = data.book && typeof data.book === 'object' ? data.book : {};
     // A file written by the other device carries its device id; keeping it would make both
     // devices write attempts under one name and merge them into each other.
