@@ -89,6 +89,34 @@ const COPY = {
     practice_ok: 'Верно', practice_ok_v: 'мгновенно',
     practice_note: 'Пояснение к каждому ответу — почему верно и почему остальные нет.',
     practice_cta: 'Тренироваться',
+
+    domains_h2: 'Веса, как в официальном плане',
+    domains_lead: 'Каждая попытка собирается по этим пропорциям, поэтому тренировка ' +
+                  'совпадает с реальной структурой экзамена.',
+
+    how_h2: 'Три вещи, которые здесь работают иначе',
+    how_1_t: 'Drag-and-drop как на экзамене',
+    how_1_p: 'Сопоставления и порядок шагов, а не только выбор из четырёх вариантов.',
+    how_2_t: 'Отчёт по доменам',
+    how_2_p: 'Не общий процент, а срез по каждому домену — понятно, что учить завтра.',
+    how_3_t: 'Русский и английский',
+    how_3_p: 'Учитесь на русском, тренируйте формулировки на английском — одним переключателем.',
+
+    app_kicker: 'Мобильное приложение',
+    app_h2: 'Тот же тренажёр в телефоне',
+    app_text: 'Часть того же проекта: те же домены, те же веса, тот же отчёт.',
+    app_cta: 'Скачать APK',
+    phone_kicker: 'Отчёт',
+    phone_title: 'Домен: Network Access',
+    phone_r1: 'Пробный экзамен',
+    phone_r2: 'Отчёт по доменам',
+    phone_r3: 'Язык вопросов', phone_r3_v: 'RU / EN',
+
+    // Required in full, at 13px or larger. Do not shorten — see the handoff, B4.
+    footer_disclaimer: 'Независимый тренажёр для подготовки к экзамену 200-301. ' +
+                       'Не связан с Cisco Systems и не аффилирован с ней; ' +
+                       'названия экзаменов и доменов приведены как справочные.',
+    footer_modes: 'Режимы', footer_app: 'Приложение', footer_contacts: 'Контакты',
   },
   en: {},
 };
@@ -105,6 +133,7 @@ const PAINT = {
   dark:  ['#F7F4EE', '#F7F4EE', '#C9A24A'],
   muted: ['rgba(247,244,238,.3)', 'rgba(247,244,238,.3)', '#C9A24A'],
   mono:  ['#8A8578', '#8A8578', '#8A8578'],
+  solid: ['#16181D', '#16181D', '#16181D'],   // on the gold app tile: all three steps ink
 };
 const mark = (size, tone = 'light') =>
   `<svg class="np-mark" width="${size}" height="${size}" viewBox="0 0 86 86" aria-hidden="true">` +
@@ -113,6 +142,15 @@ const mark = (size, tone = 'light') =>
   '</svg>';
 
 // ============================ SECTIONS ============================
+// The header and How card 03 draw the same control. It is one piece of state, so both are
+// rendered from here and both write through setLocale.
+function langSwitch() {
+  return `<div class="np-langs" role="group" aria-label="Language / Язык">` +
+    ['ru', 'en'].map(l => `<button type="button" aria-pressed="${l === locale}"` +
+      ` onclick="NetPath.setLocale('${l}')">${l.toUpperCase()}</button>`).join('') +
+    `</div>`;
+}
+
 const NAV = [
   ['nav_modes', '#modes'], ['nav_domains', '#domains'],
   ['nav_how', '#how'], ['nav_app', '#app'],
@@ -127,10 +165,7 @@ function header() {
       </a>
       <nav class="np-nav">${NAV.map(([k, href]) => `<a href="${href}">${T(k)}</a>`).join('')}</nav>
       <div class="np-header-right">
-        <div class="np-langs" role="group" aria-label="Language / Язык">
-          ${['ru', 'en'].map(l => `<button type="button" data-locale="${l}"
-             aria-pressed="${l === locale}" onclick="NetPath.setLocale('${l}')">${l.toUpperCase()}</button>`).join('')}
-        </div>
+        ${langSwitch()}
         <a class="np-btn np-btn-ink" href="#modes">${T('nav_cta')}</a>
       </div>
     </div>
@@ -216,29 +251,33 @@ function modes() {
         <article class="np-mode">
           <div class="np-mode-top"><span class="np-tag teal">${T('custom_tag')}</span></div>
           <h3>${T('custom_title')}</h3>
-          <div>
-            <div class="np-field-label">${T('custom_k_domains')}</div>
-            <div class="np-chips">
-              ${picked.map(d => `<span class="np-chip on">${d.short}</span>`).join('')}
-              <span class="np-chip off">+ ${rest}</span>
+          <div class="np-mode-body">
+            <div class="np-field-group">
+              <div class="np-field-label">${T('custom_k_domains')}</div>
+              <div class="np-chips">
+                ${picked.map(d => `<span class="np-chip on">${d.short}</span>`).join('')}
+                <span class="np-chip off">+ ${rest}</span>
+              </div>
             </div>
+            <div class="np-fields">
+              <div><div class="np-field-label">${T('custom_k_questions')}</div><div class="np-field-value">${custom.questions}</div></div>
+              <div><div class="np-field-label">${T('custom_k_timer')}</div><div class="np-field-value">${T('custom_v_timer')}</div></div>
+            </div>
+            <p class="np-note">${T('custom_note')}</p>
           </div>
-          <div class="np-fields">
-            <div><div class="np-field-label">${T('custom_k_questions')}</div><div class="np-field-value">${custom.questions}</div></div>
-            <div><div class="np-field-label">${T('custom_k_timer')}</div><div class="np-field-value">${T('custom_v_timer')}</div></div>
-          </div>
-          <p class="np-note">${T('custom_note')}</p>
           <a class="np-btn np-btn-ink np-mode-cta" href="${modeUrl(custom.mode)}">${T('custom_cta')}</a>
         </article>
 
         <article class="np-mode">
           <div class="np-mode-top"><span class="np-tag mute">${T('practice_tag')}</span></div>
           <h3>${T('practice_title')}</h3>
-          <div class="np-plate ok"><span class="k">${T('practice_ok')}</span><span class="v">${T('practice_ok_v')}</span></div>
-          <div class="np-plate warm">${T('practice_note')}</div>
-          <div class="np-steps">
-            ${['#2E7D6F', '#2E7D6F', '#C9A24A', 'rgba(22,24,29,.1)', 'rgba(22,24,29,.1)']
-              .map(c => `<i style="background:${c}"></i>`).join('')}
+          <div class="np-mode-body tight">
+            <div class="np-plate ok"><span class="k">${T('practice_ok')}</span><span class="v">${T('practice_ok_v')}</span></div>
+            <div class="np-plate warm">${T('practice_note')}</div>
+            <div class="np-steps">
+              ${['#2E7D6F', '#2E7D6F', '#C9A24A', 'rgba(22,24,29,.1)', 'rgba(22,24,29,.1)']
+                .map(c => `<i style="background:${c}"></i>`).join('')}
+            </div>
           </div>
           <a class="np-btn np-btn-outline np-mode-cta" href="${modeUrl(practice.mode)}">${T('practice_cta')}</a>
         </article>
@@ -246,6 +285,129 @@ function modes() {
       </div>
     </div>
   </section>`;
+}
+
+function domains() {
+  const max = Math.max(...CONFIG.domains.map(d => d.weight));
+  return `
+  <section class="np-domains" id="domains">
+    <div class="np-shell">
+      <div class="np-domains-intro">
+        <h2>${T('domains_h2')}</h2>
+        <p class="np-sec-lead">${T('domains_lead')}</p>
+      </div>
+      <div class="np-bars">
+        ${CONFIG.domains.map(d => `
+        <div class="np-bar">
+          <div class="np-bar-top">
+            <span class="nm">${d.label}</span>
+            <span class="pc${d.accent ? ' accent' : ''}">${Math.round(d.weight * 100)}%</span>
+          </div>
+          <div class="track"><i class="${d.fill}" style="width:${(d.weight / max * 100).toFixed(1)}%"></i></div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </section>`;
+}
+
+// The visual at the foot of each card is a CSS primitive, not a screenshot — see the
+// handoff on why the page explains itself with interface shapes instead of prose.
+const HOW = [
+  { n: '01', t: 'how_1_t', p: 'how_1_p', visual: `
+    <div class="np-dd-demo"><i class="filled"></i><i class="empty"></i><i class="lit"></i></div>` },
+  { n: '02', t: 'how_2_t', p: 'how_2_p', visual: `
+    <div class="np-chart">${[[60, 'teal'], [100, 'ink'], [35, 'gold'], [78, 'ink'], [50, 'teal'], [88, 'ink']]
+      .map(([h, c]) => `<i style="height:${h}%;background:var(--${c})"></i>`).join('')}</div>` },
+  { n: '03', t: 'how_3_t', p: 'how_3_p', visual: null },   // filled in with the live switch
+];
+
+function how() {
+  return `
+  <section class="np-how" id="how">
+    <div class="np-shell">
+      <h2>${T('how_h2')}</h2>
+      <div class="np-how-grid">
+        ${HOW.map(c => `
+        <article class="np-how-card">
+          <span class="num">${c.n}</span>
+          <h3>${T(c.t)}</h3>
+          <p>${T(c.p)}</p>
+          <div class="np-how-visual">${c.visual || langSwitch()}</div>
+        </article>`).join('')}
+      </div>
+    </div>
+  </section>`;
+}
+
+// Arrow-to-a-line, from the handoff's Assets section.
+const DOWNLOAD_ICON =
+  `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+     stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+     <path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>`;
+
+function appSection() {
+  return `
+  <section class="np-app" id="app">
+    <div class="np-shell">
+      <div class="np-panel">
+        <div class="np-app-copy">
+          <div class="np-app-brand">
+            <span class="np-app-tile">${mark(24, 'solid')}</span>
+            <span>${T('app_kicker')}</span>
+          </div>
+          <h2>${T('app_h2')}</h2>
+          <p class="np-app-text">${T('app_text')}</p>
+          <!-- The releases page, not the file: CI republishes it, so no download attribute
+               (that would name the page, not the build) and it opens in its own tab. -->
+          <a class="np-btn np-btn-download" href="${CONFIG.appUrl}" target="_blank" rel="noopener">
+            ${DOWNLOAD_ICON}${T('app_cta')}
+          </a>
+        </div>
+        ${phoneMock()}
+      </div>
+    </div>
+  </section>`;
+}
+
+function phoneMock() {
+  const rows = [
+    ['solid', T('phone_r1'), '→'],
+    ['plain', T('phone_r2'), '→'],
+    ['plain', T('phone_r3'), T('phone_r3_v')],
+  ];
+  const bars = [[40, 'rgba(22,24,29,.15)'], [62, 'rgba(22,24,29,.15)'], [55, 'rgba(22,24,29,.15)'],
+                [80, 'var(--teal)'], [100, 'var(--gold)']];
+  return `
+  <div class="np-phone" aria-hidden="true">
+    <div class="np-phone-screen">
+      <div class="np-phone-status"><span>9:41</span><span>▮▮▮</span></div>
+      <div class="np-phone-head">
+        <span class="np-phone-kicker">${T('phone_kicker')}</span>
+        <span class="np-phone-title">${T('phone_title')}</span>
+      </div>
+      <div class="np-phone-rows">
+        ${rows.map(([cls, k, v]) =>
+          `<div class="np-phone-row ${cls}"><span>${k}</span><span class="v">${v}</span></div>`).join('')}
+      </div>
+      <div class="np-phone-chart">
+        ${bars.map(([h, c]) => `<i style="height:${h}%;background:${c}"></i>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function footer() {
+  const links = [['footer_modes', '#modes'], ['footer_app', '#app'], ['footer_contacts', '#top']];
+  return `
+  <footer class="np-footer">
+    <div class="np-shell">
+      <div class="np-lockup">${mark(20, 'mono')}<span class="np-name">${CONFIG.brandName}</span></div>
+      <p class="np-disclaimer">${T('footer_disclaimer')}</p>
+      <nav class="np-footer-links">
+        ${links.map(([k, href]) => `<a href="${href}">${T(k)}</a>`).join('')}
+      </nav>
+    </div>
+  </footer>`;
 }
 
 // ============================ MOUNT ============================
@@ -259,7 +421,7 @@ function render() {
   // Instrument Serif has no Cyrillic — binding the face to `locale` alone would drop those
   // headlines to a Georgia fallback. This flips to 'en' by itself once COPY.en is filled in.
   el.dataset.copy = Object.keys(COPY[locale]).length ? locale : 'ru';
-  el.innerHTML = header() + hero() + modes();
+  el.innerHTML = header() + hero() + modes() + domains() + how() + appSection() + footer();
 }
 
 function showLanding() {

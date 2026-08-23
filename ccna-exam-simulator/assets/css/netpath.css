@@ -53,7 +53,7 @@
      Russian sets Playfair Display and takes its slightly looser metrics with it.
      See design_handoff_netpath/Type Cyrillic Test.dc.html for the comparison. */
   --serif:'Playfair Display',Georgia,'Times New Roman',serif;
-  --h1-lh:1.04; --h1-ls:-.015em;
+  --h1-lh:1.04; --h1-ls:-.015em; --phone-h:24px;
 
   --ui:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
   --num:'Space Grotesk','Manrope',system-ui,sans-serif;
@@ -74,7 +74,7 @@
 }
 .np[data-copy="en"]{
   --serif:'Instrument Serif',Georgia,'Times New Roman',serif;
-  --h1-lh:1.02; --h1-ls:-.02em;
+  --h1-lh:1.02; --h1-ls:-.02em; --phone-h:26px;
 }
 
 /* The trainer paints the body near-black with a grid overlay. While the landing
@@ -136,7 +136,7 @@ body.np-on .lang-switch{display:none}          /* the landing header carries its
 .np .np-btn-ghost:hover{border-color:rgba(247,244,238,.5)}
 .np .np-btn-outline{background:none;color:var(--ink);border:1px solid rgba(22,24,29,.2);padding:14px 24px;font-size:14px}
 .np .np-btn-outline:hover{border-color:var(--ink)}
-.np :focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:999px}
+.np :focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 
 /* ------------------------------------------------------------------ hero -- */
 .np-hero{background:var(--ink);color:var(--cream-light);padding:104px 0 112px}
@@ -187,8 +187,11 @@ body.np-on .lang-switch{display:none}          /* the landing header carries its
 .np-sec-lead{font-size:16px;line-height:1.65;color:var(--grey-text);max-width:380px;text-wrap:pretty}
 
 .np-mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:40px}
+/* The spec's min-height/width figures are content-box (the mockup has no global
+   border-box reset; this page does), so padding and border are added back here
+   rather than silently eaten. */
 .np-mode{
-  border-radius:20px;padding:32px;min-height:340px;
+  border-radius:20px;padding:32px;min-height:calc(340px + 64px + 2px);
   display:flex;flex-direction:column;gap:20px;
   background:var(--cream);border:1px solid rgba(22,24,29,.1);
   transition:box-shadow .18s,transform .18s;
@@ -196,6 +199,8 @@ body.np-on .lang-switch{display:none}          /* the landing header carries its
 .np-mode:hover{box-shadow:0 18px 40px -22px rgba(22,24,29,.45);transform:translateY(-2px)}
 .np-mode.feature{background:var(--ink);color:var(--cream-light);border-color:var(--ink)}
 .np-mode-top{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.np-mode-body{display:flex;flex-direction:column;gap:14px}
+.np-mode-body.tight{gap:10px}
 .np-tag{padding:6px 13px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em}
 .np-tag.gold{background:rgba(201,162,74,.18);color:var(--gold)}
 .np-tag.teal{background:rgba(46,125,111,.12);color:var(--teal)}
@@ -214,13 +219,14 @@ body.np-on .lang-switch{display:none}          /* the landing header carries its
 .np-specs .v.gold{color:var(--gold)}
 
 /* "build your own" card internals */
-.np-field-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--grey);margin-bottom:8px}
+.np-field-group{display:flex;flex-direction:column;gap:7px}
+.np-field-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--grey)}
 .np-chips{display:flex;flex-wrap:wrap;gap:6px}
 .np-chip{padding:6px 11px;border-radius:999px;font-size:12px;font-weight:600}
 .np-chip.on{background:var(--ink);color:var(--cream-light)}
 .np-chip.off{border:1px solid rgba(22,24,29,.18);color:var(--grey)}
 .np-fields{display:flex;gap:10px}
-.np-fields > div{flex:1}
+.np-fields > div{flex:1;display:flex;flex-direction:column;gap:5px}
 .np-field-value{padding:9px 12px;border-radius:10px;background:var(--cream-warm);font-family:var(--num);font-size:15px;font-weight:700;color:var(--ink)}
 .np-note{font-size:13px;line-height:1.55;color:var(--grey-text)}
 
@@ -230,5 +236,84 @@ body.np-on .lang-switch{display:none}          /* the landing header carries its
 .np-plate.ok .k{font-size:13px;font-weight:700;color:var(--ink)}
 .np-plate.ok .v{font-size:12px;font-weight:700;color:var(--teal)}
 .np-plate.warm{background:var(--cream-warm);display:block;font-size:13px;line-height:1.55;color:var(--grey-text)}
-.np-steps{display:flex;gap:6px}
+.np-steps{display:flex;gap:6px;padding-top:2px}
 .np-steps i{flex:1;height:6px;border-radius:3px}
+
+/* --------------------------------------------------------------- domains -- */
+.np-domains{padding:104px 0}
+.np-domains .np-shell{display:grid;grid-template-columns:.8fr 1.2fr;gap:72px;align-items:start}
+.np-domains-intro{position:sticky;top:110px}
+.np-domains-intro h2{font-family:var(--serif);font-size:46px;font-weight:400;line-height:1.08}
+.np-domains-intro .np-sec-lead{margin-top:18px;max-width:none}
+.np-bars{display:flex;flex-direction:column;gap:22px}
+.np-bar{display:flex;flex-direction:column;gap:9px}
+.np-bar .np-bar-top{display:flex;justify-content:space-between;align-items:baseline;gap:14px}
+.np-bar .nm{font-size:16px;font-weight:700;color:var(--ink)}
+.np-bar .pc{font-family:var(--num);font-size:16px;font-weight:700;color:var(--grey)}
+.np-bar .pc.accent{color:var(--gold)}
+.np-bar .track{height:10px;border-radius:5px;background:rgba(22,24,29,.07);overflow:hidden}
+.np-bar .track i{display:block;height:100%;border-radius:5px}
+.np-bar .track i.ink{background:var(--ink)}
+.np-bar .track i.teal{background:var(--teal)}
+
+/* ------------------------------------------------------------------- how -- */
+.np-how{background:var(--cream-warm);border-top:1px solid rgba(22,24,29,.07);border-bottom:1px solid rgba(22,24,29,.07);padding:96px 0}
+.np-how h2{font-family:var(--serif);font-size:46px;font-weight:400;line-height:1.08;max-width:620px}
+.np-how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
+.np-how-card{background:var(--cream);border:1px solid rgba(22,24,29,.08);border-radius:18px;padding:30px;
+  min-height:calc(240px + 60px + 2px);display:flex;flex-direction:column;gap:14px}
+.np-how-card .num{font-family:var(--num);font-size:13px;font-weight:700;color:var(--gold)}
+.np-how-card h3{font-size:21px;font-weight:800;letter-spacing:-.01em}
+.np-how-card p{font-size:15px;line-height:1.6;color:var(--grey-text)}
+.np-how-visual{margin-top:auto}
+
+/* 01 — three drag-and-drop slots in their three states */
+.np-dd-demo{display:flex;gap:8px}
+.np-dd-demo i{flex:1;height:30px;border-radius:9px}
+.np-dd-demo i.filled{background:var(--ink)}
+.np-dd-demo i.empty{border:1px dashed rgba(22,24,29,.25)}
+.np-dd-demo i.lit{background:rgba(201,162,74,.25)}
+
+/* 02 — a per-domain report, as a column chart */
+.np-chart{display:flex;align-items:flex-end;gap:6px;height:44px}
+.np-chart i{flex:1;border-radius:4px}
+
+/* 03 — the same language switch as the header, inert here */
+.np-how-visual .np-langs{align-self:flex-start;width:max-content}
+
+/* ------------------------------------------------------------------- app -- */
+.np-app{padding:104px 0}
+.np-panel{background:var(--ink);border-radius:28px;padding:64px;overflow:hidden;display:grid;grid-template-columns:1fr .7fr;gap:56px;align-items:center;color:var(--cream-light)}
+.np-app-copy{display:flex;flex-direction:column;gap:26px;align-items:flex-start}
+.np-app-brand{display:flex;align-items:center;gap:14px}
+.np-app-tile{width:44px;height:44px;border-radius:13px;background:var(--gold);display:flex;align-items:center;justify-content:center;flex:none}
+.np-app-brand span{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:rgba(247,244,238,.55)}
+.np-panel h2{font-family:var(--serif);font-size:50px;font-weight:400;line-height:1.05;color:var(--cream-light)}
+.np-app-text{font-size:17px;line-height:1.6;color:rgba(247,244,238,.7);max-width:420px}
+.np .np-btn-download{background:var(--gold);color:var(--ink);padding:15px 26px;font-size:15px;gap:9px}
+.np .np-btn-download:hover{background:#bd9642}
+
+/* Phone mockup — illustration, same rules as the hero card: inert, aria-hidden. */
+.np-phone{width:calc(268px + 24px);border-radius:38px;background:#23262E;padding:12px;box-shadow:0 40px 70px -24px rgba(0,0,0,.7);justify-self:center;user-select:none}
+.np-phone-screen{border-radius:28px;background:var(--cream);padding:22px 18px;display:flex;flex-direction:column;gap:18px;color:var(--ink)}
+.np-phone-status{display:flex;justify-content:space-between;font-size:10px;font-weight:700;color:var(--grey)}
+.np-phone-kicker{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--grey)}
+.np-phone-head{display:flex;flex-direction:column;gap:4px}
+.np-phone-title{font-family:var(--serif);font-size:var(--phone-h);line-height:1.1;color:var(--ink)}
+.np-phone-rows{display:flex;flex-direction:column;gap:10px}
+.np-phone-row{padding:13px 14px;border-radius:12px;display:flex;justify-content:space-between;gap:10px;font-size:12px}
+.np-phone-row.solid{background:var(--ink);color:var(--cream-light);font-weight:700}
+.np-phone-row.solid .v{color:var(--gold)}
+.np-phone-row.plain{border:1px solid rgba(22,24,29,.1);color:var(--grey-text);font-weight:600}
+.np-phone-row.plain .v{color:var(--grey)}
+.np-phone-chart{display:flex;align-items:flex-end;gap:5px;height:calc(46px + 4px);padding-top:4px}
+.np-phone-chart i{flex:1;border-radius:3px}
+
+/* ---------------------------------------------------------------- footer -- */
+.np-footer{border-top:1px solid rgba(22,24,29,.08)}
+.np-footer .np-shell{display:flex;align-items:center;gap:24px;flex-wrap:wrap;padding:40px}
+.np-footer .np-lockup .np-name{font-size:15px;font-weight:700;color:var(--grey);letter-spacing:normal}
+.np-disclaimer{font-size:13px;line-height:1.55;color:var(--grey);max-width:560px}
+.np-footer-links{margin-left:auto;display:flex;gap:22px}
+.np-footer-links a{font-size:13px;font-weight:600;color:var(--grey);transition:color .15s}
+.np-footer-links a:hover{color:var(--gold)}
