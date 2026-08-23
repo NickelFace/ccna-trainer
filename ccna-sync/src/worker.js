@@ -15,8 +15,21 @@
 // account, no e-mail and no password: the key IS the identity, generated on the first
 // device and typed (or scanned) into the second. Only its SHA-256 is stored, so the
 // database itself cannot be used to sync as anyone.
+//
+// That alone would make this open house: the trainer is a public site, so anyone who opens
+// it can press "make a key" and start keeping their progress in someone else's database.
+// Two settings close it, both read from the environment so neither needs a code change:
+//
+//   ALLOWED_KEY_HASHES  whitespace/comma-separated SHA-256 hex. Set it and only those keys
+//                       work — this is the actual lock. The hashes are safe to write down:
+//                       they are what the database already holds, and a 192-bit key cannot
+//                       be recovered from one.
+//   MAX_KEYS            how many distinct keys may ever be created (default below). This is
+//                       only a backstop for the window before the allowlist is set — it
+//                       caps the damage, it does not choose who gets in.
 
 const MAX_BLOB_BYTES = 1_000_000;   // D1 caps a row at 2 MB; a year of one user's history is tens of KB
+const DEFAULT_MAX_KEYS = 8;         // one user, a handful of devices and a re-key or two
 
 // The two clients, plus the two ways they run in development. Everything else gets no CORS
 // headers at all — the browser then refuses the response, which is the point.
@@ -29,6 +42,17 @@ const ALLOWED_ORIGINS = new Set([
 ]);
 
 const KEY_RE = /^[A-Za-z0-9_-]{32,128}$/;   // base64url, 32 bytes -> 43 chars
+
+// The allowlist, or null when the server is still open to any key.
+const allowList = env => {
+  const found = String(env.ALLOWED_KEY_HASHES || '').toLowerCase().match(/[0-9a-f]{64}/g);
+  return found && found.length ? new Set(found) : null;
+};
+
+const maxKeys = env => {
+  const n = Number(env.MAX_KEYS);
+  return Number.isInteger(n) && n > 0 ? n : DEFAULT_MAX_KEYS;
+};
 
 const json = (body, status, origin) => new Response(JSON.stringify(body), {
   status,
@@ -90,6 +114,12 @@ async function put(request, env, hash, origin) {
   // rev 0 means "I believe nothing is stored yet". INSERT … DO NOTHING settles the race
   // between two devices claiming that at the same moment: exactly one of them changes a row.
   if (rev === 0) {
+    // Creating a key is the only operation that grows the database, so it is the only one
+    // the cap applies to. An existing user is never turned away by it.
+    const { n } = await env.DB.prepare('SELECT COUNT(*) AS n FROM state').first();
+    if (n >= maxKeys(env)) {
+      return json({ error: 'this server is not taking new sync keys' }, 403, origin);
+    }
     const res = await env.DB
       .prepare('INSERT INTO state (key_hash, rev, blob, updated_at) VALUES (?, 1, ?, ?) ON CONFLICT (key_hash) DO NOTHING')
       .bind(hash, blob, now)
@@ -113,12 +143,19 @@ export async function handle(request, env) {
   const { pathname } = new URL(request.url);
 
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors(origin) });
-  if (pathname === '/v1/health') return json({ ok: true }, 200, origin);
+  // `locked` is how the owner checks from a terminal that the allowlist actually took
+  // effect after setting the secret. It says whether there is a list, never what is in it.
+  if (pathname === '/v1/health') return json({ ok: true, locked: !!allowList(env) }, 200, origin);
   if (pathname !== '/v1/state') return json({ error: 'not found' }, 404, origin);
 
   const key = bearer(request);
   if (!key) return json({ error: 'missing or malformed sync key' }, 401, origin);
   const hash = await keyHash(key);
+
+  // Indistinguishable from a wrong key on purpose: a stranger learns only that their key
+  // is not this server's, not whether they were close or whether a list exists at all.
+  const allowed = allowList(env);
+  if (allowed && !allowed.has(hash)) return json({ error: 'unknown sync key' }, 401, origin);
 
   if (request.method === 'GET') {
     const row = await readState(env, hash);

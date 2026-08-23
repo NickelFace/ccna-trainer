@@ -207,6 +207,7 @@ const I18N = {
     sync_nochange: 'Всё уже совпадает. Попыток в истории: {0}',
     sync_err_key: 'Ключ не подходит: нужно 32–128 символов — латиница, цифры, «-» и «_».',
     sync_err_auth: 'Сервер не принял этот ключ.',
+    sync_err_closed: 'Сервер не заводит новые ключи. Введи тот, который уже используется на другом устройстве.',
     sync_err_offline: 'Нет связи с сервером синхронизации.',
     sync_err_server: 'Сервер ответил ошибкой. Попробуй позже — прогресс на месте.',
     sync_err_corrupt: 'На сервере лежит что-то нечитаемое. Синхронизация остановлена, чтобы не затереть прогресс.',
@@ -372,6 +373,7 @@ const I18N = {
     sync_nochange: 'Already in step. Attempts in history: {0}',
     sync_err_key: 'That key will not do: 32–128 characters, letters, digits, "-" and "_".',
     sync_err_auth: 'The server did not accept this key.',
+    sync_err_closed: 'This server is not taking new keys. Use the one the other device already has.',
     sync_err_offline: 'No connection to the sync server.',
     sync_err_server: 'The server answered with an error. Try later — the progress is safe.',
     sync_err_corrupt: 'What is stored on the server cannot be read. Sync stopped rather than overwrite progress.',
@@ -1097,7 +1099,7 @@ function importProgress() {
 // protocol, the merge and the retries are in assets/js/shared/, imported by store.js —
 // this file is a classic script and only ever talks to window.Store.
 const SYNC_ERR = {
-  key: 'sync_err_key', auth: 'sync_err_auth', offline: 'sync_err_offline',
+  key: 'sync_err_key', auth: 'sync_err_auth', closed: 'sync_err_closed', offline: 'sync_err_offline',
   server: 'sync_err_server', corrupt: 'sync_err_corrupt', conflict: 'sync_err_conflict',
 };
 

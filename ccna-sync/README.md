@@ -31,6 +31,29 @@ means "I believe nothing is stored yet" and fails the same way if something is.
 Limits: the blob is capped at 1 MB (D1 allows 2 MB per row), origins are limited to the
 Pages site and the Capacitor WebView.
 
+## Who may use it
+
+The trainer is a public site, so a key on its own is not a door — anyone who opens the page
+can make one. Two environment settings decide who actually gets in:
+
+| setting | effect |
+|---|---|
+| `ALLOWED_KEY_HASHES` | whitespace- or comma-separated SHA-256 hex. Set it and only those keys work. This is the lock. |
+| `MAX_KEYS` | how many distinct keys may ever be created (default 8). A backstop for the window before the allowlist is set, not a way to choose who gets in. |
+
+A key that is not on the list gets the same 401 a wrong key gets, so a stranger cannot tell
+a list exists. The cap only ever refuses to *create* a key; an existing one keeps working.
+
+The hashes are safe to write down — they are what the table already stores, and a 192-bit
+key cannot be recovered from one. To find yours without touching the key itself:
+
+```sql
+SELECT key_hash, rev, datetime(updated_at / 1000, 'unixepoch') FROM state;
+```
+
+`GET /v1/health` answers `{"ok":true,"locked":true}` once a list is in place — which is how
+you check the setting took effect without revealing what is in it.
+
 ## Development
 
 ```bash

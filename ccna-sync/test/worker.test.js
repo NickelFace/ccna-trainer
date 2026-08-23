@@ -8,7 +8,7 @@ const KEY = 'Zm9vYmFyLXRlc3Qta2V5LTMyLWJ5dGVzLWJhc2U2NHVy';
 const KEY2 = 'c2Vjb25kLWtleS0zMi1ieXRlcy1sb25nLWJhc2U2NHVybA';
 const SITE = 'https://ccna.maks.top';
 
-const call = (env, method, path, { key, body, origin } = {}) => {
+const call = (env, method, path, { key, body, origin, vars } = {}) => {
   const headers = {};
   if (key) headers.authorization = `Bearer ${key}`;
   if (origin) headers.origin = origin;
@@ -17,13 +17,65 @@ const call = (env, method, path, { key, body, origin } = {}) => {
     method,
     headers,
     body: body === undefined ? undefined : (typeof body === 'string' ? body : JSON.stringify(body)),
-  }), { DB: env });
+  }), { DB: env, ...vars });
 };
 
-test('health needs no key', async () => {
-  const res = await call(d1(), 'GET', '/v1/health');
-  assert.equal(res.status, 200);
-  assert.deepEqual(await res.json(), { ok: true });
+test('health needs no key, and says whether the door is locked', async () => {
+  const open = await call(d1(), 'GET', '/v1/health');
+  assert.equal(open.status, 200);
+  assert.deepEqual(await open.json(), { ok: true, locked: false });
+
+  const shut = await call(d1(), 'GET', '/v1/health', { vars: { ALLOWED_KEY_HASHES: 'a'.repeat(64) } });
+  assert.deepEqual(await shut.json(), { ok: true, locked: true });
+});
+
+// ---------------------------------------------------------------- who may use this server
+
+const sha256 = async text => {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, '0')).join('');
+};
+
+test('with an allowlist, a key that is not on it gets nowhere', async () => {
+  const env = d1();
+  const vars = { ALLOWED_KEY_HASHES: await sha256(KEY) };
+
+  const mine = await call(env, 'PUT', '/v1/state', { key: KEY, body: { rev: 0, blob: 'mine' }, vars });
+  assert.equal(mine.status, 200);
+
+  // 401 either way, the same answer a wrong key gets: a stranger learns nothing about the list.
+  assert.equal((await call(env, 'GET', '/v1/state', { key: KEY2, vars })).status, 401);
+  assert.equal((await call(env, 'PUT', '/v1/state', { key: KEY2, body: { rev: 0, blob: 'theirs' }, vars })).status, 401);
+});
+
+test('the allowlist takes several keys, in any of the shapes a person types', async () => {
+  const env = d1();
+  const vars = { ALLOWED_KEY_HASHES: `${(await sha256(KEY)).toUpperCase()}, \n ${await sha256(KEY2)}` };
+  assert.equal((await call(env, 'GET', '/v1/state', { key: KEY, vars })).status, 200);
+  assert.equal((await call(env, 'GET', '/v1/state', { key: KEY2, vars })).status, 200);
+});
+
+test('junk in the allowlist does not accidentally open the door', async () => {
+  const env = d1();
+  // Nothing hash-shaped in it: the setting is not a list, so it is not a list of everyone.
+  const vars = { ALLOWED_KEY_HASHES: 'todo: paste the hash here' };
+  assert.equal((await call(env, 'GET', '/v1/state', { key: KEY, vars })).status, 200);
+});
+
+test('without an allowlist, the number of keys is still capped', async () => {
+  const env = d1();
+  const vars = { MAX_KEYS: 2 };
+  const keys = ['1', '2', '3'].map(n => `padded-sync-key-for-test-number-${n}${'x'.repeat(8)}`);
+
+  assert.equal((await call(env, 'PUT', '/v1/state', { key: keys[0], body: { rev: 0, blob: 'a' }, vars })).status, 200);
+  assert.equal((await call(env, 'PUT', '/v1/state', { key: keys[1], body: { rev: 0, blob: 'b' }, vars })).status, 200);
+
+  const third = await call(env, 'PUT', '/v1/state', { key: keys[2], body: { rev: 0, blob: 'c' }, vars });
+  assert.equal(third.status, 403);
+
+  // The cap is about new keys only — the ones already there keep working.
+  const again = await call(env, 'PUT', '/v1/state', { key: keys[0], body: { rev: 1, blob: 'a2' }, vars });
+  assert.equal(again.status, 200);
 });
 
 test('a key that is missing, malformed or too short never reaches the database', async () => {

@@ -42,7 +42,7 @@ export class SyncError extends Error {
   constructor(code, message, status = 0) {
     super(message);
     this.name = 'SyncError';
-    this.code = code;       // 'key' | 'auth' | 'offline' | 'server' | 'conflict' | 'corrupt'
+    this.code = code;       // 'key' | 'auth' | 'closed' | 'offline' | 'server' | 'conflict' | 'corrupt'
     this.status = status;
   }
 }
@@ -76,6 +76,9 @@ async function call(fetchFn, base, key, init = {}) {
     throw new SyncError('offline', err?.message || 'no connection');
   }
   if (res.status === 401) throw new SyncError('auth', 'the server did not accept this key', 401);
+  // The server is up and the key is well formed, but this server is not handing out room
+  // to new keys — a different sentence from "your key is wrong", and a different fix.
+  if (res.status === 403) throw new SyncError('closed', 'this server is not taking new sync keys', 403);
   if (res.status !== 200 && res.status !== 409) {
     throw new SyncError('server', `server answered ${res.status}`, res.status);
   }
