@@ -519,6 +519,18 @@
 .backup-actions { display: flex; gap: 10px; }
 .backup-actions .btn { flex: 1; }
 
+.sync-card { margin-top: 16px; }
+.sync-card .card-head { margin-bottom: 8px; }
+.sync-card p { line-height: 1.6; margin-bottom: 14px; }
+/* 32 characters that have to be read off one screen and typed into another */
+.sync-key {
+  width: 100%; margin-bottom: 12px; padding: 11px 12px;
+  border: 1px solid var(--border); border-radius: 10px;
+  background: var(--surface-alt); color: var(--text);
+  font-family: var(--font-mono); font-size: 13px; letter-spacing: .02em;
+}
+.sync-status { margin: 12px 0 0; }
+
 /* ---------------------------------------------------------- home: readiness */
 .readiness { padding: 22px 0 4px; }
 .readiness-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }

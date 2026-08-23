@@ -13,7 +13,8 @@ import { nextState, pruneGhosts } from '../engine/srs.js';
 import { dayKey, normalizeActivity } from '../engine/stats.js';
 import { isEmptyAnswer } from '../engine/grade.js';
 import { ACTIVITY_DAYS, bumpActivity, pruneActivity } from '../../../ccna-exam-simulator/assets/js/shared/activity.js';
-import { packBackup, isBackup } from '../../../ccna-exam-simulator/assets/js/shared/backup.js';
+import { BRANCHES, packBackup, isBackup } from '../../../ccna-exam-simulator/assets/js/shared/backup.js';
+import { isSyncKey, newSyncKey, syncOnce } from '../../../ccna-exam-simulator/assets/js/shared/sync.js';
 
 const KEY = {
   profile: 'ccna.profile',
@@ -23,7 +24,14 @@ const KEY = {
   srs: 'ccna.srs',
   activity: 'ccna.activity',
   book: 'ccna.book',
+  // Not one of the seven branches: this is what talks to the server, not progress. It is
+  // deliberately outside the `v:1` object — packBackup goes by BRANCHES — because the key
+  // would otherwise be uploaded to the very server that is only ever supposed to hold its
+  // hash, and would travel inside every exported file.
+  sync: 'ccna.sync',
 };
+
+const DEFAULT_SYNC = { key: null, syncedAt: 0, rev: 0 };
 
 // Reading state for the Теория tab: which chapters are done, where each was left off,
 // which one to offer to continue, and the reader's text size.
@@ -100,15 +108,16 @@ export const store = {
   attempts: [],
   bookmarks: [],
   srs: {},            // qn -> { box, dueAt, lastResult, seenCount }
-  activity: {},       // 'YYYY-MM-DD' -> answers graded that day
+  activity: {},       // 'YYYY-MM-DD' -> deviceId -> answers graded that day
   book: { ...DEFAULT_BOOK },
+  sync: { ...DEFAULT_SYNC },
 
   _dirty: new Set(),
   _timer: null,
   _writing: null,
 
   async load() {
-    const [profile, session, attempts, bookmarks, srs, activity, book] = await Promise.all([
+    const [profile, session, attempts, bookmarks, srs, activity, book, sync] = await Promise.all([
       read(KEY.profile, {}),
       read(KEY.session, null),
       read(KEY.attempts, []),
@@ -116,6 +125,7 @@ export const store = {
       read(KEY.srs, {}),
       read(KEY.activity, {}),
       read(KEY.book, {}),
+      read(KEY.sync, {}),
     ]);
     this.profile = mergeProfile(profile);
     if (!this.profile.deviceId) {
@@ -130,6 +140,7 @@ export const store = {
     // it is the only device that ever wrote this store.
     this.activity = normalizeActivity(activity, this.profile.deviceId);
     this.book = mergeBook(book);
+    this.sync = { ...DEFAULT_SYNC, ...(sync && typeof sync === 'object' ? sync : {}) };
     return this;
   },
 
@@ -247,6 +258,42 @@ export const store = {
     return this.profile;
   },
 
+  // ---- sync ----
+  isSyncKey,
+  newSyncKey,
+
+  setSync(patch) {
+    Object.assign(this.sync, patch);
+    this._touch('sync');
+    return this.sync;
+  },
+
+  // One exchange with the server: pull, merge, push. Throws SyncError, whose `code` is
+  // what the screen turns into a sentence — "wrong key" and "no signal" are not the same
+  // news on a phone.
+  async syncNow(now = Date.now()) {
+    const { state, rev, wrote } = await syncOnce({
+      fetch: (url, init) => fetch(url, init),
+      key: this.sync.key,
+      state: this,
+      now,
+    });
+    this.applySync(state);
+    this.setSync({ rev, syncedAt: now });
+    await this.flush();
+    return { wrote, rev };
+  },
+
+  // Adopt what the merge decided. The session is not in it by design — an exam running on
+  // this phone is not something the browser can contribute to.
+  applySync(state) {
+    for (const k of ['profile', 'attempts', 'bookmarks', 'srs', 'activity', 'book']) {
+      if (!(k in state)) continue;
+      this[k] = state[k];
+      this._mark(k);
+    }
+  },
+
   // ---- backup ----
   // The only way progress survives an install that Android treats as a fresh one — a
   // signing key change (debug → release, or a lost keystore) forces an uninstall first,
@@ -278,7 +325,9 @@ export const store = {
     // A file written by the other device carries its device id; keeping it would make both
     // devices write attempts and activity under one name and merge them into each other.
     this.profile.deviceId = newDeviceId();
-    for (const key of Object.keys(KEY)) this._touch(key);
+    // Every branch but `sync`: a restored backup carries someone's progress, never their
+    // key — the file has no key in it, and the one on this phone stays as it was.
+    for (const key of BRANCHES) this._touch(key);
     await this.flush();
   },
 

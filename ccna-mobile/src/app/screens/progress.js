@@ -12,6 +12,7 @@ import {
 import { startPractice } from '../session.js';
 import { confirmDialog } from '../dialog.js';
 import { exportBackup, readBackupFile } from '../backup.js';
+import { syncCard, wireSync } from '../sync-ui.js';
 import { toast } from '../toast.js';
 import { question as questionScreen } from './question.js';
 import { result as resultScreen } from './result.js';
@@ -181,8 +182,10 @@ export const progress = {
           <p class="muted">Пройди первый пробный экзамен — одной попытки уже хватит, чтобы
           увидеть расклад по доменам.</p>
         </div>
+        ${syncCard()}
         ${backupCard()}`);
       wireBackup(node);
+      wireSync(node, ctx);
       return node;
     }
 
@@ -217,6 +220,7 @@ export const progress = {
         <div class="topics">${topicCards(topics)}</div>` : ''}
       <div class="label spaced">Все попытки</div>
       <div class="card tight">${historyRows(attempts)}</div>
+      ${syncCard()}
       ${backupCard()}
     `);
 
@@ -243,6 +247,7 @@ export const progress = {
     });
 
     wireBackup(node);
+    wireSync(node, ctx);
     return node;
   },
 };
