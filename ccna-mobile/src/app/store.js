@@ -114,6 +114,10 @@ export const store = {
 
   _dirty: new Set(),
   _timer: null,
+  // Counts changes made here, against what the last successful sync carried. Only ever
+  // compared, never persisted: after a restart the start-up sync runs regardless.
+  _seq: 0,
+  _syncedSeq: 0,
   _writing: null,
 
   async load() {
@@ -262,6 +266,9 @@ export const store = {
   isSyncKey,
   newSyncKey,
 
+  // Is there anything here the server has not been told about?
+  get changedSinceSync() { return this._seq !== this._syncedSeq; },
+
   setSync(patch) {
     Object.assign(this.sync, patch);
     this._touch('sync');
@@ -272,6 +279,9 @@ export const store = {
   // what the screen turns into a sentence — "wrong key" and "no signal" are not the same
   // news on a phone.
   async syncNow(now = Date.now()) {
+    // Read before the request, applied after it: a change made while the exchange is in
+    // flight was not in the blob that went up, and must still count as unsynced.
+    const at = this._seq;
     const { state, rev, wrote } = await syncOnce({
       fetch: (url, init) => fetch(url, init),
       key: this.sync.key,
@@ -280,6 +290,7 @@ export const store = {
     });
     this.applySync(state);
     this.setSync({ rev, syncedAt: now });
+    this._syncedSeq = at;
     await this.flush();
     return { wrote, rev };
   },
@@ -290,7 +301,7 @@ export const store = {
     for (const k of ['profile', 'attempts', 'bookmarks', 'srs', 'activity', 'book']) {
       if (!(k in state)) continue;
       this[k] = state[k];
-      this._mark(k);
+      this._queue(k);
     }
   },
 
@@ -335,10 +346,20 @@ export const store = {
   // Queue a branch for writing without claiming it was just edited. Adopting a merged
   // state must not re-stamp it: the stamp would then say "written now" on both devices
   // after every sync, and a real edit made offline on the other one would lose to it.
-  _mark(key) {
+  // Queue a branch for writing. Split from _mark so adopting a merged state can reach the
+  // disk without counting as work the server has not seen — see applySync.
+  _queue(key) {
     this._dirty.add(key);
     if (this._timer) return;
     this._timer = setTimeout(() => { this._timer = null; this.flush(); }, FLUSH_MS);
+  },
+
+  // A branch changed because something happened here. The counter is what tells the
+  // automatic sync whether leaving is worth a request; the `sync` entry itself is not
+  // progress, so writing the key or the last-synced time does not count.
+  _mark(key) {
+    if (key !== 'sync') this._seq++;
+    this._queue(key);
   },
 
   // `profile` and `book` are the two branches merge() cannot combine field by field — an

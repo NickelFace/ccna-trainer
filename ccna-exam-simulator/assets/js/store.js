@@ -17,7 +17,7 @@ import { nextState } from './shared/srs.js';
 import { ACTIVITY_DAYS, bumpActivity, dayKey, normalizeActivity, pruneActivity } from './shared/activity.js';
 import { BRANCHES, isBackup, packBackup } from './shared/backup.js';
 import { PASS_SCALED, toScaled } from './shared/score.js';
-import { isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js';
+import { autoSyncer, isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js';
 
 const KEY = {
   profile: 'ccna.profile',
@@ -68,6 +68,10 @@ const Store = {
 
   _dirty: new Set(),
   _timer: null,
+  // Counts changes made here, against what the last successful sync carried. Only ever
+  // compared, never persisted: after a restart the start-up sync runs regardless.
+  _seq: 0,
+  _syncedSeq: 0,
 
   load() {
     this.profile = read(KEY.profile, {}) || {};
@@ -137,6 +141,9 @@ const Store = {
   newSyncKey,
   SYNC_BASE,
 
+  // Is there anything here the server has not been told about?
+  get changedSinceSync() { return this._seq !== this._syncedSeq; },
+
   setSync(patch) {
     Object.assign(this.sync, patch);
     this._touch('sync');
@@ -146,6 +153,9 @@ const Store = {
   // One exchange with the server: pull, merge, push. Throws SyncError — the caller has to
   // tell "wrong key" apart from "no connection" on screen.
   async syncNow(now = Date.now()) {
+    // Read before the request, applied after it: a change made while the exchange is in
+    // flight was not in the blob that went up, and must still count as unsynced.
+    const at = this._seq;
     const { state, rev, wrote } = await syncOnce({
       fetch: (url, init) => fetch(url, init),
       key: this.sync.key,
@@ -154,6 +164,7 @@ const Store = {
     });
     this.applySync(state);
     this.setSync({ rev, syncedAt: now });
+    this._syncedSeq = at;
     this.flush();
     return { wrote, rev };
   },
@@ -164,7 +175,7 @@ const Store = {
     for (const k of BRANCHES) {
       if (k === 'session' || !(k in state)) continue;
       this[k] = state[k];
-      this._mark(k);
+      this._queue(k);
     }
   },
 
@@ -196,10 +207,20 @@ const Store = {
   // Queue a branch for writing without claiming it was just edited. Adopting a merged
   // state must not re-stamp it: the stamp would then say "written now" on both devices
   // after every sync, and a real edit made offline on the other one would lose to it.
-  _mark(key) {
+  // Queue a branch for writing. Split from _mark so adopting a merged state can reach the
+  // disk without counting as work the server has not seen — see applySync.
+  _queue(key) {
     this._dirty.add(key);
     if (this._timer) return;
     this._timer = setTimeout(() => { this._timer = null; this.flush(); }, FLUSH_MS);
+  },
+
+  // A branch changed because something happened here. The counter is what tells the
+  // automatic sync whether leaving is worth a request; the `sync` entry itself is not
+  // progress, so writing the key or the last-synced time does not count.
+  _mark(key) {
+    if (key !== 'sync') this._seq++;
+    this._queue(key);
   },
 
   // `profile` and `book` are the two branches merge() cannot combine field by field — an
@@ -229,8 +250,26 @@ const Store = {
 
 Store.load();
 
-// The tab can go away without a beforeunload; both of these fire first.
-addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') Store.flush(); });
+// Automatic syncing, on the two moments that matter: opening the trainer, and leaving it
+// with work the server has not seen. A screen showing history redraws itself off this
+// event rather than being reached into from here — see app.js.
+const autoSync = autoSyncer(Store, {
+  onDone: result => {
+    if (result && result.wrote) dispatchEvent(new CustomEvent('ccna:synced'));
+  },
+  onError: err => console.warn('sync:', err.code || 'failed', err.message),
+});
+Store.autoSync = autoSync;
+
+// The tab can go away without a beforeunload; both of these fire first. `hidden` is also
+// the last moment a fetch still has a chance of completing, which is why the sync hangs
+// off it rather than off pagehide.
+addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'hidden') return;
+  Store.flush();
+  autoSync('leave');
+});
 addEventListener('pagehide', () => Store.flush());
 
 window.Store = Store;
+autoSync('start');

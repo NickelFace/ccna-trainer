@@ -88,6 +88,57 @@ async function call(fetchFn, base, key, init = {}) {
   return { status: res.status, body };
 }
 
+// ---------------------------------------------------------------- automatic syncing
+//
+// Two moments, and only two: when the app starts, and when it goes away with work in it.
+// Not on every answer — 100 000 requests a day is a lot until something fires per tap —
+// and not on a timer, which would spend the quota while nobody is looking.
+
+// How long a start-up sync stays good for. A second launch inside this window skips the
+// network: the other device cannot have done much in five minutes, and the leave-hook
+// below is what actually keeps the two in step.
+export const AUTO_MIN_MS = 5 * 60_000;
+
+// Leaving with unsynced work syncs almost eagerly: the point of it is that closing the app
+// on one device and picking up the other works, and a minute's wait would defeat that.
+// The floor only exists to swallow doubles — visibilitychange and pagehide can both fire on
+// the way out — and flipping between apps costs nothing on its own, since a leave with
+// nothing new does not reach the network at all.
+export const AUTO_LEAVE_MIN_MS = 10_000;
+
+// The policy, shared so the phone and the browser cannot drift into two different ideas of
+// "often enough". `store` is either client's store: it needs `sync.key`, `changedSinceSync`
+// and `syncNow()`.
+//
+// Failures are swallowed by design. An automatic sync that pops an error at launch because
+// the train went into a tunnel is worse than one that quietly tries again later — nothing
+// is lost either way, the progress is on the device. `onError` exists for logging, not for
+// telling the user off.
+export function autoSyncer(store, { minMs = AUTO_MIN_MS, leaveMs = AUTO_LEAVE_MIN_MS, onDone, onError } = {}) {
+  let inFlight = null;
+  let lastTry = 0;
+
+  return function autoSync(reason = 'start') {
+    if (!store.sync || !store.sync.key) return null;     // sync was never set up
+    if (inFlight) return inFlight;                        // one exchange at a time
+
+    const since = Date.now() - lastTry;
+    if (reason === 'leave') {
+      // Nothing of ours to say, and nobody is looking at what comes back.
+      if (!store.changedSinceSync || since < leaveMs) return null;
+    } else if (lastTry && since < minMs) {
+      return null;
+    }
+
+    lastTry = Date.now();
+    inFlight = store.syncNow()
+      .then(result => { onDone?.(result); return result; })
+      .catch(err => { onError?.(err); return null; })
+      .finally(() => { inFlight = null; });
+    return inFlight;
+  };
+}
+
 // Read what the server holds without writing anything — used to show "last synced" and to
 // check a key before adopting it.
 export async function pull({ fetch, base = SYNC_BASE, key }) {

@@ -164,6 +164,10 @@ both devices through `sync.maks.top` (the Worker in `ccna-sync/`). The server st
 opaque blob and a revision number and never parses either: everything about what progress
 means stays in `shared/`.
 
+It syncs on its own at two moments: when the trainer opens, and when the tab goes away
+with work the server has not seen. Not on a timer and not per answer — the shared policy
+in `shared/sync.js` is what both clients follow. The button stays for when you want it now.
+
 The key is the only secret — there are no accounts and no passwords, and the server keeps
 only its SHA-256. It lives in its own storage entry, outside the seven branches, so it is
 neither in the exported file nor in the blob that goes to the server. An exam in progress

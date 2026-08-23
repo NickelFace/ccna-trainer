@@ -1,7 +1,9 @@
 // Entry point: load the persisted state and the bank from dist/data, then start the
-// router. Everything is local — no network call happens at any point.
+// router. Everything the app needs is bundled — the only network call it ever makes is the
+// progress sync, and only when a sync key has been set up.
 import { router } from './router.js';
 import { store, bindPersistOnPause } from './store.js';
+import { autoSyncer } from '../../../ccna-exam-simulator/assets/js/shared/sync.js';
 import { reschedule, initNotificationListener } from './notify.js';
 import { scorable } from '../engine/select.js';
 import { sessionIsValid } from './session.js';
@@ -36,6 +38,17 @@ async function loadBank() {
   };
 }
 
+// A sync that pulled in the other device's work only redraws where that is visible, and
+// never over a modal: re-rendering the question screen mid-exam would throw away the
+// scroll position and whatever half-made choice is on it.
+const REDRAWABLE = new Set(['home', 'progress']);
+
+function redrawIfSafe() {
+  if (router.modals.length) return;
+  if (!REDRAWABLE.has(router.current()?.screen?.id)) return;
+  router.render();
+}
+
 async function boot() {
   try {
     const [bank] = await Promise.all([loadBank(), store.load()]);
@@ -52,7 +65,15 @@ async function boot() {
     // report a "ghost" as the next repetition forever.
     store.pruneGhostSrs(qn => bank.byN.has(qn));
 
-    bindPersistOnPause(() => reschedule());
+    // Automatic syncing, on the two moments that matter: launching, and going to
+    // background with work the server has not seen. Failures are silent by design — the
+    // progress is on the phone either way, and a toast about a tunnel helps nobody.
+    const autoSync = autoSyncer(store, {
+      onDone: result => { if (result && result.wrote) redrawIfSafe(); },
+      onError: err => console.warn('sync:', err.code || 'failed', err.message),
+    });
+
+    bindPersistOnPause(() => { reschedule(); autoSync('leave'); });
     initNotificationListener();
     router.init({ tabs: TABS, ctx: { bank } });
 
@@ -63,6 +84,8 @@ async function boot() {
     // First launch: ask the two questions that change what the app does, over the home
     // screen rather than in front of it, so backing out lands somewhere usable.
     if (!store.profile.onboarded) router.modal(onboarding);
+
+    autoSync('start');
   } catch (err) {
     document.getElementById('scroll').innerHTML =
       `<h1 class="screen-title">Не удалось запуститься</h1>

@@ -1690,4 +1690,9 @@ document.addEventListener('keydown', e => {
 
 // expose for inline onclick
 Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter, setLang, applyLang, openMode, segPick, historyScreen, openAttempt, exportProgress, importProgress, runSync, makeSyncKey, copySyncKey, forgetSyncKey });
+// An automatic sync that changed the history redraws the screen showing it — and only
+// that screen: pulling the ground out from under someone mid-question would be worse than
+// a stale list.
+addEventListener('ccna:synced', () => { if (SCREEN === historyScreen || SCREEN === home) SCREEN(); });
+
 window.addEventListener('DOMContentLoaded', route);
