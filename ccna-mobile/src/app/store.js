@@ -283,6 +283,15 @@ export const store = {
   },
 
   // ---- persistence ----
+  // Queue a branch for writing without claiming it was just edited. Adopting a merged
+  // state must not re-stamp it: the stamp would then say "written now" on both devices
+  // after every sync, and a real edit made offline on the other one would lose to it.
+  _mark(key) {
+    this._dirty.add(key);
+    if (this._timer) return;
+    this._timer = setTimeout(() => { this._timer = null; this.flush(); }, FLUSH_MS);
+  },
+
   // `profile` and `book` are the two branches merge() cannot combine field by field — an
   // exam date from one device beside a daily goal from the other is a plan nobody made —
   // so they carry the time they were last written. Stamping here rather than in each
@@ -291,9 +300,7 @@ export const store = {
     if ((key === 'profile' || key === 'book') && this[key] && typeof this[key] === 'object') {
       this[key].updatedAt = Date.now();
     }
-    this._dirty.add(key);
-    if (this._timer) return;
-    this._timer = setTimeout(() => { this._timer = null; this.flush(); }, FLUSH_MS);
+    this._mark(key);
   },
 
   async flush() {

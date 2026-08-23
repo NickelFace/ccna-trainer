@@ -17,6 +17,7 @@ import { nextState } from './shared/srs.js';
 import { ACTIVITY_DAYS, bumpActivity, dayKey, normalizeActivity, pruneActivity } from './shared/activity.js';
 import { BRANCHES, isBackup, packBackup } from './shared/backup.js';
 import { PASS_SCALED, toScaled } from './shared/score.js';
+import { isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js';
 
 const KEY = {
   profile: 'ccna.profile',
@@ -26,6 +27,11 @@ const KEY = {
   srs: 'ccna.srs',
   activity: 'ccna.activity',
   book: 'ccna.book',
+  // Not one of the seven branches: this is what talks to the server, not progress. It is
+  // deliberately outside the `v:1` object — packBackup goes by BRANCHES — because the key
+  // would otherwise be uploaded to the very server that is only ever supposed to hold its
+  // hash, and would travel inside every exported file.
+  sync: 'ccna.sync',
 };
 
 const FLUSH_MS = 200;
@@ -58,6 +64,7 @@ const Store = {
   srs: {},
   activity: {},
   book: {},
+  sync: { key: null, syncedAt: 0, rev: 0 },
 
   _dirty: new Set(),
   _timer: null,
@@ -76,6 +83,7 @@ const Store = {
     // Days recorded before the activity map was split by device belong to this browser —
     // it is the only device that ever wrote this store.
     this.activity = normalizeActivity(read(KEY.activity, {}), this.profile.deviceId);
+    this.sync = { key: null, syncedAt: 0, rev: 0, ...(read(KEY.sync, {}) || {}) };
     return this;
   },
 
@@ -123,6 +131,43 @@ const Store = {
     return true;
   },
 
+  // ---- sync ----
+  // Exposed for app.js, which is a classic script and cannot import the shared modules.
+  isSyncKey,
+  newSyncKey,
+  SYNC_BASE,
+
+  setSync(patch) {
+    Object.assign(this.sync, patch);
+    this._touch('sync');
+    return this.sync;
+  },
+
+  // One exchange with the server: pull, merge, push. Throws SyncError — the caller has to
+  // tell "wrong key" apart from "no connection" on screen.
+  async syncNow(now = Date.now()) {
+    const { state, rev, wrote } = await syncOnce({
+      fetch: (url, init) => fetch(url, init),
+      key: this.sync.key,
+      state: this,
+      now,
+    });
+    this.applySync(state);
+    this.setSync({ rev, syncedAt: now });
+    this.flush();
+    return { wrote, rev };
+  },
+
+  // Adopt what the merge decided. The session is not in it by design — an exam running in
+  // this tab is not something the other device can contribute to.
+  applySync(state) {
+    for (const k of BRANCHES) {
+      if (k === 'session' || !(k in state)) continue;
+      this[k] = state[k];
+      this._mark(k);
+    }
+  },
+
   // ---- backup ----
   toBackup() { return packBackup(this); },
 
@@ -148,6 +193,15 @@ const Store = {
 
   // ---- persistence ----
   // Coalesced the way the Android store coalesces: answering ten options costs one write.
+  // Queue a branch for writing without claiming it was just edited. Adopting a merged
+  // state must not re-stamp it: the stamp would then say "written now" on both devices
+  // after every sync, and a real edit made offline on the other one would lose to it.
+  _mark(key) {
+    this._dirty.add(key);
+    if (this._timer) return;
+    this._timer = setTimeout(() => { this._timer = null; this.flush(); }, FLUSH_MS);
+  },
+
   // `profile` and `book` are the two branches merge() cannot combine field by field — an
   // exam date from one device beside a daily goal from the other is a plan nobody made —
   // so they carry the time they were last written. Stamping here rather than in each
@@ -156,9 +210,7 @@ const Store = {
     if ((key === 'profile' || key === 'book') && this[key] && typeof this[key] === 'object') {
       this[key].updatedAt = Date.now();
     }
-    this._dirty.add(key);
-    if (this._timer) return;
-    this._timer = setTimeout(() => { this._timer = null; this.flush(); }, FLUSH_MS);
+    this._mark(key);
   },
 
   flush() {

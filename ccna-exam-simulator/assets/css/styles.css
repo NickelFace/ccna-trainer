@@ -328,6 +328,8 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .stat .bad{color:var(--red);font-family:var(--num);font-weight:700}
 .qjump{width:74px;padding:8px;font-size:13px;text-align:center;font-family:var(--num)}
 .qstart{width:100%;max-width:420px}
+/* the sync key: 32 characters that have to be read off one screen and typed into another */
+.synckey{width:100%;max-width:420px;font-family:var(--num);font-size:13px;letter-spacing:.02em}
 .timer{
   flex:none;display:flex;align-items:center;gap:8px;
   padding:7px 15px;border-radius:999px;background:rgba(247,244,238,.08);

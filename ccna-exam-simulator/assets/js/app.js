@@ -189,6 +189,28 @@ const I18N = {
     hist_unscored: 'без шкалы',
     hist_minutes: '{0} мин',
     hist_replay_note: 'Сохранённая попытка · {0}',
+    hist_open_screen: 'Прогресс и синхронизация',
+    sync_title: 'Синхронизация с телефоном',
+    sync_note: 'Один ключ на оба устройства: создай его здесь и введи в Android-приложении — после этого прогресс будет сходиться сам. Ключ и есть доступ к прогрессу: храни его как пароль, аккаунта и пароля у сервера нет.',
+    sync_key_ph: 'ключ синхронизации',
+    sync_new: 'Создать ключ',
+    sync_copy: 'Скопировать',
+    sync_copied: 'Ключ скопирован — введи его на телефоне.',
+    sync_created: 'Ключ создан. Введи его в приложении: Прогресс → Синхронизация.',
+    sync_go: 'Синхронизировать',
+    sync_forget: 'Забыть ключ',
+    sync_forget_confirm: 'Забыть ключ на этом устройстве? Прогресс останется здесь, но перестанет сходиться с телефоном.',
+    sync_never: 'Ещё ни разу не синхронизировано.',
+    sync_last: 'Синхронизировано: {0}',
+    sync_running: 'Синхронизирую…',
+    sync_done: 'Готово. Попыток в истории: {0}',
+    sync_nochange: 'Всё уже совпадает. Попыток в истории: {0}',
+    sync_err_key: 'Ключ не подходит: нужно 32–128 символов — латиница, цифры, «-» и «_».',
+    sync_err_auth: 'Сервер не принял этот ключ.',
+    sync_err_offline: 'Нет связи с сервером синхронизации.',
+    sync_err_server: 'Сервер ответил ошибкой. Попробуй позже — прогресс на месте.',
+    sync_err_corrupt: 'На сервере лежит что-то нечитаемое. Синхронизация остановлена, чтобы не затереть прогресс.',
+    sync_err_conflict: 'Второе устройство пишет прямо сейчас. Попробуй ещё раз.',
     hist_export: 'Выгрузить прогресс',
     hist_import: 'Загрузить из файла',
     hist_transfer_note: 'Прогресс хранится в этом браузере. Файл выгрузки — тот же формат, что читает и пишет Android-приложение: выгрузи здесь, открой на телефоне (Прогресс → Резервная копия) — и наоборот.',
@@ -332,6 +354,28 @@ const I18N = {
     hist_unscored: 'unscored',
     hist_minutes: '{0} min',
     hist_replay_note: 'Saved attempt · {0}',
+    hist_open_screen: 'Progress and sync',
+    sync_title: 'Sync with the phone',
+    sync_note: 'One key on both devices: make it here, type it into the Android app, and progress keeps itself together from then on. The key is the access: keep it like a password — the server has no accounts and no passwords.',
+    sync_key_ph: 'sync key',
+    sync_new: 'Make a key',
+    sync_copy: 'Copy',
+    sync_copied: 'Key copied — type it into the phone.',
+    sync_created: 'Key created. Enter it in the app: Progress → Sync.',
+    sync_go: 'Sync now',
+    sync_forget: 'Forget the key',
+    sync_forget_confirm: 'Forget the key on this device? Progress stays here but stops meeting the phone.',
+    sync_never: 'Never synced yet.',
+    sync_last: 'Synced: {0}',
+    sync_running: 'Syncing…',
+    sync_done: 'Done. Attempts in history: {0}',
+    sync_nochange: 'Already in step. Attempts in history: {0}',
+    sync_err_key: 'That key will not do: 32–128 characters, letters, digits, "-" and "_".',
+    sync_err_auth: 'The server did not accept this key.',
+    sync_err_offline: 'No connection to the sync server.',
+    sync_err_server: 'The server answered with an error. Try later — the progress is safe.',
+    sync_err_corrupt: 'What is stored on the server cannot be read. Sync stopped rather than overwrite progress.',
+    sync_err_conflict: 'The other device is writing right now. Try again.',
     hist_export: 'Export progress',
     hist_import: 'Import from a file',
     hist_transfer_note: 'Progress lives in this browser. The export file is the format the Android app reads and writes: export here, open it on the phone (Progress → Backup) — and the other way round.',
@@ -958,23 +1002,25 @@ function homeProgressHTML() {
     <h2>${t('hist_home_title')}</h2>
     ${all.length ? `<div class="hist">${all.slice(0, 3).map(attemptRowHTML).join('')}</div>` : `<div class="exp muted">${t('hist_none')}</div>`}
     <div class="row">
-      ${all.length > 3 ? `<button class="btn sm" onclick="historyScreen()">${t('hist_all', all.length)}</button>` : ''}
+      <button class="btn sm" onclick="historyScreen()">${all.length > 3 ? t('hist_all', all.length) : t('hist_open_screen')}</button>
       <button class="btn sm" onclick="exportProgress()">${t('hist_export')}</button>
       <button class="btn sm" onclick="importProgress()">${t('hist_import')}</button>
     </div>
   </div>`;
 }
 
-function historyScreen() {
+function historyScreen(msg = '') {
   SCREEN = historyScreen;
   const st = P();
   const all = st ? st.recentAttempts() : [];
   app().innerHTML = `<h1>${t('hist_title')}</h1>
     <div class="sub">${t('hist_transfer_note')}</div>
     ${transferRowHTML()}
+    ${syncSectionHTML()}
     <div class="sec">${all.length ? `<div class="hist">${all.map(attemptRowHTML).join('')}</div>` : `<div class="exp muted">${t('hist_none')}</div>`}</div>
     <div class="nav"><button class="btn" onclick="home()">${t('nav_home')}</button></div>`;
   wireHistory(historyScreen);
+  if (msg) setSyncMsg(msg);
   window.scrollTo(0, 0);
 }
 
@@ -1044,6 +1090,85 @@ function importProgress() {
     reader.readAsText(file);
   };
   input.click();
+}
+
+// ---- sync ----
+// The whole feature on screen: a key, a button, and one line saying what happened. The
+// protocol, the merge and the retries are in assets/js/shared/, imported by store.js —
+// this file is a classic script and only ever talks to window.Store.
+const SYNC_ERR = {
+  key: 'sync_err_key', auth: 'sync_err_auth', offline: 'sync_err_offline',
+  server: 'sync_err_server', corrupt: 'sync_err_corrupt', conflict: 'sync_err_conflict',
+};
+
+const syncStatus = () => {
+  const st = P();
+  const at = st && st.sync.syncedAt;
+  return at ? t('sync_last', esc(stampFull(at))) : t('sync_never');
+};
+
+function setSyncMsg(text) {
+  const el = document.getElementById('syncmsg');
+  if (el) el.textContent = text;
+}
+
+function syncSectionHTML() {
+  const st = P();
+  if (!st) return '';
+  const key = st.sync.key || '';
+  return `<div class="sec">
+    <h2>${t('sync_title')}</h2>
+    <div class="exp muted">${t('sync_note')}</div>
+    <div class="row">
+      <input class="synckey" id="synckey" type="text" spellcheck="false" autocomplete="off"
+             autocapitalize="off" placeholder="${t('sync_key_ph')}" value="${attrEsc(key)}">
+    </div>
+    <div class="row">
+      <button class="btn sm" onclick="runSync()">${t('sync_go')}</button>
+      <button class="btn sm" onclick="makeSyncKey()">${t('sync_new')}</button>
+      ${key ? `<button class="btn sm" onclick="copySyncKey()">${t('sync_copy')}</button>
+      <button class="btn sm" onclick="forgetSyncKey()">${t('sync_forget')}</button>` : ''}
+    </div>
+    <div class="exp muted" id="syncmsg">${syncStatus()}</div>
+  </div>`;
+}
+
+// Generated here rather than typed: 32 characters out of a 64-character alphabet is not
+// something anyone invents at a keyboard, and this is the only secret in the system.
+function makeSyncKey() {
+  const st = P(); if (!st) return;
+  st.setSync({ key: st.newSyncKey() });
+  historyScreen(t('sync_created'));
+}
+
+function copySyncKey() {
+  const st = P(); if (!st || !st.sync.key) return;
+  navigator.clipboard?.writeText(st.sync.key).then(
+    () => setSyncMsg(t('sync_copied')),
+    () => {},
+  );
+}
+
+function forgetSyncKey() {
+  const st = P(); if (!st) return;
+  if (!confirm(t('sync_forget_confirm'))) return;
+  st.setSync({ key: null, syncedAt: 0, rev: 0 });
+  historyScreen();
+}
+
+async function runSync() {
+  const st = P(); if (!st) return;
+  const key = (document.getElementById('synckey')?.value || '').trim();
+  if (!st.isSyncKey(key)) return setSyncMsg(t('sync_err_key'));
+  if (key !== st.sync.key) st.setSync({ key, syncedAt: 0, rev: 0 });
+  setSyncMsg(t('sync_running'));
+  try {
+    const { wrote } = await st.syncNow();
+    // The history above the button is now someone else's too — redraw it, then say so.
+    historyScreen(t(wrote ? 'sync_done' : 'sync_nochange', st.attempts.length));
+  } catch (err) {
+    setSyncMsg(t(SYNC_ERR[err && err.code] || 'sync_err_server'));
+  }
 }
 
 // ============================ SHARE FOR AI ============================
@@ -1564,5 +1689,5 @@ document.addEventListener('keydown', e => {
 });
 
 // expose for inline onclick
-Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter, setLang, applyLang, openMode, segPick, historyScreen, openAttempt, exportProgress, importProgress });
+Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter, setLang, applyLang, openMode, segPick, historyScreen, openAttempt, exportProgress, importProgress, runSync, makeSyncKey, copySyncKey, forgetSyncKey });
 window.addEventListener('DOMContentLoaded', route);
