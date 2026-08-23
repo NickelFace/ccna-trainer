@@ -67,6 +67,18 @@ h2,h3{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1e
 a.link{color:var(--teal-text);text-decoration:none;font-weight:600}
 a.link:hover{color:var(--ink)}
 
+/* The way back to the landing. home() is a deep-linkable page (?mode=home) and every other
+   trainer screen leads here first, so this one link is the whole exit path — and browser
+   Back is no help to anyone who arrived at ?mode=home directly. A real <a> to the pathname:
+   dropping the query is exactly what "leave the trainer" means, and route() takes it from
+   there. .wrap's 30px gap is a chapter break, far too much between a header and its title. */
+.tosite{margin-bottom:-18px}
+.tosite a{display:inline-flex;align-items:center;gap:8px;padding:4px 2px;border-radius:8px;
+  color:var(--grey-text);font-size:13px;font-weight:700;text-decoration:none}
+.tosite a:hover{color:var(--ink)}
+.tosite a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.tosite svg{display:block;flex:none}
+
 /* cards & buttons */
 .card{background:var(--cream);border:1px solid var(--edge);border-radius:16px;padding:26px;display:flex;flex-direction:column;gap:18px}
 button{font-family:inherit;font-size:14px;cursor:pointer}
@@ -450,7 +462,7 @@ details.cli-wrap summary:hover{color:var(--ink)}
      their text; on a phone every one of them is hit with a thumb, so they get a floor. */
   .grid{grid-template-columns:repeat(auto-fill,minmax(44px,1fr))}
   .dd-item{padding:14px}
-  .btn,.chip,.seg-b,.qjump,.qstart,.lang-opt,select,input{min-height:44px}
+  .btn,.chip,.seg-b,.qjump,.qstart,.lang-opt,.tosite a,select,input{min-height:44px}
   .chip,.lang-opt{display:inline-flex;align-items:center}
   /* Two-letter pills and the → button are narrow by their text, not by intent. */
   .lang-opt,.btn.sm{min-width:44px;justify-content:center}

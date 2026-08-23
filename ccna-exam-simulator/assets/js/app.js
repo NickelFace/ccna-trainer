@@ -80,6 +80,7 @@ const I18N = {
     nav_next: 'след →',
     nav_finish: 'завершить',
     nav_exit: '✕ выход',
+    nav_site: 'На главную страницу',
     label_custom_exam: 'Свой экзамен',
     label_practice: 'Тренировка',
     cfg_domains_label: 'Домены (пусто = все)',
@@ -204,6 +205,7 @@ const I18N = {
     nav_next: 'next →',
     nav_finish: 'finish',
     nav_exit: '✕ exit',
+    nav_site: 'Back to the home page',
     label_custom_exam: 'Custom Exam',
     label_practice: 'Practice',
     cfg_domains_label: 'Domains (empty = all)',
@@ -365,6 +367,9 @@ function home() {
     return m ? `<span class="dn">${esc(m[1])}</span> ${esc(m[2])}` : esc(name);
   };
   app().innerHTML = `
+  <div class="tosite"><a href="${esc(location.pathname)}" aria-label="${t('nav_site')}">
+    <span aria-hidden="true">←</span>${NetPath.mark(18)}<span>${esc(NetPath.CONFIG.brandName)}</span>
+  </a></div>
   <h1 class="home">CCNA 200-301</h1>
   <div class="sub">${t('home_stats', POOL.length, ex, META.with_exp)}<br>
   ${t('home_verified_note')}</div>
