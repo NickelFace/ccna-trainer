@@ -1,0 +1,18 @@
+{
+  "name": "ccna-sync",
+  "version": "0.1.0",
+  "description": "Cross-device progress sync for CCNA Trainer — a Cloudflare Worker over D1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-sqlite --test",
+    "dev": "wrangler dev",
+    "migrate:local": "wrangler d1 migrations apply ccna-sync --local",
+    "migrate:remote": "wrangler d1 migrations apply ccna-sync --remote",
+    "deploy": "wrangler deploy"
+  },
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "wrangler": "4.125.0"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ccna-sync",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-08-20",
+  "observability": { "enabled": true },
+
+  // The address the clients are built against. It is a custom domain rather than
+  // ccna-sync.<subdomain>.workers.dev on purpose: renaming the Worker or moving accounts
+  // then does not force a new APK. maks.top is already on Cloudflare nameservers, so this
+  // needs no DNS record and no certificate work.
+  "routes": [{ "pattern": "sync.maks.top", "custom_domain": true }],
+
+  // database_id comes from `npx wrangler d1 create ccna-sync` — see README.md, "Setup".
+  // Local development (`npm run dev`) ignores it and uses a database under .wrangler/.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ccna-sync",
+      "database_id": "PASTE_DATABASE_ID_HERE"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+name: Sync server
+
+# The Worker behind sync.maks.top. Tests run on every change; the deploy only happens
+# once the account secrets exist, so the workflow is green from the first commit and
+# starts publishing the moment CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID are added
+# to the repository secrets.
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "ccna-sync/**"
+      - ".github/workflows/sync-deploy.yml"
+  pull_request:
+    paths:
+      - "ccna-sync/**"
+  workflow_dispatch: {}
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    # A boolean, not the token itself: a step `if` cannot read the secrets context, and
+    # the token has no business being in scope while npm runs third-party install scripts.
+    env:
+      HAS_CLOUDFLARE: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+    defaults:
+      run:
+        working-directory: ccna-sync
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ccna-sync/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      # The compare-and-set on `rev` is the whole server; these run it against a real
+      # SQLite (node:sqlite), so the SQL itself is under test, not a stub of it.
+      - name: Test
+        run: npm test
+
+      # Everything below is skipped until the account side exists — see HANDOFF-cowork-cloudflare.md.
+      - name: Apply migrations
+        if: github.event_name == 'push' && env.HAS_CLOUDFLARE == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler d1 migrations apply ccna-sync --remote
+
+      - name: Deploy
+        if: github.event_name == 'push' && env.HAS_CLOUDFLARE == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler deploy
