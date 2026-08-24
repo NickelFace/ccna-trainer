@@ -58,6 +58,11 @@ export const toBlob = (state, now) => JSON.stringify(packBackup({ ...state, sess
 // design — so this is how it can refuse a write that holds less than the one before it.
 // Three things that only ever grow, and the age of the oldest attempt, which only moves
 // forward as old ones age out.
+//
+// `read` counts marks ever made, not chapters currently marked: unmarking one leaves the
+// mark in place and outvotes it with a tombstone (shared/theory.js). That is what keeps
+// this a counter that only grows — un-reading a chapter is not the progress loss this
+// guard exists to catch.
 export function statsOf(state) {
   const attempts = Array.isArray(state?.attempts) ? state.attempts : [];
   const dates = attempts.map(a => Number(a?.date) || 0).filter(Boolean);

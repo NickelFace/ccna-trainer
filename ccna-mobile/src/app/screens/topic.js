@@ -47,7 +47,7 @@ export const topic = {
   footer(ctx) {
     const t = loaded?.topic;
     if (!t || t.id !== ctx.params.id) return null;
-    const read = !!store.book.read[t.id];
+    const read = store.isRead(t.id);
 
     const bar = h(`
       <button class="btn ${read ? '' : 'primary '}grow" data-act="read" type="button">
@@ -60,7 +60,7 @@ export const topic = {
 
     bar.addEventListener('click', async e => {
       if (e.target.closest('[data-act="read"]')) {
-        const now = !store.book.read[t.id];
+        const now = !store.isRead(t.id);
         store.markRead(t.id, now);
         toast(now ? 'Глава отмечена прочитанной' : 'Отметка снята');
         return ctx.router.render();

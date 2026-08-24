@@ -1508,7 +1508,9 @@ async function bookLoadIndex() {
   return idx;
 }
 
-const bookRead = () => (P()?.book?.read) || {};
+// "Read" is a mark weighed against a tombstone, not a key that happens to be there — the
+// rule lives in shared/theory.js, and this resolves it once per render.
+const bookRead = () => { const st = P(); return st ? st.readMap(st.book) : {}; };
 
 function bookLoading(title) {
   app().innerHTML = `<h1>${esc(title)}</h1><div class="sub">${t('book_loading')}</div>`;
@@ -1659,7 +1661,7 @@ function renderChapter(tp, index) {
   wireBookRows();
   bindChecks(app());
   app().querySelector('[data-act="read"]').onclick = () => {
-    st.markRead(tp.id, !bookRead()[tp.id]);
+    st.markRead(tp.id, !st.isRead(tp.id));
     renderChapter(tp, index);
   };
   const pr = app().querySelector('[data-act="practice"]');

@@ -94,21 +94,29 @@ function mergeActivity(a, b, ownerA, ownerB) {
   return out;
 }
 
-// Reading progress. `read` is a union — a chapter finished anywhere is finished — and so
-// are the scroll positions, so a chapter only opened on the phone keeps its place. The
-// scalars (which chapter to continue, the reader's text size) come from whichever side was
-// touched last, because they describe one reader and cannot be halfway.
+// Reading progress. `read` and `readOff` are unions of latest timestamps — a chapter is
+// read or unread according to whichever of the two the reader did last, on either device
+// (see shared/theory.js: isRead). Neither map ever loses a key, which is what makes
+// unmarking survive the round trip that used to undo it. Scroll positions are a union too,
+// so a chapter only opened on the phone keeps its place. The scalars (which chapter to
+// continue, the reader's text size) come from whichever side was touched last, because
+// they describe one reader and cannot be halfway.
+const latest = (x, y) => {
+  const out = { ...obj(x) };
+  for (const [topic, when] of Object.entries(obj(y))) {
+    out[topic] = Math.max(Number(when) || 0, Number(out[topic]) || 0);
+  }
+  return out;
+};
+
 function mergeBook(a, b) {
   const A = obj(a), B = obj(b);
   const [newer, older] = stamp(B) > stamp(A) ? [B, A] : [A, B];
-  const read = { ...obj(older.read) };
-  for (const [topic, ts] of Object.entries(obj(newer.read))) {
-    read[topic] = Math.max(Number(ts) || 0, Number(read[topic]) || 0);
-  }
   return {
     ...older,
     ...newer,
-    read,
+    read: latest(older.read, newer.read),
+    readOff: latest(older.readOff, newer.readOff),
     pos: { ...obj(older.pos), ...obj(newer.pos) },
     open: { ...obj(older.open), ...obj(newer.open) },
     updatedAt: Math.max(stamp(A), stamp(B)),

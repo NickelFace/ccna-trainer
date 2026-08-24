@@ -5,7 +5,7 @@
 // here that means anything on exam day.
 import { esc, h } from '../dom.js';
 import { store } from '../store.js';
-import { loadIndex, coverage } from '../theory.js';
+import { loadIndex, coverage, readMap } from '../theory.js';
 import { topic as topicScreen } from './topic.js';
 
 let query = '';
@@ -32,7 +32,9 @@ export const theory = {
     const node = h('<h1 class="screen-title">Теория</h1><p class="muted">Загружаю учебник…</p>');
 
     loadIndex().then(index => {
-      const read = store.book.read;
+      // Resolved once per render: "read" is a mark weighed against a tombstone, not a
+      // key that is simply there — see shared/theory.js.
+      const read = readMap(store.book);
       const cov = coverage(index, read);
       const q = query.trim().toLowerCase();
       const last = store.book.last && index.byId.get(store.book.last);

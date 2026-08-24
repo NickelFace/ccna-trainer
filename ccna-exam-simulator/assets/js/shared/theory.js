@@ -29,7 +29,14 @@ const get = url => fetch(url + stamp).then(r => {
 
 // The textbook branch of the store, and what a missing or half-written one becomes.
 // Both stores keep it in this shape and merge() moves it whole, so it is defined once.
-export const DEFAULT_BOOK = { read: {}, pos: {}, open: {}, last: null, scale: 1 };
+//
+// `readOff` is the tombstone half of `read`. Without it, unmarking a chapter did not
+// survive: the merge unions read marks by key, so the mark came straight back from the
+// other device on the next exchange and the tap looked like it had been ignored. Nothing
+// is ever deleted from either map — both only take later timestamps — and a chapter counts
+// as read when its mark is younger than its tombstone. Two devices disagreeing therefore
+// settle on whichever action happened last, which is the only answer that is not a guess.
+export const DEFAULT_BOOK = { read: {}, readOff: {}, pos: {}, open: {}, last: null, scale: 1 };
 
 export const normalizeBook = raw => {
   const b = raw && typeof raw === 'object' ? raw : {};
@@ -37,10 +44,39 @@ export const normalizeBook = raw => {
     ...DEFAULT_BOOK,
     ...b,
     read: b.read && typeof b.read === 'object' ? b.read : {},
+    readOff: b.readOff && typeof b.readOff === 'object' ? b.readOff : {},
     pos: b.pos && typeof b.pos === 'object' ? b.pos : {},
     open: b.open && typeof b.open === 'object' ? b.open : {},
   };
 };
+
+const ts = (map, id) => Number(map?.[id]) || 0;
+
+// Is this chapter read, tombstone taken into account? The one place that rule lives.
+export const isRead = (book, id) => ts(book?.read, id) > ts(book?.readOff, id);
+
+// The same answer for every chapter at once: `{ id: when }` for the ones that count as
+// read. Screens want a plain map — they ask about a chapter per row — and building it once
+// per render keeps them from reaching into the two maps themselves and getting it wrong.
+export function readMap(book) {
+  const out = {};
+  for (const [id, when] of Object.entries(book?.read && typeof book.read === 'object' ? book.read : {})) {
+    if (isRead(book, id)) out[id] = Number(when) || 0;
+  }
+  return out;
+}
+
+// Mark or unmark, in place, by the rule above: reading writes a mark newer than any
+// tombstone, unreading writes a tombstone newer than the mark. Shared because the two
+// stores must not each have their own idea of what a tap does.
+export function setRead(book, id, on, now = Date.now()) {
+  const target = on ? book.read : book.readOff;
+  const other = on ? book.readOff : book.read;
+  // Later than whatever the other map says, even if a clock is behind: what matters is
+  // that this action wins over the state it was taken against.
+  target[id] = Math.max(now, ts(other, id) + 1);
+  return on;
+}
 
 export function loadIndex() {
   indexPromise ||= get(`${BASE}/index.json`).then(idx => {

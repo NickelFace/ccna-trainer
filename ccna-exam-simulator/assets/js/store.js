@@ -26,7 +26,8 @@ import { PASS_SCALED, toScaled } from './shared/score.js';
 import { autoSyncer, isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js';
 import { bodyMarkup } from './shared/book.js';
 import {
-  coverage, DEFAULT_BOOK, loadIndex, loadMap, loadTopic, normalizeBook, setBookVersion, topicOf,
+  coverage, DEFAULT_BOOK, isRead, loadIndex, loadMap, loadTopic, normalizeBook, readMap, setBookVersion,
+  setRead, topicOf,
 } from './shared/theory.js';
 
 const KEY = {
@@ -91,6 +92,7 @@ const Store = {
   loadMap,
   topicOf,
   coverage,
+  readMap,
   setBookVersion,
 
   profile: {},
@@ -149,12 +151,16 @@ const Store = {
   // ---- textbook ----
   // Same three mutators the Android store has, writing the same branch: a chapter marked
   // read on the phone shows as read here after a sync, and the other way round.
+  // Unmarking writes a tombstone rather than deleting the mark: the merge unions both
+  // maps, so a deletion would simply come back from the other device — see
+  // shared/theory.js.
   markRead(topicId, on = true) {
-    if (on) this.book.read[topicId] = Date.now();
-    else delete this.book.read[topicId];
+    setRead(this.book, topicId, on);
     this._touch('book');
     return on;
   },
+
+  isRead(topicId) { return isRead(this.book, topicId); },
 
   // Below 40px is "the top" — remembering it would send someone back to a position they
   // never left, and the branch would be rewritten (and re-synced) on every glance.

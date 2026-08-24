@@ -16,7 +16,7 @@ import { ACTIVITY_DAYS, bumpActivity, pruneActivity } from '../../../ccna-exam-s
 import { BRANCHES, packBackup, isBackup } from '../../../ccna-exam-simulator/assets/js/shared/backup.js';
 import { pruneAttempts } from '../../../ccna-exam-simulator/assets/js/shared/retention.js';
 import { isSyncKey, newSyncKey, syncOnce } from '../../../ccna-exam-simulator/assets/js/shared/sync.js';
-import { DEFAULT_BOOK, normalizeBook } from './theory.js';
+import { DEFAULT_BOOK, isRead, normalizeBook, setRead } from './theory.js';
 import { DEFAULT_GOAL, validGoal } from '../../../ccna-exam-simulator/assets/js/shared/progress.js';
 
 const KEY = {
@@ -142,12 +142,16 @@ export const store = {
   attemptId(startedAt) { return `${this.deviceId}-${startedAt}`; },
 
   // ---- textbook ----
+  // Unmarking writes a tombstone rather than deleting the mark: the merge unions both
+  // maps, so a deletion would simply come back from the other device — see
+  // shared/theory.js. `isRead` is re-exported for the screens, which ask per row.
   markRead(topicId, on = true) {
-    if (on) this.book.read[topicId] = Date.now();
-    else delete this.book.read[topicId];
+    setRead(this.book, topicId, on);
     this._touch('book');
     return on;
   },
+
+  isRead(topicId) { return isRead(this.book, topicId); },
 
   setPos(topicId, y) {
     if (y > 40) this.book.pos[topicId] = Math.round(y);

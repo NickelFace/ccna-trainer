@@ -4,6 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { merge } from '../../ccna-exam-simulator/assets/js/shared/merge.js';
+import { isRead } from '../../ccna-exam-simulator/assets/js/shared/theory.js';
 import { nextState } from '../../ccna-exam-simulator/assets/js/shared/srs.js';
 
 const PHONE = 'and-aaa111';
@@ -18,7 +19,7 @@ const state = (deviceId, over = {}) => ({
   bookmarks: [],
   srs: {},
   activity: {},
-  book: { read: {}, pos: {}, open: {}, last: null, scale: 1, updatedAt: 1000 },
+  book: { read: {}, readOff: {}, pos: {}, open: {}, last: null, scale: 1, updatedAt: 1000 },
   ...over,
 });
 
@@ -35,7 +36,7 @@ test('merging a state with itself leaves it as it was', () => {
     bookmarks: [7, 2],
     srs: { 1: nextState(null, true, 100) },
     activity: { [DAY]: { [PHONE]: { total: 3, wrong: 1, srs: 0 } } },
-    book: { read: { 'ch-1': 50 }, pos: { 'ch-1': 200 }, open: {}, last: 'ch-1', scale: 1, updatedAt: 1000 },
+    book: { read: { 'ch-1': 50 }, readOff: {}, pos: { 'ch-1': 200 }, open: {}, last: 'ch-1', scale: 1, updatedAt: 1000 },
   });
   const merged = merge(s, structuredClone(s));
   assert.deepEqual(merged, { ...s, bookmarks: [2, 7] });   // only the bookmark order is normalised
@@ -187,6 +188,41 @@ test('a chapter finished on either device stays finished, and keeps its place', 
   assert.deepEqual(merged.pos, { 'ch-1': 300, 'ch-2': 400 });
   assert.equal(merged.last, 'ch-2');    // the reader was last on the browser
   assert.equal(merged.scale, 1.2);
+});
+
+// The other half of that union. Deleting a read mark could never survive it — the other
+// device still had the key, so the union handed it straight back and the tap looked
+// ignored. Unmarking writes a tombstone instead, and the later of the two actions wins.
+test('a chapter unmarked on one device does not come back from the other', () => {
+  const local = state(PHONE, {
+    book: { read: { 'ch-1': 100 }, readOff: { 'ch-1': 300 }, pos: {}, open: {}, last: null, scale: 1, updatedAt: 300 },
+  });
+  const remote = state(WEB, {
+    book: { read: { 'ch-1': 100 }, readOff: {}, pos: {}, open: {}, last: null, scale: 1, updatedAt: 100 },
+  });
+  for (const [who, merged] of [['phone first', merge(local, remote).book], ['browser first', merge(remote, local).book]]) {
+    assert.equal(isRead(merged, 'ch-1'), false, who);
+    assert.equal(merged.read['ch-1'], 100, `${who}: the mark itself is kept, not deleted`);
+  }
+});
+
+test('reading it again after unmarking it wins, because it happened later', () => {
+  const local = state(PHONE, {
+    book: { read: { 'ch-1': 500 }, readOff: { 'ch-1': 300 }, pos: {}, open: {}, last: null, scale: 1, updatedAt: 500 },
+  });
+  const remote = state(WEB, {
+    book: { read: { 'ch-1': 100 }, readOff: { 'ch-1': 300 }, pos: {}, open: {}, last: null, scale: 1, updatedAt: 300 },
+  });
+  assert.equal(isRead(merge(local, remote).book, 'ch-1'), true);
+  assert.equal(isRead(merge(remote, local).book, 'ch-1'), true, 'and from the other side too');
+});
+
+test('a book branch written before tombstones existed still reads as it did', () => {
+  const old = state(PHONE, {
+    book: { read: { 'ch-1': 100 }, pos: {}, open: {}, last: null, scale: 1, updatedAt: 100 },
+  });
+  const merged = merge(old, state(WEB)).book;
+  assert.equal(isRead(merged, 'ch-1'), true);
 });
 
 // ------------------------------------------------------------------ junk

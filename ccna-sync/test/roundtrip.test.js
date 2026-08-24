@@ -8,6 +8,7 @@ import { handle } from '../src/worker.js';
 import { d1 } from './d1.js';
 import { syncOnce, pull, newSyncKey, isSyncKey, SyncError } from '../../ccna-exam-simulator/assets/js/shared/sync.js';
 import { nextState } from '../../ccna-exam-simulator/assets/js/shared/srs.js';
+import { isRead, setRead } from '../../ccna-exam-simulator/assets/js/shared/theory.js';
 
 const BASE = 'https://sync.maks.top';
 const KEY = newSyncKey(bytes => bytes.forEach((_, i) => { bytes[i] = i * 7; }));
@@ -29,7 +30,7 @@ const device = (deviceId, over = {}) => ({
   bookmarks: [],
   srs: {},
   activity: {},
-  book: { read: {}, pos: {}, open: {}, last: null, scale: 1, updatedAt: 1000 },
+  book: { read: {}, readOff: {}, pos: {}, open: {}, last: null, scale: 1, updatedAt: 1000 },
   ...over,
 });
 
@@ -124,7 +125,7 @@ test('receiving the other device\'s work counts as a change even with nothing wr
 test('a chapter marked read on one device arrives on the other', async () => {
   const fetch = server();
   const web = device(WEB, {
-    book: { read: { 'nf-02-topologies': 5000 }, pos: {}, open: {}, last: 'nf-02-topologies', scale: 1, updatedAt: 5000 },
+    book: { read: { 'nf-02-topologies': 5000 }, readOff: {}, pos: {}, open: {}, last: 'nf-02-topologies', scale: 1, updatedAt: 5000 },
   });
   await syncOnce({ fetch, base: BASE, key: KEY, state: web });
 
@@ -138,6 +139,27 @@ test('a chapter marked read on one device arrives on the other', async () => {
   await syncOnce({ fetch, base: BASE, key: KEY, state: alsoRead });
   const back = await syncOnce({ fetch, base: BASE, key: KEY, state: web });
   assert.deepEqual(Object.keys(back.state.book.read).sort(), ['nf-02-topologies', 'nf-08-subnetting']);
+});
+
+test('unmarking a chapter survives the round trip that used to undo it', async () => {
+  const fetch = server();
+  const web = device(WEB, { book: { ...device(WEB).book, read: { 'nf-02-topologies': 5000 }, updatedAt: 5000 } });
+  const first = await syncOnce({ fetch, base: BASE, key: KEY, state: web });
+
+  // The phone picks it up, and the reader decides it was not finished after all.
+  const phone = await syncOnce({ fetch, base: BASE, key: KEY, state: device(PHONE) });
+  assert.equal(isRead(phone.state.book, 'nf-02-topologies'), true);
+  const undone = { ...phone.state, book: { ...phone.state.book } };
+  setRead(undone.book, 'nf-02-topologies', false, 6000);
+  await syncOnce({ fetch, base: BASE, key: KEY, state: undone });
+
+  // The browser still holds the mark and no tombstone. Before tombstones existed this is
+  // exactly where the mark came back to life and reappeared on the phone.
+  const after = await syncOnce({ fetch, base: BASE, key: KEY, state: first.state });
+  assert.equal(isRead(after.state.book, 'nf-02-topologies'), false, 'on the browser');
+
+  const andBack = await syncOnce({ fetch, base: BASE, key: KEY, state: undone });
+  assert.equal(isRead(andBack.state.book, 'nf-02-topologies'), false, 'and still gone on the phone');
 });
 
 test('the device that loses the race still keeps its work', async () => {
