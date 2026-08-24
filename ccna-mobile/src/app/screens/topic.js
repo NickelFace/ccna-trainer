@@ -98,7 +98,10 @@ export const topic = {
     });
 
     if (loaded?.topic.id === id) {
-      node.append(...chapter(loaded, ctx).childNodes);
+      // replaceChildren, not append: the node was created holding "Загружаю главу…", and
+      // a chapter that is already in memory renders instantly — appending under the
+      // placeholder left it sitting above the title for as long as the chapter was open.
+      node.replaceChildren(...chapter(loaded, ctx).childNodes);
       return node;
     }
 
