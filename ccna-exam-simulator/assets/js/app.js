@@ -431,7 +431,7 @@ const I18N = {
     hist_replay_note: 'Saved attempt · {0}',
     hist_open_screen: 'Progress and sync',
     book_title: 'Textbook',
-    book_sub: 'The same 47 chapters as in the Android app: theory for every blueprint topic, and the bank\'s questions on it at the end of each chapter. The "read" mark syncs along with the rest of the progress.',
+    book_sub: 'The same 47 chapters as in the Android app: theory for every blueprint topic, and the bank\'s questions on it at the end of each chapter. The "read" mark syncs along with the rest of the progress. The chapters themselves are written in Russian.',
     book_loading: 'Loading the textbook…',
     book_failed: 'The textbook did not load: {0}.',
     book_retry: 'Try again',
