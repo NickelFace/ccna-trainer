@@ -211,6 +211,13 @@ const I18N = {
     hist_minutes: '{0} мин',
     hist_replay_note: 'Сохранённая попытка · {0}',
     hist_open_screen: 'Прогресс и синхронизация',
+    hist_mode_srs: 'Повторение',
+    hist_group_exams: 'Экзамены',
+    hist_group_practice: 'Тренировки',
+    hist_mistakes: 'Ошибок: {0}',
+    hist_no_mistakes: 'Без ошибок',
+    hist_fix: 'Разобрать ошибки',
+    hist_retention: 'История живёт полгода: попытка старше 6 месяцев удаляется сама — и здесь, и на сервере. Слабые темы считаются по тому, что осталось.',
     sync_title: 'Синхронизация с телефоном',
     sync_note: 'Один ключ на оба устройства: создай его здесь и введи в Android-приложении — после этого прогресс будет сходиться сам. Ключ и есть доступ к прогрессу: храни его как пароль, аккаунта и пароля у сервера нет.',
     sync_key_ph: 'ключ синхронизации',
@@ -399,6 +406,13 @@ const I18N = {
     hist_minutes: '{0} min',
     hist_replay_note: 'Saved attempt · {0}',
     hist_open_screen: 'Progress and sync',
+    hist_mode_srs: 'Repetition',
+    hist_group_exams: 'Exams',
+    hist_group_practice: 'Practice',
+    hist_mistakes: 'Wrong: {0}',
+    hist_no_mistakes: 'No mistakes',
+    hist_fix: 'Work through the mistakes',
+    hist_retention: 'History lives six months: an attempt older than that is dropped by itself, here and on the server. Weak topics are counted from what is left.',
     sync_title: 'Sync with the phone',
     sync_note: 'One key on both devices: make it here, type it into the Android app, and progress keeps itself together from then on. The key is the access: keep it like a password — the server has no accounts and no passwords.',
     sync_key_ph: 'sync key',
@@ -1006,26 +1020,81 @@ const stampFull = ts => {
 
 // The scale is only meaningful for a blueprint-weighted exam — see startCustomExam. Every
 // other attempt shows what it honestly has: how many were right.
+// Three kinds, because the phone files three: an exam, a practice run, and a repetition
+// session. The site only starts the first two, but a synced attempt from Android can be
+// any of them and must not be labelled as an exam it never was.
+const attemptKind = a => a.mode === 'exam' ? t('hist_mode_exam')
+  : a.mode === 'srs' ? t('hist_mode_srs')
+  : t('hist_mode_practice');
+
 const attemptScore = a => a.weighted
   ? `<span class="hs-val">${a.scaled}</span><span class="hs-of">/ 1000</span>`
   : `<span class="hs-val">${a.pct}%</span><span class="hs-of">${t('hist_unscored')}</span>`;
 
-function attemptRowHTML(a) {
+// One attempt as a fold: the same line as above for the summary, and underneath it what
+// that run actually says — how each domain went, and what is left to work on.
+//
+// <details> rather than a class the click handlers toggle: the browser already knows how
+// to open one, keyboard and screen reader included, and an accordion whose state lives in
+// the DOM survives the re-render that follows deleting a row.
+function attemptFoldHTML(a) {
   const mins = Math.max(1, Math.round((a.durationMs || 0) / 60000));
-  const kind = a.mode === 'practice' ? t('hist_mode_practice') : t('hist_mode_exam');
-  return `<div class="hist-row">
-    <div class="hist-when">${esc(stampFull(a.date))}</div>
-    <div class="hist-what">${esc(kind)} · ${t('correct_pct', a.ok, a.total, a.pct)} · ${t('hist_minutes', mins)}</div>
-    <div class="hist-score ${a.weighted && a.scaled >= passMark() ? 'pass' : ''}">${attemptScore(a)}</div>
-    <button class="btn sm" data-open="${attrEsc(a.id)}">${t('hist_open')}</button>
-    <button class="btn sm" data-del="${attrEsc(a.id)}" title="${t('hist_delete')}" aria-label="${t('hist_delete')}">✕</button>
-  </div>`;
+  const kind = attemptKind(a);
+  const wrong = mistakesIn(a);
+  const doms = (META ? META.domains : [])
+    .map(d => ({ d, p: (a.perDomain || {})[d.id] }))
+    .filter(x => x.p && x.p.tot)
+    .map(({ d, p }) => {
+      const pc = Math.round(p.ok / p.tot * 100);
+      return `<span class="dchip ${pc >= 80 ? 'g' : pc >= 60 ? 'a' : 'r'}">${esc(domShort(d.id))} ${p.ok}/${p.tot} · ${pc}%</span>`;
+    }).join('');
+  return `<details class="hitem">
+    <summary class="hist-row">
+      <div class="hist-when">${esc(stampFull(a.date))}</div>
+      <div class="hist-what">${esc(kind)} · ${t('correct_pct', a.ok, a.total, a.pct)} · ${t('hist_minutes', mins)}</div>
+      <div class="hist-score ${a.weighted && a.scaled >= passMark() ? 'pass' : ''}">${attemptScore(a)}</div>
+    </summary>
+    <div class="hist-more">
+      ${doms ? `<div class="dchips">${doms}</div>` : ''}
+      <div class="row">
+        <span class="exp muted">${wrong.length ? t('hist_mistakes', wrong.length) : t('hist_no_mistakes')}</span>
+        <div class="spacer"></div>
+        ${wrong.length ? `<button class="btn sm" data-fix="${attrEsc(a.id)}">${t('hist_fix')}</button>` : ''}
+        <button class="btn sm" data-open="${attrEsc(a.id)}">${t('hist_open')}</button>
+        <button class="btn sm" data-del="${attrEsc(a.id)}" title="${t('hist_delete')}" aria-label="${t('hist_delete')}">✕</button>
+      </div>
+    </div>
+  </details>`;
+}
+
+// Questions this attempt got wrong and the bank still has. The shared rule does the work;
+// this only binds the grading, the way every other call from here does.
+const mistakesIn = a => {
+  const st = P();
+  return st ? st.mistakesOf(a, byN(), isCorrect) : [];
+};
+
+// Exams and practice runs are two different questions ("am I ready?" and "did I work
+// today?"), so they get two folds rather than one list sorted by date. A group with
+// nothing in it is not drawn — an empty "Practice · 0" is furniture, not information.
+function attemptGroupsHTML(all) {
+  const groups = [
+    { label: 'hist_group_exams', rows: all.filter(a => a.mode === 'exam') },
+    { label: 'hist_group_practice', rows: all.filter(a => a.mode !== 'exam') },
+  ].filter(g => g.rows.length);
+  // Both open when there is one group, the exams open when there are two: whichever fold
+  // the screen is mostly about should not need a click to read.
+  return groups.map((g, i) => `<details class="hgrp"${i === 0 ? ' open' : ''}>
+    <summary><span class="hgrp-t">${t(g.label)}</span><span class="hgrp-n">${g.rows.length}</span></summary>
+    <div class="hist">${g.rows.map(attemptFoldHTML).join('')}</div>
+  </details>`).join('');
 }
 
 // Wired after innerHTML rather than through inline onclick: an attempt id can come from an
 // imported file, and nothing that arrives in a file belongs in an HTML attribute handler.
 function wireHistory(rerender) {
   document.querySelectorAll('[data-open]').forEach(b => b.onclick = () => openAttempt(b.dataset.open));
+  document.querySelectorAll('[data-fix]').forEach(b => b.onclick = () => startAttemptRun(b.dataset.fix));
   document.querySelectorAll('[data-del]').forEach(b => b.onclick = () => {
     if (!confirm(t('hist_delete_confirm'))) return;
     const st = P(); if (st) st.deleteAttempt(b.dataset.del);
@@ -1045,7 +1114,7 @@ function homeProgressHTML() {
   const all = st.recentAttempts();
   return `<div class="sec">
     <h2>${t('hist_home_title')}</h2>
-    ${all.length ? `<div class="hist">${all.slice(0, 3).map(attemptRowHTML).join('')}</div>` : `<div class="exp muted">${t('hist_none')}</div>`}
+    ${all.length ? `<div class="hist">${all.slice(0, 3).map(attemptFoldHTML).join('')}</div>` : `<div class="exp muted">${t('hist_none')}</div>`}
     <div class="row">
       <button class="btn sm" onclick="learnScreen()">${t('learn_open')}</button>
       <button class="btn sm" onclick="historyScreen()">${all.length > 3 ? t('hist_all', all.length) : t('hist_open_screen')}</button>
@@ -1063,7 +1132,9 @@ function historyScreen(msg = '') {
     <div class="sub">${t('hist_transfer_note')}</div>
     ${transferRowHTML()}
     ${syncSectionHTML()}
-    <div class="sec">${all.length ? `<div class="hist">${all.map(attemptRowHTML).join('')}</div>` : `<div class="exp muted">${t('hist_none')}</div>`}</div>
+    <div class="sec">${all.length
+      ? `${attemptGroupsHTML(all)}<div class="exp muted" style="margin-top:10px">${t('hist_retention')}</div>`
+      : `<div class="exp muted">${t('hist_none')}</div>`}</div>
     <div class="nav"><button class="btn" onclick="home()">${t('nav_home')}</button></div>`;
   wireHistory(historyScreen);
   if (msg) setSyncMsg(msg);
@@ -1083,9 +1154,12 @@ function openAttempt(id) {
   // the arrow keys cannot walk a finished attempt back into the exam screen.
   const ans = { ...(a.answers || {}) };
   const rev = qs.map(q => ({ q, good: isCorrect(q, ans[q.n]) }));
-  S = { mode: a.mode === 'practice' ? 'pr-done' : 'ex-done', qs, i: 0, ans, flags: new Set(),
+  // Only an exam gets the exam report; a practice run and the phone's repetition session
+  // are both "a list of questions I went through" and read as the practice review.
+  const asExam = a.mode === 'exam';
+  S = { mode: asExam ? 'ex-done' : 'pr-done', qs, i: 0, ans, flags: new Set(),
     replay: true, attempt: a, reviewFilter: rev.some(r => !r.good) ? 'bad' : 'all' };
-  if (a.mode === 'practice') {
+  if (!asExam) {
     S.result = { rev, ok: rev.filter(r => r.good).length };
     renderPracticeResults();
   } else {
@@ -1313,7 +1387,7 @@ function learnScreen() {
   window.scrollTo(0, 0);
 }
 
-// The three runs. All of them are the practice screen over a chosen set — the difference is
+// The runs. All of them are the practice screen over a chosen set — the difference is
 // only which questions, and whether the answers count as a repetition in the day's tally.
 function startRun(numbers, { srs = false } = {}) {
   const qs = numbers.map(n => byN().get(n)).filter(Boolean);
@@ -1328,6 +1402,15 @@ const startWrongRun = () => startRun(learnWrong());
 function startTopicRun(topic) {
   const pool = DATA.filter(q => scorable(q) && (q.tp || 'General') === topic);
   startRun(shuffle(pool).slice(0, 20).map(q => q.n));
+}
+
+// The mistakes of one stored attempt, from the fold that lists them. Not the same set as
+// startWrongRun: that one is "everything I currently have wrong", this one is "what went
+// wrong in this run" — a question fixed since then is still part of what that attempt was.
+function startAttemptRun(id) {
+  const st = P();
+  const a = st ? st.attemptById(id) : null;
+  if (a) startRun(mistakesIn(a));
 }
 
 // ============================ SHARE FOR AI ============================
@@ -1848,7 +1931,7 @@ document.addEventListener('keydown', e => {
 });
 
 // expose for inline onclick
-Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter, setLang, applyLang, openMode, segPick, historyScreen, learnScreen, startSrsRun, startWrongRun, startTopicRun, openAttempt, exportProgress, importProgress, runSync, makeSyncKey, copySyncKey, forgetSyncKey });
+Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter, setLang, applyLang, openMode, segPick, historyScreen, learnScreen, startSrsRun, startWrongRun, startTopicRun, startAttemptRun, openAttempt, exportProgress, importProgress, runSync, makeSyncKey, copySyncKey, forgetSyncKey });
 // An automatic sync that changed the history redraws the screen showing it — and only
 // that screen: pulling the ground out from under someone mid-question would be worse than
 // a stale list.

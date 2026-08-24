@@ -461,15 +461,42 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .hist-score.pass .hs-val{color:var(--teal-text)}
 .hist-score .hs-of{font-size:11px;font-weight:600;color:var(--grey-text)}
 
+/* The history as folds. Two levels: a group per kind of run, and an attempt inside it that
+   opens onto its domain breakdown. Both are <details>, so the open/closed state is the
+   browser's and survives the re-render that follows deleting a row. */
+.hgrp{border:1px solid var(--edge);border-radius:15px;background:var(--cream-light);margin:0 0 10px}
+.hgrp>summary{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;
+  font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--grey-text)}
+/* display:flex already drops Chrome's triangle; the -webkit rule is for older Safari. */
+.hgrp>summary::-webkit-details-marker{display:none}
+.hgrp>summary::before{content:'▸';font-size:11px;color:var(--grey-text);transition:transform .15s ease}
+.hgrp[open]>summary::before{content:'▾'}
+.hgrp>summary:hover{color:var(--ink)}
+.hgrp>summary .hgrp-n{font-family:var(--num);font-size:12px;font-weight:700;color:var(--grey-text);
+  background:rgba(22,24,29,.07);border-radius:999px;padding:2px 9px;letter-spacing:0}
+.hgrp>.hist{padding:0 10px 12px}
+
+.hitem>summary{cursor:pointer;list-style:none}
+.hitem>summary::-webkit-details-marker{display:none}
+.hitem[open]>summary.hist-row{border-color:var(--edge-strong);border-bottom-left-radius:0;border-bottom-right-radius:0}
+.hist-more{display:flex;flex-direction:column;gap:10px;padding:12px 15px 13px;
+  background:var(--cream);border:1px solid var(--edge-strong);border-top:0;
+  border-radius:0 0 13px 13px}
+.dchips{display:flex;flex-wrap:wrap;gap:6px}
+.dchip{font-family:var(--num);font-size:11px;font-weight:700;white-space:nowrap;
+  border-radius:999px;padding:4px 10px;background:rgba(22,24,29,.05);color:var(--grey-text)}
+.dchip.g{background:rgba(46,125,111,.12);color:var(--teal-text)}
+.dchip.a{background:rgba(201,162,74,.16);color:var(--gold-text)}
+.dchip.r{background:rgba(179,69,58,.1);color:var(--red)}
+
 @media(max-width:640px){
-  /* Three lines instead of five columns: the date and the score, then what the run was,
-     then the buttons — with "delete" pushed to the far edge, away from "review". */
+  /* Two lines instead of a row of columns: the date with the score on the far edge, then
+     what the run was underneath. The buttons live in the fold, which stacks on its own. */
   .hist-row{display:flex;flex-wrap:wrap;gap:9px 12px}
   .hist-when{order:1}
   .hist-score{order:2;margin-left:auto}
   .hist-what{order:3;flex:1 1 100%}
-  .hist-row .btn.sm{order:4}
-  .hist-row .btn.sm:last-child{margin-left:auto}
+  .hist-more .btn.sm:last-child{margin-left:auto}
 }
 
 /* The language pill has nowhere to float that is not on top of the sticky strip once the
