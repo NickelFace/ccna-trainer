@@ -291,7 +291,11 @@ export const store = {
   applySync(state) {
     for (const k of ['profile', 'attempts', 'bookmarks', 'srs', 'activity', 'book']) {
       if (!(k in state)) continue;
-      this[k] = state[k];
+      // Normalized on the way in, the same as on load: what comes back has been through
+      // another client, and one still on an older build sends a textbook branch with no
+      // tombstone map in it. Adopting that shape would leave `readOff` undefined until the
+      // next restart, and the next unmark writing into nothing.
+      this[k] = k === 'book' ? normalizeBook(state[k]) : state[k];
       this._queue(k);
     }
   },
