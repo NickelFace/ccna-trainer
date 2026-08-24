@@ -328,6 +328,12 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .stat .bad{color:var(--red);font-family:var(--num);font-weight:700}
 .qjump{width:74px;padding:8px;font-size:13px;text-align:center;font-family:var(--num)}
 .qstart{width:100%;max-width:420px}
+/* fourteen days of work, one bar each — relative to the busiest day, because the site has
+   no daily goal to measure against */
+.strip{display:flex;align-items:flex-end;gap:4px;height:56px;margin-top:12px}
+.strip i{flex:1;background:var(--cream-warm);border-radius:3px;min-height:3px}
+.strip i.on{background:var(--teal-text)}
+
 /* the sync key: 32 characters that have to be read off one screen and typed into another */
 .synckey{width:100%;max-width:420px;font-family:var(--num);font-size:13px;letter-spacing:.02em}
 .timer{

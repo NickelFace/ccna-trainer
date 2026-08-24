@@ -17,6 +17,10 @@ import { nextState } from './shared/srs.js';
 import { ACTIVITY_DAYS, bumpActivity, dayKey, normalizeActivity, pruneActivity } from './shared/activity.js';
 import { BRANCHES, isBackup, packBackup } from './shared/backup.js';
 import { pruneAttempts } from './shared/retention.js';
+import { boxHistogram, dueCount, dueQueue, nextDueAt, wrongQueue } from './shared/srs-queue.js';
+import {
+  answeredTotal, dayStats, mistakesOf, recentDays, scoreTone, streakDays, toneFor, topicStats, weakTopics,
+} from './shared/progress.js';
 import { PASS_SCALED, toScaled } from './shared/score.js';
 import { autoSyncer, isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js';
 
@@ -54,9 +58,25 @@ const newDeviceId = () => 'web-' + Math.random().toString(36).slice(2, 8);
 
 const Store = {
   // Re-exported for app.js, which is a classic script and cannot import the shared modules
-  // itself — the scale must be the one the Android app uses, not a second copy of it.
+  // itself — every rule below has to be the one the Android app uses, not a second copy.
+  // The three that grade take isCorrect as an argument; app.js passes its own, so the exam
+  // keeps working even if this module never loads.
   toScaled,
   PASS_SCALED,
+  dueQueue,
+  dueCount,
+  nextDueAt,
+  boxHistogram,
+  wrongQueue,
+  topicStats,
+  weakTopics,
+  mistakesOf,
+  dayStats,
+  streakDays,
+  recentDays,
+  answeredTotal,
+  toneFor,
+  scoreTone,
 
   profile: {},
   session: null,

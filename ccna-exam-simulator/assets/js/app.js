@@ -176,6 +176,28 @@ const I18N = {
     by_domain: 'По доменам',
     badge_ok: 'верно',
     badge_wrong: 'ошибка',
+    learn_title: 'Учить',
+    learn_open: 'Учить',
+    learn_today: 'Сегодня',
+    learn_today_line: 'Отвечено {0} · ошибок {1} · повторений {2}',
+    learn_streak: 'Серия: {0} дн.',
+    learn_streak_none: 'Серии пока нет — ответь хотя бы на один вопрос сегодня.',
+    learn_srs: 'Повторение',
+    learn_srs_note: 'Вопросы, у которых подошёл срок. Верный ответ отодвигает следующий показ (1 → 3 → 7 → 16 → 35 дней), неверный возвращает вопрос на завтра.',
+    learn_srs_go: 'Повторить · {0}',
+    learn_srs_empty: 'Всё повторено.',
+    learn_srs_next: 'Следующее повторение: {0}.',
+    learn_srs_none: 'Пока нечего повторять — вопросы попадают сюда после первого ответа.',
+    learn_wrong: 'Работа над ошибками',
+    learn_wrong_note: 'Вопросы, где последний ответ был неверным. Самые свежие ошибки — первыми.',
+    learn_wrong_go: 'Разобрать · {0}',
+    learn_wrong_empty: 'Неразобранных ошибок нет.',
+    learn_topics: 'Слабые темы',
+    learn_topics_note: 'Считается по ответам в сохранённых попытках. История живёт 6 месяцев, поэтому старое постепенно перестаёт учитываться.',
+    learn_topics_empty: 'Пока не по чему судить — пройди экзамен или тренировку.',
+    learn_topic_row: '{0} из {1} верно · {2}%',
+    learn_topic_go: 'учить',
+    learn_days: 'Последние 14 дней',
     hist_home_title: 'Мой прогресс',
     hist_title: 'История попыток',
     hist_none: 'Пока нет ни одной завершённой попытки. Пройди экзамен или тренировку — результат сохранится здесь, в этом браузере.',
@@ -342,6 +364,28 @@ const I18N = {
     by_domain: 'By Domain',
     badge_ok: 'correct',
     badge_wrong: 'wrong',
+    learn_title: 'Practice',
+    learn_open: 'Practice',
+    learn_today: 'Today',
+    learn_today_line: '{0} answered · {1} wrong · {2} repetitions',
+    learn_streak: 'Streak: {0} days',
+    learn_streak_none: 'No streak yet — answer one question today to start one.',
+    learn_srs: 'Repetition',
+    learn_srs_note: 'Questions that have come due. A right answer pushes the next showing out (1 → 3 → 7 → 16 → 35 days), a wrong one brings it back tomorrow.',
+    learn_srs_go: 'Repeat · {0}',
+    learn_srs_empty: 'Everything is repeated.',
+    learn_srs_next: 'Next repetition: {0}.',
+    learn_srs_none: 'Nothing to repeat yet — a question lands here after its first answer.',
+    learn_wrong: 'Mistakes',
+    learn_wrong_note: 'Questions whose last answer was wrong, most recently missed first.',
+    learn_wrong_go: 'Work through · {0}',
+    learn_wrong_empty: 'No outstanding mistakes.',
+    learn_topics: 'Weak topics',
+    learn_topics_note: 'Counted from the answers in saved attempts. History is kept for six months, so old work gradually stops counting.',
+    learn_topics_empty: 'Nothing to judge by yet — take an exam or a practice run.',
+    learn_topic_row: '{0} of {1} right · {2}%',
+    learn_topic_go: 'study',
+    learn_days: 'Last 14 days',
     hist_home_title: 'My progress',
     hist_title: 'Attempt history',
     hist_none: 'No finished attempts yet. Take an exam or a practice run — the result is kept here, in this browser.',
@@ -1003,6 +1047,7 @@ function homeProgressHTML() {
     <h2>${t('hist_home_title')}</h2>
     ${all.length ? `<div class="hist">${all.slice(0, 3).map(attemptRowHTML).join('')}</div>` : `<div class="exp muted">${t('hist_none')}</div>`}
     <div class="row">
+      <button class="btn sm" onclick="learnScreen()">${t('learn_open')}</button>
       <button class="btn sm" onclick="historyScreen()">${all.length > 3 ? t('hist_all', all.length) : t('hist_open_screen')}</button>
       <button class="btn sm" onclick="exportProgress()">${t('hist_export')}</button>
       <button class="btn sm" onclick="importProgress()">${t('hist_import')}</button>
@@ -1173,6 +1218,118 @@ async function runSync() {
   }
 }
 
+// ============================ LEARN ============================
+// What the phone's «Учить» tab does, in the browser: the repetition queue, the mistakes,
+// and the topics that keep costing points. Every rule behind it — when a question is due,
+// what counts as weak, how a streak is counted — comes from assets/js/shared/ through
+// window.Store, so both devices answer these questions the same way.
+
+const learnDue = () => {
+  const st = P();
+  return st ? st.dueQueue(st.srs, Date.now(), { has: n => byN().has(n) }) : [];
+};
+
+const learnWrong = () => {
+  const st = P();
+  return st ? st.wrongQueue(st.srs, { has: n => byN().has(n) }) : [];
+};
+
+// One bar per day, tallest where the most was answered. Deliberately plain: fourteen divs
+// say what a chart library would, and the scale is relative to the busiest day rather than
+// to a goal the site has no way to set.
+function activityStripHTML(days) {
+  const peak = Math.max(1, ...days.map(d => d.total));
+  return `<div class="strip" role="img" aria-label="${t('learn_days')}">${days.map(d => {
+    const h = d.total ? Math.max(8, Math.round((d.total / peak) * 100)) : 3;
+    return `<i class="${d.total ? 'on' : ''}" style="height:${h}%" title="${esc(d.key)} · ${d.total}"></i>`;
+  }).join('')}</div>`;
+}
+
+function learnScreen() {
+  SCREEN = learnScreen;
+  const st = P();
+  // Without the bank every queue reads as empty, and an empty queue here says «everything
+  // is repeated» — a lie that would send someone away from work they have waiting. Staying
+  // put is the honest answer: this screen is only reachable from inside the trainer, where
+  // the bank is loaded, so getting here without one means something else already went
+  // wrong and home() would fail on the same missing data.
+  if (!st || !byN().size) return;
+
+  const now = Date.now();
+  const today = st.dayStats(st.activity, now);
+  const streak = st.streakDays(st.activity, now);
+  const due = learnDue();
+  const wrong = learnWrong();
+  const next = st.nextDueAt(st.srs, { has: n => byN().has(n) });
+  const topics = st.weakTopics(st.attempts, byN(), isCorrect);
+
+  const srsBody = due.length
+    ? `<button class="btn" onclick="startSrsRun()">${t('learn_srs_go', due.length)}</button>`
+    : `<div class="exp muted">${Object.keys(st.srs).length
+        ? `${t('learn_srs_empty')} ${next ? t('learn_srs_next', esc(stampFull(next))) : ''}`
+        : t('learn_srs_none')}</div>`;
+
+  app().innerHTML = `<h1>${t('learn_title')}</h1>
+
+    <div class="sec">
+      <h2>${t('learn_today')}</h2>
+      <div class="exp">${t('learn_today_line', today.total, today.wrong, today.srs)}</div>
+      <div class="exp muted">${streak ? t('learn_streak', streak) : t('learn_streak_none')}</div>
+      ${activityStripHTML(st.recentDays(st.activity, now, 14))}
+    </div>
+
+    <div class="sec">
+      <h2>${t('learn_srs')}</h2>
+      <div class="exp muted">${t('learn_srs_note')}</div>
+      ${srsBody}
+    </div>
+
+    <div class="sec">
+      <h2>${t('learn_wrong')}</h2>
+      <div class="exp muted">${t('learn_wrong_note')}</div>
+      ${wrong.length
+        ? `<button class="btn" onclick="startWrongRun()">${t('learn_wrong_go', wrong.length)}</button>`
+        : `<div class="exp muted">${t('learn_wrong_empty')}</div>`}
+    </div>
+
+    <div class="sec">
+      <h2>${t('learn_topics')}</h2>
+      <div class="exp muted">${t('learn_topics_note')}</div>
+      ${topics.length ? `<div class="hist">${topics.map(r => `<div class="hist-row">
+        <div class="hist-what">${esc(r.topic)}</div>
+        <div class="hist-score ${r.pct >= 75 ? 'pass' : ''}">${t('learn_topic_row', r.ok, r.tot, r.pct)}</div>
+        <button class="btn sm" data-topic="${attrEsc(r.topic)}">${t('learn_topic_go')}</button>
+      </div>`).join('')}</div>` : `<div class="exp muted">${t('learn_topics_empty')}</div>`}
+    </div>
+
+    <div class="nav">
+      <button class="btn" onclick="home()">${t('nav_home')}</button>
+      <button class="btn" onclick="historyScreen()">${t('hist_open_screen')}</button>
+    </div>`;
+
+  // Topic names come out of the bank, so they are wired rather than inlined — same reason
+  // the history rows are.
+  document.querySelectorAll('[data-topic]').forEach(b => b.onclick = () => startTopicRun(b.dataset.topic));
+  window.scrollTo(0, 0);
+}
+
+// The three runs. All of them are the practice screen over a chosen set — the difference is
+// only which questions, and whether the answers count as a repetition in the day's tally.
+function startRun(numbers, { srs = false } = {}) {
+  const qs = numbers.map(n => byN().get(n)).filter(Boolean);
+  if (!qs.length) return;
+  S = { mode: 'pr', qs, i: 0, ans: {}, ok: 0, done: 0, srsRun: srs, ...practiceRun() };
+  renderPractice();
+}
+
+const startSrsRun = () => startRun(learnDue(), { srs: true });
+const startWrongRun = () => startRun(learnWrong());
+
+function startTopicRun(topic) {
+  const pool = DATA.filter(q => scorable(q) && (q.tp || 'General') === topic);
+  startRun(shuffle(pool).slice(0, 20).map(q => q.n));
+}
+
 // ============================ SHARE FOR AI ============================
 // Plain-text rendering of a question (+ the user's answer, if any) — meant to be
 // pasted into an AI chat to get an independent explanation. Deliberately omits
@@ -1287,13 +1444,13 @@ function renderPractice() {
 function grade(q, given) {
   const ok = given.join('') === q.a.split('').sort().join('');
   S.ans[q.n] = { given, ok }; S.done++; if (ok) S.ok++;
-  recordAnswer(q.n, ok, 'practice');
+  recordAnswer(q.n, ok, S.srsRun ? 'srs' : 'practice');
   renderPractice();
 }
 function gradeDD(q, placement) {
   const ok = ddCorrect(q, placement);
   S.ans[q.n] = { placement, ok }; S.done++; if (ok) S.ok++;
-  recordAnswer(q.n, ok, 'practice');
+  recordAnswer(q.n, ok, S.srsRun ? 'srs' : 'practice');
   renderPractice();
 }
 function pMove(d) {
@@ -1691,7 +1848,7 @@ document.addEventListener('keydown', e => {
 });
 
 // expose for inline onclick
-Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter, setLang, applyLang, openMode, segPick, historyScreen, openAttempt, exportProgress, importProgress, runSync, makeSyncKey, copySyncKey, forgetSyncKey });
+Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter, setLang, applyLang, openMode, segPick, historyScreen, learnScreen, startSrsRun, startWrongRun, startTopicRun, openAttempt, exportProgress, importProgress, runSync, makeSyncKey, copySyncKey, forgetSyncKey });
 // An automatic sync that changed the history redraws the screen showing it — and only
 // that screen: pulling the ground out from under someone mid-question would be worse than
 // a stale list.
