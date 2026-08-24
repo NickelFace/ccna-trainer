@@ -84,7 +84,7 @@ test('the phone restores what the browser exported', async () => {
 });
 
 test('the browser restores what the phone exported', () => {
-  store.bookmarks = [102];
+  store.toggleBookmark(102);
   store.book = { read: { 'ch-1': NOW }, pos: {}, open: {}, last: 'ch-1', scale: 1 };
   const file = JSON.parse(JSON.stringify(store.toBackup()));
 
@@ -94,7 +94,7 @@ test('the browser restores what the phone exported', () => {
   assert.equal(web.attempts[0].id, store.attempts[0].id);
   // Branches the web trainer has no screen for survive the round trip — importing a phone
   // backup here and exporting it back must not strip the textbook or the bookmarks.
-  assert.deepEqual(web.bookmarks, [102]);
+  assert.deepEqual(web.bookmarkList(), [102]);
   assert.equal(web.book.last, 'ch-1');
   // …but not the device identity: two devices writing attempts under one id would merge
   // each other's history into itself.

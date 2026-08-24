@@ -17,6 +17,7 @@ import { BRANCHES, packBackup, isBackup } from '../../../ccna-exam-simulator/ass
 import { pruneAttempts } from '../../../ccna-exam-simulator/assets/js/shared/retention.js';
 import { isSyncKey, newSyncKey, syncOnce } from '../../../ccna-exam-simulator/assets/js/shared/sync.js';
 import { DEFAULT_BOOK, isRead, normalizeBook, setRead } from './theory.js';
+import { normalizeTset, tsetEntries, tsetHas, tsetMark } from '../../../ccna-exam-simulator/assets/js/shared/tset.js';
 import { DEFAULT_GOAL, validGoal } from '../../../ccna-exam-simulator/assets/js/shared/progress.js';
 
 const KEY = {
@@ -91,7 +92,7 @@ export const store = {
   profile: { ...DEFAULT_PROFILE },
   session: null,
   attempts: [],
-  bookmarks: [],
+  bookmarks: { on: {}, off: {} },
   srs: {},            // qn -> { box, dueAt, lastResult, seenCount }
   activity: {},       // 'YYYY-MM-DD' -> deviceId -> answers graded that day
   book: { ...DEFAULT_BOOK },
@@ -125,7 +126,7 @@ export const store = {
     // Six months, and then by itself — see shared/retention.js. Done here as well as in
     // the sync so a phone that never syncs still forgets on schedule.
     this.attempts = pruneAttempts(attempts);
-    this.bookmarks = bookmarks;
+    this.bookmarks = normalizeTset(bookmarks);
     this.srs = srs;
     // Days recorded before the activity map was split by device belong to this phone —
     // it is the only device that ever wrote this store.
@@ -234,16 +235,24 @@ export const store = {
   },
 
   // ---- bookmarks ----
+  // A tombstoned set rather than a list — see shared/tset.js. Taking a question back off
+  // the pile is an action with a date on it, so the other device cannot quietly put it
+  // back the next time the two talk.
   toggleBookmark(qn) {
-    const i = this.bookmarks.indexOf(qn);
-    if (i >= 0) this.bookmarks.splice(i, 1);
-    else this.bookmarks.push(qn);
+    const on = !this.isBookmarked(qn);
+    tsetMark(this.bookmarks.on, this.bookmarks.off, qn, on);
     this._touch('bookmarks');
-    return i < 0;
+    return on;
   },
 
-  isBookmarked(qn) {
-    return this.bookmarks.includes(qn);
+  isBookmarked(qn) { return tsetHas(this.bookmarks.on, this.bookmarks.off, qn); },
+
+  // Question numbers currently put aside, oldest first — the order they were added in,
+  // which is the order a list of them should read.
+  bookmarkList() {
+    return Object.entries(tsetEntries(this.bookmarks.on, this.bookmarks.off))
+      .sort((x, y) => x[1] - y[1])
+      .map(([qn]) => Number(qn));
   },
 
   // ---- profile ----
@@ -295,7 +304,9 @@ export const store = {
       // another client, and one still on an older build sends a textbook branch with no
       // tombstone map in it. Adopting that shape would leave `readOff` undefined until the
       // next restart, and the next unmark writing into nothing.
-      this[k] = k === 'book' ? normalizeBook(state[k]) : state[k];
+      this[k] = k === 'book' ? normalizeBook(state[k])
+        : k === 'bookmarks' ? normalizeTset(state[k])
+        : state[k];
       this._queue(k);
     }
   },
@@ -321,7 +332,7 @@ export const store = {
     this.profile = mergeProfile(data.profile);
     this.session = data.session ?? null;
     this.attempts = Array.isArray(data.attempts) ? data.attempts : [];
-    this.bookmarks = Array.isArray(data.bookmarks) ? data.bookmarks : [];
+    this.bookmarks = normalizeTset(data.bookmarks);
     this.srs = data.srs && typeof data.srs === 'object' ? data.srs : {};
     // Un-attributed days in the file were graded on whatever device exported it, not here.
     this.activity = normalizeActivity(data.activity, data.profile?.deviceId);

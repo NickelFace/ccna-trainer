@@ -9,6 +9,7 @@ import { d1 } from './d1.js';
 import { syncOnce, pull, newSyncKey, isSyncKey, SyncError } from '../../ccna-exam-simulator/assets/js/shared/sync.js';
 import { nextState } from '../../ccna-exam-simulator/assets/js/shared/srs.js';
 import { isRead, setRead } from '../../ccna-exam-simulator/assets/js/shared/theory.js';
+import { tsetHas, tsetMark } from '../../ccna-exam-simulator/assets/js/shared/tset.js';
 
 const BASE = 'https://sync.maks.top';
 const KEY = newSyncKey(bytes => bytes.forEach((_, i) => { bytes[i] = i * 7; }));
@@ -27,7 +28,7 @@ const device = (deviceId, over = {}) => ({
   profile: { deviceId, dailyGoal: 30, updatedAt: 1000 },
   session: null,
   attempts: [],
-  bookmarks: [],
+  bookmarks: { on: {}, off: {} },
   srs: {},
   activity: {},
   book: { read: {}, readOff: {}, pos: {}, open: {}, last: null, scale: 1, updatedAt: 1000 },
@@ -74,8 +75,8 @@ test('an exam passed in the browser shows up on the phone', async () => {
 
 test('work done on both devices while apart survives on both', async () => {
   const fetch = server();
-  const web = device(WEB, { attempts: [attempt('web-bbb222-100', 100)], bookmarks: [3] });
-  const phone = device(PHONE, { attempts: [attempt('and-aaa111-200', 200)], bookmarks: [7] });
+  const web = device(WEB, { attempts: [attempt('web-bbb222-100', 100)], bookmarks: { on: { 3: 100 }, off: {} } });
+  const phone = device(PHONE, { attempts: [attempt('and-aaa111-200', 200)], bookmarks: { on: { 7: 200 }, off: {} } });
 
   await syncOnce({ fetch, base: BASE, key: KEY, state: web });
   const onPhone = await syncOnce({ fetch, base: BASE, key: KEY, state: phone });
@@ -83,7 +84,7 @@ test('work done on both devices while apart survives on both', async () => {
 
   for (const [who, result] of [['phone', onPhone], ['browser', onWeb]]) {
     assert.deepEqual(result.state.attempts.map(a => a.id), ['web-bbb222-100', 'and-aaa111-200'], who);
-    assert.deepEqual(result.state.bookmarks, [3, 7], who);
+    assert.deepEqual(result.state.bookmarks.on, { 3: 100, 7: 200 }, who);
   }
 });
 
@@ -139,6 +140,23 @@ test('a chapter marked read on one device arrives on the other', async () => {
   await syncOnce({ fetch, base: BASE, key: KEY, state: alsoRead });
   const back = await syncOnce({ fetch, base: BASE, key: KEY, state: web });
   assert.deepEqual(Object.keys(back.state.book.read).sort(), ['nf-02-topologies', 'nf-08-subnetting']);
+});
+
+test('a bookmark taken off survives the round trip too', async () => {
+  const fetch = server();
+  const web = device(WEB, { bookmarks: { on: { 12: 100, 34: 100 }, off: {} } });
+  const first = await syncOnce({ fetch, base: BASE, key: KEY, state: web });
+
+  // The phone gets both, and puts one of them back on the shelf.
+  const phone = await syncOnce({ fetch, base: BASE, key: KEY, state: device(PHONE) });
+  assert.deepEqual(Object.keys(phone.state.bookmarks.on).sort(), ['12', '34']);
+  const undone = { ...phone.state, bookmarks: { on: { ...phone.state.bookmarks.on }, off: { ...phone.state.bookmarks.off } } };
+  tsetMark(undone.bookmarks.on, undone.bookmarks.off, 12, false, 200);
+  await syncOnce({ fetch, base: BASE, key: KEY, state: undone });
+
+  const after = await syncOnce({ fetch, base: BASE, key: KEY, state: first.state });
+  assert.equal(tsetHas(after.state.bookmarks.on, after.state.bookmarks.off, 12), false, 'gone on the browser');
+  assert.equal(tsetHas(after.state.bookmarks.on, after.state.bookmarks.off, 34), true, 'the other one is untouched');
 });
 
 test('unmarking a chapter survives the round trip that used to undo it', async () => {

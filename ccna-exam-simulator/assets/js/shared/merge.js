@@ -17,6 +17,7 @@
 // terms, because losing a morning of practice to a bookmark tapped on the other device is
 // exactly the failure that makes people stop trusting sync.
 import { normalizeActivity } from './activity.js';
+import { normalizeTset, tsetMergeMap } from './tset.js';
 
 const obj = v => (v && typeof v === 'object' && !Array.isArray(v)) ? v : {};
 const arr = v => Array.isArray(v) ? v : [];
@@ -50,11 +51,15 @@ function mergeAttempts(a, b) {
   return [...byId.values()].sort((x, y) => (x.date || 0) - (y.date || 0));
 }
 
-// Union. There are no tombstones, so un-bookmarking a question on one device is undone by
-// the other until both have synced it away — an extra bookmark is a nuisance, a silently
-// deleted one is lost work, and only one of those is worth risking.
-const mergeBookmarks = (a, b) =>
-  [...new Set([...arr(a), ...arr(b)].filter(n => Number.isFinite(n)))].sort((x, y) => x - y);
+// A tombstoned set, the same one the textbook's read marks use: putting a question aside
+// and taking it back are both dated, and the later of the two wins on both devices. Before
+// this, un-bookmarking was simply undone by the other device — the union only knew how to
+// add. A plain array from an older build (or an older backup file) normalizes into adds
+// stamped 1, so nothing is lost by meeting one.
+const mergeBookmarks = (a, b) => {
+  const A = normalizeTset(a), B = normalizeTset(b);
+  return { on: tsetMergeMap(A.on, B.on), off: tsetMergeMap(A.off, B.off) };
+};
 
 // Per question, the state that was graded later. `at` is written by nextState; entries
 // from before it existed count as 0 and lose to any real grading, and two of them keep the
@@ -101,22 +106,14 @@ function mergeActivity(a, b, ownerA, ownerB) {
 // so a chapter only opened on the phone keeps its place. The scalars (which chapter to
 // continue, the reader's text size) come from whichever side was touched last, because
 // they describe one reader and cannot be halfway.
-const latest = (x, y) => {
-  const out = { ...obj(x) };
-  for (const [topic, when] of Object.entries(obj(y))) {
-    out[topic] = Math.max(Number(when) || 0, Number(out[topic]) || 0);
-  }
-  return out;
-};
-
 function mergeBook(a, b) {
   const A = obj(a), B = obj(b);
   const [newer, older] = stamp(B) > stamp(A) ? [B, A] : [A, B];
   return {
     ...older,
     ...newer,
-    read: latest(older.read, newer.read),
-    readOff: latest(older.readOff, newer.readOff),
+    read: tsetMergeMap(older.read, newer.read),
+    readOff: tsetMergeMap(older.readOff, newer.readOff),
     pos: { ...obj(older.pos), ...obj(newer.pos) },
     open: { ...obj(older.open), ...obj(newer.open) },
     updatedAt: Math.max(stamp(A), stamp(B)),

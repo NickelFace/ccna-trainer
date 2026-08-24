@@ -25,6 +25,7 @@ import {
 import { PASS_SCALED, toScaled } from './shared/score.js';
 import { autoSyncer, isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js';
 import { bodyMarkup } from './shared/book.js';
+import { normalizeTset, tsetEntries, tsetHas, tsetMark } from './shared/tset.js';
 import {
   coverage, DEFAULT_BOOK, isRead, loadIndex, loadMap, loadTopic, normalizeBook, readMap, setBookVersion,
   setRead, topicOf,
@@ -98,7 +99,7 @@ const Store = {
   profile: {},
   session: null,
   attempts: [],
-  bookmarks: [],
+  bookmarks: { on: {}, off: {} },
   srs: {},
   activity: {},
   book: { ...DEFAULT_BOOK },
@@ -117,7 +118,7 @@ const Store = {
     // Six months, and then by itself — see shared/retention.js. Done here as well as in
     // the sync so a device that never syncs still forgets on schedule.
     this.attempts = pruneAttempts(read(KEY.attempts, []) || []);
-    this.bookmarks = read(KEY.bookmarks, []) || [];
+    this.bookmarks = normalizeTset(read(KEY.bookmarks, {}));
     this.srs = read(KEY.srs, {}) || {};
     this.book = normalizeBook(read(KEY.book, {}));
     if (!this.profile.deviceId) {
@@ -146,6 +147,25 @@ const Store = {
     this.profile.dailyGoal = n;
     this._touch('profile');
     return n;
+  },
+
+  // ---- bookmarks ----
+  // The site has no screen for these yet; the phone's are carried through untouched. The
+  // accessors exist so that when it grows one, it cannot invent a second idea of what a
+  // bookmark is — see shared/tset.js.
+  toggleBookmark(qn) {
+    const on = !this.isBookmarked(qn);
+    tsetMark(this.bookmarks.on, this.bookmarks.off, qn, on);
+    this._touch('bookmarks');
+    return on;
+  },
+
+  isBookmarked(qn) { return tsetHas(this.bookmarks.on, this.bookmarks.off, qn); },
+
+  bookmarkList() {
+    return Object.entries(tsetEntries(this.bookmarks.on, this.bookmarks.off))
+      .sort((x, y) => x[1] - y[1])
+      .map(([qn]) => Number(qn));
   },
 
   // ---- textbook ----
@@ -256,7 +276,9 @@ const Store = {
       // another client, and one still on an older build sends a textbook branch with no
       // tombstone map in it. Adopting that shape would leave `readOff` undefined until the
       // next restart, and the next unmark writing into nothing.
-      this[k] = k === 'book' ? normalizeBook(state[k]) : state[k];
+      this[k] = k === 'book' ? normalizeBook(state[k])
+        : k === 'bookmarks' ? normalizeTset(state[k])
+        : state[k];
       this._queue(k);
     }
   },
@@ -272,7 +294,7 @@ const Store = {
     this.profile = { ...(data.profile && typeof data.profile === 'object' ? data.profile : {}) };
     this.session = data.session ?? null;
     this.attempts = Array.isArray(data.attempts) ? data.attempts : [];
-    this.bookmarks = Array.isArray(data.bookmarks) ? data.bookmarks : [];
+    this.bookmarks = normalizeTset(data.bookmarks);
     this.srs = data.srs && typeof data.srs === 'object' ? data.srs : {};
     // Un-attributed days in the file were graded on whatever device exported it, not here.
     this.activity = normalizeActivity(data.activity, data.profile?.deviceId);

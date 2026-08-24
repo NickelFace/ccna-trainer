@@ -69,3 +69,52 @@ test('junk in either map is a number of zero, not a crash', () => {
   assert.deepEqual(readMap(b), {});
   assert.deepEqual(readMap({ read: { 'ch-1': 'soon' }, readOff: {} }), {});
 });
+
+// ---------------------------------------------------------------- bookmarks
+// The same primitive, the other set that uses it. What the store adds on top is only the
+// toggle and the order a list of them reads in.
+import { normalizeTset, tsetEntries, tsetHas, tsetMark } from '../../ccna-exam-simulator/assets/js/shared/tset.js';
+
+const set = (over = {}) => ({ on: {}, off: {}, ...over });
+
+test('a question put aside and taken back follows the later action', () => {
+  const s = set();
+  tsetMark(s.on, s.off, 12, true, 100);
+  assert.equal(tsetHas(s.on, s.off, 12), true);
+  tsetMark(s.on, s.off, 12, false, 200);
+  assert.equal(tsetHas(s.on, s.off, 12), false);
+  tsetMark(s.on, s.off, 12, true, 300);
+  assert.equal(tsetHas(s.on, s.off, 12), true);
+});
+
+test('taking one back off in the same millisecond it was added still removes it', () => {
+  const s = set();
+  tsetMark(s.on, s.off, 12, true, 100);
+  tsetMark(s.on, s.off, 12, false, 100);
+  assert.equal(tsetHas(s.on, s.off, 12), false);
+});
+
+test('the list keeps the order they were added in', () => {
+  const s = set();
+  tsetMark(s.on, s.off, 30, true, 300);
+  tsetMark(s.on, s.off, 10, true, 100);
+  tsetMark(s.on, s.off, 20, true, 200);
+  tsetMark(s.on, s.off, 10, false, 400);
+  const order = Object.entries(tsetEntries(s.on, s.off)).sort((x, y) => x[1] - y[1]).map(([n]) => Number(n));
+  assert.deepEqual(order, [20, 30]);
+});
+
+test('the array both clients used to store normalizes into adds nobody has undone', () => {
+  const s = normalizeTset([3, 7]);
+  assert.deepEqual(s, { on: { 3: 1, 7: 1 }, off: {} });
+  assert.equal(tsetHas(s.on, s.off, 3), true);
+  // …and a removal made anywhere since still beats it, because 1 is as old as it gets.
+  tsetMark(s.on, s.off, 3, false, 2);
+  assert.equal(tsetHas(s.on, s.off, 3), false);
+});
+
+test('junk in place of a set is an empty set, not a crash', () => {
+  assert.deepEqual(normalizeTset(null), { on: {}, off: {} });
+  assert.deepEqual(normalizeTset('nope'), { on: {}, off: {} });
+  assert.deepEqual(normalizeTset({ on: [1, 2], off: 7 }), { on: {}, off: {} });
+});

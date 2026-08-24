@@ -16,7 +16,7 @@ const state = (deviceId, over = {}) => ({
   profile: { deviceId, dailyGoal: 30, updatedAt: 1000 },
   session: null,
   attempts: [],
-  bookmarks: [],
+  bookmarks: { on: {}, off: {} },
   srs: {},
   activity: {},
   book: { read: {}, readOff: {}, pos: {}, open: {}, last: null, scale: 1, updatedAt: 1000 },
@@ -33,13 +33,13 @@ const attempt = (id, date, over = {}) => ({
 test('merging a state with itself leaves it as it was', () => {
   const s = state(PHONE, {
     attempts: [attempt('and-aaa111-1', 5)],
-    bookmarks: [7, 2],
+    bookmarks: { on: { 7: 1000, 2: 1000 }, off: {} },
     srs: { 1: nextState(null, true, 100) },
     activity: { [DAY]: { [PHONE]: { total: 3, wrong: 1, srs: 0 } } },
     book: { read: { 'ch-1': 50 }, readOff: {}, pos: { 'ch-1': 200 }, open: {}, last: 'ch-1', scale: 1, updatedAt: 1000 },
   });
   const merged = merge(s, structuredClone(s));
-  assert.deepEqual(merged, { ...s, bookmarks: [2, 7] });   // only the bookmark order is normalised
+  assert.deepEqual(merged, s);
 });
 
 test('re-merging the same remote state adds nothing the second time', () => {
@@ -65,6 +65,38 @@ test('both devices arrive at the same history, whichever side they merge from', 
   assert.deepEqual(here.bookmarks, there.bookmarks);
   assert.deepEqual(here.srs, there.srs);
   assert.deepEqual(here.activity, there.activity);
+});
+
+// ------------------------------------------------------------------ bookmarks
+
+test('a bookmark taken off on one device does not come back from the other', () => {
+  const local = state(PHONE, { bookmarks: { on: { 12: 100 }, off: { 12: 300 } } });
+  const remote = state(WEB, { bookmarks: { on: { 12: 100 }, off: {} } });
+  for (const [who, merged] of [['phone first', merge(local, remote)], ['browser first', merge(remote, local)]]) {
+    assert.deepEqual(merged.bookmarks.on, { 12: 100 }, `${who}: the add is kept, not deleted`);
+    assert.deepEqual(merged.bookmarks.off, { 12: 300 }, who);
+  }
+});
+
+test('putting it back after taking it off wins, because it happened later', () => {
+  const local = state(PHONE, { bookmarks: { on: { 12: 500 }, off: { 12: 300 } } });
+  const remote = state(WEB, { bookmarks: { on: { 12: 100 }, off: { 12: 300 } } });
+  const merged = merge(local, remote).bookmarks;
+  assert.ok(merged.on[12] > merged.off[12]);
+});
+
+test('two devices bookmarking different questions keep both', () => {
+  const local = state(PHONE, { bookmarks: { on: { 3: 100 }, off: {} } });
+  const remote = state(WEB, { bookmarks: { on: { 7: 200 }, off: {} } });
+  assert.deepEqual(merge(local, remote).bookmarks.on, { 3: 100, 7: 200 });
+});
+
+test('a plain array from an older build meets the new shape without losing either side', () => {
+  const old = state(PHONE, { bookmarks: [3, 7] });
+  const now = state(WEB, { bookmarks: { on: { 9: 400 }, off: { 3: 500 } } });
+  const merged = merge(old, now).bookmarks;
+  assert.deepEqual(merged.on, { 3: 1, 7: 1, 9: 400 });
+  assert.deepEqual(merged.off, { 3: 500 }, 'and a removal still outranks the legacy add');
 });
 
 // ------------------------------------------------------------------ attempts
@@ -230,7 +262,7 @@ test('a book branch written before tombstones existed still reads as it did', ()
 test('a state missing branches entirely merges instead of throwing', () => {
   const merged = merge({}, { attempts: [attempt('a', 1)], bookmarks: [4] });
   assert.deepEqual(merged.attempts.map(a => a.id), ['a']);
-  assert.deepEqual(merged.bookmarks, [4]);
+  assert.deepEqual(merged.bookmarks, { on: { 4: 1 }, off: {} }, 'an array from an older build is adopted');
   assert.deepEqual(merged.srs, {});
   assert.equal(merged.session, null);
 });
@@ -238,7 +270,7 @@ test('a state missing branches entirely merges instead of throwing', () => {
 test('branches of the wrong type are treated as empty, not spread into the result', () => {
   const merged = merge({ attempts: 'nope', bookmarks: { 1: true }, srs: [], activity: 7, book: null }, {});
   assert.deepEqual(merged.attempts, []);
-  assert.deepEqual(merged.bookmarks, []);
+  assert.deepEqual(merged.bookmarks, { on: {}, off: {} });
   assert.deepEqual(merged.srs, {});
   assert.deepEqual(merged.activity, {});
 });
