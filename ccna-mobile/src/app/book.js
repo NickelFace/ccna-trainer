@@ -1,6 +1,6 @@
 // The chapter reader's markup lives in shared/ — the web trainer renders the same
 // chapters and they have to come out identical. Only the click wiring is local.
-export { inline, sectionMarkup, bodyMarkup } from '../../../ccna-exam-simulator/assets/js/shared/book.js?v=13';
+export { inline, sectionMarkup, bodyMarkup } from '../../../ccna-exam-simulator/assets/js/shared/book.js?v=14';
 
 // Self-check answers reveal on tap. Delegated from the screen root so re-renders don't
 // have to rebind anything.
