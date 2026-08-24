@@ -8,16 +8,20 @@ import { isCorrect } from './grade.js';
 import {
   toneFor, scoreTone, msPerQuestion, scaledDelta, pointsToPass, isScored, scoredAttempts,
   weakDomains, dayStats, answeredOn, answeredTotal, recentDays, streakDays,
+  isAbandoned, answeredIn,
   topicStats as topicStatsWith, weakTopics as weakTopicsWith, mistakesOf as mistakesOfWith,
-} from '../../../ccna-exam-simulator/assets/js/shared/progress.js?v=14';
-import { dayKey, daySum, normalizeActivity } from '../../../ccna-exam-simulator/assets/js/shared/activity.js?v=14';
+  perDomainOf as perDomainOfWith,
+} from '../../../ccna-exam-simulator/assets/js/shared/progress.js?v=15';
+import { dayKey, daySum, normalizeActivity } from '../../../ccna-exam-simulator/assets/js/shared/activity.js?v=15';
 
 export { dayKey, normalizeActivity, daySum };
 export {
   toneFor, scoreTone, msPerQuestion, scaledDelta, pointsToPass, isScored, scoredAttempts,
   weakDomains, dayStats, answeredOn, answeredTotal, recentDays, streakDays,
+  isAbandoned, answeredIn,
 };
 
 export const topicStats = (attempts, byN) => topicStatsWith(attempts, byN, isCorrect);
 export const weakTopics = (attempts, byN, opts) => weakTopicsWith(attempts, byN, isCorrect, opts);
 export const mistakesOf = (attempt, byN) => mistakesOfWith(attempt, byN, isCorrect);
+export const perDomainOf = (attempt, byN) => perDomainOfWith(attempt, byN, isCorrect);

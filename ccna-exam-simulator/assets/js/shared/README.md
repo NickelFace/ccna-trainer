@@ -19,6 +19,9 @@ a browser, in the WebView, and under `node --test`.
 - `activity.js` — the daily counters: local day key, the per-device bucket, pruning.
 - `progress.js` — what is derived from the history: topic statistics, weak topics, the
   mistakes of an attempt, the day, the streak, the daily goal, the tones a score is shown in.
+  Also which attempts count at all: a run with fewer than a third of its questions answered
+  was walked away from, not taken, so it gets no 300..1000 score and no place in the
+  averages — while the answers it does hold keep counting like any other.
 - `score.js` — the 300..1000 scale and the pass mark.
 - `retention.js` — how long an attempt is kept (six months) and what pruning may touch.
 

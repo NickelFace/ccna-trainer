@@ -6,7 +6,7 @@ import { esc, h } from '../dom.js';
 import { PASS_SCALED, SCALE_MIN, SCALE_MAX } from '../../engine/score.js';
 import {
   toneFor, scoreTone, msPerQuestion, scaledDelta, pointsToPass, weakDomains, mistakesOf,
-  isScored, scoredAttempts,
+  isScored, scoredAttempts, isAbandoned, answeredIn, perDomainOf,
 } from '../../engine/stats.js';
 import { store } from '../store.js';
 import { review as reviewScreen } from './review.js';
@@ -65,12 +65,21 @@ function scoreCard(attempt, delta) {
 // breakdown below is useful regardless — but never show a 300..1000 number next to them:
 // it would read as comparable to a real exam while actually being a biased or tiny
 // sample. A plain fraction says exactly as much as is true.
+//
+// An abandoned run (see isAbandoned) is the same card with a smaller denominator: the
+// questions that were answered, not the ones that were drawn. Nothing is hidden — the
+// line underneath says how far the run actually got — but the fraction on top is about
+// the answers given, so getting all four right reads as four out of four.
 function plainCard(attempt) {
-  const pct = attempt.total ? Math.round((attempt.ok / attempt.total) * 100) : 0;
-  const label = attempt.mode === 'exam' ? 'Свой экзамен' : (MODE_LABEL[attempt.mode] || 'Тренировка');
+  const dropped = isAbandoned(attempt);
+  const asked = dropped ? answeredIn(attempt) : attempt.total;
+  const pct = asked ? Math.round((attempt.ok / asked) * 100) : 0;
+  const label = dropped
+    ? `Не засчитана · отвечено ${answeredIn(attempt)} из ${attempt.total}`
+    : (attempt.mode === 'exam' ? 'Свой экзамен' : (MODE_LABEL[attempt.mode] || 'Тренировка'));
   return `
     <div class="card score-card plain">
-      <div class="score mono ${toneFor(pct)}">${attempt.ok}/${attempt.total}</div>
+      <div class="score mono ${toneFor(pct)}">${attempt.ok}/${asked}</div>
       <div class="muted">${esc(label)} · ${pct}% верно</div>
       <div class="score-stats">
         <div class="stat"><b class="mono">${pct}%</b><span>точность</span></div>
@@ -79,8 +88,8 @@ function plainCard(attempt) {
     </div>`;
 }
 
-function nextStepCard(attempt, bank, mistakes) {
-  const weak = weakDomains(attempt, bank.meta.domains);
+function nextStepCard(attempt, perDomain, bank, mistakes) {
+  const weak = weakDomains({ ...attempt, perDomain }, bank.meta.domains);
   const detail = weak.length
     ? `Слабее всего ${weak.map(d => `${d.name.replace(/^\d+\.\d+\s+/, '')} (${d.pct}%)`).join(' и ')}.`
     : 'По доменам ровно — добирай объёмом.';
@@ -97,9 +106,9 @@ function nextStepCard(attempt, bank, mistakes) {
     </div>`;
 }
 
-function domainRows(attempt, domains) {
+function domainRows(perDomain, domains) {
   return domains.map(d => {
-    const p = attempt.perDomain[d.id] || { ok: 0, tot: 0 };
+    const p = perDomain[d.id] || { ok: 0, tot: 0 };
     if (!p.tot) return '';
     const pct = Math.round((p.ok / p.tot) * 100);
     return `
@@ -149,6 +158,9 @@ export const result = {
     const { bank } = ctx;
     const mistakes = mistakesOf(attempt, bank.byN);
     const scored = isScored(attempt);
+    // Recomputed over the answered questions for an abandoned run, the filed tally
+    // otherwise — one call, so the breakdown and the card above it cannot disagree.
+    const perDomain = perDomainOf(attempt, bank.byN);
 
     // The delta needs the attempt's own position among *scored* attempts, not the raw
     // history — comparing a real exam's score to whatever practice run happened right
@@ -161,9 +173,9 @@ export const result = {
 
     const node = h(`
       ${scored ? scoreCard(attempt, delta) : plainCard(attempt)}
-      ${nextStepCard(attempt, bank, mistakes)}
+      ${nextStepCard(attempt, perDomain, bank, mistakes)}
       <div class="label spaced">По доменам</div>
-      <div class="card">${domainRows(attempt, bank.meta.domains)}</div>
+      <div class="card">${domainRows(perDomain, bank.meta.domains)}</div>
     `);
 
     node.querySelector('[data-act="mistakes"]')?.addEventListener('click', () =>

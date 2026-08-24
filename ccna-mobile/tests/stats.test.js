@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   toneFor, scoreTone, msPerQuestion, scaledDelta, pointsToPass,
   topicStats, weakTopics, weakDomains, mistakesOf, isScored, scoredAttempts,
+  isAbandoned, answeredIn, perDomainOf,
   dayKey, normalizeActivity, dayStats, recentDays, answeredOn, answeredTotal, streakDays,
 } from '../src/engine/stats.js';
 import { DOMAINS } from './helpers.js';
@@ -74,6 +75,51 @@ test('only a blueprint-weighted attempt is scored', () => {
   assert.equal(isScored({}), false);                  // practice/srs attempts carry no flag at all
   const list = [{ id: 'a', weighted: true }, { id: 'b', weighted: false }, { id: 'c', weighted: true }];
   assert.deepEqual(scoredAttempts(list).map(a => a.id), ['a', 'c']);
+});
+
+// An exam opened and walked away from: 3 of the 12 questions touched (below a third),
+// one of them right. The 9 never reached are not knowledge, and the 300..1000 score that
+// grades them as wrong describes the walking away.
+const walkedOut = () => attempt({
+  id: 'gone', ok: 1, pct: 8, scaled: 307, weighted: true,
+  answers: { 1: { given: ['B'] }, 3: { given: ['A'] }, 4: { given: ['B'] } },
+});
+
+test('an attempt with fewer than a third answered is abandoned, not a result', () => {
+  assert.equal(answeredIn(walkedOut()), 3);
+  assert.equal(isAbandoned(walkedOut()), true);
+  assert.equal(isAbandoned(attempt()), false);                       // all 12 answered
+  // Exactly a third still counts: the rule is "fewer than", and a short run that was
+  // seen through is a real, if small, sample.
+  const четверть = n => Object.fromEntries(BANK.slice(0, n).map(x => [x.n, { given: ['A'] }]));
+  assert.equal(isAbandoned(attempt({ answers: четверть(4) })), false);
+  assert.equal(isAbandoned(attempt({ answers: четверть(3) })), true);
+  // Nothing to divide by: an attempt with no questions is not "abandoned", it is empty.
+  assert.equal(isAbandoned({ total: 0, answers: {} }), false);
+});
+
+test('an abandoned attempt is never scored, however it was drawn', () => {
+  assert.equal(isScored(walkedOut()), false);
+  const list = [attempt({ id: 'a', weighted: true }), walkedOut(), attempt({ id: 'c', weighted: true })];
+  assert.deepEqual(scoredAttempts(list).map(a => a.id), ['a', 'c']);
+});
+
+test('what an abandoned attempt did answer still counts, and only that', () => {
+  // OSPF: 1 wrong + 3 right; NAT: 4 wrong. The untouched questions leave no row at all.
+  assert.deepEqual(topicStats([walkedOut()], byN).map(r => [r.topic, r.ok, r.tot]),
+    [['NAT', 0, 1], ['OSPF', 1, 2]]);
+  assert.deepEqual(mistakesOf(walkedOut(), byN), [1, 4]);
+  // One more answer puts the run at exactly a third, so it counts — and then the eight
+  // questions left blank are eight wrong answers, the way a finished exam grades them.
+  const seenThrough = attempt({ answers: { ...walkedOut().answers, 5: { given: ['A'] } } });
+  assert.equal(isAbandoned(seenThrough), false);
+  assert.equal(mistakesOf(seenThrough, byN).length, 10);
+});
+
+test('the domain breakdown of an abandoned attempt is recomputed over the answers', () => {
+  assert.deepEqual(perDomainOf(walkedOut(), byN), { IPC: { ok: 1, tot: 2 }, IPS: { ok: 0, tot: 1 } });
+  // A finished attempt keeps the tally it was filed with — nothing is recomputed behind it.
+  assert.deepEqual(perDomainOf(attempt(), byN), attempt().perDomain);
 });
 
 test('topic stats aggregate every attempt and sort worst first', () => {

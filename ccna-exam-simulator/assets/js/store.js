@@ -13,23 +13,23 @@
    Branches this app never touches (profile beyond its device id, bookmarks, book) are
    still loaded, kept, and exported verbatim: importing a phone backup here and exporting
    it back must not quietly strip the textbook progress. */
-import { nextState } from './shared/srs.js?v=14';
-import { ACTIVITY_DAYS, bumpActivity, dayKey, normalizeActivity, pruneActivity } from './shared/activity.js?v=14';
-import { BRANCHES, isBackup, packBackup } from './shared/backup.js?v=14';
-import { pruneAttempts } from './shared/retention.js?v=14';
-import { boxHistogram, dueCount, dueQueue, nextDueAt, wrongQueue } from './shared/srs-queue.js?v=14';
+import { nextState } from './shared/srs.js?v=15';
+import { ACTIVITY_DAYS, bumpActivity, dayKey, normalizeActivity, pruneActivity } from './shared/activity.js?v=15';
+import { BRANCHES, isBackup, packBackup } from './shared/backup.js?v=15';
+import { pruneAttempts } from './shared/retention.js?v=15';
+import { boxHistogram, dueCount, dueQueue, nextDueAt, wrongQueue } from './shared/srs-queue.js?v=15';
 import {
-  answeredTotal, dayStats, goalOf, mistakesOf, recentDays, scoreTone, streakDays, toneFor, topicStats,
-  validGoal, weakTopics,
-} from './shared/progress.js?v=14';
-import { PASS_SCALED, toScaled } from './shared/score.js?v=14';
-import { autoSyncer, isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js?v=14';
-import { bodyMarkup } from './shared/book.js?v=14';
-import { normalizeTset, tsetEntries, tsetHas, tsetMark } from './shared/tset.js?v=14';
+  answeredTotal, answeredIn, dayStats, goalOf, isAbandoned, mistakesOf, perDomainOf, recentDays,
+  scoreTone, streakDays, toneFor, topicStats, validGoal, weakTopics,
+} from './shared/progress.js?v=15';
+import { PASS_SCALED, toScaled } from './shared/score.js?v=15';
+import { autoSyncer, isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js?v=15';
+import { bodyMarkup } from './shared/book.js?v=15';
+import { normalizeTset, tsetEntries, tsetHas, tsetMark } from './shared/tset.js?v=15';
 import {
   coverage, DEFAULT_BOOK, isRead, loadIndex, loadMap, loadTopic, normalizeBook, readMap, setBookVersion,
   setRead, topicOf,
-} from './shared/theory.js?v=14';
+} from './shared/theory.js?v=15';
 
 const KEY = {
   profile: 'ccna.profile',
@@ -78,6 +78,10 @@ const Store = {
   topicStats,
   weakTopics,
   mistakesOf,
+  // An exam that was opened and walked away from is not a result — see progress.js.
+  isAbandoned,
+  answeredIn,
+  perDomainOf,
   dayStats,
   streakDays,
   recentDays,

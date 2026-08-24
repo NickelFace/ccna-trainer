@@ -11,8 +11,8 @@
 // working because a sync helper failed is a bad trade. The two implementations are
 // equivalent today (ccna-mobile/src/engine/grade.js was lifted from app.js verbatim) and
 // tests/grade.test.js is what keeps the phone's honest.
-import { PASS_SCALED } from './score.js?v=14';
-import { daySum, dayKey } from './activity.js?v=14';
+import { PASS_SCALED } from './score.js?v=15';
+import { daySum, dayKey } from './activity.js?v=15';
 
 // Two different scales, two different thresholds — mixing them up paints a passing score
 // amber. Domain bars go by percentage (>=82 ok, 60..81 warn); the score itself goes by
@@ -35,9 +35,51 @@ export const pointsToPass = attempt => PASS_SCALED - attempt.scaled;
 // one — by Cisco blueprint weight, not filtered to a domain, a question type, or a "weak
 // domains" pick. Those still get graded internally (the per-domain breakdown is useful
 // regardless of how the questions were chosen) but never claim a comparable score — see
-// the `weighted` flag set in session.js's startExam.
-export const isScored = attempt => !!attempt.weighted;
+// the `weighted` flag set in session.js's startExam. Nor does an exam nobody finished,
+// however it was drawn — see isAbandoned below.
+export const isScored = attempt => !!attempt.weighted && !isAbandoned(attempt);
 export const scoredAttempts = attempts => attempts.filter(isScored);
+
+// ---------------------------------------------------------------- abandoned attempts
+// An exam that was opened and walked away from is filed like any other run: the questions
+// never reached are graded as wrong, so a 100-question exam with one answer lands at 307
+// and then drags every average that reads the history. That number describes the walking
+// away, not the knowledge.
+//
+// So a run where fewer than a third of the questions were answered is not a result: no
+// 300..1000 score, no bar on the chart, no place in the averages. What was actually
+// answered still counts everywhere — four questions answered correctly are four questions
+// answered correctly — and only the untouched rest is dropped instead of being read as
+// ignorance. A finished exam is the opposite case: a blank left in one is a wrong answer
+// and stays counted, which is why the rule keys on the attempt, not on the question.
+export const ANSWERED_MIN = 1 / 3;
+
+export const answeredIn = attempt => Object.keys(attempt.answers || {}).length;
+
+export function isAbandoned(attempt) {
+  const total = attempt.total || (attempt.qs ? attempt.qs.length : 0);
+  return total > 0 && answeredIn(attempt) < total * ANSWERED_MIN;
+}
+
+// The questions of an attempt its statistics should read.
+export const gradedQs = attempt =>
+  isAbandoned(attempt) ? attempt.qs.filter(qn => (attempt.answers || {})[qn] != null) : attempt.qs;
+
+// The per-domain tally to draw: the one filed with the attempt, except for an abandoned
+// run, where it is recomputed over what was answered — so the breakdown reads "4 of 4"
+// rather than "1 of 20" and agrees with everything else on the screen.
+export function perDomainOf(attempt, byN, isCorrect) {
+  if (!isAbandoned(attempt)) return attempt.perDomain || {};
+  const out = {};
+  for (const qn of gradedQs(attempt)) {
+    const q = byN.get(qn);
+    if (!q) continue;
+    const row = out[q.dom] || (out[q.dom] = { ok: 0, tot: 0 });
+    row.tot++;
+    if (isCorrect(q, attempt.answers[qn])) row.ok++;
+  }
+  return out;
+}
 
 // "General" is the dump's catch-all for questions that were never tagged, not a subject
 // anyone can go and study — it is aggregated but never offered as something to work on.
@@ -47,7 +89,7 @@ const CATCH_ALL = 'General';
 export function topicStats(attempts, byN, isCorrect) {
   const acc = new Map();
   for (const attempt of attempts) {
-    for (const qn of attempt.qs) {
+    for (const qn of gradedQs(attempt)) {
       const q = byN.get(qn);
       if (!q) continue;                       // question dropped from the bank since
       const key = q.tp || CATCH_ALL;
@@ -84,7 +126,7 @@ export function weakDomains(attempt, domains, { limit = 2 } = {}) {
 
 // Questions answered wrong in an attempt, in the order they were asked.
 export const mistakesOf = (attempt, byN, isCorrect) =>
-  attempt.qs.filter(qn => {
+  gradedQs(attempt).filter(qn => {
     const q = byN.get(qn);
     return q && !isCorrect(q, attempt.answers[qn]);
   });

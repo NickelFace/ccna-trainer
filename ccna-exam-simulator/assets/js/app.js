@@ -166,6 +166,7 @@ const I18N = {
     no_correct: 'Верных ответов нет.',
     dd_no_why: 'Для вопросов на сопоставление пояснений в банке нет — здесь только правильное распределение.',
     results_kicker: 'Результат',
+    results_abandoned: 'Отвечено меньше трети вопросов: попытка не идёт ни в баллы, ни в статистику. Верные ответы засчитаны.',
     results_of: '/ 1000',
     results_title: 'Результат',
     scale_note: 'шкала 300–1000 · порог 825',
@@ -210,6 +211,8 @@ const I18N = {
     hist_mode_exam: 'Экзамен',
     hist_mode_practice: 'Тренировка',
     hist_unscored: 'без шкалы',
+    hist_not_counted: 'не засчитана',
+    hist_abandoned: 'брошена · отвечено {0} из {1}',
     hist_minutes: '{0} мин',
     hist_replay_note: 'Сохранённая попытка · {0}',
     hist_open_screen: 'Прогресс и синхронизация',
@@ -383,6 +386,7 @@ const I18N = {
     no_correct: 'No correct answers.',
     dd_no_why: 'The bank carries no rationale for matching questions — this is the correct placement, nothing more.',
     results_kicker: 'Result',
+    results_abandoned: 'Fewer than a third of the questions were answered: this run counts neither towards the score nor in the statistics. The correct answers still count.',
     results_of: '/ 1000',
     results_title: 'Result',
     scale_note: 'scale 300–1000 · pass 825',
@@ -427,6 +431,8 @@ const I18N = {
     hist_mode_exam: 'Exam',
     hist_mode_practice: 'Practice',
     hist_unscored: 'unscored',
+    hist_not_counted: 'not counted',
+    hist_abandoned: 'abandoned · {0} of {1} answered',
     hist_minutes: '{0} min',
     hist_replay_note: 'Saved attempt · {0}',
     hist_open_screen: 'Progress and sync',
@@ -1071,9 +1077,22 @@ const attemptKind = a => a.mode === 'exam' ? t('hist_mode_exam')
   : a.mode === 'srs' ? t('hist_mode_srs')
   : t('hist_mode_practice');
 
-const attemptScore = a => a.weighted
-  ? `<span class="hs-val">${a.scaled}</span><span class="hs-of">/ 1000</span>`
-  : `<span class="hs-val">${a.pct}%</span><span class="hs-of">${t('hist_unscored')}</span>`;
+// An attempt that was opened and walked away from is not a result — the questions never
+// reached were graded as wrong, and the 300..1000 score that comes out of that describes
+// the walking away. So it shows what it honestly has: how many of the answers actually
+// given were right. See isAbandoned in shared/progress.js.
+const dropped = a => { const st = P(); return !!st && st.isAbandoned(a); };
+const askedIn = a => { const st = P(); return st ? st.answeredIn(a) : a.total; };
+
+const attemptScore = a => {
+  if (dropped(a)) {
+    const asked = askedIn(a);
+    return `<span class="hs-val">${a.ok}/${asked}</span><span class="hs-of">${t('hist_not_counted')}</span>`;
+  }
+  return a.weighted
+    ? `<span class="hs-val">${a.scaled}</span><span class="hs-of">/ 1000</span>`
+    : `<span class="hs-val">${a.pct}%</span><span class="hs-of">${t('hist_unscored')}</span>`;
+};
 
 // One attempt as a fold: the same line as above for the summary, and underneath it what
 // that run actually says — how each domain went, and what is left to work on.
@@ -1085,8 +1104,9 @@ function attemptFoldHTML(a) {
   const mins = Math.max(1, Math.round((a.durationMs || 0) / 60000));
   const kind = attemptKind(a);
   const wrong = mistakesIn(a);
+  const perDom = perDomainIn(a);
   const doms = (META ? META.domains : [])
-    .map(d => ({ d, p: (a.perDomain || {})[d.id] }))
+    .map(d => ({ d, p: perDom[d.id] }))
     .filter(x => x.p && x.p.tot)
     .map(({ d, p }) => {
       const pc = Math.round(p.ok / p.tot * 100);
@@ -1095,8 +1115,10 @@ function attemptFoldHTML(a) {
   return `<details class="hitem">
     <summary class="hist-row">
       <div class="hist-when">${esc(stampFull(a.date))}</div>
-      <div class="hist-what">${esc(kind)} · ${t('correct_pct', a.ok, a.total, a.pct)} · ${t('hist_minutes', mins)}</div>
-      <div class="hist-score ${a.weighted && a.scaled >= passMark() ? 'pass' : ''}">${attemptScore(a)}</div>
+      <div class="hist-what">${esc(kind)} · ${dropped(a)
+        ? t('hist_abandoned', askedIn(a), a.total)
+        : `${t('correct_pct', a.ok, a.total, a.pct)} · ${t('hist_minutes', mins)}`}</div>
+      <div class="hist-score ${!dropped(a) && a.weighted && a.scaled >= passMark() ? 'pass' : ''}">${attemptScore(a)}</div>
     </summary>
     <div class="hist-more">
       ${doms ? `<div class="dchips">${doms}</div>` : ''}
@@ -1116,6 +1138,13 @@ function attemptFoldHTML(a) {
 const mistakesIn = a => {
   const st = P();
   return st ? st.mistakesOf(a, byN(), isCorrect) : [];
+};
+
+// The per-domain tally to draw: the one filed with the attempt, or — for an abandoned run
+// — one recomputed over the questions that were actually answered.
+const perDomainIn = a => {
+  const st = P();
+  return st ? st.perDomainOf(a, byN(), isCorrect) : (a.perDomain || {});
 };
 
 // Exams and practice runs are two different questions ("am I ready?" and "did I work
@@ -1208,8 +1237,9 @@ function openAttempt(id) {
     S.result = { rev, ok: rev.filter(r => r.good).length };
     renderPracticeResults();
   } else {
-    S.result = { rev, perDom: a.perDomain || {}, ok: a.ok, pct: a.pct, scaled: a.scaled,
-      pass: a.scaled >= passMark(), total: a.total };
+    S.result = { rev, perDom: perDomainIn(a), ok: a.ok, pct: a.pct, scaled: a.scaled,
+      pass: !dropped(a) && a.scaled >= passMark(), total: a.total,
+      abandoned: dropped(a), asked: askedIn(a) };
     renderResults();
   }
 }
@@ -2150,7 +2180,13 @@ function finishExam() {
   // browser cannot report two different scores for the same answers.
   const scaled = toScaled(pct);
   const pass = scaled >= passMark();
-  S.result = { rev, perDom, ok, pct, scaled, pass, total: S.qs.length };
+  // Walked away from rather than taken? Then the number above is about the walking away,
+  // and the screen says so instead of reporting it — see isAbandoned in shared/progress.js.
+  // What is stored stays the raw tally; only the reading of it changes.
+  const att = { qs: S.qs.map(q => q.n), answers: S.ans, total: S.qs.length, perDomain: perDom };
+  const gone = dropped(att);
+  S.result = { rev, perDom: gone ? perDomainIn(att) : perDom, ok, pct, scaled,
+    pass: pass && !gone, total: S.qs.length, abandoned: gone, asked: askedIn(att) };
   saveExamAttempt(rev, perDom, ok, pct, scaled);
   // Default to "работа над ошибками" — jump straight to what needs fixing.
   S.reviewFilter = rev.some(r => !r.good) ? 'bad' : 'all';
@@ -2165,15 +2201,23 @@ function renderResults() {
   // may have dropped one since, or the file came from a phone on another build.
   const total = S.result.total || rev.length;
 
+  const gone = !!S.result.abandoned;
+  const asked = S.result.asked || 0;
+
   let h = `${replayNote()}<div class="score-panel">
     <div class="score-main">
       <span class="score-kicker">${t('results_kicker')}</span>
-      <div class="score-line"><span class="big-score">${scaled}</span><span class="score-of">${t('results_of')}</span></div>
-      <span class="scaled">${t('scale_note')}</span>
+      <div class="score-line">${gone
+        ? `<span class="big-score">${ok}/${asked}</span>`
+        : `<span class="big-score">${scaled}</span><span class="score-of">${t('results_of')}</span>`}</div>
+      <span class="scaled">${gone ? t('results_abandoned') : t('scale_note')}</span>
     </div>
     <div class="score-side">
-      <span class="score-badge ${pass ? 'pass' : 'fail'}">${pass ? t('pass_badge') : t('fail_badge')}</span>
-      <span class="score-pct">${t('correct_pct', ok, total, pct)}</span>
+      <span class="score-badge ${gone ? 'none' : pass ? 'pass' : 'fail'}">${gone
+        ? t('hist_not_counted') : pass ? t('pass_badge') : t('fail_badge')}</span>
+      <span class="score-pct">${gone
+        ? t('hist_abandoned', asked, total)
+        : t('correct_pct', ok, total, pct)}</span>
     </div>
   </div>
   <div class="nav"><button class="btn" onclick="home()">${t('nav_home')}</button>

@@ -22,7 +22,10 @@ moves between devices as a file. [Russian version](README.ru.md).
   Every question is independently classified against the official domain blueprint
   (not the source dump's own topic tags, which turned out to be frequently wrong).
   Scored on the Cisco 300–1000 scale with the **825 pass threshold** and a
-  per-domain score breakdown.
+  per-domain score breakdown. A run with fewer than a third of its questions answered is
+  not counted: the questions never reached are graded as wrong, and the score that comes
+  out of that describes walking away rather than knowledge. The answers that were given
+  still count everywhere, as usual.
 - **Custom Exam** — filter by domain and question type (text / exhibit / drag-and-drop),
   pick question count and timer.
 - **Practice** — one question at a time, instant feedback.

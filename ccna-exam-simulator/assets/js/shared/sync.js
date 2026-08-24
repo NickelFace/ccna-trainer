@@ -13,9 +13,9 @@
 //
 // The server never parses the blob. It is the `v:1` object both clients already export to
 // a file, minus the session — an exam with a running clock belongs to the device running it.
-import { packBackup } from './backup.js?v=14';
-import { merge } from './merge.js?v=14';
-import { pruneState } from './retention.js?v=14';
+import { packBackup } from './backup.js?v=15';
+import { merge } from './merge.js?v=15';
+import { pruneState } from './retention.js?v=15';
 
 export const SYNC_BASE = 'https://sync.maks.top';
 

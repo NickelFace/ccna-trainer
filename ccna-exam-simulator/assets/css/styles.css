@@ -374,6 +374,9 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .score-badge{padding:9px 18px;border-radius:999px;font-size:14px;font-weight:700}
 .score-badge.pass{background:rgba(46,125,111,.26);color:var(--teal-on-dark)}
 .score-badge.fail{background:rgba(179,69,58,.26);color:var(--red-on-dark)}
+/* Neither passed nor failed: an attempt that was walked away from, which the panel
+   reports as answered-out-of-drawn rather than as a score. */
+.score-badge.none{background:rgba(255,255,255,.14);color:var(--on-dark)}
 .score-pct{font-size:15px;font-weight:600;color:var(--on-dark)}
 .pass{color:var(--teal-text);font-weight:700}
 .fail{color:var(--red);font-weight:700}

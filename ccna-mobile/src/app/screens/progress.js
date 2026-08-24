@@ -7,7 +7,7 @@ import { store } from '../store.js';
 import { PASS_SCALED, SCALE_MIN, SCALE_MAX } from '../../engine/score.js';
 import {
   msPerQuestion, scaledDelta, weakTopics, scoreTone, toneFor,
-  scoredAttempts, dayStats, recentDays,
+  scoredAttempts, dayStats, recentDays, isAbandoned, answeredIn,
 } from '../../engine/stats.js';
 import { startPractice } from '../session.js';
 import { confirmDialog } from '../dialog.js';
@@ -106,20 +106,26 @@ function activityStrip(activity, goal, now) {
 
 function historyRows(attempts) {
   return attempts.slice().reverse().map(a => {
+    const dropped = isAbandoned(a);
     const label = a.mode === 'exam'
       ? (a.weighted ? 'Экзамен' : 'Свой экзамен')
       : (MODE_LABEL[a.mode] || 'Тренировка');
     // A weighted attempt shows the 300..1000 score, same as everywhere else it appears;
     // anything else shows its percentage — never a scaled number that would look
-    // comparable to a real exam result but was drawn from a biased or tiny sample.
-    const value = a.weighted
+    // comparable to a real exam result but was drawn from a biased or tiny sample. An
+    // abandoned run shows the percentage of what it did answer, and says so.
+    const asked = dropped ? answeredIn(a) : a.total;
+    const pct = asked ? Math.round((a.ok / asked) * 100) : 0;
+    const value = a.weighted && !dropped
       ? `<span class="mono ${scoreTone(a.scaled)}">${a.scaled}</span>`
-      : `<span class="mono ${toneFor(a.pct)}">${a.pct}%</span>`;
+      : `<span class="mono ${toneFor(pct)}">${pct}%</span>`;
     return `
       <button class="history-row" data-attempt="${esc(a.id)}" type="button">
         <span class="history-main">
           <span>${esc(label)} · ${esc(fmtDate(a.date))}</span>
-          <span class="muted">${a.ok}/${a.total} верно · ${fmtMinSec(msPerQuestion(a))} на вопрос</span>
+          <span class="muted">${dropped
+            ? `не засчитана · ${a.ok}/${asked} верно из ${a.total}`
+            : `${a.ok}/${a.total} верно · ${fmtMinSec(msPerQuestion(a))} на вопрос`}</span>
         </span>
         ${value}
       </button>`;
@@ -191,8 +197,15 @@ export const progress = {
 
     const scored = scoredAttempts(attempts);
     const delta = scored.length ? scaledDelta(scored) : null;
-    const lastAttempt = attempts[attempts.length - 1];
-    const avgMs = Math.round(attempts.reduce((sum, a) => sum + msPerQuestion(a), 0) / attempts.length);
+    // "In the last attempt" means the last one that counts — an exam closed after one
+    // answer is not the run this number is about.
+    const lastCounted = [...attempts].reverse().find(a => !isAbandoned(a)) || attempts[attempts.length - 1];
+    // Speed is per question asked, so an exam that was closed after one answer would
+    // report a fraction of a second per question and pull the average through the floor.
+    // Those runs are not results (see isAbandoned) and do not belong in it.
+    const timed = attempts.filter(a => !isAbandoned(a));
+    const avgMs = timed.length
+      ? Math.round(timed.reduce((sum, a) => sum + msPerQuestion(a), 0) / timed.length) : 0;
     const topics = weakTopics(attempts, bank.byN);
 
     const node = h(`
@@ -213,7 +226,7 @@ export const progress = {
         </div>`}
       <div class="mini-stats">
         <div class="card mini"><b class="mono">${fmtMinSec(avgMs)}</b><span>средн. на вопрос</span></div>
-        <div class="card mini"><b class="mono">${lastAttempt.pct}%</b><span>в последней попытке</span></div>
+        <div class="card mini"><b class="mono">${lastCounted.pct}%</b><span>в последней попытке</span></div>
       </div>
       ${topics.length ? `
         <div class="label spaced">Слабые темы</div>
