@@ -16,6 +16,7 @@ import { ACTIVITY_DAYS, bumpActivity, pruneActivity } from '../../../ccna-exam-s
 import { BRANCHES, packBackup, isBackup } from '../../../ccna-exam-simulator/assets/js/shared/backup.js';
 import { pruneAttempts } from '../../../ccna-exam-simulator/assets/js/shared/retention.js';
 import { isSyncKey, newSyncKey, syncOnce } from '../../../ccna-exam-simulator/assets/js/shared/sync.js';
+import { DEFAULT_BOOK, normalizeBook } from './theory.js';
 
 const KEY = {
   profile: 'ccna.profile',
@@ -33,10 +34,6 @@ const KEY = {
 };
 
 const DEFAULT_SYNC = { key: null, syncedAt: 0, rev: 0 };
-
-// Reading state for the Теория tab: which chapters are done, where each was left off,
-// which one to offer to continue, and the reader's text size.
-const DEFAULT_BOOK = { read: {}, pos: {}, open: {}, last: null, scale: 1 };
 
 const FLUSH_MS = 200;
 
@@ -77,17 +74,6 @@ export const mergeProfile = (stored) => {
     ...p,
     dailyGoal: validGoal(p.dailyGoal) ? p.dailyGoal : DEFAULT_PROFILE.dailyGoal,
     notify: { ...DEFAULT_PROFILE.notify, ...(p.notify && typeof p.notify === 'object' ? p.notify : {}) },
-  };
-};
-
-const mergeBook = (stored) => {
-  const b = stored && typeof stored === 'object' ? stored : {};
-  return {
-    ...DEFAULT_BOOK,
-    ...b,
-    read: b.read && typeof b.read === 'object' ? b.read : {},
-    pos: b.pos && typeof b.pos === 'object' ? b.pos : {},
-    open: b.open && typeof b.open === 'object' ? b.open : {},
   };
 };
 
@@ -146,7 +132,7 @@ export const store = {
     // Days recorded before the activity map was split by device belong to this phone —
     // it is the only device that ever wrote this store.
     this.activity = normalizeActivity(activity, this.profile.deviceId);
-    this.book = mergeBook(book);
+    this.book = normalizeBook(book);
     this.sync = { ...DEFAULT_SYNC, ...(sync && typeof sync === 'object' ? sync : {}) };
     return this;
   },
@@ -335,7 +321,7 @@ export const store = {
     this.activity = normalizeActivity(data.activity, data.profile?.deviceId);
     // Backups written before the Теория tab existed simply have no `book` key — the
     // merge turns that into an untouched textbook rather than an error.
-    this.book = mergeBook(data.book);
+    this.book = normalizeBook(data.book);
     // A file written by the other device carries its device id; keeping it would make both
     // devices write attempts and activity under one name and merge them into each other.
     this.profile.deviceId = newDeviceId();

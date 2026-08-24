@@ -23,6 +23,10 @@ import {
 } from './shared/progress.js';
 import { PASS_SCALED, toScaled } from './shared/score.js';
 import { autoSyncer, isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js';
+import { bodyMarkup } from './shared/book.js';
+import {
+  coverage, DEFAULT_BOOK, loadIndex, loadMap, loadTopic, normalizeBook, setBookVersion, topicOf,
+} from './shared/theory.js';
 
 const KEY = {
   profile: 'ccna.profile',
@@ -77,6 +81,15 @@ const Store = {
   answeredTotal,
   toneFor,
   scoreTone,
+  // The textbook: the same chapter files the Android app reads, rendered by the same
+  // block renderer. Loading is lazy — nothing here is fetched until the reader opens.
+  bodyMarkup,
+  loadIndex,
+  loadTopic,
+  loadMap,
+  topicOf,
+  coverage,
+  setBookVersion,
 
   profile: {},
   session: null,
@@ -84,7 +97,7 @@ const Store = {
   bookmarks: [],
   srs: {},
   activity: {},
-  book: {},
+  book: { ...DEFAULT_BOOK },
   sync: { key: null, syncedAt: 0, rev: 0 },
 
   _dirty: new Set(),
@@ -102,7 +115,7 @@ const Store = {
     this.attempts = pruneAttempts(read(KEY.attempts, []) || []);
     this.bookmarks = read(KEY.bookmarks, []) || [];
     this.srs = read(KEY.srs, {}) || {};
-    this.book = read(KEY.book, {}) || {};
+    this.book = normalizeBook(read(KEY.book, {}));
     if (!this.profile.deviceId) {
       this.profile.deviceId = newDeviceId();
       this._touch('profile');
@@ -120,6 +133,30 @@ const Store = {
   // twice (the review sheet is reachable mid-session) updates one row instead of filing a
   // second one.
   attemptId(startedAt) { return `${this.deviceId}-${startedAt}`; },
+
+  // ---- textbook ----
+  // Same three mutators the Android store has, writing the same branch: a chapter marked
+  // read on the phone shows as read here after a sync, and the other way round.
+  markRead(topicId, on = true) {
+    if (on) this.book.read[topicId] = Date.now();
+    else delete this.book.read[topicId];
+    this._touch('book');
+    return on;
+  },
+
+  // Below 40px is "the top" — remembering it would send someone back to a position they
+  // never left, and the branch would be rewritten (and re-synced) on every glance.
+  setPos(topicId, y) {
+    if (y > 40) this.book.pos[topicId] = Math.round(y);
+    else delete this.book.pos[topicId];
+    this._touch('book');
+  },
+
+  setBook(patch) {
+    Object.assign(this.book, patch);
+    this._touch('book');
+    return this.book;
+  },
 
   // ---- spaced repetition + activity ----
   recordAnswer(qn, correct, mode, now = Date.now()) {
@@ -217,7 +254,9 @@ const Store = {
     this.srs = data.srs && typeof data.srs === 'object' ? data.srs : {};
     // Un-attributed days in the file were graded on whatever device exported it, not here.
     this.activity = normalizeActivity(data.activity, data.profile?.deviceId);
-    this.book = data.book && typeof data.book === 'object' ? data.book : {};
+    // Backups written before the textbook existed simply have no `book` key — that
+    // normalizes into an untouched one rather than an error.
+    this.book = normalizeBook(data.book);
     // A file written by the other device carries its device id; keeping it would make both
     // devices write attempts under one name and merge them into each other.
     this.profile.deviceId = newDeviceId();

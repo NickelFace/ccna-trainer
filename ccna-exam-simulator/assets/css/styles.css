@@ -527,3 +527,100 @@ details.cli-wrap summary:hover{color:var(--ink)}
   .chrome-x{width:44px;height:44px}
   .qjump{width:84px}
 }
+
+/* ============================ TEXTBOOK ============================
+   The reader's class names are produced by assets/js/shared/book.js, which the Android
+   app renders with too — the markup is shared, the look is not. These rules dress the
+   same chapters in the site's palette; the phone's live in ccna-mobile/src/styles/book.css.
+
+   Reading is the one screen where the text *is* the interface, so the body here is set
+   larger and looser than the rest of the trainer. */
+
+/* ---- contents ---- */
+.bk-rows{display:flex;flex-direction:column;padding:0 10px 12px}
+.bk-row{display:grid;grid-template-columns:20px 1fr;gap:12px;align-items:start;width:100%;
+  text-align:left;padding:13px 14px;background:none;border:0;border-top:1px solid var(--line);
+  font:inherit;color:var(--ink);cursor:pointer;border-radius:11px}
+.bk-rows .bk-row:first-child{border-top:0}
+.bk-row:hover{background:var(--cream-warm)}
+.bk-mark{font-family:var(--num);font-size:13px;font-weight:700;color:var(--teal-text);line-height:1.5}
+.bk-main{display:flex;flex-direction:column;gap:3px;min-width:0}
+.bk-row-title{font-size:15px;font-weight:700;line-height:1.35}
+.bk-row.read .bk-row-title{color:var(--grey-text)}
+.bk-row-note{font-size:13px;color:var(--grey-text);line-height:1.5}
+.bk-row-meta{font-family:var(--num);font-size:11px;font-weight:700;color:var(--grey);margin-top:2px}
+.bk-search{width:100%;padding:12px 15px;font:inherit;font-size:14px;color:var(--ink);
+  background:var(--cream);border:1px solid var(--edge);border-radius:13px}
+.bk-search::placeholder{color:var(--grey)}
+.bk-search:focus{outline:none;border-color:var(--edge-strong)}
+
+/* ---- chapter ---- */
+.bk{display:flex;flex-direction:column;gap:0}
+.bk-kicker{font-family:var(--num);font-size:11px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--grey-text);margin-bottom:10px}
+.bk>h1{margin-bottom:10px}
+.bk-meta{font-family:var(--num);font-size:12px;font-weight:700;color:var(--grey);margin-top:10px}
+.bk-toc{margin-top:16px}
+.bk-toc ol{margin:8px 0 0;padding-left:22px;columns:2;column-gap:26px}
+.bk-toc li{margin:5px 0;break-inside:avoid;font-size:13px}
+.bk-toc a{color:var(--teal-text);text-decoration:none}
+.bk-toc a:hover{color:var(--ink)}
+.bk-actions{margin-top:26px}
+.bk-next{margin-top:14px;justify-content:flex-start;text-align:left}
+
+.bk-section{margin-top:30px;scroll-margin-top:20px}
+.bk-h2{font-family:var(--serif);font-size:25px;font-weight:400;line-height:1.15;
+  text-transform:none;letter-spacing:0;color:var(--ink);
+  padding-bottom:9px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.bk-h3{font-size:16px;font-weight:700;text-transform:none;letter-spacing:0;color:var(--ink);margin:20px 0 8px}
+.bk p{font-size:16px;line-height:1.68;color:var(--ink);margin:12px 0}
+.bk strong{font-weight:700}
+.bk em{font-style:italic}
+.bk code{font-family:var(--mono);font-size:13.5px;background:var(--cream-warm);
+  border-radius:5px;padding:1px 5px;overflow-wrap:anywhere}
+.bk-list{margin:12px 0;padding-left:24px;font-size:16px;line-height:1.65}
+.bk-list li{margin:8px 0}
+.bk-list li::marker{color:var(--grey)}
+
+/* Tables and code are what never fits: both scroll inside themselves so the page never
+   gains a horizontal scrollbar of its own. */
+.bk-tablewrap{margin:16px 0;overflow-x:auto;border:1px solid var(--edge);border-radius:13px}
+.bk-table{border-collapse:collapse;width:100%;font-size:14px}
+.bk-table th,.bk-table td{padding:10px 13px;text-align:left;vertical-align:top;
+  border-bottom:1px solid var(--line);line-height:1.5}
+.bk-table th{font-weight:700;background:var(--cream-warm);white-space:nowrap}
+.bk-table tr:last-child td{border-bottom:0}
+.bk-code{margin:16px 0;padding:14px 15px;overflow-x:auto;background:var(--ink);
+  border-radius:13px;font-family:var(--mono);font-size:13px;line-height:1.55;
+  color:var(--cream-light);white-space:pre}
+.bk-code.cfg{border-left:3px solid var(--teal)}
+.bk-code.cli{border-left:3px solid var(--gold)}
+
+.bk-note{margin:18px 0;padding:14px 16px;border:1px solid var(--edge);border-left-width:3px;
+  border-radius:13px;background:var(--cream-warm)}
+.bk-note-h{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--grey-text);margin-bottom:6px}
+.bk-note p{font-size:15px;margin:6px 0}
+.bk-note.key{border-left-color:var(--teal)}
+.bk-note.key .bk-note-h{color:var(--teal-text)}
+.bk-note.trap{border-left-color:var(--red)}
+.bk-note.trap .bk-note-h{color:var(--red)}
+.bk-note.lab{border-left-color:var(--gold)}
+.bk-note.lab .bk-note-h{color:var(--gold-text)}
+
+/* ---- self-check ---- */
+.bk-check{margin:18px 0;border:1px solid var(--edge);border-radius:14px;overflow:hidden}
+.bk-q{border-top:1px solid var(--line)}
+.bk-q:first-child{border-top:0}
+.bk-qh{display:flex;gap:11px;width:100%;text-align:left;padding:13px 15px;
+  background:none;border:0;font:inherit;font-size:15px;line-height:1.5;color:var(--ink);cursor:pointer}
+.bk-qh:hover{background:var(--cream-warm)}
+.bk-qmark{flex:0 0 13px;font-family:var(--num);font-weight:700;color:var(--gold-text)}
+.bk-qh[aria-expanded="true"]{color:var(--grey-text)}
+.bk-qa{padding:0 15px 14px 39px;font-size:15px;line-height:1.6;color:var(--teal-text)}
+
+@media(max-width:560px){
+  .bk-toc ol{columns:1}
+  .bk-h2{font-size:22px}
+  .bk p,.bk-list{font-size:15.5px}
+}

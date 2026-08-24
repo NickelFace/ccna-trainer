@@ -50,3 +50,15 @@ jobs:
 
       - name: Run engine and bank tests
         run: npm test
+
+      # The site has no build step: Pages serves ccna-exam-simulator/data/theory/ exactly
+      # as committed. A chapter edited without rebuilding would therefore be current in
+      # the APK (which builds the book on every release) and stale on the site — the same
+      # class of drift the shared engine modules were moved to one place to avoid. So:
+      # rebuild into a temp directory and insist the committed copy is identical.
+      - name: Textbook build is committed
+        working-directory: .
+        run: |
+          node ccna-book/build.mjs --out "$RUNNER_TEMP/theory" > /dev/null
+          diff -r "$RUNNER_TEMP/theory" ccna-exam-simulator/data/theory \
+            || { echo "::error::data/theory is stale — run: node ccna-book/build.mjs --out ccna-exam-simulator/data/theory"; exit 1; }

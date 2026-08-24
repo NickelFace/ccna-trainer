@@ -211,6 +211,26 @@ const I18N = {
     hist_minutes: '{0} мин',
     hist_replay_note: 'Сохранённая попытка · {0}',
     hist_open_screen: 'Прогресс и синхронизация',
+    book_title: 'Учебник',
+    book_sub: 'Те же 47 глав, что в Android-приложении: теория под каждую тему блюпринта, а в конце главы — вопросы банка по ней. Отметка «прочитано» синхронизируется вместе с прогрессом.',
+    book_loading: 'Загружаю учебник…',
+    book_failed: 'Учебник не загрузился: {0}.',
+    book_retry: 'Попробовать снова',
+    book_cov: 'Покрыто вопросов банка',
+    book_cov_foot: '{0} из {1} вопросов стоят за прочитанными главами · прочитано {2} из {3} глав.',
+    book_resume: 'Продолжить · {0}',
+    book_search: 'Поиск по темам',
+    book_nothing: 'Ничего не нашлось. Попробуй другое слово.',
+    book_row_meta: '{0} мин · {1} вопр.',
+    book_blueprint: 'экзамен {0}',
+    book_toc: 'Содержание · {0}',
+    book_read_mark: 'Прочитано',
+    book_read_done: '✓ Прочитано',
+    book_practice: 'Вопросы по главе · {0}',
+    book_next: 'Следующая глава · {0}',
+    book_back: '← к оглавлению',
+    book_open: 'Учебник',
+    book_open_for_q: 'Глава: {0}',
     hist_mode_srs: 'Повторение',
     hist_group_exams: 'Экзамены',
     hist_group_practice: 'Тренировки',
@@ -406,6 +426,26 @@ const I18N = {
     hist_minutes: '{0} min',
     hist_replay_note: 'Saved attempt · {0}',
     hist_open_screen: 'Progress and sync',
+    book_title: 'Textbook',
+    book_sub: 'The same 47 chapters as in the Android app: theory for every blueprint topic, and the bank\'s questions on it at the end of each chapter. The "read" mark syncs along with the rest of the progress.',
+    book_loading: 'Loading the textbook…',
+    book_failed: 'The textbook did not load: {0}.',
+    book_retry: 'Try again',
+    book_cov: 'Bank questions covered',
+    book_cov_foot: '{0} of {1} questions are backed by a chapter you have read · {2} of {3} chapters read.',
+    book_resume: 'Continue · {0}',
+    book_search: 'Search the chapters',
+    book_nothing: 'Nothing found. Try another word.',
+    book_row_meta: '{0} min · {1} questions',
+    book_blueprint: 'exam {0}',
+    book_toc: 'Contents · {0}',
+    book_read_mark: 'Mark as read',
+    book_read_done: '✓ Read',
+    book_practice: 'Questions on this chapter · {0}',
+    book_next: 'Next chapter · {0}',
+    book_back: '← contents',
+    book_open: 'Textbook',
+    book_open_for_q: 'Chapter: {0}',
     hist_mode_srs: 'Repetition',
     hist_group_exams: 'Exams',
     hist_group_practice: 'Practice',
@@ -1117,6 +1157,7 @@ function homeProgressHTML() {
     ${all.length ? `<div class="hist">${all.slice(0, 3).map(attemptFoldHTML).join('')}</div>` : `<div class="exp muted">${t('hist_none')}</div>`}
     <div class="row">
       <button class="btn sm" onclick="learnScreen()">${t('learn_open')}</button>
+      <button class="btn sm" onclick="bookScreen()">${t('book_open')}</button>
       <button class="btn sm" onclick="historyScreen()">${all.length > 3 ? t('hist_all', all.length) : t('hist_open_screen')}</button>
       <button class="btn sm" onclick="exportProgress()">${t('hist_export')}</button>
       <button class="btn sm" onclick="importProgress()">${t('hist_import')}</button>
@@ -1378,6 +1419,7 @@ function learnScreen() {
 
     <div class="nav">
       <button class="btn" onclick="home()">${t('nav_home')}</button>
+      <button class="btn" onclick="bookScreen()">${t('book_open')}</button>
       <button class="btn" onclick="historyScreen()">${t('hist_open_screen')}</button>
     </div>`;
 
@@ -1411,6 +1453,256 @@ function startAttemptRun(id) {
   const st = P();
   const a = st ? st.attemptById(id) : null;
   if (a) startRun(mistakesIn(a));
+}
+
+// ============================ TEXTBOOK ============================
+// The same 47 chapters the Android app reads, from the same files under data/theory/ and
+// through the same block renderer (shared/book.js). Nothing here is fetched until the
+// reader is opened — the index is ~40 KB and a chapter a few dozen, against a 3 MB bank.
+//
+// Both screens are async in a synchronous app: they paint "loading", then replace the
+// screen when the JSON lands. A second call while the first is still in flight wins —
+// hence the token — so clicking through chapters quickly cannot leave an older one
+// painting over a newer.
+
+// Bumped when the chapters are rebuilt: Pages caches data/ like any other file.
+const BOOK_V = '1';
+let bookIndex = null;      // the resolved index.json, once
+let bookQuery = '';        // the search box, remembered across renders
+let bookOpen = null;       // the chapter on screen: { id, topic }
+let bookToken = 0;
+
+const bookBase = () => {
+  const st = P();
+  if (st) st.setBookVersion(BOOK_V);
+  return st;
+};
+
+// index.json plus the lookup the screens want. Failure is not cached: a chapter list that
+// failed once because the connection dropped must be retryable by opening it again.
+async function bookLoadIndex() {
+  if (bookIndex) return bookIndex;
+  const st = bookBase();
+  if (!st) throw new Error('store');
+  const idx = await st.loadIndex();
+  bookIndex = idx;
+  return idx;
+}
+
+const bookRead = () => (P()?.book?.read) || {};
+
+function bookLoading(title) {
+  app().innerHTML = `<h1>${esc(title)}</h1><div class="sub">${t('book_loading')}</div>`;
+}
+
+function bookFailed(err) {
+  app().innerHTML = `<h1>${t('book_title')}</h1>
+    <div class="exp muted">${t('book_failed', esc(err.message || String(err)))}</div>
+    <div class="nav"><button class="btn" onclick="bookScreen()">${t('book_retry')}</button>
+      <button class="btn" onclick="home()">${t('nav_home')}</button></div>`;
+}
+
+// ---- contents ----
+const bookMatches = (tp, q) => !q
+  || tp.title.toLowerCase().includes(q)
+  || tp.lead.toLowerCase().includes(q)
+  || tp.sections.some(s => s.title.toLowerCase().includes(q));
+
+function bookScreen() {
+  SCREEN = bookScreen;
+  const token = ++bookToken;
+  bookLoading(t('book_title'));
+  bookLoadIndex().then(index => {
+    if (token !== bookToken) return;
+    renderBookList(index);
+  }).catch(err => { if (token === bookToken) bookFailed(err); });
+}
+
+function renderBookList(index) {
+  const st = P();
+  const read = bookRead();
+  const cov = st.coverage(index, read);
+  const q = bookQuery.trim().toLowerCase();
+  const done = index.topics.filter(tp => read[tp.id]).length;
+  const last = !q && st.book.last ? index.topics.find(tp => tp.id === st.book.last) : null;
+
+  const groups = index.domains.map(d => {
+    const list = d.topics.map(id => index.topics.find(tp => tp.id === id)).filter(tp => tp && bookMatches(tp, q));
+    if (!list.length) return '';
+    const here = list.filter(tp => read[tp.id]).length;
+    // A search opens what it found; otherwise the fold remembers how it was left, and
+    // the domain of the chapter being read opens on its own so «Продолжить» points into
+    // something visible.
+    const open = q || (st.book.open[d.id] ?? (last ? d.id === last.dom : false));
+    return `<details class="hgrp bk-dom" data-dom="${attrEsc(d.id)}"${open ? ' open' : ''}>
+      <summary><span class="hgrp-t">${esc(d.name)}</span><span class="hgrp-n">${here}/${d.topics.length}</span></summary>
+      <div class="bk-rows">${list.map(tp => `
+        <button class="bk-row${read[tp.id] ? ' read' : ''}" data-chapter="${attrEsc(tp.id)}">
+          <span class="bk-mark">${read[tp.id] ? '✓' : ''}</span>
+          <span class="bk-main">
+            <span class="bk-row-title">${esc(tp.title)}</span>
+            <span class="bk-row-note">${esc(tp.lead)}</span>
+            <span class="bk-row-meta">${t('book_row_meta', tp.minutes, tp.qn)}</span>
+          </span>
+        </button>`).join('')}</div>
+    </details>`;
+  }).join('');
+
+  app().innerHTML = `<h1>${t('book_title')}</h1>
+    <div class="sub">${t('book_sub')}</div>
+
+    <div class="sec">
+      <div class="dbar">
+        <div class="top"><span class="nm">${t('book_cov')}</span><span class="vl ${cov.pct >= 80 ? 'g' : cov.pct >= 40 ? 'a' : 'r'}">${cov.pct}%</span></div>
+        <div class="track"><div class="fill ${cov.pct >= 80 ? 'g' : cov.pct >= 40 ? 'a' : ''}" style="width:${cov.pct}%"></div></div>
+      </div>
+      <div class="exp muted">${t('book_cov_foot', cov.done, cov.total, done, index.topics.length)}</div>
+      ${last ? `<button class="btn" data-chapter="${attrEsc(last.id)}">${t('book_resume', esc(last.title))}</button>` : ''}
+    </div>
+
+    <input class="bk-search" type="search" placeholder="${t('book_search')}" value="${attrEsc(bookQuery)}" autocomplete="off">
+    ${groups || `<div class="exp muted">${t('book_nothing')}</div>`}
+
+    <div class="nav"><button class="btn" onclick="home()">${t('nav_home')}</button>
+      <button class="btn" onclick="learnScreen()">${t('learn_open')}</button></div>`;
+
+  wireBookRows();
+
+  const box = document.querySelector('.bk-search');
+  box.oninput = () => {
+    const caret = box.selectionStart;
+    bookQuery = box.value;
+    renderBookList(index);
+    const next = document.querySelector('.bk-search');
+    next.focus();
+    next.setSelectionRange(caret, caret);
+  };
+  // `toggle` does not bubble, hence the capture phase. Which domains are folded is part
+  // of the synced textbook branch, so the phone opens on the same ones.
+  app().addEventListener('toggle', e => {
+    const box2 = e.target.closest?.('.bk-dom');
+    if (!box2 || bookQuery.trim()) return;
+    st.book.open[box2.dataset.dom] = box2.open;
+    st.setBook({});
+  }, true);
+  window.scrollTo(0, 0);
+}
+
+const wireBookRows = () =>
+  document.querySelectorAll('[data-chapter]').forEach(b => b.onclick = () => chapterScreen(b.dataset.chapter));
+
+// ---- one chapter ----
+function chapterScreen(id) {
+  SCREEN = () => chapterScreen(id);
+  const token = ++bookToken;
+  const known = bookIndex && bookIndex.topics.find(tp => tp.id === id);
+  bookLoading(known ? known.title : t('book_title'));
+  const st = bookBase();
+  Promise.all([st.loadTopic(id), bookLoadIndex()]).then(([tp, index]) => {
+    if (token !== bookToken) return;
+    bookOpen = { id, topic: tp };
+    st.setBook({ last: id });
+    renderChapter(tp, index);
+  }).catch(err => { if (token === bookToken) bookFailed(err); });
+}
+
+function renderChapter(tp, index) {
+  const st = P();
+  const meta = index.topics.find(x => x.id === tp.id);
+  const order = index.topics.map(x => x.id);
+  const next = index.topics[order.indexOf(tp.id) + 1];
+  const dom = index.domains.find(d => d.id === tp.dom);
+  const read = !!bookRead()[tp.id];
+
+  app().innerHTML = `<article class="bk">
+    <div class="bk-kicker">${esc(dom ? dom.name : tp.dom)}${tp.blueprint.length ? ` · ${t('book_blueprint', tp.blueprint.map(esc).join(', '))}` : ''}</div>
+    <h1>${esc(tp.title)}</h1>
+    <div class="sub">${esc(tp.lead)}</div>
+    <div class="bk-meta">${t('book_row_meta', tp.minutes, meta ? meta.qn : tp.qs.length)}</div>
+
+    <details class="exp-toggle bk-toc"><summary>${t('book_toc', tp.sections.length)}</summary>
+      <ol>${tp.sections.map(s => `<li><a href="#sec-${attrEsc(s.id)}">${esc(s.title)}</a></li>`).join('')}</ol>
+    </details>
+
+    ${st.bodyMarkup(tp)}
+
+    <div class="nav bk-actions">
+      <button class="btn ${read ? '' : 'primary'}" data-act="read">${read ? t('book_read_done') : t('book_read_mark')}</button>
+      ${tp.qs.length ? `<button class="btn" data-act="practice">${t('book_practice', Math.min(20, tp.qs.length))}</button>` : ''}
+    </div>
+
+    ${next ? `<button class="btn bk-next" data-chapter="${attrEsc(next.id)}">${t('book_next', esc(next.title))}</button>` : ''}
+
+    <div class="nav"><button class="btn" onclick="bookScreen()">${t('book_back')}</button>
+      <button class="btn" onclick="home()">${t('nav_home')}</button></div>
+  </article>`;
+
+  wireBookRows();
+  bindChecks(app());
+  app().querySelector('[data-act="read"]').onclick = () => {
+    st.markRead(tp.id, !bookRead()[tp.id]);
+    renderChapter(tp, index);
+  };
+  const pr = app().querySelector('[data-act="practice"]');
+  // The chapter's own questions, which is the whole point of a textbook inside a trainer:
+  // read it, then answer exactly what the bank asks about it.
+  if (pr) pr.onclick = () => startRun(shuffle(tp.qs.slice()).slice(0, 20));
+  restoreBookScroll(tp.id);
+}
+
+// Self-check answers reveal on click. The markup comes from shared/book.js; this is the
+// half that could not be shared, because the Android app delegates it from a screen root
+// that outlives the render and this one does not.
+function bindChecks(node) {
+  node.querySelectorAll('[data-check]').forEach(head => head.onclick = () => {
+    const open = head.getAttribute('aria-expanded') === 'true';
+    head.setAttribute('aria-expanded', String(!open));
+    head.nextElementSibling.hidden = open;
+  });
+}
+
+// Where the chapter was left off, both ways. Saving is throttled to one write per second
+// of scrolling — the branch is synced, and a store write per scroll event would be a
+// network conversation about nothing.
+function restoreBookScroll(id) {
+  const y = (P()?.book?.pos || {})[id] || 0;
+  if (y) requestAnimationFrame(() => window.scrollTo(0, y));
+  else window.scrollTo(0, 0);
+}
+
+let bookScrollTimer = null;
+addEventListener('scroll', () => {
+  if (!bookOpen || SCREEN === null || bookScrollTimer) return;
+  bookScrollTimer = setTimeout(() => {
+    bookScrollTimer = null;
+    // Only while a chapter is actually the screen: leaving one for the exam must not keep
+    // rewriting its position with wherever that screen happens to be scrolled.
+    if (bookOpen && document.querySelector('.bk')) P()?.setPos(bookOpen.id, window.scrollY);
+  }, 1000);
+}, { passive: true });
+
+// Every reviewed question on screen gets the link to its chapter, once the map is here.
+const wireChapterLinks = () =>
+  document.querySelectorAll('[data-forq]').forEach(el => bookChapterFor(+el.dataset.forq, el));
+
+// Which chapter covers a question — used by the review sheet's "read the chapter" link.
+// The map is 1395 short entries; it loads on the first review that needs it.
+let bookMap = null;
+function bookChapterFor(qn, into) {
+  const st = P();
+  if (!st || bookMap === false) return;
+  const show = map => {
+    const id = st.topicOf(map, qn);
+    if (!id) return;
+    const title = bookIndex && bookIndex.topics.find(tp => tp.id === id);
+    into.innerHTML = `<button class="btn sm" data-chapter="${attrEsc(id)}">${t('book_open_for_q', esc(title ? title.title : id))}</button>`;
+    wireBookRows();
+  };
+  if (bookMap) return show(bookMap);
+  bookBase();
+  Promise.all([st.loadMap(), bookLoadIndex()])
+    .then(([map]) => { bookMap = map; show(map); })
+    .catch(() => { bookMap = false; });   // no textbook on this deployment: say nothing
 }
 
 // ============================ SHARE FOR AI ============================
@@ -1571,6 +1863,7 @@ function renderPracticeResults() {
   if (!shown.length) h += emptyReview();
   for (const { q, good } of shown) h += reviewItemHTML(q, good, S.ans[q.n]);
   app().innerHTML = h; window.scrollTo(0, 0);
+  wireChapterLinks();
 }
 
 // Jump to any question by its bank number. If it isn't in the current practice set,
@@ -1886,6 +2179,7 @@ function renderResults() {
   if (!shown.length) h += emptyReview();
   for (const { q, good } of shown) h += reviewItemHTML(q, good, S.ans[q.n]);
   app().innerHTML = h; window.scrollTo(0, 0);
+  wireChapterLinks();
 }
 // Each filter deserves the sentence that fits it: "no errors" is good news, "no correct
 // answers" is not, and "no questions" is neither.
@@ -1900,7 +2194,11 @@ function reviewItemHTML(q, good, ans) {
   let h = `<div class="review-item ${good ? 'ok' : 'bad'}">${qBadges(q, good ? `<span class="badge b-ok">${t('badge_ok')}</span>` : `<span class="badge b-disp">${t('badge_wrong')}</span>`)}${exhibit(q)}<div class="qtext">${esc(q.t)}</div>${cliBlock(q.cli)}`;
   if (q.y === 'dd') h += ddReview(q, ans);
   else h += rationale(q, (ans && ans.given) || []);
-  h += `<div class="row" style="margin-top:8px"><button class="btn sm" onclick="copyQuestion(this, ${q.n})">${t('copy_for_ai_short')}</button></div>`;
+  // Filled in asynchronously, or left empty if this deployment has no textbook — see
+  // bookChapterFor. An empty div rather than a spinner: a link that appears is a bonus,
+  // a placeholder that never resolves is a defect.
+  h += `<div class="row" style="margin-top:8px"><button class="btn sm" onclick="copyQuestion(this, ${q.n})">${t('copy_for_ai_short')}</button>
+    <span class="bk-forq" data-forq="${q.n}"></span></div>`;
   return h + `</div>`;
 }
 function ddReview(q, ans) {
@@ -1931,7 +2229,7 @@ document.addEventListener('keydown', e => {
 });
 
 // expose for inline onclick
-Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter, setLang, applyLang, openMode, segPick, historyScreen, learnScreen, startSrsRun, startWrongRun, startTopicRun, startAttemptRun, openAttempt, exportProgress, importProgress, runSync, makeSyncKey, copySyncKey, forgetSyncKey });
+Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter, setLang, applyLang, openMode, segPick, historyScreen, learnScreen, startSrsRun, startWrongRun, startTopicRun, startAttemptRun, bookScreen, chapterScreen, openAttempt, exportProgress, importProgress, runSync, makeSyncKey, copySyncKey, forgetSyncKey });
 // An automatic sync that changed the history redraws the screen showing it — and only
 // that screen: pulling the ground out from under someone mid-question would be worse than
 // a stale list.
