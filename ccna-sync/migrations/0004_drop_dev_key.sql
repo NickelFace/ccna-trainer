@@ -1,0 +1,13 @@
+-- The device check that 0003 unblocked is done: sync works from the released APK, and the
+-- development key's row is what it left behind. MAX_KEYS counts rows, so that row is the
+-- difference between "one slot free" and a 403 the next time a key has to be created --
+-- which is exactly what a rotation is.
+--
+-- Deleted by hash, the shape 0002 used: this takes one known row and cannot reach further
+-- if the allowlist is ever edited carelessly. The owner's row is not named here at all.
+--
+-- The key itself stays on the allowlist, so the next check against the live server simply
+-- creates the row again and the slot is spoken for once more. Before a rotation, either
+-- run a migration like this one again, or raise MAX_KEYS for as long as the rotation
+-- takes -- the cap is meant to say how many keys are allowed, not how many rows fit.
+DELETE FROM state WHERE key_hash = '0543a5c346606e6860f4a2eb95bffba4b436aada0af745518072175762ca3f12';
