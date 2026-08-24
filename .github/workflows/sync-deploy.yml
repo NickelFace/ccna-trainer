@@ -49,7 +49,7 @@ jobs:
       - name: Test
         run: npm test
 
-      # Everything below is skipped until the account side exists — see HANDOFF-cowork-cloudflare.md.
+      # Everything below is skipped until the account side exists — see ccna-sync/README.md.
       - name: Apply migrations
         if: github.event_name == 'push' && env.HAS_CLOUDFLARE == 'true'
         env:

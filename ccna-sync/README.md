@@ -13,11 +13,26 @@ apart and the server from needing a deploy every time the format grows a field.
 ## Protocol
 
 ```
-GET  /v1/health                       → 200 {"ok":true}
-GET  /v1/state                        → 200 {"rev":N,"blob":"…"}    (rev 0, blob null if nothing stored)
-PUT  /v1/state {"rev":N,"blob":"…"}   → 200 {"rev":N+1}
-                                      → 409 {"rev":M,"blob":"…"}    (someone else wrote first)
+GET  /v1/health                       → 200 {"ok":true,"locked":true}
+GET  /v1/state                        → 200 {"rev":N,"blob":"…","stats":{…}}  (rev 0, blob null if nothing stored)
+PUT  /v1/state {"rev":N,"blob":"…",   → 200 {"rev":N+1}
+                "stats":{…}}          → 409 {"rev":M,"blob":"…"}    (someone else wrote first)
+                                      → 422 {"error":"…"}           (this write would lose history)
+GET  /v1/history                      → 200 {"revisions":[{"rev":N,"created_at":…,"bytes":…}]}
+POST /v1/restore {"rev":N}            → 200 {"rev":M+1}
 ```
+
+`stats` is what the write claims it holds — how many attempts, how many questions in
+repetition, how many chapters read, and the oldest attempt's date. The server does not
+read the blob, so this is the only way it can notice that a client is about to replace a
+full history with an emptier one; when it would, the write is refused with 422 instead of
+succeeding quietly. A deliberate prune passes `prune: true` and goes through. A client that
+sends no `stats` is not blocked — the guard simply has nothing to compare, which is why an
+old build can still write.
+
+`/v1/history` lists what can be rolled back to — revisions with their dates and sizes,
+never the blobs, so asking the question does not download twenty copies of the progress.
+`/v1/restore` puts one of them back as a new revision, so restoring is itself undoable.
 
 Authentication is one header, `Authorization: Bearer <sync key>`, where the key is a long
 random string the user generates on one device and types into the other. The database
@@ -40,6 +55,9 @@ can make one. Two environment settings decide who actually gets in:
 |---|---|
 | `ALLOWED_KEY_HASHES` | whitespace- or comma-separated SHA-256 hex, in `wrangler.jsonc` under `vars`. Set it and only those keys work. This is the lock. |
 | `MAX_KEYS` | how many distinct keys may ever be created (default 8). A backstop for the window before the allowlist is set, not a way to choose who gets in. |
+
+The deployed configuration sets both: two hashes in `ALLOWED_KEY_HASHES` and `MAX_KEYS: 2`,
+so the list is the lock and the cap cannot let a third key in behind it.
 
 To lock the server to your own key:
 
@@ -101,5 +119,18 @@ Automatic, from `.github/workflows/sync-deploy.yml` on every push to `main` that
 this directory — but only once the repository has the `CLOUDFLARE_API_TOKEN` and
 `CLOUDFLARE_ACCOUNT_ID` secrets. Until then the workflow just runs the tests.
 
-The account-side setup (D1 database, `database_id` in `wrangler.jsonc`, API token, custom
-domain) is written up step by step in `../HANDOFF-cowork-cloudflare.md`.
+The account side is set up once, by hand:
+
+1. **D1 database** named `ccna-sync` (Storage & Databases → D1 → Create). Copy its
+   Database ID — it is not a secret.
+2. Put that UUID in `wrangler.jsonc` in place of `PASTE_DATABASE_ID_HERE`, commit, push.
+3. **API token** (My Profile → API Tokens → Create Custom Token) with exactly three
+   rights: Account · *Workers Scripts: Edit*, Account · *D1: Edit*, Zone · *Workers
+   Routes: Edit* for the zone the custom domain lives in. The "Edit Cloudflare Workers"
+   template does not always include D1 — check the list before creating. Never a Global
+   API Key.
+4. **Repository secrets** `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` (Settings →
+   Secrets and variables → Actions).
+5. The next push deploys; `sync.maks.top` is declared in `wrangler.jsonc` as a custom
+   domain, so the Workers Routes right is enough for Cloudflare to bind it and write the
+   DNS record itself.

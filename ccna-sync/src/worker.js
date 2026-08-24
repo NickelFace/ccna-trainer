@@ -3,7 +3,7 @@
 // The server is deliberately stupid: it stores an opaque string and the revision it is at,
 // and refuses a write that is not based on the revision it currently holds. It never looks
 // inside the blob, so the save format can change without touching or redeploying this.
-// Merging is the clients' job (shared/merge.js) — see ../HANDOFF-sync.md §3.
+// Merging is the clients' job — see ../../ccna-exam-simulator/assets/js/shared/merge.js.
 //
 //   GET  /v1/state  -> 200 { rev, blob }            rev 0 and blob null when nothing is stored
 //   PUT  /v1/state  <- { rev, blob }

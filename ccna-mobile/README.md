@@ -8,9 +8,10 @@ covering the whole blueprint, each one bound to the bank questions it answers, s
 mistake leads straight to the paragraph that explains it and a chapter leads straight to
 practice on its own questions.
 
-Vanilla JS + esbuild + Capacitor. No framework, no CDN, no network at runtime: the bank,
-the exhibits and the fonts are all bundled, and the app does not declare
-`android.permission.INTERNET`.
+Vanilla JS + esbuild + Capacitor. No framework, no CDN, and nothing fetched to study: the
+bank, the exhibits, the chapters and the fonts are all bundled, so every screen works with
+the device in flight mode. The single use of the network is progress sync, and it stays
+idle until a key is entered — see below.
 
 ## Commands
 
@@ -43,6 +44,7 @@ src/
 │  ├─ cli.js        show-output blocks
 │  └─ ai-prompt.js  the AI request, assembled from toggles
 ├─ app/             screens, router, persistence — everything that touches the DOM
+│  ├─ store.js      the seven branches of progress, their storage and the sync loop
 │  ├─ theory.js     loads the book: index on tab open, a chapter when opened
 │  └─ book.js       renders chapter blocks (tables, CLI, callouts, self-checks)
 └─ styles/          tokens.css is the design system; nothing invents a value
@@ -74,6 +76,20 @@ it without a layout pass. Three rules the code holds itself to:
 `prefers-reduced-motion: reduce` collapses every duration in `base.css`, and the hand-off
 skips its animation entirely.
 
+## Sync
+
+Optional, off until a key is entered: Прогресс → «Синхронизация» → the same key as in the
+browser, and both devices converge through `sync.maks.top` (the Worker in
+[`../ccna-sync/`](../ccna-sync/)). The server keeps an opaque blob and a revision number
+and understands neither; what progress *means* lives in
+[`shared/`](../ccna-exam-simulator/assets/js/shared/), and the merge runs on the devices.
+
+It syncs when the app starts, when it goes to the background with work the server has not
+seen, and when it comes back from the background — an app can sit open for days without
+ever being "started" again, so the return is its own moment. Never on a timer, never per
+answer. An exam in progress is not uploaded at all: a running clock and a half-written
+answer sheet belong to the phone they were started on.
+
 ## Backup
 
 Progress lives only in the phone's SharedPreferences (`store.js`, via `@capacitor/preferences`)
@@ -96,18 +112,21 @@ build to download.
 
 ### Versioning
 
-`BASE_VERSION` in the workflow is the release line. The first build on a line publishes it
-verbatim, every build after that adds a patch number:
+`BASE_VERSION` in the workflow is where the count starts. The first build publishes it
+verbatim, every build after that adds a patch number, and the hundredth rolls the minor
+over rather than growing a third digit past 99:
 
 ```
-2.0  →  2.0.1  →  2.0.2  →  …
+2.0  →  2.0.1  →  …  →  2.0.99  →  2.1  →  2.1.1  →  …  →  2.1.99  →  2.2  →  …
 ```
 
-`versionCode` is the workflow run number — monotonic, which is all Android asks of it.
-Nothing is stored in `package.json` or a VERSION file; the run counter is the source.
+All of it is arithmetic on one counter — the workflow run number — so the sequence can
+neither skip nor repeat. `versionCode` is that same run number, monotonic, which is all
+Android asks of it. Nothing is stored in `package.json` or a VERSION file.
 
-To open a new line: bump `BASE_VERSION` and set `RUN_OFFSET` to the run number of that
-first build (the counter is per workflow file and never resets).
+To start a line somewhere other than where the arithmetic lands: bump `BASE_VERSION` and
+set `RUN_OFFSET` to the run number of that first build (the counter is per workflow file
+and never resets).
 
 ### Signing
 
@@ -126,12 +145,10 @@ later) is a signature change — Android refuses to install over a mismatched on
 uninstalls the old app first, and `allowBackup="false"` in the manifest means that takes
 its data with it. Export a backup (below) before that install, import it after.
 
-**Without these secrets the workflow publishes a debug APK instead.** An unsigned release
-APK cannot be installed at all, so falling back to the debug variant is the only way the
-release stays useful — at the cost of no minification and a throwaway signing key, which
-means a build cannot be installed over a previous one without uninstalling first. Add the
-secrets and every build becomes a signed, minified release AAB + APK that upgrades in
-place.
+**Without these secrets the workflow stops.** An unsigned release APK cannot be installed
+at all, and a debug-signed one carries a throwaway key that no later build can upgrade
+over — publishing either as if it were the release is worse than publishing nothing, so
+the run fails with a message naming the missing secrets instead.
 
 ## Known gaps
 
