@@ -3,10 +3,16 @@ name: Release Android app
 # Every push to main that touches the app or the question bank publishes a new release
 # and deletes the previous ones, so there is always exactly one build to download.
 #
-# Versioning: BASE_VERSION is the release line. The first run on a line publishes it
-# verbatim (2.0), every run after that adds a patch number (2.0.1, 2.0.2, …). To start a
-# new line, bump BASE_VERSION and set RUN_OFFSET to the run number of that first build —
-# the run counter is per-workflow-file and never resets.
+# Versioning: BASE_VERSION is where the count starts. The first run publishes it verbatim
+# (2.0), every run after that adds a patch number (2.0.1, 2.0.2, …) — and the hundredth
+# rolls the minor over instead of growing a third digit past 99: after 2.0.99 comes 2.1,
+# then 2.1.1 … 2.1.99, then 2.2, and so on. Two digits of patch is what a version people
+# read off a release page can carry without turning into a serial number.
+#
+# All of it comes off one counter — the run number, which is per-workflow-file and never
+# resets — so the sequence cannot skip or repeat. RUN_OFFSET is the run number that should
+# publish BASE_VERSION itself; to start a line somewhere other than where the arithmetic
+# would land, bump BASE_VERSION and set RUN_OFFSET to that first build's run number.
 #
 # versionCode must never go backwards, or Android refuses the update with
 # INSTALL_FAILED_VERSION_DOWNGRADE on every device that already has a newer one installed.
@@ -71,11 +77,15 @@ jobs:
       - name: Work out the version
         id: version
         run: |
-          patch=$(( ${{ github.run_number }} - ${{ env.RUN_OFFSET }} ))
-          if [ "$patch" -le 0 ]; then
-            name="${BASE_VERSION}"
+          n=$(( ${{ github.run_number }} - ${{ env.RUN_OFFSET }} ))
+          if [ "$n" -lt 0 ]; then n=0; fi          # a hand-set RUN_OFFSET ahead of the counter
+          major="${BASE_VERSION%%.*}"
+          minor=$(( ${BASE_VERSION##*.} + n / 100 ))
+          patch=$(( n % 100 ))
+          if [ "$patch" -eq 0 ]; then
+            name="${major}.${minor}"
           else
-            name="${BASE_VERSION}.${patch}"
+            name="${major}.${minor}.${patch}"
           fi
           code=$(( ${{ github.run_number }} + ${{ env.CODE_OFFSET }} ))
           echo "name=$name" >> "$GITHUB_OUTPUT"
