@@ -179,6 +179,8 @@ const I18N = {
     learn_title: 'Учить',
     learn_open: 'Учить',
     learn_today: 'Сегодня',
+    learn_goal_line: 'Дневная норма · {0} из {1}',
+    learn_goal_set: 'Норма в день',
     learn_today_line: 'Отвечено {0} · ошибок {1} · повторений {2}',
     learn_streak: 'Серия: {0} дн.',
     learn_streak_none: 'Серии пока нет — ответь хотя бы на один вопрос сегодня.',
@@ -394,6 +396,8 @@ const I18N = {
     learn_title: 'Practice',
     learn_open: 'Practice',
     learn_today: 'Today',
+    learn_goal_line: 'Daily goal · {0} of {1}',
+    learn_goal_set: 'Answers per day',
     learn_today_line: '{0} answered · {1} wrong · {2} repetitions',
     learn_streak: 'Streak: {0} days',
     learn_streak_none: 'No streak yet — answer one question today to start one.',
@@ -1377,6 +1381,7 @@ function learnScreen() {
   const wrong = learnWrong();
   const next = st.nextDueAt(st.srs, { has: n => byN().has(n) });
   const topics = st.weakTopics(st.attempts, byN(), isCorrect);
+  const goal = st.goalOf(st.profile);
 
   const srsBody = due.length
     ? `<button class="btn" onclick="startSrsRun()">${t('learn_srs_go', due.length)}</button>`
@@ -1388,8 +1393,15 @@ function learnScreen() {
 
     <div class="sec">
       <h2>${t('learn_today')}</h2>
+      <div class="dbar">
+        <div class="top"><span class="nm">${t('learn_goal_line', today.total, goal)}</span>
+          <span class="vl ${today.total >= goal ? 'g' : ''}">${Math.min(100, Math.round(today.total / goal * 100))}%</span></div>
+        <div class="track"><div class="fill ${today.total >= goal ? 'g' : ''}" style="width:${Math.min(100, Math.round(today.total / goal * 100))}%"></div></div>
+      </div>
       <div class="exp">${t('learn_today_line', today.total, today.wrong, today.srs)}</div>
       <div class="exp muted">${streak ? t('learn_streak', streak) : t('learn_streak_none')}</div>
+      <div class="row"><label class="goalset">${t('learn_goal_set')}
+        <input id="goal" type="number" min="1" max="500" step="5" value="${goal}"></label></div>
       ${activityStripHTML(st.recentDays(st.activity, now, 14))}
     </div>
 
@@ -1426,6 +1438,10 @@ function learnScreen() {
   // Topic names come out of the bank, so they are wired rather than inlined — same reason
   // the history rows are.
   document.querySelectorAll('[data-topic]').forEach(b => b.onclick = () => startTopicRun(b.dataset.topic));
+  // Committed on change rather than on every keystroke: typing "40" passes through "4",
+  // and a goal of 4 written to the synced profile on the way is not what was meant.
+  const goalBox = document.getElementById('goal');
+  if (goalBox) goalBox.onchange = () => { st.setGoal(parseInt(goalBox.value, 10)); learnScreen(); };
   window.scrollTo(0, 0);
 }
 

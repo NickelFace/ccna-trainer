@@ -17,6 +17,7 @@ import { BRANCHES, packBackup, isBackup } from '../../../ccna-exam-simulator/ass
 import { pruneAttempts } from '../../../ccna-exam-simulator/assets/js/shared/retention.js';
 import { isSyncKey, newSyncKey, syncOnce } from '../../../ccna-exam-simulator/assets/js/shared/sync.js';
 import { DEFAULT_BOOK, normalizeBook } from './theory.js';
+import { DEFAULT_GOAL, validGoal } from '../../../ccna-exam-simulator/assets/js/shared/progress.js';
 
 const KEY = {
   profile: 'ccna.profile',
@@ -46,7 +47,7 @@ const newDeviceId = () => 'and-' + Math.random().toString(36).slice(2, 8);
 const DEFAULT_PROFILE = {
   level: null,          // 'first' | 'again' | 'retake' — set in onboarding (step 7)
   examDate: null,
-  dailyGoal: 30,
+  dailyGoal: DEFAULT_GOAL,
   lang: 'ru',
   aiTarget: null,
   fontScale: 1,         // question text size, cycled by the "Aa Размер" control
@@ -58,11 +59,8 @@ const DEFAULT_PROFILE = {
   notify: { enabled: false, daily: true, weeklyMock: true, time: '19:00' },
 };
 
-// A restored backup or a hand-edited preference file can carry `dailyGoal: 0`, a negative
-// number, or plain junk (a string, null) — that number is a denominator everywhere it's
-// shown ("N из 0" on the home screen, a divide-by-zero-shaped plan line in Профиль), so
-// anything that isn't a whole number of at least 1 falls back to the default instead.
-const validGoal = n => Number.isInteger(n) && n >= 1;
+// `validGoal` is shared: that number is a denominator everywhere it is shown ("N из 0" on
+// the home screen, a divide-by-zero-shaped plan line in Профиль), and the site sets it too.
 
 // `notify` is a nested object, so a plain spread would drop any key a stored profile
 // predates — an older backup has no `notify.weeklyMock`, and shallow-merging it in would

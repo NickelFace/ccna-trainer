@@ -19,7 +19,8 @@ import { BRANCHES, isBackup, packBackup } from './shared/backup.js';
 import { pruneAttempts } from './shared/retention.js';
 import { boxHistogram, dueCount, dueQueue, nextDueAt, wrongQueue } from './shared/srs-queue.js';
 import {
-  answeredTotal, dayStats, mistakesOf, recentDays, scoreTone, streakDays, toneFor, topicStats, weakTopics,
+  answeredTotal, dayStats, goalOf, mistakesOf, recentDays, scoreTone, streakDays, toneFor, topicStats,
+  validGoal, weakTopics,
 } from './shared/progress.js';
 import { PASS_SCALED, toScaled } from './shared/score.js';
 import { autoSyncer, isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js';
@@ -81,6 +82,7 @@ const Store = {
   answeredTotal,
   toneFor,
   scoreTone,
+  goalOf,
   // The textbook: the same chapter files the Android app reads, rendered by the same
   // block renderer. Loading is lazy — nothing here is fetched until the reader opens.
   bodyMarkup,
@@ -133,6 +135,16 @@ const Store = {
   // twice (the review sheet is reachable mid-session) updates one row instead of filing a
   // second one.
   attemptId(startedAt) { return `${this.deviceId}-${startedAt}`; },
+
+  // ---- the daily goal ----
+  // The one profile field the site can set. Onboarding on the phone asks for it; here it
+  // is the number under the day's counter, and it travels with the profile branch.
+  setGoal(n) {
+    if (!validGoal(n)) return goalOf(this.profile);
+    this.profile.dailyGoal = n;
+    this._touch('profile');
+    return n;
+  },
 
   // ---- textbook ----
   // Same three mutators the Android store has, writing the same branch: a chapter marked

@@ -89,6 +89,15 @@ export const mistakesOf = (attempt, byN, isCorrect) =>
     return q && !isCorrect(q, attempt.answers[qn]);
   });
 
+// ---------------------------------------------------------------- the daily goal
+// How many answers a day counts as a day's work. Stored in `profile.dailyGoal`, set in
+// onboarding on the phone and in the "Сегодня" card on the site, and used as a
+// denominator by both — so a zero, a negative or plain junk from a restored backup has
+// to become the default rather than reach a division.
+export const DEFAULT_GOAL = 30;
+export const validGoal = n => Number.isInteger(n) && n >= 1;
+export const goalOf = profile => validGoal(profile?.dailyGoal) ? profile.dailyGoal : DEFAULT_GOAL;
+
 // ---------------------------------------------------------------- daily activity
 // The activity map is { 'YYYY-MM-DD': { [deviceId]: { total, wrong, srs } } }. It exists because the
 // streak and the day's quota cannot be derived from attempts alone — a session that was

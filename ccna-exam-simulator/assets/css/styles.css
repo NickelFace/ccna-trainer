@@ -624,3 +624,10 @@ details.cli-wrap summary:hover{color:var(--ink)}
   .bk-h2{font-size:22px}
   .bk p,.bk-list{font-size:15.5px}
 }
+
+/* The daily goal, the one profile field the site can set — a number beside its label
+   rather than a form, because that is the whole of it. */
+.goalset{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:var(--grey-text)}
+.goalset input{width:82px;padding:8px 10px;font:inherit;font-family:var(--num);font-weight:700;
+  font-size:14px;color:var(--ink);background:var(--cream);border:1px solid var(--edge);border-radius:11px}
+.goalset input:focus{outline:none;border-color:var(--edge-strong)}
