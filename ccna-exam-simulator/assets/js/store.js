@@ -13,23 +13,23 @@
    Branches this app never touches (profile beyond its device id, bookmarks, book) are
    still loaded, kept, and exported verbatim: importing a phone backup here and exporting
    it back must not quietly strip the textbook progress. */
-import { nextState } from './shared/srs.js';
-import { ACTIVITY_DAYS, bumpActivity, dayKey, normalizeActivity, pruneActivity } from './shared/activity.js';
-import { BRANCHES, isBackup, packBackup } from './shared/backup.js';
-import { pruneAttempts } from './shared/retention.js';
-import { boxHistogram, dueCount, dueQueue, nextDueAt, wrongQueue } from './shared/srs-queue.js';
+import { nextState } from './shared/srs.js?v=13';
+import { ACTIVITY_DAYS, bumpActivity, dayKey, normalizeActivity, pruneActivity } from './shared/activity.js?v=13';
+import { BRANCHES, isBackup, packBackup } from './shared/backup.js?v=13';
+import { pruneAttempts } from './shared/retention.js?v=13';
+import { boxHistogram, dueCount, dueQueue, nextDueAt, wrongQueue } from './shared/srs-queue.js?v=13';
 import {
   answeredTotal, dayStats, goalOf, mistakesOf, recentDays, scoreTone, streakDays, toneFor, topicStats,
   validGoal, weakTopics,
-} from './shared/progress.js';
-import { PASS_SCALED, toScaled } from './shared/score.js';
-import { autoSyncer, isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js';
-import { bodyMarkup } from './shared/book.js';
-import { normalizeTset, tsetEntries, tsetHas, tsetMark } from './shared/tset.js';
+} from './shared/progress.js?v=13';
+import { PASS_SCALED, toScaled } from './shared/score.js?v=13';
+import { autoSyncer, isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js?v=13';
+import { bodyMarkup } from './shared/book.js?v=13';
+import { normalizeTset, tsetEntries, tsetHas, tsetMark } from './shared/tset.js?v=13';
 import {
   coverage, DEFAULT_BOOK, isRead, loadIndex, loadMap, loadTopic, normalizeBook, readMap, setBookVersion,
   setRead, topicOf,
-} from './shared/theory.js';
+} from './shared/theory.js?v=13';
 
 const KEY = {
   profile: 'ccna.profile',

@@ -12,13 +12,13 @@ import { Preferences } from '@capacitor/preferences';
 import { nextState, pruneGhosts } from '../engine/srs.js';
 import { dayKey, normalizeActivity } from '../engine/stats.js';
 import { isEmptyAnswer } from '../engine/grade.js';
-import { ACTIVITY_DAYS, bumpActivity, pruneActivity } from '../../../ccna-exam-simulator/assets/js/shared/activity.js';
-import { BRANCHES, packBackup, isBackup } from '../../../ccna-exam-simulator/assets/js/shared/backup.js';
-import { pruneAttempts } from '../../../ccna-exam-simulator/assets/js/shared/retention.js';
-import { isSyncKey, newSyncKey, syncOnce } from '../../../ccna-exam-simulator/assets/js/shared/sync.js';
+import { ACTIVITY_DAYS, bumpActivity, pruneActivity } from '../../../ccna-exam-simulator/assets/js/shared/activity.js?v=13';
+import { BRANCHES, packBackup, isBackup } from '../../../ccna-exam-simulator/assets/js/shared/backup.js?v=13';
+import { pruneAttempts } from '../../../ccna-exam-simulator/assets/js/shared/retention.js?v=13';
+import { isSyncKey, newSyncKey, syncOnce } from '../../../ccna-exam-simulator/assets/js/shared/sync.js?v=13';
 import { DEFAULT_BOOK, isRead, normalizeBook, setRead } from './theory.js';
-import { normalizeTset, tsetEntries, tsetHas, tsetMark } from '../../../ccna-exam-simulator/assets/js/shared/tset.js';
-import { DEFAULT_GOAL, validGoal } from '../../../ccna-exam-simulator/assets/js/shared/progress.js';
+import { normalizeTset, tsetEntries, tsetHas, tsetMark } from '../../../ccna-exam-simulator/assets/js/shared/tset.js?v=13';
+import { DEFAULT_GOAL, validGoal } from '../../../ccna-exam-simulator/assets/js/shared/progress.js?v=13';
 
 const KEY = {
   profile: 'ccna.profile',

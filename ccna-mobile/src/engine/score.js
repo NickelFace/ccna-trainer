@@ -4,7 +4,7 @@
 // file attempts into the same history, so a score computed on the phone and one computed
 // in the browser have to come out of the same formula.
 import { isCorrect } from './grade.js';
-import { PASS_SCALED, SCALE_MIN, SCALE_MAX, toScaled } from '../../../ccna-exam-simulator/assets/js/shared/score.js';
+import { PASS_SCALED, SCALE_MIN, SCALE_MAX, toScaled } from '../../../ccna-exam-simulator/assets/js/shared/score.js?v=13';
 
 export { PASS_SCALED, SCALE_MIN, SCALE_MAX, toScaled };
 

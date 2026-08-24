@@ -9,8 +9,8 @@ import {
   toneFor, scoreTone, msPerQuestion, scaledDelta, pointsToPass, isScored, scoredAttempts,
   weakDomains, dayStats, answeredOn, answeredTotal, recentDays, streakDays,
   topicStats as topicStatsWith, weakTopics as weakTopicsWith, mistakesOf as mistakesOfWith,
-} from '../../../ccna-exam-simulator/assets/js/shared/progress.js';
-import { dayKey, daySum, normalizeActivity } from '../../../ccna-exam-simulator/assets/js/shared/activity.js';
+} from '../../../ccna-exam-simulator/assets/js/shared/progress.js?v=13';
+import { dayKey, daySum, normalizeActivity } from '../../../ccna-exam-simulator/assets/js/shared/activity.js?v=13';
 
 export { dayKey, normalizeActivity, daySum };
 export {
