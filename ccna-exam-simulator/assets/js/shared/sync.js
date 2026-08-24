@@ -15,6 +15,7 @@
 // a file, minus the session — an exam with a running clock belongs to the device running it.
 import { packBackup } from './backup.js';
 import { merge } from './merge.js';
+import { pruneState } from './retention.js';
 
 export const SYNC_BASE = 'https://sync.maks.top';
 
@@ -42,7 +43,7 @@ export class SyncError extends Error {
   constructor(code, message, status = 0) {
     super(message);
     this.name = 'SyncError';
-    this.code = code;       // 'key' | 'auth' | 'closed' | 'offline' | 'server' | 'conflict' | 'corrupt'
+    this.code = code;       // 'key' | 'auth' | 'closed' | 'shrink' | 'offline' | 'server' | 'conflict' | 'corrupt'
     this.status = status;
   }
 }
@@ -52,6 +53,27 @@ const MAX_TRIES = 4;
 // What travels. The session is dropped rather than sent as null-and-restored: it is the
 // one branch a second device must never adopt.
 export const toBlob = (state, now) => JSON.stringify(packBackup({ ...state, session: null }, now));
+
+// A few counts sent alongside the blob. The server cannot read the blob — that is the
+// design — so this is how it can refuse a write that holds less than the one before it.
+// Three things that only ever grow, and the age of the oldest attempt, which only moves
+// forward as old ones age out.
+export function statsOf(state) {
+  const attempts = Array.isArray(state?.attempts) ? state.attempts : [];
+  const dates = attempts.map(a => Number(a?.date) || 0).filter(Boolean);
+  return {
+    attempts: attempts.length,
+    srs: Object.keys(state?.srs && typeof state.srs === 'object' ? state.srs : {}).length,
+    read: Object.keys(state?.book?.read && typeof state.book.read === 'object' ? state.book.read : {}).length,
+    oldest: dates.length ? Math.min(...dates) : 0,
+  };
+}
+
+// Is this write dropping attempts because they aged out, rather than because something
+// went wrong? Only the client can say — and it can only say it honestly, because the
+// server checks the claim against the oldest attempt it was told about last time.
+const isPrune = (mine, theirs) =>
+  !!theirs && mine.attempts < theirs.attempts && mine.oldest > theirs.oldest;
 
 const parseBlob = blob => {
   if (blob == null) return null;
@@ -79,6 +101,12 @@ async function call(fetchFn, base, key, init = {}) {
   // The server is up and the key is well formed, but this server is not handing out room
   // to new keys — a different sentence from "your key is wrong", and a different fix.
   if (res.status === 403) throw new SyncError('closed', 'this server is not taking new sync keys', 403);
+  // The server thinks this write would lose progress. Never retried automatically: if the
+  // client is wrong about what it holds, sending it again is how the loss happens.
+  if (res.status === 422) {
+    const detail = await res.json().catch(() => ({}));
+    throw new SyncError('shrink', detail.error || 'this write would drop progress', 422);
+  }
   if (res.status !== 200 && res.status !== 409) {
     throw new SyncError('server', `server answered ${res.status}`, res.status);
   }
@@ -147,7 +175,7 @@ export function autoSyncer(store, { minMs = AUTO_MIN_MS, leaveMs = AUTO_LEAVE_MI
 export async function pull({ fetch, base = SYNC_BASE, key }) {
   if (!isSyncKey(key)) throw new SyncError('key', 'sync key is malformed');
   const { body } = await call(fetch, base, key, { method: 'GET' });
-  return { rev: body.rev | 0, remote: parseBlob(body.blob) };
+  return { rev: body.rev | 0, remote: parseBlob(body.blob), stats: body.stats ?? null };
 }
 
 // One full exchange. Returns the state both devices now agree on, the revision it is
@@ -158,11 +186,15 @@ export async function pull({ fetch, base = SYNC_BASE, key }) {
 export async function syncOnce({ fetch, base = SYNC_BASE, key, state, now = Date.now() }) {
   if (!isSyncKey(key)) throw new SyncError('key', 'sync key is malformed');
 
-  let { rev, remote } = await pull({ fetch, base, key });
+  let { rev, remote, stats: theirs } = await pull({ fetch, base, key });
 
   for (let attempt = 0; attempt < MAX_TRIES; attempt++) {
-    const merged = remote ? merge(state, remote) : { ...state };
+    // Pruned after the merge, not before: the merge unions both histories, so anything
+    // dropped locally comes straight back off the server unless the rule is applied to the
+    // result. This is the only place old attempts actually stop existing.
+    const merged = pruneState(remote ? merge(state, remote) : { ...state }, now);
     const blob = toBlob(merged, now);
+    const stats = statsOf(merged);
 
     // Nothing of ours to add: the server already holds exactly this. Skipping the write
     // keeps the revision from climbing on every idle sync, which is what makes a
@@ -171,7 +203,7 @@ export async function syncOnce({ fetch, base = SYNC_BASE, key, state, now = Date
 
     const { status, body } = await call(fetch, base, key, {
       method: 'PUT',
-      body: JSON.stringify({ rev, blob }),
+      body: JSON.stringify({ rev, blob, stats, prune: isPrune(stats, theirs) }),
     });
     if (status === 200) return { state: merged, rev: body.rev | 0, wrote: true };
 
@@ -179,6 +211,7 @@ export async function syncOnce({ fetch, base = SYNC_BASE, key, state, now = Date
     // go round again — with two devices this settles on the first retry.
     rev = body.rev | 0;
     remote = parseBlob(body.blob);
+    theirs = body.stats ?? theirs;
   }
   throw new SyncError('conflict', 'the other device kept writing; try again');
 }

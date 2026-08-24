@@ -16,6 +16,7 @@
 import { nextState } from './shared/srs.js';
 import { ACTIVITY_DAYS, bumpActivity, dayKey, normalizeActivity, pruneActivity } from './shared/activity.js';
 import { BRANCHES, isBackup, packBackup } from './shared/backup.js';
+import { pruneAttempts } from './shared/retention.js';
 import { PASS_SCALED, toScaled } from './shared/score.js';
 import { autoSyncer, isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js';
 
@@ -76,7 +77,9 @@ const Store = {
   load() {
     this.profile = read(KEY.profile, {}) || {};
     this.session = read(KEY.session, null);
-    this.attempts = read(KEY.attempts, []) || [];
+    // Six months, and then by itself — see shared/retention.js. Done here as well as in
+    // the sync so a device that never syncs still forgets on schedule.
+    this.attempts = pruneAttempts(read(KEY.attempts, []) || []);
     this.bookmarks = read(KEY.bookmarks, []) || [];
     this.srs = read(KEY.srs, {}) || {};
     this.book = read(KEY.book, {}) || {};

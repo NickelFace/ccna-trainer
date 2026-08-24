@@ -9,6 +9,9 @@
 //   PUT  /v1/state  <- { rev, blob }
 //                   -> 200 { rev }                  accepted, rev is the new one
 //                   -> 409 { rev, blob }            someone else wrote first; here is theirs
+//   GET  /v1/history-> 200 { revisions: [...] }     what can be rolled back to
+//   POST /v1/restore<- { rev }
+//                   -> 200 { rev }                  an old revision written back as a new one
 //   GET  /v1/health -> 200 { ok: true }             no auth, for CI and uptime checks
 //
 // Auth is one long random key per user, sent as `Authorization: Bearer <key>`. There is no
@@ -30,6 +33,11 @@
 
 const MAX_BLOB_BYTES = 1_000_000;   // D1 caps a row at 2 MB; a year of one user's history is tens of KB
 const DEFAULT_MAX_KEYS = 8;         // one user, a handful of devices and a re-key or two
+
+// How many past revisions stay recoverable. Twenty writes of a heavy year of progress is
+// under a megabyte, against 500 MB of free database — the cost of an undo is nothing, and
+// the alternative to having one is a support conversation with yourself.
+const MAX_HISTORY = 20;
 
 // The two clients, plus the two ways they run in development. Everything else gets no CORS
 // headers at all — the browser then refuses the response, which is the point.
@@ -53,6 +61,29 @@ const maxKeys = env => {
   const n = Number(env.MAX_KEYS);
   return Number.isInteger(n) && n > 0 ? n : DEFAULT_MAX_KEYS;
 };
+
+// The counts a client sends with a write. The server cannot read the blob — that is the
+// whole design — so this is the only way it can tell "here is more progress" from "here is
+// less". Deliberately small: three things that only ever grow, and the age of the oldest
+// attempt, which only ever moves forward.
+const COUNTERS = ['attempts', 'srs', 'read'];
+
+const validStats = v =>
+  !!v && typeof v === 'object' && !Array.isArray(v)
+  && [...COUNTERS, 'oldest'].every(k => Number.isInteger(v[k]) && v[k] >= 0);
+
+// Is this write losing something? `prune` is the client saying "yes, on purpose, I dropped
+// attempts that aged out" — which is allowed only if the oldest one really did move
+// forward, and never excuses losing a repetition or a read chapter.
+function losesHistory(before, after, prune) {
+  if (!before || !after) return null;                  // nothing to compare against
+  for (const k of COUNTERS) {
+    if (after[k] >= before[k]) continue;
+    if (k === 'attempts' && prune && after.oldest > before.oldest) continue;
+    return k;
+  }
+  return null;
+}
 
 const json = (body, status, origin) => new Response(JSON.stringify(body), {
   status,
@@ -86,7 +117,34 @@ function bearer(request) {
 }
 
 const readState = (env, hash) =>
-  env.DB.prepare('SELECT rev, blob FROM state WHERE key_hash = ?').bind(hash).first();
+  env.DB.prepare('SELECT rev, blob, stats FROM state WHERE key_hash = ?').bind(hash).first();
+
+const safeParse = text => { try { return JSON.parse(text); } catch { return null; } };
+
+// Put an old revision back as a new one. The history is never rewritten — going back is
+// itself a write, and staying able to undo the undo is the point of keeping it.
+async function restore(request, env, hash, origin) {
+  let body;
+  try { body = await request.json(); } catch { return json({ error: 'body must be JSON' }, 400, origin); }
+  const rev = body?.rev;
+  if (!Number.isInteger(rev) || rev < 1) return json({ error: 'rev must be a whole number >= 1' }, 400, origin);
+
+  const old = await env.DB.prepare('SELECT blob FROM history WHERE key_hash = ? AND rev = ?').bind(hash, rev).first();
+  if (!old) return json({ error: 'no such revision' }, 404, origin);
+
+  const now = Date.now();
+  const res = await env.DB
+    // stats go to NULL: the counts of a revision from before are not recorded, and a stale
+    // comparison would refuse the very next honest write.
+    .prepare('UPDATE state SET rev = rev + 1, blob = ?, updated_at = ?, stats = NULL WHERE key_hash = ?')
+    .bind(old.blob, now, hash)
+    .run();
+  if (res.meta.changes !== 1) return json({ error: 'nothing stored under this key' }, 404, origin);
+
+  const row = await readState(env, hash);
+  await remember(env, hash, row.rev, old.blob, now);
+  return json({ rev: row.rev }, 200, origin);
+}
 
 // What a conflicting writer needs to merge and try again: the revision that won and what it
 // wrote. Returns the "nothing stored" pair when the row was deleted in between.
@@ -102,40 +160,79 @@ async function put(request, env, hash, origin) {
   } catch {
     return json({ error: 'body must be JSON' }, 400, origin);
   }
-  const { rev, blob } = body || {};
+  const { rev, blob, stats, prune } = body || {};
   if (!Number.isInteger(rev) || rev < 0) return json({ error: 'rev must be a whole number >= 0' }, 400, origin);
   if (typeof blob !== 'string') return json({ error: 'blob must be a string' }, 400, origin);
   if (new TextEncoder().encode(blob).length > MAX_BLOB_BYTES) {
     return json({ error: `blob exceeds ${MAX_BLOB_BYTES} bytes` }, 413, origin);
   }
+  if (stats !== undefined && !validStats(stats)) {
+    return json({ error: 'stats must be whole numbers: attempts, srs, read, oldest' }, 400, origin);
+  }
 
   const now = Date.now();
+
+  // Refuse a write that would lose progress. This guards against a broken client and a
+  // half-restored backup, not against whoever holds the key — they could send any counts
+  // they like. What protects against them is the allowlist, and nothing else pretends to.
+  const current = await env.DB.prepare('SELECT stats FROM state WHERE key_hash = ?').bind(hash).first();
+  if (stats && current?.stats) {
+    let before = null;
+    try { before = JSON.parse(current.stats); } catch { before = null; }
+    const lost = losesHistory(before, stats, prune === true);
+    if (lost) {
+      return json({ error: `this write drops ${lost} and did not say it was pruning`, stats: before }, 422, origin);
+    }
+  }
+  const packed = stats ? JSON.stringify(stats) : (current?.stats ?? null);
 
   // rev 0 means "I believe nothing is stored yet". INSERT … DO NOTHING settles the race
   // between two devices claiming that at the same moment: exactly one of them changes a row.
   if (rev === 0) {
     // Creating a key is the only operation that grows the database, so it is the only one
-    // the cap applies to. An existing user is never turned away by it.
-    const { n } = await env.DB.prepare('SELECT COUNT(*) AS n FROM state').first();
-    if (n >= maxKeys(env)) {
-      return json({ error: 'this server is not taking new sync keys' }, 403, origin);
+    // the cap applies to — and only when there is no allowlist. With one, the number of
+    // keys is already bounded by the list, while the cap counts *rows*: a row nobody can
+    // authenticate as still occupies a slot, and that is how an allowed key came to be
+    // refused with 403 on a real phone.
+    if (!allowList(env)) {
+      const { n } = await env.DB.prepare('SELECT COUNT(*) AS n FROM state').first();
+      if (n >= maxKeys(env)) {
+        return json({ error: 'this server is not taking new sync keys' }, 403, origin);
+      }
     }
     const res = await env.DB
-      .prepare('INSERT INTO state (key_hash, rev, blob, updated_at) VALUES (?, 1, ?, ?) ON CONFLICT (key_hash) DO NOTHING')
-      .bind(hash, blob, now)
+      .prepare('INSERT INTO state (key_hash, rev, blob, updated_at, stats) VALUES (?, 1, ?, ?, ?) ON CONFLICT (key_hash) DO NOTHING')
+      .bind(hash, blob, now, packed)
       .run();
-    if (res.meta.changes === 1) return json({ rev: 1 }, 200, origin);
-    return conflict(env, hash, origin);
+    if (res.meta.changes !== 1) return conflict(env, hash, origin);
+    await remember(env, hash, 1, blob, now);
+    return json({ rev: 1 }, 200, origin);
   }
 
   // Everything else is a compare-and-set on the revision. One statement, so two devices
   // writing at the same instant cannot both win.
   const res = await env.DB
-    .prepare('UPDATE state SET rev = rev + 1, blob = ?, updated_at = ? WHERE key_hash = ? AND rev = ?')
-    .bind(blob, now, hash, rev)
+    .prepare('UPDATE state SET rev = rev + 1, blob = ?, updated_at = ?, stats = ? WHERE key_hash = ? AND rev = ?')
+    .bind(blob, now, packed, hash, rev)
     .run();
-  if (res.meta.changes === 1) return json({ rev: rev + 1 }, 200, origin);
-  return conflict(env, hash, origin);
+  if (res.meta.changes !== 1) return conflict(env, hash, origin);
+  await remember(env, hash, rev + 1, blob, now);
+  return json({ rev: rev + 1 }, 200, origin);
+}
+
+// Keep the accepted revision, drop everything past the last MAX_HISTORY. Failing to record
+// history must not fail the write: the progress is already stored, and an undo nobody can
+// reach is a smaller loss than a sync that reports failure after succeeding.
+async function remember(env, hash, rev, blob, now) {
+  try {
+    await env.DB.batch([
+      env.DB.prepare('INSERT OR REPLACE INTO history (key_hash, rev, blob, created_at) VALUES (?, ?, ?, ?)')
+        .bind(hash, rev, blob, now),
+      env.DB.prepare(`DELETE FROM history WHERE key_hash = ? AND rev <= ?`).bind(hash, rev - MAX_HISTORY),
+    ]);
+  } catch (err) {
+    console.warn('history: could not record revision', rev, err?.message);
+  }
 }
 
 export async function handle(request, env) {
@@ -146,7 +243,8 @@ export async function handle(request, env) {
   // `locked` is how the owner checks from a terminal that the allowlist actually took
   // effect after setting the secret. It says whether there is a list, never what is in it.
   if (pathname === '/v1/health') return json({ ok: true, locked: !!allowList(env) }, 200, origin);
-  if (pathname !== '/v1/state') return json({ error: 'not found' }, 404, origin);
+  const known = pathname === '/v1/state' || pathname === '/v1/history' || pathname === '/v1/restore';
+  if (!known) return json({ error: 'not found' }, 404, origin);
 
   const key = bearer(request);
   if (!key) return json({ error: 'missing or malformed sync key' }, 401, origin);
@@ -157,9 +255,31 @@ export async function handle(request, env) {
   const allowed = allowList(env);
   if (allowed && !allowed.has(hash)) return json({ error: 'unknown sync key' }, 401, origin);
 
+  if (pathname === '/v1/history') {
+    if (request.method !== 'GET') return json({ error: 'method not allowed' }, 405, origin);
+    // Sizes and dates, never the blobs: this answers "what can I go back to", and a list
+    // that carries twenty copies of the progress would be a heavy way to ask it.
+    const { results } = await env.DB
+      .prepare('SELECT rev, created_at, LENGTH(blob) AS bytes FROM history WHERE key_hash = ? ORDER BY rev DESC')
+      .bind(hash)
+      .all();
+    return json({ revisions: results || [] }, 200, origin);
+  }
+
+  if (pathname === '/v1/restore') {
+    if (request.method !== 'POST') return json({ error: 'method not allowed' }, 405, origin);
+    return restore(request, env, hash, origin);
+  }
+
   if (request.method === 'GET') {
     const row = await readState(env, hash);
-    return json({ rev: row ? row.rev : 0, blob: row ? row.blob : null }, 200, origin);
+    return json({
+      rev: row ? row.rev : 0,
+      blob: row ? row.blob : null,
+      // What the last write claimed it held. The client compares its own counts against
+      // this to know whether it is about to shrink anything, and says so if it is.
+      stats: row?.stats ? safeParse(row.stats) : null,
+    }, 200, origin);
   }
   if (request.method === 'PUT') return put(request, env, hash, origin);
 

@@ -89,7 +89,7 @@ test('a key that is missing, malformed or too short never reaches the database',
 test('an unknown key reads as "nothing stored yet"', async () => {
   const res = await call(d1(), 'GET', '/v1/state', { key: KEY });
   assert.equal(res.status, 200);
-  assert.deepEqual(await res.json(), { rev: 0, blob: null });
+  assert.deepEqual(await res.json(), { rev: 0, blob: null, stats: null });
 });
 
 test('first write claims rev 1 and reads back verbatim', async () => {
@@ -100,7 +100,7 @@ test('first write claims rev 1 and reads back verbatim', async () => {
   assert.deepEqual(await put.json(), { rev: 1 });
 
   const get = await call(env, 'GET', '/v1/state', { key: KEY });
-  assert.deepEqual(await get.json(), { rev: 1, blob });
+  assert.deepEqual(await get.json(), { rev: 1, blob, stats: null });
 });
 
 test('the server does not care what the blob is', async () => {
@@ -117,7 +117,7 @@ test('writes advance the revision one at a time', async () => {
   const second = await call(env, 'PUT', '/v1/state', { key: KEY, body: { rev: 1, blob: 'two' } });
   assert.deepEqual(await second.json(), { rev: 2 });
   const get = await call(env, 'GET', '/v1/state', { key: KEY });
-  assert.deepEqual(await get.json(), { rev: 2, blob: 'two' });
+  assert.deepEqual(await get.json(), { rev: 2, blob: 'two', stats: null });
 });
 
 test('a write based on a stale revision loses and is handed the winner', async () => {
@@ -153,7 +153,7 @@ test('two keys cannot see each other', async () => {
   const env = d1();
   await call(env, 'PUT', '/v1/state', { key: KEY, body: { rev: 0, blob: 'mine' } });
   const other = await call(env, 'GET', '/v1/state', { key: KEY2 });
-  assert.deepEqual(await other.json(), { rev: 0, blob: null });
+  assert.deepEqual(await other.json(), { rev: 0, blob: null, stats: null });
 });
 
 test('a malformed write is rejected before it can store nonsense', async () => {
@@ -173,7 +173,7 @@ test('a malformed write is rejected before it can store nonsense', async () => {
   }
   // …and nothing of it landed.
   const get = await call(env, 'GET', '/v1/state', { key: KEY });
-  assert.deepEqual(await get.json(), { rev: 0, blob: null });
+  assert.deepEqual(await get.json(), { rev: 0, blob: null, stats: null });
 });
 
 test('unknown paths and methods are refused', async () => {
@@ -198,4 +198,143 @@ test('CORS answers the two clients and nobody else', async () => {
   // A real response carries the header too, not just the preflight.
   const get = await call(env, 'GET', '/v1/state', { key: KEY, origin: SITE });
   assert.equal(get.headers.get('access-control-allow-origin'), SITE);
+});
+
+// ---------------------------------------------------------------- losing progress
+
+const stats = (attempts, srs, read, oldest = 1000) => ({ attempts, srs, read, oldest });
+
+test('a write that quietly holds less than the last one is refused', async () => {
+  const env = d1();
+  await call(env, 'PUT', '/v1/state', { key: KEY, body: { rev: 0, blob: 'full', stats: stats(12, 300, 8) } });
+
+  const shrunk = await call(env, 'PUT', '/v1/state', { key: KEY, body: { rev: 1, blob: 'empty', stats: stats(0, 0, 0) } });
+  assert.equal(shrunk.status, 422);
+  const body = await shrunk.json();
+  assert.match(body.error, /drops attempts/);
+  assert.deepEqual(body.stats, stats(12, 300, 8), 'and says what it thought was there');
+
+  const get = await call(env, 'GET', '/v1/state', { key: KEY });
+  assert.equal((await get.json()).blob, 'full', 'nothing was overwritten');
+});
+
+test('a write that says it is pruning may drop attempts, but only older ones', async () => {
+  const env = d1();
+  await call(env, 'PUT', '/v1/state', { key: KEY, body: { rev: 0, blob: 'a', stats: stats(12, 300, 8, 1000) } });
+
+  // Same oldest attempt, fewer of them: that is not ageing out, that is losing them.
+  const notReally = await call(env, 'PUT', '/v1/state', {
+    key: KEY, body: { rev: 1, blob: 'b', stats: stats(5, 300, 8, 1000), prune: true },
+  });
+  assert.equal(notReally.status, 422);
+
+  const pruned = await call(env, 'PUT', '/v1/state', {
+    key: KEY, body: { rev: 1, blob: 'b', stats: stats(5, 300, 8, 9000), prune: true },
+  });
+  assert.equal(pruned.status, 200);
+});
+
+test('pruning never excuses losing repetitions or read chapters', async () => {
+  const env = d1();
+  await call(env, 'PUT', '/v1/state', { key: KEY, body: { rev: 0, blob: 'a', stats: stats(12, 300, 8, 1000) } });
+  const res = await call(env, 'PUT', '/v1/state', {
+    key: KEY, body: { rev: 1, blob: 'b', stats: stats(12, 299, 8, 9000), prune: true },
+  });
+  assert.equal(res.status, 422);
+  assert.match((await res.json()).error, /drops srs/);
+});
+
+test('growing is always fine, and the counts come back on a read', async () => {
+  const env = d1();
+  await call(env, 'PUT', '/v1/state', { key: KEY, body: { rev: 0, blob: 'a', stats: stats(1, 10, 0) } });
+  await call(env, 'PUT', '/v1/state', { key: KEY, body: { rev: 1, blob: 'b', stats: stats(2, 40, 3) } });
+  const get = await call(env, 'GET', '/v1/state', { key: KEY });
+  assert.deepEqual((await get.json()).stats, stats(2, 40, 3));
+});
+
+test('a client that sends no counts is not blocked, and does not erase the last ones', async () => {
+  const env = d1();
+  await call(env, 'PUT', '/v1/state', { key: KEY, body: { rev: 0, blob: 'a', stats: stats(9, 90, 9) } });
+  const quiet = await call(env, 'PUT', '/v1/state', { key: KEY, body: { rev: 1, blob: 'b' } });
+  assert.equal(quiet.status, 200);
+  const get = await call(env, 'GET', '/v1/state', { key: KEY });
+  assert.deepEqual((await get.json()).stats, stats(9, 90, 9));
+});
+
+test('nonsense counts are refused before anything is stored', async () => {
+  const env = d1();
+  for (const bad of [{ attempts: 1 }, { attempts: -1, srs: 0, read: 0, oldest: 0 }, { attempts: 1.5, srs: 0, read: 0, oldest: 0 }, 'no']) {
+    const res = await call(env, 'PUT', '/v1/state', { key: KEY, body: { rev: 0, blob: 'x', stats: bad } });
+    assert.equal(res.status, 400, JSON.stringify(bad));
+  }
+});
+
+// ---------------------------------------------------------------- going back
+
+test('every accepted write can be gone back to', async () => {
+  const env = d1();
+  for (const [rev, blob] of [[0, 'one'], [1, 'two'], [2, 'three']]) {
+    await call(env, 'PUT', '/v1/state', { key: KEY, body: { rev, blob } });
+  }
+
+  const list = await call(env, 'GET', '/v1/history', { key: KEY });
+  const { revisions } = await list.json();
+  assert.deepEqual(revisions.map(r => r.rev), [3, 2, 1], 'newest first');
+  assert.deepEqual(revisions.map(r => r.bytes), [5, 3, 3]);
+  assert.ok(revisions.every(r => r.created_at > 0));
+  assert.ok(revisions.every(r => !('blob' in r)), 'the list is a list, not twenty copies');
+
+  const back = await call(env, 'POST', '/v1/restore', { key: KEY, body: { rev: 1 } });
+  assert.equal(back.status, 200);
+  assert.deepEqual(await back.json(), { rev: 4 }, 'going back is itself a new revision');
+
+  const get = await call(env, 'GET', '/v1/state', { key: KEY });
+  const state = await get.json();
+  assert.equal(state.blob, 'one');
+  assert.equal(state.stats, null, 'and the counts of a revision nobody recorded do not block the next write');
+
+  // The undo can be undone: rev 3 is still there.
+  const forward = await call(env, 'POST', '/v1/restore', { key: KEY, body: { rev: 3 } });
+  assert.equal(forward.status, 200);
+  assert.equal((await (await call(env, 'GET', '/v1/state', { key: KEY })).json()).blob, 'three');
+});
+
+test('history is kept to the last twenty revisions', async () => {
+  const env = d1();
+  for (let rev = 0; rev < 25; rev++) {
+    await call(env, 'PUT', '/v1/state', { key: KEY, body: { rev, blob: `v${rev}` } });
+  }
+  const { revisions } = await (await call(env, 'GET', '/v1/history', { key: KEY })).json();
+  assert.equal(revisions.length, 20);
+  assert.equal(revisions[0].rev, 25);
+  assert.equal(revisions.at(-1).rev, 6);
+});
+
+test('one key cannot see or restore another key\'s revisions', async () => {
+  const env = d1();
+  await call(env, 'PUT', '/v1/state', { key: KEY, body: { rev: 0, blob: 'mine' } });
+  const { revisions } = await (await call(env, 'GET', '/v1/history', { key: KEY2 })).json();
+  assert.deepEqual(revisions, []);
+  const res = await call(env, 'POST', '/v1/restore', { key: KEY2, body: { rev: 1 } });
+  assert.equal(res.status, 404);
+});
+
+test('restoring something that was never there says so', async () => {
+  const env = d1();
+  await call(env, 'PUT', '/v1/state', { key: KEY, body: { rev: 0, blob: 'a' } });
+  assert.equal((await call(env, 'POST', '/v1/restore', { key: KEY, body: { rev: 99 } })).status, 404);
+  assert.equal((await call(env, 'POST', '/v1/restore', { key: KEY, body: { rev: 0 } })).status, 400);
+  assert.equal((await call(env, 'GET', '/v1/restore', { key: KEY })).status, 405);
+  assert.equal((await call(env, 'PUT', '/v1/history', { key: KEY, body: {} })).status, 405);
+});
+
+// ---------------------------------------------------------------- the cap and the list
+
+test('with an allowlist the row count stops mattering', async () => {
+  // The bug this exists for: rows nobody can authenticate as still occupied slots, so an
+  // allowed key was refused with 403 on a real phone. With a list, the list is the bound.
+  const env = d1();
+  const vars = { MAX_KEYS: 1, ALLOWED_KEY_HASHES: `${await sha256(KEY)} ${await sha256(KEY2)}` };
+  assert.equal((await call(env, 'PUT', '/v1/state', { key: KEY, body: { rev: 0, blob: 'a' }, vars })).status, 200);
+  assert.equal((await call(env, 'PUT', '/v1/state', { key: KEY2, body: { rev: 0, blob: 'b' }, vars })).status, 200);
 });

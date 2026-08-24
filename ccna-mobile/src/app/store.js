@@ -14,6 +14,7 @@ import { dayKey, normalizeActivity } from '../engine/stats.js';
 import { isEmptyAnswer } from '../engine/grade.js';
 import { ACTIVITY_DAYS, bumpActivity, pruneActivity } from '../../../ccna-exam-simulator/assets/js/shared/activity.js';
 import { BRANCHES, packBackup, isBackup } from '../../../ccna-exam-simulator/assets/js/shared/backup.js';
+import { pruneAttempts } from '../../../ccna-exam-simulator/assets/js/shared/retention.js';
 import { isSyncKey, newSyncKey, syncOnce } from '../../../ccna-exam-simulator/assets/js/shared/sync.js';
 
 const KEY = {
@@ -137,7 +138,9 @@ export const store = {
       this._touch('profile');
     }
     this.session = session;
-    this.attempts = attempts;
+    // Six months, and then by itself — see shared/retention.js. Done here as well as in
+    // the sync so a phone that never syncs still forgets on schedule.
+    this.attempts = pruneAttempts(attempts);
     this.bookmarks = bookmarks;
     this.srs = srs;
     // Days recorded before the activity map was split by device belong to this phone —

@@ -33,10 +33,17 @@ const device = (deviceId, over = {}) => ({
   ...over,
 });
 
+// Dates are relative to an hour ago, so every fixture sits inside the six-month retention
+// window without any test having to think about it. `aged` is for the one that does.
+const RECENT = Date.now() - 3_600_000;
+const DAY_MS = 86_400_000;
+
 const attempt = (id, date) => ({
-  id, date, mode: 'exam', preset: 'full', weighted: true, scaled: 800, pct: 60,
+  id, date: RECENT + date, mode: 'exam', preset: 'full', weighted: true, scaled: 800, pct: 60,
   ok: 60, total: 100, perDomain: {}, durationMs: 1000, answers: { 1: 'A' }, qs: [1],
 });
+
+const aged = (id, days) => ({ ...attempt(id, 0), date: RECENT - days * DAY_MS });
 
 test('a generated key is one the server will accept', () => {
   assert.ok(isSyncKey(newSyncKey()));
@@ -178,4 +185,77 @@ test('a server that keeps saying "someone wrote first" gives up rather than loop
     err => err.code === 'conflict',
   );
   assert.equal(calls, 4, 'four tries, then it stops');
+});
+
+// ---------------------------------------------------------------- not losing things
+
+test('the counts the client sends describe what it actually holds', async () => {
+  const fetch = server();
+  const state = device(WEB, {
+    attempts: [attempt('a', 500), attempt('b', 900)],
+    srs: { 1: nextState(null, true, 100), 2: nextState(null, false, 200) },
+    book: { read: { 'ch-1': 1, 'ch-2': 2, 'ch-3': 3 }, pos: {}, open: {}, last: null, scale: 1, updatedAt: 1 },
+  });
+  await syncOnce({ fetch, base: BASE, key: KEY, state });
+
+  const { stats } = await pull({ fetch, base: BASE, key: KEY });
+  assert.deepEqual(stats, { attempts: 2, srs: 2, read: 3, oldest: RECENT + 500 });
+});
+
+test('a client that has lost its history cannot push the loss through', async () => {
+  const fetch = server();
+  const full = device(WEB, { attempts: [attempt('a', 500), attempt('b', 900)] });
+  await syncOnce({ fetch, base: BASE, key: KEY, state: full });
+
+  // The same device after its storage was wiped: it would merge with the server and get
+  // everything back — so to lose anything it has to be told not to merge. This is that
+  // case: a blob that simply holds less, sent by something that is not this client.
+  const bare = { rev: 1, blob: JSON.stringify({ v: 1, attempts: [], srs: {}, book: { read: {} } }),
+    stats: { attempts: 0, srs: 0, read: 0, oldest: 0 } };
+  const res = await fetch(`${BASE}/v1/state`, {
+    method: 'PUT',
+    headers: { authorization: `Bearer ${KEY}`, 'content-type': 'application/json' },
+    body: JSON.stringify(bare),
+  });
+  assert.equal(res.status, 422);
+
+  const { remote } = await pull({ fetch, base: BASE, key: KEY });
+  assert.equal(remote.attempts.length, 2, 'the history is still there');
+});
+
+test('an attempt older than six months ages out of both sides', async () => {
+  const fetch = server();
+  // Uploaded while it was still young: the server holds it, and a plain merge would hand
+  // it back for ever. The retention rule runs on the merged state, which is what stops it.
+  const beforeCutoff = device(WEB, { attempts: [aged('old', 200), attempt('new', 900)] });
+  const first = await syncOnce({ fetch, base: BASE, key: KEY, state: beforeCutoff, now: RECENT - 200 * DAY_MS + 1000 });
+  assert.equal(first.state.attempts.length, 2, 'nothing is dropped while it is inside the window');
+
+  const later = await syncOnce({ fetch, base: BASE, key: KEY, state: beforeCutoff });
+  assert.deepEqual(later.state.attempts.map(a => a.id), ['new'], 'and it is gone once it is not');
+  assert.ok(later.wrote);
+
+  const { remote, stats } = await pull({ fetch, base: BASE, key: KEY });
+  assert.deepEqual(remote.attempts.map(a => a.id), ['new'], 'the server let the shrink through');
+  assert.equal(stats.attempts, 1);
+
+  // And the device that still has it locally does not push it back on the next sync.
+  const again = await syncOnce({ fetch, base: BASE, key: KEY, state: beforeCutoff });
+  assert.deepEqual(again.state.attempts.map(a => a.id), ['new']);
+});
+
+test('the repetition map does not age out with the attempts', async () => {
+  const fetch = server();
+  const state = device(WEB, { attempts: [aged('old', 300)], srs: { 7: nextState(null, true, 100) } });
+  const result = await syncOnce({ fetch, base: BASE, key: KEY, state });
+  assert.deepEqual(result.state.attempts, []);
+  assert.deepEqual(Object.keys(result.state.srs), ['7'], 'a question learned last year is still learned');
+});
+
+test('an error the client must not retry is named apart from a conflict', async () => {
+  const fetch = async () => Response.json({ error: 'this write drops attempts' }, { status: 422 });
+  await assert.rejects(
+    () => syncOnce({ fetch, base: BASE, key: KEY, state: device(WEB) }),
+    err => err.code === 'shrink' && err.status === 422,
+  );
 });
