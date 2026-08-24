@@ -26,10 +26,19 @@ moves between devices as a file. [Russian version](README.ru.md).
 - **Custom Exam** — filter by domain and question type (text / exhibit / drag-and-drop),
   pick question count and timer.
 - **Practice** — one question at a time, instant feedback.
-- **Progress** — every finished run is kept in `localStorage`: the attempt history is on
-  the home screen and on its own screen, and any attempt can be re-opened with its full
-  review. Graded answers also feed a spaced-repetition map and a daily counter, which is
-  what the Android app schedules repetitions from.
+- **Learn** — the queue of questions that are due for repetition (Leitner boxes
+  1/3/7/16/35 days), the ones whose last answer was wrong, and the topics that keep
+  costing points, plus what was answered today, the streak, and a fortnight's activity.
+  The same rules the Android app schedules from, out of `assets/js/shared/`.
+- **Textbook** — all 47 chapters of [`ccna-book`](../ccna-book), the ones the Android app
+  ships: contents by domain with a search, a read mark that syncs, a remembered scroll
+  position, the bank's questions on the chapter as a practice run, and a link from any
+  reviewed question to the chapter that covers it. Written in Russian.
+- **Progress** — every finished run is kept in `localStorage`: the attempt history folds
+  into exams and practice, and each attempt opens onto its per-domain breakdown, its
+  mistakes, and a run over exactly those mistakes. Any attempt can be re-opened with its
+  full review. Attempts are kept for six months and then drop by themselves; the
+  repetition map is not touched by that — a question learned last year stays learned.
 - **Transfer** — export/import of the whole progress as one `v:1` JSON file, the same
   format the [Android app](../ccna-mobile) reads and writes: export in the browser, open
   it on the phone (Progress → Backup) — or the other way round. No account, no server.
@@ -158,7 +167,9 @@ under `build/` and are re-applied by `build_data.py` on every rebuild.
 ## Progress and the shared rules
 
 `assets/js/shared/` holds what the browser and the phone must agree on: the Leitner
-intervals, the day counters, the 300..1000 scale, and the branch list of the save file.
+intervals and the queues read off them, the day counters, the topic statistics, the
+300..1000 scale, the branch list of the save file, and the textbook — both how a chapter
+is rendered and where its files are.
 The web trainer loads them as ES modules; `ccna-mobile/src/engine/*` re-exports them and
 esbuild bundles them into the APK, so there is one implementation, not two copies that
 drift. `ccna-mobile/tests/interop.test.js` drives both stores and asserts each can restore
@@ -166,8 +177,12 @@ what the other exported.
 
 Storage keys (`ccna.profile`, `ccna.attempts`, `ccna.srs`, `ccna.activity`, …) and the
 shape of an attempt are the Android app's, key for key. Branches this app has no screen
-for — bookmarks, textbook progress — are still carried through an import/export round trip
-untouched.
+for — bookmarks — are still carried through an import/export round trip untouched.
+
+`data/theory/` is the built textbook, committed rather than generated on deploy: GitHub
+Pages has no build step. `data-check.yml` rebuilds it into a temp directory on every push
+and fails if the committed copy differs, so a chapter cannot be current in the APK and
+stale on the site.
 
 `shared/merge.js` is what makes two devices one history: attempts union by id, a day keeps
 each device's own count, an SRS entry goes to whichever grading happened later. It is a
