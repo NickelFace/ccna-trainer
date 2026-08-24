@@ -64,6 +64,28 @@ SELECT key_hash, rev, datetime(updated_at / 1000, 'unixepoch') FROM state;
 `GET /v1/health` answers `{"ok":true,"locked":true}` once a list is in place — which is how
 you check the setting took effect without revealing what is in it.
 
+## If the key is lost
+
+Losing the key does not lose the progress. Every device keeps its own full copy — the
+server is a meeting point, not the original — so a forgotten key costs the ability of two
+devices to keep meeting, not the history itself. Make a new key on both and carry on.
+
+The one case that hurts is a forgotten key *and* a device that is gone. Three ways out, in
+the order you would reach for them:
+
+1. **The exported file.** Progress → Export writes the same `v:1` JSON the phone reads.
+   It depends on no key and no server, and it is the only copy that survives all of this
+   going wrong at once. Worth doing before anything is rotated.
+2. **The database.** The blob is plain JSON and the account owner can read it: D1 console →
+   `SELECT blob FROM state;`, save what comes back as a `.json` file, and load it with
+   Progress → Import. Nothing here is encrypted against the person who owns the account —
+   that is a deliberate trade for exactly this recoverability.
+3. **D1 Time Travel** restores the whole database to any point in the last 30 days, which
+   covers "I overwrote it" rather than "I lost the key".
+
+Keep the key itself where passwords go. It is 32 characters of randomness with no recovery
+question behind it, because there is no account it belongs to.
+
 ## Development
 
 ```bash
