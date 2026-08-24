@@ -1329,9 +1329,12 @@ async function runSync() {
   if (key !== st.sync.key) st.setSync({ key, syncedAt: 0, rev: 0 });
   setSyncMsg(t('sync_running'));
   try {
-    const { wrote } = await st.syncNow();
+    // "Nothing changed" only when nothing moved either way: a sync that brought the other
+    // device's work down writes nothing, and reporting no change would be the opposite of
+    // what just happened.
+    const { wrote, pulled } = await st.syncNow();
     // The history above the button is now someone else's too — redraw it, then say so.
-    historyScreen(t(wrote ? 'sync_done' : 'sync_nochange', st.attempts.length));
+    historyScreen(t(wrote || pulled ? 'sync_done' : 'sync_nochange', st.attempts.length));
   } catch (err) {
     setSyncMsg(t(SYNC_ERR[err && err.code] || 'sync_err_server'));
   }

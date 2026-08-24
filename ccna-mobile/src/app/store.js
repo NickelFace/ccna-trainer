@@ -269,7 +269,7 @@ export const store = {
     // Read before the request, applied after it: a change made while the exchange is in
     // flight was not in the blob that went up, and must still count as unsynced.
     const at = this._seq;
-    const { state, rev, wrote } = await syncOnce({
+    const { state, rev, wrote, pulled } = await syncOnce({
       fetch: (url, init) => fetch(url, init),
       key: this.sync.key,
       state: this,
@@ -279,7 +279,7 @@ export const store = {
     this.setSync({ rev, syncedAt: now });
     this._syncedSeq = at;
     await this.flush();
-    return { wrote, rev };
+    return { wrote, pulled, rev };
   },
 
   // Adopt what the merge decided. The session is not in it by design — an exam running on
@@ -384,4 +384,14 @@ export function bindPersistOnPause(onPause = () => {}) {
     if (document.visibilityState === 'hidden') { store.flush(); onPause(); }
   });
   window.addEventListener('pagehide', () => { store.flush(); onPause(); });
+}
+
+// The mirror image: the app is on screen again after being away. `visibilitychange` is
+// what Android's WebView actually delivers when the activity is resumed — the same event
+// the pause hook above listens to, the other way round — so this needs no Capacitor
+// plugin and behaves identically in the dev browser.
+export function bindResume(onResume) {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') onResume();
+  });
 }

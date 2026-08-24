@@ -68,8 +68,11 @@ export function wireSync(node, ctx) {
     button.disabled = true;
     if (line) line.textContent = 'Синхронизирую…';
     try {
-      const { wrote } = await store.syncNow();
-      toast(wrote
+      // "Nothing to do" is only true when nothing moved in either direction — a sync
+      // that brought the other device's work down writes nothing, and saying it matched
+      // already would be saying the opposite of what just happened.
+      const { wrote, pulled } = await store.syncNow();
+      toast(wrote || pulled
         ? `Готово. Попыток в истории: ${store.attempts.length}`
         : 'Всё уже совпадает.');
       // The chart, the history and the weak topics above are someone else's now too.

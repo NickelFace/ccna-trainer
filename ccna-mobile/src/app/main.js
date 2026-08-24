@@ -2,7 +2,7 @@
 // router. Everything the app needs is bundled — the only network call it ever makes is the
 // progress sync, and only when a sync key has been set up.
 import { router } from './router.js';
-import { store, bindPersistOnPause } from './store.js';
+import { store, bindPersistOnPause, bindResume } from './store.js';
 import { autoSyncer } from '../../../ccna-exam-simulator/assets/js/shared/sync.js';
 import { reschedule, initNotificationListener } from './notify.js';
 import { scorable } from '../engine/select.js';
@@ -40,8 +40,10 @@ async function loadBank() {
 
 // A sync that pulled in the other device's work only redraws where that is visible, and
 // never over a modal: re-rendering the question screen mid-exam would throw away the
-// scroll position and whatever half-made choice is on it.
-const REDRAWABLE = new Set(['home', 'progress']);
+// scroll position and whatever half-made choice is on it. `theory` is in the set because
+// read marks are one of the things that arrive; `topic` is not — a chapter being read is
+// as bad a place to redraw as a question being answered.
+const REDRAWABLE = new Set(['home', 'progress', 'theory']);
 
 function redrawIfSafe() {
   if (router.modals.length) return;
@@ -65,15 +67,21 @@ async function boot() {
     // report a "ghost" as the next repetition forever.
     store.pruneGhostSrs(qn => bank.byN.has(qn));
 
-    // Automatic syncing, on the two moments that matter: launching, and going to
-    // background with work the server has not seen. Failures are silent by design — the
-    // progress is on the phone either way, and a toast about a tunnel helps nobody.
+    // Automatic syncing, on the three moments that matter: launching, going to background
+    // with work the server has not seen, and coming back — that last one is a read, and
+    // it is what makes a chapter marked read on the site be marked here by the time the
+    // phone is looked at. Failures are silent by design — the progress is on the phone
+    // either way, and a toast about a tunnel helps nobody.
+    //
+    // `pulled`, not `wrote`: a device that only receives the other's work writes nothing,
+    // and a redraw keyed on the write would leave the screen showing the old numbers.
     const autoSync = autoSyncer(store, {
-      onDone: result => { if (result && result.wrote) redrawIfSafe(); },
+      onDone: result => { if (result && (result.pulled || result.wrote)) redrawIfSafe(); },
       onError: err => console.warn('sync:', err.code || 'failed', err.message),
     });
 
     bindPersistOnPause(() => { reschedule(); autoSync('leave'); });
+    bindResume(() => autoSync('resume'));
     initNotificationListener();
     router.init({ tabs: TABS, ctx: { bank } });
 

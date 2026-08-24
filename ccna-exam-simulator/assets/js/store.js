@@ -228,7 +228,7 @@ const Store = {
     // Read before the request, applied after it: a change made while the exchange is in
     // flight was not in the blob that went up, and must still count as unsynced.
     const at = this._seq;
-    const { state, rev, wrote } = await syncOnce({
+    const { state, rev, wrote, pulled } = await syncOnce({
       fetch: (url, init) => fetch(url, init),
       key: this.sync.key,
       state: this,
@@ -238,7 +238,7 @@ const Store = {
     this.setSync({ rev, syncedAt: now });
     this._syncedSeq = at;
     this.flush();
-    return { wrote, rev };
+    return { wrote, pulled, rev };
   },
 
   // Adopt what the merge decided. The session is not in it by design — an exam running in
@@ -328,8 +328,10 @@ Store.load();
 // with work the server has not seen. A screen showing history redraws itself off this
 // event rather than being reached into from here — see app.js.
 const autoSync = autoSyncer(Store, {
+  // `pulled`, not `wrote`: a sync that only receives the other device's work writes
+  // nothing, and that is precisely the case a screen showing history needs to hear about.
   onDone: result => {
-    if (result && result.wrote) dispatchEvent(new CustomEvent('ccna:synced'));
+    if (result && (result.pulled || result.wrote)) dispatchEvent(new CustomEvent('ccna:synced'));
   },
   onError: err => console.warn('sync:', err.code || 'failed', err.message),
 });

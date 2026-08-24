@@ -121,9 +121,10 @@ async function call(fetchFn, base, key, init = {}) {
 
 // ---------------------------------------------------------------- automatic syncing
 //
-// Two moments, and only two: when the app starts, and when it goes away with work in it.
-// Not on every answer — 100 000 requests a day is a lot until something fires per tap —
-// and not on a timer, which would spend the quota while nobody is looking.
+// Three moments, and only three: when the app starts, when it goes away with work in it,
+// and when it comes back. Not on every answer — 100 000 requests a day is a lot until
+// something fires per tap — and not on a timer, which would spend the quota while nobody
+// is looking.
 
 // How long a start-up sync stays good for. A second launch inside this window skips the
 // network: the other device cannot have done much in five minutes, and the leave-hook
@@ -137,6 +138,15 @@ export const AUTO_MIN_MS = 5 * 60_000;
 // nothing new does not reach the network at all.
 export const AUTO_LEAVE_MIN_MS = 10_000;
 
+// Coming back is the other half of that promise: mark a chapter read on the site, pick the
+// phone up, and it should already know. Unlike a launch this does not wait five minutes —
+// the app was away, and away is exactly when the other device could have written. Unlike a
+// leave it does not ask whether anything changed here: the point of it is what comes down,
+// not what goes up. The floor is what keeps flipping between two apps from being a request
+// each time; a leave that just synced also sets it, so the usual leave-and-return pair
+// costs one exchange, not two.
+export const AUTO_RESUME_MIN_MS = 20_000;
+
 // The policy, shared so the phone and the browser cannot drift into two different ideas of
 // "often enough". `store` is either client's store: it needs `sync.key`, `changedSinceSync`
 // and `syncNow()`.
@@ -145,7 +155,9 @@ export const AUTO_LEAVE_MIN_MS = 10_000;
 // the train went into a tunnel is worse than one that quietly tries again later — nothing
 // is lost either way, the progress is on the device. `onError` exists for logging, not for
 // telling the user off.
-export function autoSyncer(store, { minMs = AUTO_MIN_MS, leaveMs = AUTO_LEAVE_MIN_MS, onDone, onError } = {}) {
+export function autoSyncer(store, {
+  minMs = AUTO_MIN_MS, leaveMs = AUTO_LEAVE_MIN_MS, resumeMs = AUTO_RESUME_MIN_MS, onDone, onError,
+} = {}) {
   let inFlight = null;
   let lastTry = 0;
 
@@ -157,6 +169,9 @@ export function autoSyncer(store, { minMs = AUTO_MIN_MS, leaveMs = AUTO_LEAVE_MI
     if (reason === 'leave') {
       // Nothing of ours to say, and nobody is looking at what comes back.
       if (!store.changedSinceSync || since < leaveMs) return null;
+    } else if (reason === 'resume') {
+      // Deliberately not gated on `changedSinceSync`: this one is a read.
+      if (since < resumeMs) return null;
     } else if (lastTry && since < minMs) {
       return null;
     }
@@ -179,7 +194,12 @@ export async function pull({ fetch, base = SYNC_BASE, key }) {
 }
 
 // One full exchange. Returns the state both devices now agree on, the revision it is
-// stored under, and whether anything actually had to be written.
+// stored under, whether anything actually had to be written, and whether what came back
+// differs from what went in.
+//
+// `wrote` and `pulled` are not the same question and a caller redrawing a screen wants the
+// second one: a device that only receives the other's work writes nothing, and keying a
+// redraw on `wrote` is how a screen ends up showing what it held before the sync.
 //
 // `state` is this device's branches. The result is what the caller should adopt — it is a
 // new object, and the caller's own session is left in it untouched.
@@ -187,6 +207,11 @@ export async function syncOnce({ fetch, base = SYNC_BASE, key, state, now = Date
   if (!isSyncKey(key)) throw new SyncError('key', 'sync key is malformed');
 
   let { rev, remote, stats: theirs } = await pull({ fetch, base, key });
+
+  // What this device held going in, in the same form the comparisons below use. Computed
+  // once: it is the yardstick for "did anything come down", and `state` does not change
+  // under us during the exchange.
+  const mine = toBlob(state, now);
 
   for (let attempt = 0; attempt < MAX_TRIES; attempt++) {
     // Pruned after the merge, not before: the merge unions both histories, so anything
@@ -199,13 +224,15 @@ export async function syncOnce({ fetch, base = SYNC_BASE, key, state, now = Date
     // Nothing of ours to add: the server already holds exactly this. Skipping the write
     // keeps the revision from climbing on every idle sync, which is what makes a
     // background sync safe to run often.
-    if (remote && blob === toBlob(remote, now)) return { state: merged, rev, wrote: false };
+    if (remote && blob === toBlob(remote, now)) {
+      return { state: merged, rev, wrote: false, pulled: blob !== mine };
+    }
 
     const { status, body } = await call(fetch, base, key, {
       method: 'PUT',
       body: JSON.stringify({ rev, blob, stats, prune: isPrune(stats, theirs) }),
     });
-    if (status === 200) return { state: merged, rev: body.rev | 0, wrote: true };
+    if (status === 200) return { state: merged, rev: body.rev | 0, wrote: true, pulled: blob !== mine };
 
     // 409: the other device wrote between our read and our write. Take what it wrote and
     // go round again — with two devices this settles on the first retry.

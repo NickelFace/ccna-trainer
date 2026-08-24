@@ -53,6 +53,42 @@ test('leaving with work in hand syncs, but not once per flip', async () => {
   assert.equal(store.calls, 1);
 });
 
+test('coming back from the background syncs even with nothing of ours to send', async () => {
+  // The whole point of this one is what comes down: a chapter marked read on the site
+  // while the phone was away has to be here by the time the phone is looked at.
+  const store = fakeStore({ changedSinceSync: false });
+  const tick = autoSyncer(store, { minMs: 60_000, resumeMs: 0 });
+  await tick('resume');
+  assert.equal(store.calls, 1);
+});
+
+test('flipping between two apps is not a request each time', async () => {
+  const store = fakeStore({ changedSinceSync: false });
+  const tick = autoSyncer(store, { minMs: 0, resumeMs: 60_000 });
+  await tick('resume');
+  assert.equal(store.calls, 1);
+  assert.equal(tick('resume'), null, 'straight back inside the floor');
+  assert.equal(store.calls, 1);
+});
+
+test('a leave that just synced holds off the resume that follows it', async () => {
+  // Leaving and coming back is one round trip, not two: the leave wrote everything this
+  // device had, and the other one cannot have answered in the seconds since.
+  const store = fakeStore({ changedSinceSync: true });
+  const tick = autoSyncer(store, { minMs: 0, leaveMs: 0, resumeMs: 60_000 });
+  await tick('leave');
+  assert.equal(store.calls, 1);
+  assert.equal(tick('resume'), null);
+  assert.equal(store.calls, 1);
+});
+
+test('a resume before anything has ever synced still goes', async () => {
+  const store = fakeStore({ changedSinceSync: false });
+  const tick = autoSyncer(store, { resumeMs: 60_000 });
+  await tick('resume');
+  assert.equal(store.calls, 1);
+});
+
 test('two triggers at once are one exchange', async () => {
   let release;
   const store = fakeStore({

@@ -96,6 +96,50 @@ test('a sync with nothing new to say does not write', async () => {
   assert.equal(second.rev, first.rev, 'the revision does not climb on an idle sync');
 });
 
+// `wrote` and `pulled` answer different questions, and the screens key their redraw on the
+// second one. A device that only receives writes nothing — reporting that as "no change"
+// is how a phone shows yesterday's numbers after a sync that just fetched today's.
+test('receiving the other device\'s work counts as a change even with nothing written', async () => {
+  const fetch = server();
+  // Both devices already agree — this is the phone that has just synced and gone to sleep.
+  const phone = device(PHONE);
+  const settled = await syncOnce({ fetch, base: BASE, key: KEY, state: phone });
+  const idle = await syncOnce({ fetch, base: BASE, key: KEY, state: settled.state });
+  assert.equal(idle.wrote, false);
+  assert.equal(idle.pulled, false, 'a genuinely idle sync says so');
+
+  // Meanwhile the browser files an attempt. The phone wakes up: nothing of its own to
+  // send, and yet everything about what it is holding changes.
+  // The browser is holding what the phone last pushed (that is what "already agree"
+  // means, profile included) plus the run it has just finished.
+  const web = { ...settled.state, attempts: [attempt('web-bbb222-100', 100)] };
+  await syncOnce({ fetch, base: BASE, key: KEY, state: web });
+
+  const woken = await syncOnce({ fetch, base: BASE, key: KEY, state: settled.state });
+  assert.equal(woken.wrote, false, 'the phone had nothing the server did not have');
+  assert.equal(woken.pulled, true, 'but it is holding something it was not holding before');
+  assert.deepEqual(woken.state.attempts.map(a => a.id), ['web-bbb222-100']);
+});
+
+test('a chapter marked read on one device arrives on the other', async () => {
+  const fetch = server();
+  const web = device(WEB, {
+    book: { read: { 'nf-02-topologies': 5000 }, pos: {}, open: {}, last: 'nf-02-topologies', scale: 1, updatedAt: 5000 },
+  });
+  await syncOnce({ fetch, base: BASE, key: KEY, state: web });
+
+  const phone = device(PHONE);
+  const down = await syncOnce({ fetch, base: BASE, key: KEY, state: phone });
+  assert.deepEqual(Object.keys(down.state.book.read), ['nf-02-topologies']);
+  assert.equal(down.pulled, true);
+
+  // And back the other way, without the first mark being lost on the round trip.
+  const alsoRead = { ...down.state, book: { ...down.state.book, read: { ...down.state.book.read, 'nf-08-subnetting': 6000 }, updatedAt: 6000 } };
+  await syncOnce({ fetch, base: BASE, key: KEY, state: alsoRead });
+  const back = await syncOnce({ fetch, base: BASE, key: KEY, state: web });
+  assert.deepEqual(Object.keys(back.state.book.read).sort(), ['nf-02-topologies', 'nf-08-subnetting']);
+});
+
 test('the device that loses the race still keeps its work', async () => {
   const fetch = server();
   const web = device(WEB, { attempts: [attempt('web-bbb222-100', 100)] });
