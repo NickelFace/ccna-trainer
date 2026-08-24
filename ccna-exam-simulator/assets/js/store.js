@@ -17,7 +17,6 @@ import { nextState } from './shared/srs.js';
 import { ACTIVITY_DAYS, bumpActivity, dayKey, normalizeActivity, pruneActivity } from './shared/activity.js';
 import { BRANCHES, isBackup, packBackup } from './shared/backup.js';
 import { PASS_SCALED, toScaled } from './shared/score.js';
-import { qrSvg } from './shared/qr.js';
 import { autoSyncer, isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js';
 
 const KEY = {
@@ -140,7 +139,6 @@ const Store = {
   // Exposed for app.js, which is a classic script and cannot import the shared modules.
   isSyncKey,
   newSyncKey,
-  qrSvg,
   SYNC_BASE,
 
   // Is there anything here the server has not been told about?

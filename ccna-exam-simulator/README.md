@@ -138,6 +138,23 @@ Each question in `questions.json`:
 }
 ```
 
+## Where the bank comes from
+
+The questions were reconstructed from a 774-page PDF dump, which is a source that is wrong
+often enough to have to be checked rather than trusted. Two audits were run over it and
+both are why the numbers on the home screen mean anything:
+
+- every one of the 418 questions carrying an exhibit was checked against public sources,
+  and five answer keys turned out to be wrong — #151, #986, #787, #1045, #1320 — and were
+  corrected. Fourteen more are genuinely arguable; those keep the dump's key and are marked
+  `disp` in the data, so the app can say so on the review screen instead of insisting.
+- the dump's own topic tags were discarded entirely and all 1395 questions were classified
+  against the Cisco 200-301 v1.1 blueprint, because the tags disagreed with the questions
+  often enough to make the per-domain report meaningless.
+
+Corrections never touch `data/questions.json` by hand — they live in the override files
+under `build/` and are re-applied by `build_data.py` on every rebuild.
+
 ## Progress and the shared rules
 
 `assets/js/shared/` holds what the browser and the phone must agree on: the Leitner

@@ -51,22 +51,14 @@
     <!--
       The bank, the exhibits and the fonts are all bundled in the APK and served over
       Capacitor's local scheme, so studying still works with the phone in flight mode and
-      nothing here is needed for it. These two are for progress sync, which is off until a
-      sync key is entered:
+      nothing here needs a network. INTERNET is for progress sync alone, which stays idle
+      until a sync key is entered, and the only host it ever talks to is sync.maks.top.
 
-      INTERNET — the only host the app ever talks to is sync.maks.top, and only to exchange
-      the progress blob. Until 2026-08 this permission was deliberately absent and the app
-      opened no socket at all; that stopped being true the moment sync shipped, and leaving
-      it out would have made every sync fail with "no connection" on a working network.
-
-      CAMERA — reading the sync key off a QR code instead of typing 32 characters. Optional
-      in every sense: the feature hides itself when there is no camera or the permission is
-      refused, and the key can always be typed. uses-feature required="false" so a phone
-      without a camera can still install the app.
+      Until 2026-08 this permission was deliberately absent and the app opened no socket at
+      all. That stopped being true the moment sync shipped: without it every sync fails as
+      "no connection" on a perfectly good network.
     -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <!-- The AI target opens in whichever browser or app claims an https link. Android 11+
          requires declaring that we intend to look at web links at all. -->

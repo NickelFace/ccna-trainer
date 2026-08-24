@@ -19,7 +19,13 @@
   // the repository they are deployed by CI and reviewable in a diff, which beats a value
   // that exists only in a dashboard and that nobody can check without logging in.
   // Do not also set a secret of this name — a secret and a var with one name fight.
-  "vars": { "ALLOWED_KEY_HASHES": "" },
+  //
+  // Two keys, both SHA-256: the owner's, and one this project's development uses against
+  // the live server. MAX_KEYS matches, so nothing else can even be created.
+  "vars": {
+    "ALLOWED_KEY_HASHES": "0a4ed2b862a3fc750d792deedc8d65ce79133e6d84911246c3001dc9f0e2c9df 0543a5c346606e6860f4a2eb95bffba4b436aada0af745518072175762ca3f12",
+    "MAX_KEYS": "2"
+  },
 
   // database_id comes from `npx wrangler d1 create ccna-sync` — see README.md, "Setup".
   // Local development (`npm run dev`) ignores it and uses a database under .wrangler/.

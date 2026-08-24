@@ -56,7 +56,6 @@ const I18N = {
   ru: {
     boot_loading: 'Загрузка банка вопросов…',
     home_stats: '{0} оцениваемых вопросов · {1} со схемами · {2} с пояснениями',
-    home_verified_note: 'Банк проверен онлайн (418/418 картиночных), ключ исправлен: #151, #986, #787, #1045, #1320.',
     home_go_start: 'Старт',
     home_go_config: 'Настроить',
     home_full_title: 'Полный экзамен',
@@ -195,9 +194,6 @@ const I18N = {
     sync_key_ph: 'ключ синхронизации',
     sync_new: 'Создать ключ',
     sync_copy: 'Скопировать',
-    sync_qr_show: 'Показать QR',
-    sync_qr_hide: 'Скрыть QR',
-    sync_qr_note: 'Наведи камеру телефона: Прогресс → Синхронизация → «Сканировать QR». Кто видит этот код — видит и прогресс.',
     sync_copied: 'Ключ скопирован — введи его на телефоне.',
     sync_created: 'Ключ создан. Введи его в приложении: Прогресс → Синхронизация.',
     sync_go: 'Синхронизировать',
@@ -225,7 +221,6 @@ const I18N = {
   en: {
     boot_loading: 'Loading the question bank…',
     home_stats: '{0} scored questions · {1} with exhibits · {2} with rationale',
-    home_verified_note: 'Bank verified online (418/418 image questions), key fixed: #151, #986, #787, #1045, #1320.',
     home_go_start: 'Start',
     home_go_config: 'Configure',
     home_full_title: 'Full Exam',
@@ -364,9 +359,6 @@ const I18N = {
     sync_key_ph: 'sync key',
     sync_new: 'Make a key',
     sync_copy: 'Copy',
-    sync_qr_show: 'Show QR',
-    sync_qr_hide: 'Hide QR',
-    sync_qr_note: 'Point the phone at it: Progress → Sync → "Scan QR". Whoever can see this code can see the progress.',
     sync_copied: 'Key copied — type it into the phone.',
     sync_created: 'Key created. Enter it in the app: Progress → Sync.',
     sync_go: 'Sync now',
@@ -468,8 +460,7 @@ function home() {
     <span aria-hidden="true">←</span>${NetPath.mark(18)}<span>${esc(NetPath.CONFIG.brandName)}</span>
   </a></div>
   <h1 class="home">CCNA 200-301</h1>
-  <div class="sub">${t('home_stats', POOL.length, ex, META.with_exp)}<br>
-  ${t('home_verified_note')}</div>
+  <div class="sub">${t('home_stats', POOL.length, ex, META.with_exp)}</div>
 
   <div class="modes">
     <button class="btn big" onclick="startFullExam()">
@@ -1109,10 +1100,6 @@ const SYNC_ERR = {
   server: 'sync_err_server', corrupt: 'sync_err_corrupt', conflict: 'sync_err_conflict',
 };
 
-// The QR is the key in a form anyone across the table can photograph, so it stays behind a
-// tap rather than sitting on the screen next to the history.
-let SYNC_QR = false;
-
 const syncStatus = () => {
   const st = P();
   const at = st && st.sync.syncedAt;
@@ -1139,11 +1126,8 @@ function syncSectionHTML() {
       <button class="btn sm" onclick="runSync()">${t('sync_go')}</button>
       <button class="btn sm" onclick="makeSyncKey()">${t('sync_new')}</button>
       ${key ? `<button class="btn sm" onclick="copySyncKey()">${t('sync_copy')}</button>
-      <button class="btn sm" onclick="toggleSyncQr()">${t(SYNC_QR ? 'sync_qr_hide' : 'sync_qr_show')}</button>
       <button class="btn sm" onclick="forgetSyncKey()">${t('sync_forget')}</button>` : ''}
     </div>
-    ${key && SYNC_QR ? `<div class="sync-qr">${st.qrSvg(key)}</div>
-    <div class="exp muted">${t('sync_qr_note')}</div>` : ''}
     <div class="exp muted" id="syncmsg">${syncStatus()}</div>
   </div>`;
 }
@@ -1154,11 +1138,6 @@ function makeSyncKey() {
   const st = P(); if (!st) return;
   st.setSync({ key: st.newSyncKey() });
   historyScreen(t('sync_created'));
-}
-
-function toggleSyncQr() {
-  SYNC_QR = !SYNC_QR;
-  historyScreen();
 }
 
 function copySyncKey() {
@@ -1172,7 +1151,6 @@ function copySyncKey() {
 function forgetSyncKey() {
   const st = P(); if (!st) return;
   if (!confirm(t('sync_forget_confirm'))) return;
-  SYNC_QR = false;
   st.setSync({ key: null, syncedAt: 0, rev: 0 });
   historyScreen();
 }
@@ -1710,7 +1688,7 @@ document.addEventListener('keydown', e => {
 });
 
 // expose for inline onclick
-Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter, setLang, applyLang, openMode, segPick, historyScreen, openAttempt, exportProgress, importProgress, runSync, makeSyncKey, copySyncKey, forgetSyncKey, toggleSyncQr });
+Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter, setLang, applyLang, openMode, segPick, historyScreen, openAttempt, exportProgress, importProgress, runSync, makeSyncKey, copySyncKey, forgetSyncKey });
 // An automatic sync that changed the history redraws the screen showing it — and only
 // that screen: pulling the ground out from under someone mid-question would be worse than
 // a stale list.

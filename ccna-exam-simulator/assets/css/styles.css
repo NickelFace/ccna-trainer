@@ -330,10 +330,6 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .qstart{width:100%;max-width:420px}
 /* the sync key: 32 characters that have to be read off one screen and typed into another */
 .synckey{width:100%;max-width:420px;font-family:var(--num);font-size:13px;letter-spacing:.02em}
-/* The key as a square for the phone's camera. White quiet zone included — a dark surround
-   is what makes half the scanners give up. */
-.sync-qr{margin:12px 0 8px}
-.sync-qr svg{width:100%;max-width:240px;height:auto;border-radius:8px;display:block}
 .timer{
   flex:none;display:flex;align-items:center;gap:8px;
   padding:7px 15px;border-radius:999px;background:rgba(247,244,238,.08);
