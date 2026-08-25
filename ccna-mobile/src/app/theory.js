@@ -3,5 +3,5 @@
 // answer, not two. Re-exported here so the screens keep importing '../theory.js'.
 export {
   DEFAULT_BOOK, normalizeBook, setBookVersion, isRead, readMap, setRead,
-  loadIndex, loadTopic, loadMap, topicOf, coverage,
+  loadIndex, loadTopic, loadMap, topicOf, sectionOf, coverage,
 } from '../../../ccna-exam-simulator/assets/js/shared/theory.js?v=19';

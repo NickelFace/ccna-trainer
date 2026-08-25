@@ -112,7 +112,7 @@ export const topic = {
       store.setBook({ last: id });
       node.replaceChildren(...chapter(loaded, ctx).childNodes);
       ctx.router.renderFooter();
-      restoreScroll(id);
+      openAt(id, ctx.params.at);
     }).catch(err => {
       node.replaceChildren(...h(`<p class="muted">Глава не открылась: ${esc(err.message)}</p>`).childNodes);
     });
@@ -122,7 +122,7 @@ export const topic = {
 
   mount(node, ctx) {
     node.style.setProperty('--bk-scale', scaleOf());
-    if (loaded?.topic.id === ctx.params.id) restoreScroll(ctx.params.id);
+    if (loaded?.topic.id === ctx.params.id) openAt(ctx.params.id, ctx.params.at);
   },
 
   unmount() {
@@ -139,6 +139,20 @@ function restoreScroll(id) {
   const y = store.book.pos[id] || 0;
   if (!y) return;
   requestAnimationFrame(() => { document.getElementById('scroll').scrollTop = y; });
+}
+
+// A chapter opened from a graded answer knows which section answers it, so it opens there
+// instead of at the top — and marks it on the way in, because landing mid-chapter with
+// nothing highlighted reads as the page having scrolled by itself rather than as an answer.
+// The anchors come from shared/book.js, so they are the same ones the site jumps to.
+function openAt(id, at) {
+  if (!at) return restoreScroll(id);
+  requestAnimationFrame(() => {
+    const target = document.getElementById(`sec-${at}`);
+    if (!target) return restoreScroll(id);     // rebuilt book, section gone: top of chapter
+    target.classList.add('bk-at');
+    target.scrollIntoView();
+  });
 }
 
 function chapter({ topic: t, index }, ctx) {

@@ -152,6 +152,20 @@
 
 /* ---------------------------------------------------------- chapter body */
 .bk-section { margin-top: 26px; scroll-margin-top: 12px; }
+
+/* The section a question was sent to, marked where it lands. It fades rather than staying
+   lit: after a few seconds the reader knows where they are, and a permanent stripe would
+   just be another thing on the page. */
+.bk-section.bk-at { position: relative; scroll-margin-top: 20px; }
+.bk-section.bk-at::before {
+  content: ''; position: absolute; left: -10px; top: 2px; bottom: 0; width: 3px;
+  border-radius: 2px; background: var(--primary);
+  animation: bk-at-fade 6s ease forwards;
+}
+@keyframes bk-at-fade { 0%, 55% { opacity: 1 } 100% { opacity: .25 } }
+@media (prefers-reduced-motion: reduce) {
+  .bk-section.bk-at::before { animation: none; opacity: .5 }
+}
 .bk-h2 {
   font-size: calc(18px * var(--bk-scale));
   font-weight: 600;
@@ -291,3 +305,9 @@
    clearly a way out of the session rather than a way on through it. */
 .review-theory:not(:empty) { margin: 14px 0 4px; }
 .review-theory .btn { width: 100%; justify-content: center; }
+
+/* Two lines when the build could name a section: the chapter, and quieter beneath it the
+   place in it. One line when it could not — the chapter alone is still where to read. */
+.bk-goto { flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px;
+  text-align: left; padding-top: 9px; padding-bottom: 9px; }
+.bk-goto .sc { font-size: var(--fs-label); color: var(--text-3); font-weight: 500; }

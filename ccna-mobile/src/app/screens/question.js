@@ -8,7 +8,7 @@ import { store } from '../store.js';
 import { confirmDialog, closeDialogs } from '../dialog.js';
 import { openSheet, closeSheet } from '../sheet.js';
 import { openExhibit } from '../exhibit.js';
-import { loadIndex, loadMap, topicOf } from '../theory.js';
+import { loadIndex, loadMap, topicOf, sectionOf } from '../theory.js';
 import { topic as topicScreen } from './topic.js';
 import { isCorrect, ddNeeded } from '../../engine/grade.js';
 import {
@@ -636,11 +636,19 @@ function openReview(ctx, q, s) {
     const t = index.byId.get(topicOf(map, q.n));
     const slot = t && content.querySelector('.review-theory');
     if (!slot) return;
-    slot.innerHTML = `<button class="btn soft wide" data-act="theory" type="button">
-      Теория: ${esc(t.title)}</button>`;
+    // ccna-book/build.mjs can often name one section of that chapter, not just the chapter
+    // — roughly a third of the bank. Where it can, say so and open the chapter there: a
+    // 35-minute chapter is a long way to hunt for the paragraph that answers one question.
+    // Where it cannot, "somewhere in this chapter" is the honest answer and the second
+    // line is simply absent.
+    const secId = sectionOf(map, q.n);
+    const sec = secId && (t.sections || []).find(x => x.id === secId);
+    slot.innerHTML = `<button class="btn soft wide bk-goto" data-act="theory" type="button">
+      <span class="ch">Теория: ${esc(t.title)}</span>
+      ${sec ? `<span class="sc">Раздел: ${esc(sec.title)}</span>` : ''}</button>`;
     slot.querySelector('button').addEventListener('click', () => {
       closeReview();
-      ctx.router.modal(topicScreen, { id: t.id });
+      ctx.router.modal(topicScreen, { id: t.id, at: sec ? sec.id : null });
     });
   }).catch(() => {});
 
