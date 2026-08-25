@@ -12,26 +12,26 @@
    Branches this app never touches (profile beyond its device id, bookmarks, book) are
    still loaded, kept, and exported verbatim: importing a phone backup here and exporting
    it back must not quietly strip the textbook progress. */
-import { nextState } from './shared/srs.js?v=18';
-import { ACTIVITY_DAYS, bumpActivity, dayKey, normalizeActivity, pruneActivity } from './shared/activity.js?v=18';
-import { BRANCHES, isBackup, packBackup } from './shared/backup.js?v=18';
-import { pruneAttempts } from './shared/retention.js?v=18';
-import { boxHistogram, dueCount, dueQueue, nextDueAt, wrongQueue } from './shared/srs-queue.js?v=18';
+import { nextState } from './shared/srs.js?v=19';
+import { ACTIVITY_DAYS, bumpActivity, dayKey, normalizeActivity, pruneActivity } from './shared/activity.js?v=19';
+import { BRANCHES, isBackup, packBackup } from './shared/backup.js?v=19';
+import { pruneAttempts } from './shared/retention.js?v=19';
+import { boxHistogram, dueCount, dueQueue, nextDueAt, wrongQueue } from './shared/srs-queue.js?v=19';
 import {
   answeredTotal, answeredIn, dayStats, goalOf, isAbandoned, mistakesOf, perDomainOf,
   recentDays, scoreTone, scoredAttempts, streakDays, toneFor, topicStats, validGoal, weakTopics,
-} from './shared/progress.js?v=18';
-import { PASS_SCALED, toScaled } from './shared/score.js?v=18';
-import { readiness, readinessDelta } from './shared/readiness.js?v=18';
-import { MOCK_EVERY_DAYS, mockState } from './shared/plan.js?v=18';
-import { daysUntil, isExamDate } from './shared/localdate.js?v=18';
-import { autoSyncer, isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js?v=18';
-import { bodyMarkup } from './shared/book.js?v=18';
-import { normalizeTset, tsetEntries, tsetHas, tsetMark } from './shared/tset.js?v=18';
+} from './shared/progress.js?v=19';
+import { PASS_SCALED, toScaled } from './shared/score.js?v=19';
+import { readiness, readinessDelta } from './shared/readiness.js?v=19';
+import { MOCK_EVERY_DAYS, mockState } from './shared/plan.js?v=19';
+import { daysUntil, isExamDate } from './shared/localdate.js?v=19';
+import { autoSyncer, isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js?v=19';
+import { bodyMarkup } from './shared/book.js?v=19';
+import { normalizeTset, tsetEntries, tsetHas, tsetMark } from './shared/tset.js?v=19';
 import {
   coverage, DEFAULT_BOOK, isRead, loadIndex, loadMap, loadTopic, normalizeBook, readMap, sectionOf,
   setBookVersion, setRead, topicOf,
-} from './shared/theory.js?v=18';
+} from './shared/theory.js?v=19';
 
 const KEY = {
   profile: 'ccna.profile',
@@ -238,6 +238,31 @@ const Store = {
 
   recordAnswers(pairs, mode, now = Date.now()) {
     for (const [qn, correct] of pairs) this.recordAnswer(qn, correct, mode, now);
+  },
+
+  // ---- the run in progress ----
+  // Leaving a run should not be the same as losing it, so the run is written down as it
+  // goes: which questions, where the reader is, what has been answered so far. Question
+  // NUMBERS, never the objects — the bank is 3 MB, and re-serialising a slice of it on
+  // every answer would be absurd.
+  //
+  // The branch already existed here and in shared/backup.js — a save file is meant to put
+  // a device back exactly where the export left it — and merge() deliberately leaves it
+  // alone: pulling a half-written attempt with a running clock onto a second device loses
+  // it rather than continuing it. Field names match the ones the phone writes, so a
+  // restored file describes the same run on either side.
+  saveSession(session) {
+    this.session = { ...session, savedAt: Date.now() };
+    this._touch('session');
+    return this.session;
+  },
+
+  // Called when a run is filed as an attempt, and when one is abandoned on purpose. Not
+  // on the way out of a screen — that is a pause.
+  clearSession() {
+    if (!this.session) return;
+    this.session = null;
+    this._touch('session');
   },
 
   // ---- attempts ----

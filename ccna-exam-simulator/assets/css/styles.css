@@ -618,6 +618,21 @@ details.cli-wrap summary:hover{color:var(--ink)}
    here is recomputed from the attempt history by assets/js/shared/readiness.js — nothing
    below is stored, and nothing below is a second opinion about the score. */
 
+/* The unfinished run, offered back. Gold down the left edge because it is the one thing on
+   the dashboard that is waiting on the reader rather than describing them. */
+.card.resume{gap:12px;padding:20px 24px;border-left:3px solid var(--gold);margin-bottom:22px}
+.card.resume .lb{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--grey-text)}
+.card.resume .rs-t{font-size:16px;font-weight:700}
+.card.resume .rs-b{display:flex;flex-wrap:wrap;gap:10px}
+
+/* Back to the run, from a screen that did not replace it — a chapter opened from a graded
+   answer. Sticky, because the way into the textbook is a question and the way out of it is
+   this, and a long chapter should not put one out of reach of the other. */
+.backrun{position:sticky;top:10px;z-index:5;margin-bottom:14px;
+  background:var(--ink);color:var(--cream-light);border-color:var(--ink)}
+.backrun:hover{background:var(--ink);border-color:var(--gold);color:var(--cream-light)}
+
 /* Two columns that fold together at 1100px. The left one carries more, hence 1.35fr. */
 .dgrid{display:grid;grid-template-columns:1.35fr 1fr;gap:22px;align-items:stretch}
 .dgrid.top{align-items:start}

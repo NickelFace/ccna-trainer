@@ -4,4 +4,4 @@
 export {
   DEFAULT_BOOK, normalizeBook, setBookVersion, isRead, readMap, setRead,
   loadIndex, loadTopic, loadMap, topicOf, coverage,
-} from '../../../ccna-exam-simulator/assets/js/shared/theory.js?v=18';
+} from '../../../ccna-exam-simulator/assets/js/shared/theory.js?v=19';

@@ -1,5 +1,5 @@
 {
-  "version": "18",
+  "version": "19",
   "files": {
     "ccna-exam-simulator/assets/js/shared/activity.js": "c9bf7288b2e96c3e",
     "ccna-exam-simulator/assets/js/shared/backup.js": "47e36e8476f4558c",
@@ -16,6 +16,6 @@
     "ccna-exam-simulator/assets/js/shared/sync.js": "b1c157e8418150e6",
     "ccna-exam-simulator/assets/js/shared/theory.js": "a69bdcb8036cbe20",
     "ccna-exam-simulator/assets/js/shared/tset.js": "4709c5f5bde474bf",
-    "ccna-exam-simulator/assets/js/store.js": "3c81bad533b8f01f"
+    "ccna-exam-simulator/assets/js/store.js": "ce5115e3e60cb2bd"
   }
 }

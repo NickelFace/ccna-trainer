@@ -162,8 +162,23 @@ const I18N = {
     verdict_correct: '✓ Верно',
     verdict_incorrect: '✗ Неверно',
     no_questions_filtered: 'Нет вопросов под выбранные фильтры.',
-    exit_confirm: 'Выйти без результата?',
     finish_confirm: 'Завершить экзамен?',
+    // Leaving a run now pauses it instead of losing it, so the only thing left worth
+    // warning about is the clock — it is a deadline, and it does not stop with you.
+    pause_timed: 'Прогон сохранится, но часы продолжат идти. Выйти?',
+    resume_label: 'Незавершённый прогон',
+    resume_exam: 'Экзамен',
+    resume_practice: 'Тренировка',
+    resume_srs: 'Повторение',
+    resume_at: 'вопрос {0} из {1}',
+    resume_answered: 'отвечено {0}',
+    resume_left: 'осталось {0}',
+    resume_expired: 'время вышло',
+    resume_go: 'Продолжить',
+    resume_finish: 'Завершить',
+    resume_finish_confirm: 'Завершить прогон и записать результат в историю?',
+    resume_replace: 'Есть незавершённый прогон. Начать новый? Незавершённый будет потерян — он не попадёт в историю.',
+    back_to_run: '← Вернуться к прогону · вопрос {0} из {1}',
     flag_on: '★ снять метку',
     flag_off: '☆ на потом',
     nav_finish_exam: 'Завершить',
@@ -427,8 +442,21 @@ const I18N = {
     verdict_correct: '✓ Correct',
     verdict_incorrect: '✗ Incorrect',
     no_questions_filtered: 'No questions match the selected filters.',
-    exit_confirm: 'Exit without a result?',
     finish_confirm: 'Finish the exam?',
+    pause_timed: 'The run will be kept, but the clock keeps running. Leave?',
+    resume_label: 'Unfinished run',
+    resume_exam: 'Exam',
+    resume_practice: 'Practice',
+    resume_srs: 'Repetition',
+    resume_at: 'question {0} of {1}',
+    resume_answered: '{0} answered',
+    resume_left: '{0} left',
+    resume_expired: 'time is up',
+    resume_go: 'Resume',
+    resume_finish: 'Finish',
+    resume_finish_confirm: 'Finish this run and file the result in the history?',
+    resume_replace: 'A run is still unfinished. Start a new one? The unfinished run is lost — it will not reach the history.',
+    back_to_run: '← Back to the run · question {0} of {1}',
     flag_on: '★ unflag',
     flag_off: '☆ flag for later',
     nav_finish_exam: 'Finish',
@@ -786,14 +814,15 @@ function renderSide() {
 }
 
 // Leaving a running exam through the sidebar is the same decision as leaving it through
-// the ✕ in its own strip, so it asks the same question. Practice keeps what it answered
-// (savePracticeAttempt files on the way out), an exam does not — hence only 'ex'.
+// the ✕ in its own strip, so both come through here. Neither files anything and neither
+// throws anything away: the run is written down and offered back on the dashboard. Only
+// a timed exam asks first, because its deadline does not pause with it.
 function goScreen(id) {
   const go = MODE_ENTRY[id];
   if (!go) return;
-  if (S.mode === 'ex' && !confirm(t('exit_confirm'))) return;
+  if (!confirmLeave()) return;
+  pauseRun();
   if (S.tid) { clearInterval(S.tid); S.tid = null; }
-  if (S.mode === 'pr') finishPractice({ leave: true });
   S = {};
   NAV_AT = id;
   narrow();
@@ -939,6 +968,8 @@ function home() {
     <div class="sub">${t('home_stats', POOL.length, ex, META.with_exp)}</div>
   </div>
 
+  ${resumeCardHTML()}
+
   <div class="dgrid">
     ${readyPanelHTML(r, plan)}
     <div class="dcol">${todayCardHTML()}${queueRowsHTML()}</div>
@@ -970,6 +1001,32 @@ function home() {
   app().classList.add('wide');
   wireDash();
   if (st) window.scrollTo(0, 0);
+}
+
+// A run that was left unfinished, offered back. First thing on the dashboard when there is
+// one, because the reader who reloaded the tab or wandered into the textbook is looking for
+// exactly this and has no other way back to it.
+//
+// Two buttons and no third: come back to it, or finish it and let it into the history. It
+// is dropped only by starting another run, which asks first.
+function resumeCardHTML() {
+  const sn = pausedSession();
+  if (!sn) return '';
+  const parts = [t('resume_at', Math.min((sn.i || 0) + 1, sn.qs.length), sn.qs.length)];
+  const answered = sessionAnswered(sn);
+  if (answered) parts.push(t('resume_answered', answered));
+  if (sn.endsAt) {
+    const left = sn.endsAt - Date.now();
+    parts.push(left > 0 ? t('resume_left', t('hist_minutes', Math.ceil(left / 60000))) : t('resume_expired'));
+  }
+  return `<div class="card resume">
+    <div class="lb">${t('resume_label')}</div>
+    <div class="rs-t">${t(SESSION_KIND[sn.mode] || 'resume_practice')} · ${esc(parts.join(' · '))}</div>
+    <div class="rs-b">
+      <button class="btn primary" data-act="resume">${t('resume_go')}</button>
+      <button class="btn" data-act="resume-finish">${t('resume_finish')}</button>
+    </div>
+  </div>`;
 }
 
 // The forecast, what is dragging it, and the button that acts on it — one dark panel,
@@ -1118,6 +1175,7 @@ function wireDash() {
   box.querySelectorAll('[data-topic]').forEach(b => b.onclick = () => startTopicRun(b.dataset.topic));
   box.querySelectorAll('[data-act]').forEach(b => b.onclick = () => ({
     'weak-run': startWeakRun, srs: startSrsRun, wrong: startWrongRun,
+    resume: resumeRun, 'resume-finish': finishPaused,
   })[b.dataset.act]?.());
   wireChapterLinks();
 }
@@ -1353,17 +1411,20 @@ const maxQN = () => DATA.reduce((m, q) => Math.max(m, q.n), 0);
 function startPractice() {
   // Explicit question number wins: whole bank in order, opened at that question.
   const jn = $('#qstart') ? parseInt($('#qstart').value, 10) : 0;
+  if (!clearForNewRun()) return;
   if (jn) {
     const all = DATA.slice().sort((a, b) => a.n - b.n);
     const i = all.findIndex(q => q.n === jn);
     if (i < 0) { $('#qstart').value = ''; $('#qstart').placeholder = t('practice_no_question', jn); return; }
     S = { mode: 'pr', qs: all, i, ans: {}, ok: 0, done: 0, ...practiceRun() };
+    keepSession();
     return renderPractice();
   }
   let p = domPool(true);
   if ($('#shf').classList.contains('on')) p = shuffle(p);
   const c = +$('#cnt').value; if (c) p = p.slice(0, c);
   S = { mode: 'pr', qs: p, i: 0, ans: {}, ok: 0, done: 0, ...practiceRun() };
+  keepSession();
   renderPractice();
 }
 
@@ -2065,11 +2126,165 @@ function weakScreen() {
 
 // The runs. All of them are the practice screen over a chosen set — the difference is
 // only which questions, and whether the answers count as a repetition in the day's tally.
+// ============================ THE RUN IN PROGRESS ============================
+// A run used to exist only in `S`, which meant every way out of it was destructive: the
+// sidebar and the ✕ threw an exam away, walking out of practice filed whatever had been
+// answered as a finished attempt, and a reload — or opening the textbook from a graded
+// answer, which is how this was noticed — lost the run with no way back to it.
+//
+// So a live run is written to the store as it goes (store.saveSession), and leaving one is
+// a pause. Three things follow from that: the dashboard can offer it back, the history only
+// ever receives runs that were actually finished, and starting a new run has to say out
+// loud that it replaces the paused one.
+//
+// The stored shape is the phone's, field for field — `session` is a branch of the v:1 save
+// file, so a file exported here has to describe the same run over there. Question numbers,
+// not questions: the bank is 3 MB.
+const SESSION_KIND = { exam: 'resume_exam', practice: 'resume_practice', srs: 'resume_srs' };
+
+function snapshotSession() {
+  if (S.replay || !Array.isArray(S.qs) || !S.qs.length) return null;
+  if (S.mode !== 'ex' && S.mode !== 'pr') return null;      // a finished run is not a session
+  return {
+    mode: S.mode === 'ex' ? 'exam' : S.srsRun ? 'srs' : 'practice',
+    preset: S.preset || null,
+    weighted: !!S.weighted,
+    qs: S.qs.map(q => q.n),
+    i: S.i,
+    answers: S.ans,
+    flags: S.flags ? [...S.flags] : [],
+    // An absolute deadline, not a remaining duration — the clock has to keep running while
+    // the tab is closed, or closing it would buy time. Same rule on the phone.
+    endsAt: S.end || 0,
+    startedAt: S.startedAt,
+  };
+}
+
+// Called after every change worth coming back to. The store coalesces writes and flushes
+// on pagehide, so this is cheap enough to call on each answer.
+function keepSession() {
+  const st = P(), snap = snapshotSession();
+  if (st && snap) st.saveSession(snap);
+}
+
+// The stored run, if it is still usable. `build_data.py` can renumber or drop a question
+// between deployments, and a session pointing at numbers the bank no longer has cannot be
+// resumed — that is not an error to report, it is a stale session to forget.
+function pausedSession() {
+  const st = P();
+  const sn = st && st.session;
+  if (!sn || !Array.isArray(sn.qs) || !sn.qs.length || !sn.startedAt) return null;
+  if (!DATA.length) return sn;                    // pre-boot: the card can be drawn anyway
+  if (sn.qs.every(n => byN().has(n))) return sn;
+  st.clearSession();
+  return null;
+}
+
+const sessionAnswered = sn => Object.keys(sn.answers || {}).length;
+
+// Rebuild `S` from the stored run and put the reader back on the question they left.
+function resumeRun() {
+  const sn = pausedSession();
+  if (!sn) return goScreen('home');
+  narrow();
+  const qs = sn.qs.map(n => byN().get(n));
+  const common = {
+    qs, i: Math.min(Math.max(sn.i || 0, 0), qs.length - 1),
+    ans: { ...(sn.answers || {}) },
+    startedAt: sn.startedAt, attemptId: attemptId(sn.startedAt),
+  };
+  if (sn.mode === 'exam') {
+    S = { mode: 'ex', ...common, flags: new Set(sn.flags || []), end: sn.endsAt || 0, tid: null,
+      preset: sn.preset || null, weighted: !!sn.weighted };
+    // The deadline may well have passed while the tab was closed. That run is over, and
+    // finishing it is the honest reading — if too little of it was answered, dropped()
+    // files it as walked away from rather than as a score.
+    if (S.end && Date.now() >= S.end) return finishExam();
+    if (S.end) S.tid = setInterval(tick, 1000);
+    renderExam();
+  } else {
+    // `ok` and `done` are tallies of what is already in `answers`, so they are recounted
+    // rather than stored — one less pair of numbers that can disagree with the answers.
+    const given = Object.values(common.ans);
+    S = { mode: 'pr', ...common, srsRun: sn.mode === 'srs',
+      done: given.length, ok: given.filter(a => a && a.ok).length };
+    renderPractice();
+  }
+  NAV_AT = null;
+  renderSide();
+}
+
+// Finish a paused run without opening it: grade what is there and file it, which is the
+// other half of "an unfinished run does not reach the history" — it reaches it when the
+// reader says it is finished.
+function finishPaused() {
+  const sn = pausedSession();
+  if (!sn || !confirm(t('resume_finish_confirm'))) return;
+  resumeRun();
+  if (S.mode === 'ex') finishExam();
+  else if (S.mode === 'pr') finishPractice();
+}
+
+function dropPaused() {
+  const st = P();
+  if (st) st.clearSession();
+}
+
+// Leaving a screen that holds a live run. Nothing is filed and nothing is thrown away —
+// only the clock is stopped, because a paused exam keeps its deadline in `endsAt` and
+// rebuilds the interval on the way back in.
+function pauseRun() {
+  if (S.mode !== 'ex' && S.mode !== 'pr') return;
+  // Nothing answered and never moved off the first question — there is nothing to come
+  // back to, and offering it would be clutter on the dashboard rather than a rescue.
+  if (!S.i && !Object.keys(S.ans || {}).length) dropPaused();
+  else keepSession();
+  if (S.tid) { clearInterval(S.tid); S.tid = null; }
+}
+
+// The one warning left on the way out. An untimed run loses nothing by being paused, so
+// asking would be noise; a timed one keeps counting down whether or not anyone is looking.
+const confirmLeave = () => !(S.mode === 'ex' && S.end) || confirm(t('pause_timed'));
+
+// Starting a run while another one is unfinished. The unfinished one is dropped rather
+// than filed — half an exam is not a result — so this is the moment to say so.
+//
+// It can be unfinished in two ways: paused in the store, or still live in `S` behind the
+// screen being looked at. The second is not theoretical — the textbook keeps the run alive
+// while a chapter is open, and that chapter offers to practise its own questions.
+function clearForNewRun() {
+  if ((inRun() || pausedSession()) && !confirm(t('resume_replace'))) return false;
+  dropPaused();
+  return true;
+}
+
+// Back to a run from a screen that does not replace it — the textbook, above all: opening
+// a chapter from a graded answer keeps `S` alive but used to leave no way back to it.
+const inRun = () => S.mode === 'ex' || S.mode === 'pr';
+
+const backRunHTML = () => inRun()
+  ? `<button class="btn sm backrun" onclick="backToRun()">${t('back_to_run', S.i + 1, S.qs.length)}</button>`
+  : '';
+
+function backToRun() {
+  if (!inRun()) return goScreen('home');
+  narrow();
+  NAV_AT = null;
+  renderSide();
+  if (S.mode === 'ex') {
+    if (S.end && Date.now() >= S.end) return finishExam();
+    if (S.end && !S.tid) S.tid = setInterval(tick, 1000);
+    renderExam();
+  } else renderPractice();
+}
+
 function startRun(numbers, { srs = false } = {}) {
   const qs = numbers.map(n => byN().get(n)).filter(Boolean);
   if (!qs.length) return;
+  if (!clearForNewRun()) return;
   narrow();
   S = { mode: 'pr', qs, i: 0, ans: {}, ok: 0, done: 0, srsRun: srs, ...practiceRun() };
+  keepSession();
   renderPractice();
 }
 
@@ -2258,7 +2473,7 @@ function renderChapter(tp, index, at = null) {
   const dom = index.domains.find(d => d.id === tp.dom);
   const read = !!bookRead()[tp.id];
 
-  app().innerHTML = `<article class="bk">
+  app().innerHTML = `${backRunHTML()}<article class="bk">
     <div class="bk-kicker">${esc(dom ? dom.name : tp.dom)}${tp.blueprint.length ? ` · ${t('book_blueprint', tp.blueprint.map(esc).join(', '))}` : ''}</div>
     <h1>${esc(tp.title)}</h1>
     <div class="sub">${esc(tp.lead)}</div>
@@ -2443,7 +2658,7 @@ function renderPractice() {
   SCREEN = renderPractice;
   const q = S.qs[S.i]; if (!q) return home();
   const st = S.ans[q.n];
-  let h = chrome(false, `<button class="btn sm chrome-exit" onclick="home()">${t('nav_exit')}</button>
+  let h = chrome(false, `<button class="btn sm chrome-exit" onclick="goScreen('home')">${t('nav_exit')}</button>
     ${chromeProgress(S.i, S.qs.length)}
     <span class="chrome-score"><span class="ok">${S.ok}</span>✓ <span class="bad">${S.done - S.ok}</span>✗</span>`)
     + `<div class="row">
@@ -2501,33 +2716,46 @@ function grade(q, given) {
   const ok = given.join('') === q.a.split('').sort().join('');
   S.ans[q.n] = { given, ok }; S.done++; if (ok) S.ok++;
   recordAnswer(q.n, ok, S.srsRun ? 'srs' : 'practice');
+  keepSession();
   renderPractice();
 }
 function gradeDD(q, placement) {
   const ok = ddCorrect(q, placement);
   S.ans[q.n] = { placement, ok }; S.done++; if (ok) S.ok++;
   recordAnswer(q.n, ok, S.srsRun ? 'srs' : 'practice');
+  keepSession();
   renderPractice();
 }
 function pMove(d) {
   const n = S.i + d;
-  if (n >= 0 && n < S.qs.length) { S.i = n; renderPractice(); }
-  else if (n >= S.qs.length) { S.done ? finishPractice() : home(); }
+  if (n >= 0 && n < S.qs.length) { S.i = n; keepSession(); renderPractice(); }
+  else if (n >= S.qs.length) { S.done ? finishPractice() : goScreen('home'); }
 }
 // Practice has no timer/scale like the exam — just tally what was answered so far
 // (works mid-session via "Разбор ошибок" too, not only after the last question).
 // `leave` is walking out through the sidebar rather than pressing finish: what was
 // answered is still filed — a practice run has no all-or-nothing about it — but the
 // results sheet is not what the click asked for, so it is not drawn.
-function finishPractice({ leave = false } = {}) {
+function finishPractice() {
   const rev = S.qs.filter(q => S.ans[q.n] !== undefined).map(q => ({ q, good: S.ans[q.n].ok }));
   S.result = { rev, ok: rev.filter(r => r.good).length };
   S.reviewFilter = rev.some(r => !r.good) ? 'bad' : 'all';
   S.mode = 'pr-done';
   savePracticeAttempt(rev);
+  if (P()) P().clearSession();
   renderSide();
-  if (!leave) renderPracticeResults();
+  renderPracticeResults();
 }
+// The review sheet is reachable mid-run, so leaving it has to put the run back the way it
+// was — a live 'pr', written down again, opened at the first question still unanswered.
+function continuePractice() {
+  S.mode = 'pr';
+  S.i = S.qs.findIndex(q => S.ans[q.n] === undefined);
+  if (S.i < 0) S.i = 0;
+  keepSession();
+  renderPractice();
+}
+
 function renderPracticeResults() {
   SCREEN = renderPracticeResults;
   const { rev, ok } = S.result;
@@ -2536,7 +2764,7 @@ function renderPracticeResults() {
   let h = `<h1>${t('practice_results_title')}</h1>${replayNote()}<div class="card">
     <div class="center sub">${t('answered_pct', ok, rev.length, pct)}</div>
     <div class="nav center" style="justify-content:center"><button class="btn" onclick="home()">${t('nav_home')}</button>
-      ${S.replay ? '' : `<button class="btn primary" onclick="S.i=S.qs.findIndex(q=>S.ans[q.n]===undefined);if(S.i<0)S.i=0;renderPractice()">${t('continue_practice')}</button>`}</div>
+      ${S.replay ? '' : `<button class="btn primary" onclick="continuePractice()">${t('continue_practice')}</button>`}</div>
   </div>
   <div class="sec"><h2>${t('review_title')}</h2><div class="row">
     <span class="chip ${S.reviewFilter === 'bad' ? 'on' : ''}" onclick="setReviewFilter('bad')">${t('filter_errors')}<span class="c">${nBad}</span></span>
@@ -2704,11 +2932,13 @@ function ddCorrect(q, placement) {
 // ============================ EXAM ============================
 function beginExam(qs, mins, { preset = 'custom', weighted = false } = {}) {
   if (!qs.length) { alert(t('no_questions_filtered')); return; }
+  if (!clearForNewRun()) return;
   narrow();
   const startedAt = Date.now();
   S = { mode: 'ex', qs, i: 0, ans: {}, flags: new Set(), end: mins ? startedAt + mins * 60000 : 0, tid: null,
     preset, weighted, startedAt, attemptId: attemptId(startedAt) };
   if (S.end) S.tid = setInterval(tick, 1000);
+  keepSession();
   renderExam();
 }
 function tick() {
@@ -2722,7 +2952,7 @@ function tick() {
 function renderExam() {
   SCREEN = renderExam;
   const q = S.qs[S.i], multi = q.y !== 'dd' && q.a.length > 1, cur = S.ans[q.n];
-  let h = chrome(true, `<button class="chrome-x" onclick="if(confirm('${t('exit_confirm')}'))home()"
+  let h = chrome(true, `<button class="chrome-x" onclick="goScreen('home')"
       title="${t('nav_exit')}" aria-label="${t('nav_exit')}">✕</button>
     ${chromeProgress(S.i, S.qs.length)}
     ${S.end ? `<span class="timer" id="timer">${CLOCK_ICON}<span>--:--</span></span>` : ''}`);
@@ -2756,7 +2986,7 @@ function renderExam() {
     document.querySelectorAll('.opt').forEach(b => b.onclick = () => {
       const k = b.dataset.k; let a = new Set((S.ans[q.n] && S.ans[q.n].given) || []);
       if (multi) { a.has(k) ? a.delete(k) : a.add(k); } else a = new Set([k]);
-      S.ans[q.n] = { given: [...a] }; renderExam();
+      S.ans[q.n] = { given: [...a] }; keepSession(); renderExam();
     });
   }
 }
@@ -2776,7 +3006,7 @@ function ddExamMarkup(q, cur) {
 function wireDDExam(q) {
   const placement = Object.assign({}, (S.ans[q.n] && S.ans[q.n].placement) || {});
   let dragEl = null, sel = null;
-  const persist = () => { S.ans[q.n] = { placement: Object.assign({}, placement) }; };
+  const persist = () => { S.ans[q.n] = { placement: Object.assign({}, placement) }; keepSession(); };
   document.querySelectorAll('.dd-item').forEach(el => {
     el.addEventListener('dragstart', e => { dragEl = el; el.classList.add('dragging'); });
     el.addEventListener('dragend', () => { el.classList.remove('dragging'); dragEl = null; });
@@ -2790,9 +3020,9 @@ function wireDDExam(q) {
     slot.addEventListener('click', () => { if (sel) { const s = sel; sel = null; s.classList.remove('sel'); handle(slot, s); } });
   });
 }
-function eMove(d) { const n = S.i + d; if (n >= 0 && n < S.qs.length) { S.i = n; renderExam(); } }
-function eGo(i) { S.i = i; renderExam(); }
-function eFlag() { const n = S.qs[S.i].n; S.flags.has(n) ? S.flags.delete(n) : S.flags.add(n); renderExam(); }
+function eMove(d) { const n = S.i + d; if (n >= 0 && n < S.qs.length) { S.i = n; keepSession(); renderExam(); } }
+function eGo(i) { S.i = i; keepSession(); renderExam(); }
+function eFlag() { const n = S.qs[S.i].n; S.flags.has(n) ? S.flags.delete(n) : S.flags.add(n); keepSession(); renderExam(); }
 
 function isCorrect(q, ans) {
   if (!ans) return false;
@@ -2823,6 +3053,9 @@ function finishExam() {
   S.result = { rev, perDom: gone ? perDomainIn(att) : perDom, ok, pct, scaled,
     pass: pass && !gone, total: S.qs.length, abandoned: gone, asked: askedIn(att) };
   saveExamAttempt(rev, perDom, ok, pct, scaled);
+  // Filed, so it is no longer a run to come back to — the dashboard must not keep offering
+  // a result that is already on screen.
+  if (P()) P().clearSession();
   // The attempt is over and filed. Saying so matters beyond tidiness: leaving through the
   // sidebar asks "выйти без результата?" while a run is live, and there is no result left
   // to lose here — it is on the screen. Same mode a replayed exam opens in, so the arrow

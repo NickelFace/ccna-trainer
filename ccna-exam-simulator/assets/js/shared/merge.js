@@ -16,8 +16,8 @@
 // What it deliberately does not do: pick a "winner" state. Every branch merges on its own
 // terms, because losing a morning of practice to a bookmark tapped on the other device is
 // exactly the failure that makes people stop trusting sync.
-import { normalizeActivity } from './activity.js?v=18';
-import { normalizeTset, tsetMergeMap } from './tset.js?v=18';
+import { normalizeActivity } from './activity.js?v=19';
+import { normalizeTset, tsetMergeMap } from './tset.js?v=19';
 
 const obj = v => (v && typeof v === 'object' && !Array.isArray(v)) ? v : {};
 const arr = v => Array.isArray(v) ? v : [];
