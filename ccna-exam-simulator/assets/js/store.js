@@ -1,8 +1,7 @@
 /* Progress store — the web trainer's persistent half.
    ES module by necessity: it imports the rules both clients share (shared/), and the only
    way to load those in a page with no build step is `<script type="module">`. app.js stays
-   a classic script, so the one thing this file exports to it is `window.Store` — the same
-   arrangement landing.js uses with `window.NetPath`.
+   a classic script, so the one thing this file exports to it is `window.Store`.
 
    The shape is the Android app's, key for key (ccna-mobile/src/app/store.js): seven
    branches under the same names, attempts in the same form, SRS and activity written by
@@ -13,23 +12,26 @@
    Branches this app never touches (profile beyond its device id, bookmarks, book) are
    still loaded, kept, and exported verbatim: importing a phone backup here and exporting
    it back must not quietly strip the textbook progress. */
-import { nextState } from './shared/srs.js?v=15';
-import { ACTIVITY_DAYS, bumpActivity, dayKey, normalizeActivity, pruneActivity } from './shared/activity.js?v=15';
-import { BRANCHES, isBackup, packBackup } from './shared/backup.js?v=15';
-import { pruneAttempts } from './shared/retention.js?v=15';
-import { boxHistogram, dueCount, dueQueue, nextDueAt, wrongQueue } from './shared/srs-queue.js?v=15';
+import { nextState } from './shared/srs.js?v=16';
+import { ACTIVITY_DAYS, bumpActivity, dayKey, normalizeActivity, pruneActivity } from './shared/activity.js?v=16';
+import { BRANCHES, isBackup, packBackup } from './shared/backup.js?v=16';
+import { pruneAttempts } from './shared/retention.js?v=16';
+import { boxHistogram, dueCount, dueQueue, nextDueAt, wrongQueue } from './shared/srs-queue.js?v=16';
 import {
-  answeredTotal, answeredIn, dayStats, goalOf, isAbandoned, mistakesOf, perDomainOf, recentDays,
-  scoreTone, streakDays, toneFor, topicStats, validGoal, weakTopics,
-} from './shared/progress.js?v=15';
-import { PASS_SCALED, toScaled } from './shared/score.js?v=15';
-import { autoSyncer, isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js?v=15';
-import { bodyMarkup } from './shared/book.js?v=15';
-import { normalizeTset, tsetEntries, tsetHas, tsetMark } from './shared/tset.js?v=15';
+  answeredTotal, answeredIn, dayStats, goalOf, isAbandoned, mistakesOf, perDomainOf,
+  recentDays, scoreTone, scoredAttempts, streakDays, toneFor, topicStats, validGoal, weakTopics,
+} from './shared/progress.js?v=16';
+import { PASS_SCALED, toScaled } from './shared/score.js?v=16';
+import { readiness, readinessDelta } from './shared/readiness.js?v=16';
+import { MOCK_EVERY_DAYS, mockState } from './shared/plan.js?v=16';
+import { daysUntil, isExamDate } from './shared/localdate.js?v=16';
+import { autoSyncer, isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js?v=16';
+import { bodyMarkup } from './shared/book.js?v=16';
+import { normalizeTset, tsetEntries, tsetHas, tsetMark } from './shared/tset.js?v=16';
 import {
   coverage, DEFAULT_BOOK, isRead, loadIndex, loadMap, loadTopic, normalizeBook, readMap, setBookVersion,
   setRead, topicOf,
-} from './shared/theory.js?v=15';
+} from './shared/theory.js?v=16';
 
 const KEY = {
   profile: 'ccna.profile',
@@ -89,6 +91,18 @@ const Store = {
   toneFor,
   scoreTone,
   goalOf,
+  // Which attempts are allowed a 300..1000 score at all — the only ones the dashboard's
+  // chart may draw.
+  scoredAttempts,
+  // The forecast the dashboard is built on, and the weekly mock the sidebar counts down
+  // to. readiness takes the grading as an argument, for the same reason weakTopics does.
+  // Weak domains are read off its per-domain breakdown rather than through
+  // progress.js's weakDomains(), which asks the same question of one attempt.
+  readiness,
+  readinessDelta,
+  mockState,
+  MOCK_EVERY_DAYS,
+  daysUntil,
   // The textbook: the same chapter files the Android app reads, rendered by the same
   // block renderer. Loading is lazy — nothing here is fetched until the reader opens.
   bodyMarkup,
@@ -151,6 +165,18 @@ const Store = {
     this.profile.dailyGoal = n;
     this._touch('profile');
     return n;
+  },
+
+  // ---- the exam date ----
+  // The second profile field the site can set, and the one the countdown in the sidebar
+  // reads. Stored as a plain 'YYYY-MM-DD' local calendar day — see shared/localdate.js
+  // for why that is not a timestamp. An empty value clears it rather than storing junk.
+  setExamDate(v) {
+    const next = isExamDate(v) ? v : null;
+    if (next) this.profile.examDate = next;
+    else delete this.profile.examDate;
+    this._touch('profile');
+    return next;
   },
 
   // ---- bookmarks ----

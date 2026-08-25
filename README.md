@@ -45,9 +45,10 @@ cd ccna-mobile && npm install && npm run dev
   anything itself — that is the clients' job, below.
   Docs: [README.md](ccna-sync/README.md)
 - [`ccna-exam-simulator/assets/js/shared/`](ccna-exam-simulator/assets/js/shared/) — the
-  rules both applications run: repetition intervals, the 300–1000 scale, what counts as a
-  day's work, the save format, and the merge the two devices meet in. The Android build
-  imports these files directly; there is no second copy to drift.
+  rules both applications run: repetition intervals, the 300–1000 scale, the readiness
+  forecast and the weekly mock, what counts as a day's work, the save format, and the
+  merge the two devices meet in. The Android build imports these files directly; there is
+  no second copy to drift.
   Docs: [README.md](ccna-exam-simulator/assets/js/shared/README.md)
 - [`brand/`](brand/) — the NetPath mark and the script that renders every icon size from it.
 - `run.sh` / `stop.sh` — start/stop the local web server (port 8099).

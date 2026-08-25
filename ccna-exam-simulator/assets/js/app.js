@@ -23,31 +23,53 @@ let BY_N = null;                           // question number -> question, built
 const P = () => window.Store || null;
 const byN = () => BY_N || (BY_N = new Map(DATA.map(q => [q.n, q])));
 
+// ============================ BRAND ============================
+// The NetPath mark: the same three bars as brand/generate.py, on the same 86-unit grid,
+// kept as data rather than a pasted <svg> string. It used to live in landing.js and moved
+// here when the landing was removed — the sidebar lockup is the only place it is drawn now.
+const BARS = [[8, 58, 20, 20, 7], [33, 38, 20, 40, 7], [58, 12, 20, 66, 7]];
+const MARK_INK = ['#16181D', '#16181D', '#C9A24A'];
+const mark = size =>
+  `<svg width="${size}" height="${size}" viewBox="0 0 86 86" aria-hidden="true">` +
+  BARS.map(([x, y, w, h, r], i) =>
+    `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${MARK_INK[i]}"/>`).join('') +
+  '</svg>';
+
+const BRAND = 'NetPath';
+
 // ============================ I18N ============================
-// UI-chrome translation. Default stays Russian (existing behaviour, untouched) —
-// EN is an opt-in toggle (see .lang-switch in index.html), persisted in localStorage.
-// The question bank's own explanations (`why`/`exp`) exist only in Russian (~1200
-// entries) — translating them is out of scope, so EN mode simply hides that prose
-// instead of mixing languages; see rationale() below.
-// Resolved once, by the landing (stored choice → Accept-Language → Russian). Reading
-// storage again here would disagree with it on a first visit from an English browser.
-let LANG = NetPath.locale;
-
-// The landing owns the locale — it is the same choice, offered in three places (its header,
-// its How card, and the fixed switch above). This one delegates so all three stay in step.
-function setLang(lang) { NetPath.setLocale(lang); }
-
-// Applied by NetPath.setLocale; redraws the screen in place. Reloading would be simpler but
-// costs the scroll position and, mid-attempt, would drop the session.
-function applyLang(lang) {
-  if (lang === LANG) return;
-  LANG = lang;
-  markLangSwitch();
-  if (SCREEN) SCREEN();
+// UI-chrome translation. Default stays Russian — EN is an opt-in toggle (the pill in the
+// sidebar), persisted in localStorage. The question bank's own explanations (`why`/`exp`)
+// exist only in Russian (~1200 entries) — translating them is out of scope, so EN mode
+// simply hides that prose instead of mixing languages; see rationale() below.
+//
+// Stored choice first, then what the browser asks for, then Russian. There is no server to
+// read Accept-Language from — the site is static — so navigator.languages is the
+// client-side equivalent of the same header. This used to be resolved in landing.js.
+function initialLang() {
+  let saved = null;
+  try { saved = localStorage.getItem('ccna_lang'); } catch { /* blocked storage */ }
+  if (saved === 'ru' || saved === 'en') return saved;
+  const asked = navigator.languages && navigator.languages.length
+    ? navigator.languages : [navigator.language || ''];
+  return asked.some(l => /^en\b/i.test(l)) ? 'en' : 'ru';
 }
-const markLangSwitch = () =>
-  document.querySelectorAll('.lang-opt')
-    .forEach(el => el.classList.toggle('on', el.dataset.lang === LANG));
+let LANG = initialLang();
+
+// Redraws the screen in place rather than reloading: a reload costs the scroll position
+// and, mid-attempt, would drop the session. <html lang> follows, because it has to name
+// the language of the text actually on screen — otherwise Chrome offers to translate a
+// page already in the reader's language and a screen reader picks the wrong phonemes.
+function setLang(lang) {
+  if ((lang !== 'ru' && lang !== 'en') || lang === LANG) return;
+  LANG = lang;
+  try { localStorage.setItem('ccna_lang', lang); } catch { /* blocked storage */ }
+  document.documentElement.lang = lang;
+  const y = window.scrollY;
+  renderSide();
+  if (SCREEN) SCREEN();
+  window.scrollTo(0, y);
+}
 
 // How to redraw whatever is on screen after a language change. Every screen entry point
 // records itself here; each one renders from state it does not own, so replaying it is safe.
@@ -88,7 +110,6 @@ const I18N = {
     nav_next: 'след →',
     nav_finish: 'завершить',
     nav_exit: '✕ выход',
-    nav_site: 'На главную страницу',
     label_custom_exam: 'Свой экзамен',
     label_practice: 'Тренировка',
     cfg_domains_label: 'Домены (пусто = все)',
@@ -272,6 +293,51 @@ const I18N = {
     hist_import_replace: 'Импорт заменит весь прогресс в этом браузере: {0} попыток. Продолжить?',
     hist_import_bad: 'Файл не похож на резервную копию CCNA Trainer.',
     hist_imported: 'Прогресс загружен: попыток — {0}.',
+
+    // ---- the dashboard, the sidebar, and the weak-spots screen ----
+    nav_dashboard: 'Дашборд',
+    nav_weak: 'Слабые места',
+    nav_book: 'Учебник',
+    nav_history: 'История',
+    nav_progress: 'Прогресс',
+    side_offline: 'офлайн · без бэкенда',
+    ready_title: 'Прогноз готовности',
+    ready_scale: 'шкала 300–1000 · порог 825 · по последним {0} ответам',
+    ready_delta: '{0} за неделю',
+    ready_to_pass: 'до порога {0}',
+    ready_weak_now: 'Слабое сейчас',
+    ready_empty: 'Пока не по чему судить — пройди экзамен или тренировку.',
+    weak_title: 'Слабые места',
+    weak_go: 'Тренировать слабое',
+    weak_mix: '{0} · {1} · с пояснениями',
+    weak_mix_title: 'Микс на сегодня',
+    weak_mix_rule: 'Доля домена в миксе — его вес по блюпринту, умноженный на долю ошибок за последние {0} ответов.',
+    weak_mix_none: 'Ни один домен не ниже порога 75% — тренировать по слабому нечего.',
+    weak_doms_title: 'Домены ниже порога',
+    weak_dom_cost: 'Вес {0}% в экзамене · {1} из {2} · это {3} прогноза',
+    weak_dom_go: 'Учить · {0} вопр.',
+    dash_modes_title: 'Режимы',
+    dash_domains_title: 'Домены экзамена · последние {0} ответов',
+    dash_domain_foot: '{0} из {1} верно · вес {2}%',
+    dash_domain_go: 'учить',
+    dash_weak_link: 'Слабые места →',
+    dash_srs_line: 'подошёл срок у {0}',
+    dash_wrong_line: 'последний ответ был неверным',
+    dash_scores_title: 'Баллы за {0}',
+    dash_scores_note: 'Только взвешенные по блюпринту попытки — тренировка и повторение не попадают на шкалу.',
+    dash_today_line: 'Отвечено {0} · ошибок {1} · повторений {2} · серия {3} дн.',
+    plan_title: 'План подготовки',
+    plan_exam_date: 'Дата экзамена',
+    plan_days_left: 'осталось {0} дн.',
+    plan_days_none: 'дата экзамена не задана',
+    plan_days_past: 'дата экзамена уже прошла',
+    plan_mock_in: 'Пробный экзамен через {0} дн.',
+    plan_mock_due: 'Пора на пробный экзамен',
+    plan_side_title: 'До экзамена',
+    plan_side_unit: 'дн.',
+    plan_side_set: 'Задать дату экзамена →',
+    backup_title: 'Резервная копия',
+    hist_book_ch: 'глава',
   },
   en: {
     boot_loading: 'Loading the question bank…',
@@ -308,7 +374,6 @@ const I18N = {
     nav_next: 'next →',
     nav_finish: 'finish',
     nav_exit: '✕ exit',
-    nav_site: 'Back to the home page',
     label_custom_exam: 'Custom Exam',
     label_practice: 'Practice',
     cfg_domains_label: 'Domains (empty = all)',
@@ -492,12 +557,80 @@ const I18N = {
     hist_import_replace: 'Importing replaces all progress in this browser: {0} attempts. Continue?',
     hist_import_bad: 'That file is not a CCNA Trainer backup.',
     hist_imported: 'Progress imported: {0} attempts.',
+
+    // ---- the dashboard, the sidebar, and the weak-spots screen ----
+    nav_dashboard: 'Dashboard',
+    nav_weak: 'Weak spots',
+    nav_book: 'Textbook',
+    nav_history: 'History',
+    nav_progress: 'Progress',
+    side_offline: 'offline · no backend',
+    ready_title: 'Readiness forecast',
+    ready_scale: 'scale 300–1000 · pass 825 · over the last {0} answers',
+    ready_delta: '{0} this week',
+    ready_to_pass: '{0} short of passing',
+    ready_weak_now: 'Weak right now',
+    ready_empty: 'Nothing to judge by yet — take an exam or a practice run.',
+    weak_title: 'Weak spots',
+    weak_go: 'Work on the weak spots',
+    weak_mix: '{0} · {1} · with explanations',
+    weak_mix_title: 'Today\u2019s mix',
+    weak_mix_rule: 'A domain\u2019s share of the mix is its blueprint weight times how much of it went wrong over the last {0} answers.',
+    weak_mix_none: 'No domain is below the 75% threshold — there is no weak spot to drill.',
+    weak_doms_title: 'Domains below the threshold',
+    weak_dom_cost: 'Weight {0}% of the exam · {1} out of {2} · that is {3} of the forecast',
+    weak_dom_go: 'Study · {0} q.',
+    dash_modes_title: 'Modes',
+    dash_domains_title: 'Exam domains · last {0} answers',
+    dash_domain_foot: '{0} of {1} right · weight {2}%',
+    dash_domain_go: 'study',
+    dash_weak_link: 'Weak spots →',
+    dash_srs_line: '{0} have come due',
+    dash_wrong_line: 'the last answer was wrong',
+    dash_scores_title: 'Scores over {0}',
+    dash_scores_note: 'Blueprint-weighted attempts only — practice and repetition never reach the scale.',
+    dash_today_line: '{0} answered · {1} wrong · {2} repetitions · {3}-day streak',
+    plan_title: 'Study plan',
+    plan_exam_date: 'Exam date',
+    plan_days_left: '{0} days left',
+    plan_days_none: 'no exam date set',
+    plan_days_past: 'the exam date has passed',
+    plan_mock_in: 'Mock exam in {0} days',
+    plan_mock_due: 'Time for a mock exam',
+    plan_side_title: 'To the exam',
+    plan_side_unit: 'days',
+    plan_side_set: 'Set the exam date →',
+    backup_title: 'Backup',
+    hist_book_ch: 'chapter',
   },
 };
 const fmt = (s, ...vals) => s.replace(/\{(\d+)\}/g, (_, i) => vals[i] ?? '');
+
+// "21 баллов" is what a template produces and nobody says. Russian picks one of three
+// forms by the last digits; English by whether the number is one. Only the handful of
+// counted nouns that actually appear in full — abbreviations like "вопр." and "дн." are
+// invariant and never come through here.
+const RU_PLURAL = {
+  question: ['вопрос', 'вопроса', 'вопросов'],
+  mistake: ['ошибка', 'ошибки', 'ошибок'],
+  point: ['балл', 'балла', 'баллов'],
+  attempt: ['попытка', 'попытки', 'попыток'],
+  day: ['день', 'дня', 'дней'],
+};
+const EN_PLURAL = {
+  question: ['question', 'questions'], mistake: ['mistake', 'mistakes'],
+  point: ['point', 'points'], attempt: ['attempt', 'attempts'], day: ['day', 'days'],
+};
+function plural(n, kind) {
+  const abs = Math.abs(n) % 100, ones = abs % 10;
+  if (LANG === 'en') return EN_PLURAL[kind][Math.abs(n) === 1 ? 0 : 1];
+  if (abs > 10 && abs < 20) return RU_PLURAL[kind][2];
+  return RU_PLURAL[kind][ones === 1 ? 0 : ones >= 2 && ones <= 4 ? 1 : 2];
+}
+// "{0} {1:question}" — the number, then the noun made to agree with it.
+const n_ = (n, kind) => `${n} ${plural(n, kind)}`;
 const t = (k, ...vals) => fmt((I18N[LANG] && I18N[LANG][k]) || I18N.ru[k] || k, ...vals);
-markLangSwitch();   // the fixed switch reflects the locale the landing resolved
-document.querySelectorAll('.lang-opt').forEach(el => el.classList.toggle('on', el.dataset.lang === LANG));
+document.documentElement.lang = LANG;
 
 // ---- load ----
 async function boot() {
@@ -508,6 +641,10 @@ async function boot() {
   DATA = q; META = m;
   META.domains.forEach(d => DOM[d.id] = d);
   POOL = DATA.filter(scorable);
+  // The sidebar counts chapters read out of how many there are, and only the index knows
+  // the second number. 40 KB behind a 3 MB bank, and the strip redraws when it lands —
+  // a deployment without a textbook simply keeps showing the count without a total.
+  bookLoadIndex().then(renderSide).catch(() => {});
 }
 function scorable(q) {
   if (q.y === 'txt' || q.y === 'ex') return q.a && q.a.length > 0;
@@ -518,88 +655,456 @@ const domName = id => (DOM[id] ? DOM[id].name : id);
 const domShort = id => domName(id).replace(/^\d+\.\d+\s+/, '');
 
 // ============================ ENTRY ============================
-// The landing is the site's first screen and has to paint immediately, so the 3 MB bank is
-// fetched only when a mode is actually entered — and only once. A deep link
-// (?mode=exam|custom|practice) skips the landing and opens that mode directly; the mode
-// CTAs on the landing are ordinary links to those same URLs, so middle-click and
-// "copy link address" behave the way they look.
+// The root of the site is the dashboard, and the dashboard is built on the bank — it
+// counts the questions and forecasts a score off them — so the 3 MB fetch starts on load
+// rather than on entering a mode. Until it lands every screen paints `boot_loading`.
+//
+// A deep link (?mode=…) opens that screen directly; the sidebar rewrites the parameter as
+// it goes, so any screen can be copied out of the address bar and come back the same.
 let booting = null;
 const ensureBooted = () => booting || (booting = boot());
 
 const MODE_ENTRY = {
+  home,                         // the dashboard, and the default with no parameter at all
+  weak: weakScreen,
+  book: bookScreen,
+  history: historyScreen,
+  progress: progressScreen,
   exam: startFullExam,          // straight into the weighted 100-question attempt
   custom: () => cfg('exam'),    // the configure screen for a self-built exam
   practice: () => cfg('practice'),
-  // Not a mode the bank knows about — a fourth stop for the query param, the trainer's own
-  // home() screen. The header's "Тренажёр" button uses this rather than modeExamUrl: README
-  // §2.1 specs it going straight into the full exam, but that means one click on a generic
-  // "trainer" label drops a first-time visitor into a 120-minute timed attempt with no way
-  // to see the other two modes first. Deliberate deviation, not an oversight — the mode
-  // cards on the landing (and "Начать экзамен" on this screen) still go straight to exam.
-  home,
 };
 
 function route() {
   const mode = new URLSearchParams(location.search).get('mode');
-  if (mode && MODE_ENTRY[mode]) return openMode(mode);
-  NetPath.showLanding();
+  openMode(MODE_ENTRY[mode] ? mode : 'home');
 }
 
 function openMode(mode) {
-  if (!MODE_ENTRY[mode]) return NetPath.showLanding();
-  NetPath.hideLanding();
-  app().innerHTML = `<h1>${esc(NetPath.CONFIG.brandName)}</h1><div class="sub">${t('boot_loading')}</div>`;
-  ensureBooted().then(MODE_ENTRY[mode]);
+  const go = MODE_ENTRY[mode] || home;
+  NAV_AT = mode;
+  narrow();
+  renderSide();
+  app().innerHTML = `<h1>CCNA 200-301</h1><div class="sub">${t('boot_loading')}</div>`;
+  ensureBooted().then(() => { go(); renderSide(); });
 }
 
-// ============================ HOME ============================
+// The dashboard is laid out in two columns and gets a wider column to do it in. Every way
+// out of it passes through one of the calls to narrow() below, so no other screen inherits
+// the width — a question at 1180px is a line too long to read.
+const narrow = () => app().classList.remove('wide');
+
+// ============================ SIDEBAR ============================
+// One strip of navigation that outlives every screen. It is redrawn rather than mutated:
+// each item carries a count that comes out of the store, and those move as work is done.
+//
+// Which item is lit is held here and not read back off the address bar — an attempt
+// started from the dashboard keeps the dashboard lit, which is where leaving it lands.
+let NAV_AT = 'home';
+
+const NAV = [
+  ['home', 'nav_dashboard'],
+  ['weak', 'nav_weak'],
+  ['book', 'nav_book'],
+  ['history', 'nav_history'],
+  ['progress', 'nav_progress'],
+];
+
+// The textbook index is 40 KB against a 3 MB bank, and the sidebar wants its chapter count
+// on every screen. Fetched once, in the background, and the strip is redrawn when it lands.
+const navCounts = () => {
+  const st = P();
+  if (!st) return {};
+  const read = Object.keys(st.readMap(st.book)).length;
+  return {
+    weak: DATA.length ? String(weakMixPlan().length || '') : '',
+    book: bookIndex ? `${read}/${bookIndex.topics.length}` : (read ? String(read) : ''),
+    history: st.attempts.length ? String(st.attempts.length) : '',
+    progress: '',
+  };
+};
+
+// Where the countdown card gets its two numbers: the exam, and the weekly mock. Both are
+// the phone's rules, out of shared/plan.js and shared/localdate.js.
+function planState(now = Date.now()) {
+  const st = P();
+  if (!st) return null;
+  const mock = st.mockState(st.attempts, now);
+  return {
+    left: st.daysUntil(st.profile.examDate, now),
+    date: st.profile.examDate || null,
+    mock,
+    // How far through this week's mock cycle we are — the bar under the countdown.
+    pct: Math.round(((st.MOCK_EVERY_DAYS - mock.daysLeft) / st.MOCK_EVERY_DAYS) * 100),
+  };
+}
+
+const mockLine = plan =>
+  plan.mock.due ? t('plan_mock_due') : t('plan_mock_in', plan.mock.daysLeft);
+
+function sidePlanHTML() {
+  const plan = planState();
+  if (!plan) return '';
+  const dated = plan.date && plan.left !== null && plan.left >= 0;
+  return `<div class="plan-card">
+    <div class="lb">${t('plan_side_title')}</div>
+    ${dated ? `<div class="plan-days">
+      <b>${plan.left}</b><span class="u">${t('plan_side_unit')}</span>
+      <span class="dt">${esc(stampDay(plan.date))}</span>
+    </div>` : `<button class="plan-set" data-nav="progress">${t('plan_side_set')}</button>`}
+    <div class="plan-track"><i style="width:${Math.max(0, Math.min(100, plan.pct))}%"></i></div>
+    <div class="plan-note">${mockLine(plan)}</div>
+  </div>`;
+}
+
+function renderSide() {
+  const box = document.getElementById('side');
+  if (!box) return;
+  const counts = navCounts();
+  box.innerHTML = `
+    <div class="side-lockup">${mark(26)}<span>${BRAND}</span></div>
+    <nav class="side-nav" aria-label="${BRAND}">
+      ${NAV.map(([id, key]) => `<button class="snav${id === NAV_AT ? ' on' : ''}" data-nav="${id}"
+        ${id === NAV_AT ? 'aria-current="page"' : ''}>
+        <span class="dot"></span><span class="lb">${t(key)}</span>
+        <span class="n">${esc(counts[id] || '')}</span></button>`).join('')}
+    </nav>
+    <div class="side-foot">
+      ${sidePlanHTML()}
+      <div class="side-lang">
+        <div class="lang-switch" role="group" aria-label="Language / Язык">
+          ${['ru', 'en'].map(l => `<span class="lang-opt${l === LANG ? ' on' : ''}"
+            data-lang="${l}">${l.toUpperCase()}</span>`).join('')}
+        </div>
+        <span class="note">${t('side_offline')}</span>
+      </div>
+    </div>`;
+  box.querySelectorAll('[data-nav]').forEach(b => b.onclick = () => goScreen(b.dataset.nav));
+  box.querySelectorAll('[data-lang]').forEach(b => b.onclick = () => setLang(b.dataset.lang));
+}
+
+// Leaving a running exam through the sidebar is the same decision as leaving it through
+// the ✕ in its own strip, so it asks the same question. Practice keeps what it answered
+// (savePracticeAttempt files on the way out), an exam does not — hence only 'ex'.
+function goScreen(id) {
+  const go = MODE_ENTRY[id];
+  if (!go) return;
+  if (S.mode === 'ex' && !confirm(t('exit_confirm'))) return;
+  if (S.tid) { clearInterval(S.tid); S.tid = null; }
+  if (S.mode === 'pr') finishPractice({ leave: true });
+  S = {};
+  NAV_AT = id;
+  narrow();
+  history.replaceState(null, '', id === 'home' ? location.pathname : `?mode=${id}`);
+  renderSide();
+  if (!DATA.length) return ensureBooted().then(() => { go(); renderSide(); });
+  go();
+  renderSide();
+}
+
+// ============================ READINESS ============================
+// The forecast the dashboard is built on, and the mix the one big button starts. Both are
+// derived, never stored: shared/readiness.js reads the last 200 answers out of the attempt
+// history, and the Android app forecasts off exactly the same function.
+//
+// Recomputed per render rather than cached. It walks 200 answers over a Map — cheap enough
+// that a cache would only be a way of showing a stale number after an attempt is filed.
+const WEAK_BELOW = 75;              // shared/progress.js calls the same line "weak"
+const MIX_SIZE = 20;                // one sitting, not a second exam
+const WEEK_MS = 7 * 86_400_000;
+
+const readyNow = () => {
+  const st = P();
+  if (!st || !DATA.length) return null;
+  return st.readiness(st.attempts, byN(), META.domains, isCorrect);
+};
+
+const readyDelta = () => {
+  const st = P();
+  if (!st || !DATA.length) return null;
+  return st.readinessDelta(st.attempts, byN(), META.domains, isCorrect, Date.now() - WEEK_MS);
+};
+
+// "1.0 Network Fundamentals" — the blueprint number is set apart from the name.
+const domNameHTML = id => {
+  const m = domName(id).match(/^(\d+\.\d+)\s+(.*)$/);
+  return m ? `<span class="dn">${esc(m[1])}</span> ${esc(m[2])}` : esc(domName(id));
+};
+
+// The six domains as the window actually saw them. A domain nobody has answered anything
+// in has no percentage — it is left out rather than drawn at zero, which would read as
+// "you got them all wrong" instead of "nothing to say yet".
+function domainRows(r) {
+  if (!r) return [];
+  return META.domains.map(d => {
+    const p = r.perDomain[d.id] || { ok: 0, tot: 0, pct: null };
+    return { id: d.id, weight: d.weight, ok: p.ok, tot: p.tot, pct: p.pct };
+  }).filter(x => x.tot > 0);
+}
+
+// How today's mix is split. Each weak domain's share is its blueprint weight times how
+// much of it went wrong — a domain worth a quarter of the exam and half missed is worth
+// twice one worth an eighth and half missed. Everything below the threshold gets at least
+// one question: a mix that silently drops a domain is not the mix the line above it says.
+function weakMixPlan() {
+  const rows = domainRows(readyNow()).filter(d => d.pct < WEAK_BELOW);
+  if (!rows.length) return [];
+  const raw = rows.map(d => ({ ...d, w: d.weight * (1 - d.pct / 100) }));
+  const sum = raw.reduce((a, d) => a + d.w, 0) || 1;
+  let left = MIX_SIZE;
+  return raw.map((d, i) => {
+    const rest = raw.length - i - 1;                  // the one question each of those still owes
+    // The last domain takes the remainder, so the parts always add up to MIX_SIZE.
+    const want = rest === 0 ? left : Math.round((d.w / sum) * MIX_SIZE);
+    const n = Math.min(Math.max(1, want), Math.max(1, left - rest));
+    left -= n;
+    return { ...d, mix: n };
+  });
+}
+
+// The mix as question numbers. Inside a domain the weak topics come first — they are the
+// part of it that is actually costing points — and the order within each group is random,
+// which a stable sort over a shuffled pool gives for free.
+function weakMixNumbers(plan = weakMixPlan()) {
+  if (!plan.length) return [];
+  const st = P();
+  const hot = new Set((st ? st.weakTopics(st.attempts, byN(), isCorrect, { limit: 12 }) : [])
+    .map(r => r.topic));
+  const out = [];
+  for (const d of plan) {
+    const pool = shuffle(POOL.filter(q => q.dom === d.id));
+    pool.sort((a, b) => (hot.has(b.tp) ? 1 : 0) - (hot.has(a.tp) ? 1 : 0));
+    out.push(...pool.slice(0, d.mix).map(q => q.n));
+  }
+  return shuffle(out);
+}
+
+// "20 вопросов · IPC 9 · SEC 6 · IPS 5 · с пояснениями"
+const mixLine = plan => t('weak_mix',
+  n_(plan.reduce((a, d) => a + d.mix, 0), 'question'),
+  plan.map(d => `${d.id} ${d.mix}`).join(' · '));
+
+// Every run started from a weak spot is practice: instant checking and the rationale, and
+// never the 300..1000 scale — a pick aimed at what you are worst at is not the sample the
+// scale describes. Same rule as startCustomExam.
+const startWeakRun = () => startRun(weakMixNumbers());
+
+function startDomainRun(id) {
+  const plan = weakMixPlan().find(d => d.id === id);
+  const n = plan ? plan.mix : MIX_SIZE;
+  startRun(shuffle(POOL.filter(q => q.dom === id)).slice(0, n).map(q => q.n));
+}
+
+// A question from a domain (or a topic), so the chapter link has something to resolve
+// against — bookChapterFor maps a question, not a subject. For a domain the pick is not
+// arbitrary: it comes from the weakest topic inside it, which is the chapter actually
+// worth opening, and only falls back to the first question when nothing is flagged yet.
+const anyQOf = pick => { const q = POOL.find(pick); return q ? q.n : 0; };
+
+function domainChapterQ(id) {
+  const st = P();
+  const weak = st ? st.weakTopics(st.attempts, byN(), isCorrect, { limit: 12 }) : [];
+  const hit = weak.find(r => r.dom === id);
+  return (hit && anyQOf(q => q.dom === id && q.tp === hit.topic)) || anyQOf(q => q.dom === id);
+}
+const chapterSlot = qn => qn ? `<span data-forq="${qn}"></span>` : '';
+
+// ============================ DASHBOARD ============================
+// Where am I, and what should I do right now — in that order, and above the fold.
 function home() {
   SCREEN = home;
+  NAV_AT = 'home';
+  const st = P();
   const ex = DATA.filter(q => q.y === 'ex').length;
-  const ddReady = META.dd_ready, ddTotal = META.dd_total;
-  // Bars are read against the heaviest domain, so the widest one is full width. The old
-  // fixed multiplier left every bar short of the track for no reason.
-  const maxWeight = Math.max(...META.domains.map(d => d.weight));
-  // "1.0 Network Fundamentals" — the blueprint number is set apart from the name.
-  const domName = name => {
-    const m = name.match(/^(\d+\.\d+)\s+(.*)$/);
-    return m ? `<span class="dn">${esc(m[1])}</span> ${esc(m[2])}` : esc(name);
-  };
+  const r = readyNow();
+  const plan = weakMixPlan();
   app().innerHTML = `
-  <div class="tosite"><a href="${esc(location.pathname)}" aria-label="${t('nav_site')}">
-    <span aria-hidden="true">←</span>${NetPath.mark(18)}<span>${esc(NetPath.CONFIG.brandName)}</span>
-  </a></div>
-  <h1 class="home">CCNA 200-301</h1>
-  <div class="sub">${t('home_stats', POOL.length, ex, META.with_exp)}</div>
-
-  <div class="modes">
-    <button class="btn big" onclick="startFullExam()">
-      <span class="tx"><b>${t('home_full_title')}</b><span>${t('home_full_desc')}</span></span>
-      <span class="go">${t('home_go_start')}</span>
-    </button>
-    <button class="btn big pu" onclick="cfg('exam')">
-      <span class="tx"><b>${t('home_custom_title')}</b><span>${t('home_custom_desc')}</span></span>
-      <span class="go">${t('home_go_config')}</span>
-    </button>
-    <button class="btn big gr" onclick="cfg('practice')">
-      <span class="tx"><b>${t('home_practice_title')}</b><span>${t('home_practice_desc')}</span></span>
-      <span class="go">${t('home_go_config')}</span>
-    </button>
+  <div>
+    <h1 class="home">CCNA 200-301</h1>
+    <div class="sub">${t('home_stats', POOL.length, ex, META.with_exp)}</div>
   </div>
 
-  ${homeProgressHTML()}
-
-  <div class="sec">
-    <h2>${t('home_domains_title')}</h2>
-    ${META.domains.map(d => `
-      <div class="dbar">
-        <div class="top"><span class="nm">${domName(d.name)}</span><span class="vl">${t('home_domain_weight', Math.round(d.weight*100), d.count)}</span></div>
-        <div class="track"><div class="fill" style="width:${Math.round(d.weight / maxWeight * 100)}%"></div></div>
-      </div>`).join('')}
+  <div class="dgrid">
+    ${readyPanelHTML(r, plan)}
+    <div class="dcol">${todayCardHTML()}${queueRowsHTML()}</div>
   </div>
-  <div class="sub">${t('home_dd_note', ddReady, ddTotal, META.sim_total)}<a class="link" href="#" onclick="browseSims();return false;">${t('home_sims_link')}</a>.</div>
+
+  <div class="dgrid top">
+    <div class="modes">
+      <h2>${t('dash_modes_title')}</h2>
+      <button class="btn big" onclick="startFullExam()">
+        <span class="tx"><b>${t('home_full_title')}</b><span>${t('home_full_desc')}</span></span>
+        <span class="go">${t('home_go_start')}</span>
+      </button>
+      <button class="btn big pu" onclick="cfg('exam')">
+        <span class="tx"><b>${t('home_custom_title')}</b><span>${t('home_custom_desc')}</span></span>
+        <span class="go">${t('home_go_config')}</span>
+      </button>
+      <button class="btn big gr" onclick="cfg('practice')">
+        <span class="tx"><b>${t('home_practice_title')}</b><span>${t('home_practice_desc')}</span></span>
+        <span class="go">${t('home_go_config')}</span>
+      </button>
+    </div>
+    ${scoreChartHTML()}
+  </div>
+
+  ${domainsSectionHTML(r)}
+
+  <div class="sub">${t('home_dd_note', META.dd_ready, META.dd_total, META.sim_total)}<a class="link" href="#" onclick="browseSims();return false;">${t('home_sims_link')}</a>.</div>
   <div class="foot">${t('home_footer')}</div>`;
-  wireHistory(home);
+  app().classList.add('wide');
+  wireDash();
+  if (st) window.scrollTo(0, 0);
+}
+
+// The forecast, what is dragging it, and the button that acts on it — one dark panel,
+// because the number on it is the only one worth reading before booking an exam.
+// The panel always ends in the run worth doing next, and there are only two answers: work
+// on what is weak, or — with nothing under the threshold, or nothing measured yet — sit a
+// full exam, which is what would move the forecast either way.
+const readyActionHTML = plan => plan.length
+  ? `<button class="weakgo" data-act="weak-run">
+      <span class="tx"><b>${t('weak_go')}</b><span>${esc(mixLine(plan))}</span></span>
+      <span class="go">${t('home_go_start')}</span></button>`
+  : `<button class="weakgo" onclick="startFullExam()">
+      <span class="tx"><b>${t('home_full_title')}</b><span>${t('home_full_desc')}</span></span>
+      <span class="go">${t('home_go_start')}</span></button>`;
+
+function readyPanelHTML(r, plan) {
+  const pass = passMark();
+  const has = r && r.forecast !== null;
+  if (!has) {
+    return `<div class="ready">
+      <div class="ready-l"><div class="kick">${t('ready_title')}</div>
+        <div class="ready-empty">${t('ready_empty')}</div></div>
+      ${readyActionHTML([])}
+    </div>`;
+  }
+  const d = readyDelta();
+  const short = pass - r.forecast;
+  const weak = domainRows(r).filter(x => x.pct < WEAK_BELOW).sort((a, b) => a.pct - b.pct);
+  return `<div class="ready">
+    <div class="ready-head">
+      <div class="ready-l">
+        <div class="kick">${t('ready_title')}</div>
+        <div class="ready-n">
+          <span class="v">${r.forecast}</span>
+          <span class="of">${t('results_of')}</span>
+          ${d === null ? '' : `<span class="dl${d < 0 ? ' down' : ''}">${t('ready_delta', `${d > 0 ? '+' : ''}${d}`)}</span>`}
+        </div>
+        <div class="ready-note">${t('ready_scale', r.sample)}</div>
+      </div>
+      <span class="ready-pill${short <= 0 ? ' pass' : ''}">${short > 0 ? t('ready_to_pass', short) : t('pass_badge')}</span>
+    </div>
+    ${weak.length ? `<div class="ready-rule"></div>
+    <div class="ready-weak">
+      <div class="kick">${t('ready_weak_now')}</div>
+      <div class="wchips">${weak.map(x =>
+        `<span class="wchip">${esc(domShort(x.id))}<span class="p">${x.pct}%</span></span>`).join('')}</div>
+    </div>` : ''}
+    ${readyActionHTML(plan)}
+  </div>`;
+}
+
+// What was answered today, against the goal, with a fortnight of the same behind it.
+function todayCardHTML() {
+  const st = P();
+  if (!st) return '';
+  const now = Date.now();
+  const day = st.dayStats(st.activity, now);
+  const goal = st.goalOf(st.profile);
+  const pct = Math.min(100, Math.round(day.total / goal * 100));
+  const done = day.total >= goal;
+  return `<div class="pcard">
+    <h2>${t('learn_today')}</h2>
+    <div class="dbar">
+      <div class="top"><span class="nm">${t('learn_goal_line', day.total, goal)}</span>
+        <span class="vl ${done ? 'g' : 'a'}">${pct}%</span></div>
+      <div class="track"><div class="fill ${done ? 'g' : 'a'}" style="width:${pct}%"></div></div>
+    </div>
+    <div class="plan-note">${t('dash_today_line', day.total, day.wrong, day.srs, st.streakDays(st.activity, now))}</div>
+    ${activityStripHTML(st.recentDays(st.activity, now, 14), goal)}
+  </div>`;
+}
+
+// The two queues, as two lines: what is due and what is still wrong.
+function queueRowsHTML() {
+  const st = P();
+  if (!st) return '';
+  const due = learnDue().length, wrong = learnWrong().length;
+  // Nothing due and nothing ever answered are two different states: one says the work is
+  // done, the other that there is no work yet. Saying the first when it is the second
+  // congratulates someone on a queue they have not started.
+  const idle = Object.keys(st.srs).length ? t('learn_srs_empty') : t('learn_srs_none');
+  return `<button class="rowbtn" data-act="srs"${due ? '' : ' disabled'}>
+      <span class="tx"><b>${t('learn_srs')}</b><span>${due ? t('dash_srs_line', n_(due, 'question')) : idle}</span></span>
+      <span class="n">${due}</span>
+    </button>
+    <button class="rowbtn" data-act="wrong"${wrong ? '' : ' disabled'}>
+      <span class="tx"><b>${t('learn_wrong')}</b><span>${wrong ? t('dash_wrong_line') : t('learn_wrong_empty')}</span></span>
+      <span class="n r">${wrong}</span>
+    </button>`;
+}
+
+// The scaled score of the last few attempts that are allowed to claim one. Nothing else
+// goes on here: a filtered pick graded 90% is not 930 on Cisco's scale and drawing it
+// beside real attempts would say it was.
+const CHART_H = 118;
+function scoreChartHTML() {
+  const st = P();
+  if (!st) return '';
+  const runs = st.scoredAttempts(st.attempts.slice().sort((a, b) => a.date - b.date)).slice(-7);
+  if (runs.length < 2) return '';
+  const pass = passMark();
+  const at = v => Math.max(0, Math.min(CHART_H, Math.round((v - 300) / 700 * CHART_H)));
+  const last = runs.length - 1;
+  const move = runs[last].scaled - runs[last - 1].scaled;
+  return `<div class="pcard">
+    <div class="dhead"><h2>${t('dash_scores_title', n_(runs.length, 'attempt'))}</h2>
+      <span class="dlink" style="cursor:default">${move > 0 ? '+' : ''}${move}</span></div>
+    <div class="chart">
+      <div class="chart-pass" style="bottom:${at(pass)}px"><span>${pass}</span></div>
+      ${runs.map((a, i) => `<i class="${i === last ? 'last' : i >= last - 2 ? 'near' : ''}"
+        style="height:${Math.max(3, at(a.scaled))}px" title="${esc(stampFull(a.date))} · ${a.scaled}"></i>`).join('')}
+    </div>
+    <div class="chart-vals">${runs.map((a, i) =>
+      `<span class="${i === last ? 'last' : ''}">${a.scaled}</span>`).join('')}</div>
+    <div class="plan-note" style="font-weight:400">${t('dash_scores_note')}</div>
+  </div>`;
+}
+
+// The six domains as they actually went over the window — not as the blueprint weights
+// them. The weight is still said, underneath, because it is what makes one worth more.
+function domainsSectionHTML(r) {
+  const rows = domainRows(r);
+  if (!rows.length) return '';
+  return `<div class="sec">
+    <div class="dhead"><h2>${t('dash_domains_title', r.sample)}</h2>
+      <button class="dlink" data-nav="weak">${t('dash_weak_link')}</button></div>
+    <div class="domgrid">${rows.map(d => {
+      const tone = d.pct >= WEAK_BELOW ? 'g' : d.pct >= 60 ? 'a' : 'r';
+      return `<div class="dbar">
+        <div class="top"><span class="nm">${domNameHTML(d.id)}</span>
+          <span class="act"><span class="vl ${tone}">${d.pct}%</span>
+            <button class="tiny" data-drill="${d.id}">${t('dash_domain_go')}</button></span></div>
+        <div class="track"><div class="fill ${tone}" style="width:${d.pct}%"></div></div>
+        <div class="foot">${t('dash_domain_foot', d.ok, d.tot, Math.round(d.weight * 100))}</div>
+      </div>`;
+    }).join('')}</div>
+  </div>`;
+}
+
+// Domain ids and topic names come out of the bank, so the handlers are wired after the
+// markup rather than inlined into it — same rule the history rows follow.
+function wireDash() {
+  const box = app();
+  box.querySelectorAll('[data-nav]').forEach(b => b.onclick = () => goScreen(b.dataset.nav));
+  box.querySelectorAll('[data-drill]').forEach(b => b.onclick = () => startDomainRun(b.dataset.drill));
+  box.querySelectorAll('[data-topic]').forEach(b => b.onclick = () => startTopicRun(b.dataset.topic));
+  box.querySelectorAll('[data-act]').forEach(b => b.onclick = () => ({
+    'weak-run': startWeakRun, srs: startSrsRun, wrong: startWrongRun,
+  })[b.dataset.act]?.());
+  wireChapterLinks();
 }
 
 // ============================ LAB SIMULATIONS (reference only) ============================
@@ -652,6 +1157,7 @@ function formatSimAnswer(text) {
 }
 
 function browseSims() {
+  narrow();
   SCREEN = browseSims;
   const sims = DATA.filter(q => q.y === 'sim');
   let h = `<div class="row"><button class="btn" onclick="home()">${t('nav_back')}</button></div>
@@ -740,6 +1246,7 @@ let cfgMode = 'exam';
 // `keep` is set only when replaying the screen after a language change: the chips the
 // user has already ticked are part of the screen, not something to reset under them.
 function cfg(mode, keep) {
+  narrow();
   // Replaying this screen after a language change must not reset what the user has already
   // set up. The chips live in selDoms/selTypes and survive on their own; the controls are
   // plain DOM, so their values are carried across the re-render by hand.
@@ -1062,6 +1569,14 @@ function savePracticeAttempt(rev) {
 // ---- history ----
 const attrEsc = v => esc(v).replace(/"/g, '&quot;');
 
+// The exam date, as it is stored ('YYYY-MM-DD') and as it is read ('14.10.2026'). Split by
+// hand rather than through Date: the string is a calendar day, and parsing it would make it
+// a UTC instant that reads back as the day before east of UTC — see shared/localdate.js.
+const stampDay = iso => {
+  const [y, m, d] = String(iso || '').split('-');
+  return y ? `${d}.${m}.${y}` : '';
+};
+
 const stampFull = ts => {
   const d = new Date(ts);
   const p2 = n => String(n).padStart(2, '0');
@@ -1175,44 +1690,84 @@ function wireHistory(rerender) {
   });
 }
 
-const transferRowHTML = () => `<div class="row">
-  <button class="btn sm" onclick="exportProgress()">${t('hist_export')}</button>
-  <button class="btn sm" onclick="importProgress()">${t('hist_import')}</button>
-</div>`;
 
-// The home screen shows the three most recent attempts; the rest are one click away.
-function homeProgressHTML() {
+function historyScreen() {
+  SCREEN = historyScreen;
+  NAV_AT = 'history';
+  const st = P();
+  const all = st ? st.recentAttempts() : [];
+  app().innerHTML = `
+    <div>
+      <h1>${t('hist_title')}</h1>
+      <div class="sub">${t('hist_retention')}</div>
+    </div>
+    ${all.length ? attemptGroupsHTML(all) : `<div class="exp muted">${t('hist_none')}</div>`}`;
+  wireHistory(historyScreen);
+  window.scrollTo(0, 0);
+}
+
+// ============================ PROGRESS ============================
+// Where the progress itself is looked after rather than read: the key that carries it to
+// the phone, the file that carries it anywhere, and the two dates the plan is made of.
+function progressScreen(msg = '') {
+  SCREEN = progressScreen;
+  NAV_AT = 'progress';
+  const st = P();
+  app().innerHTML = `
+    <div>
+      <h1>${t('hist_open_screen')}</h1>
+      <div class="sub">${t('sync_note')}</div>
+    </div>
+    ${syncSectionHTML()}
+    <div class="pcard">
+      <h2>${t('backup_title')}</h2>
+      <div class="plan-note" style="font-weight:400">${t('hist_transfer_note')}</div>
+      <div class="row">
+        <button class="btn sm" onclick="exportProgress()">${t('hist_export')}</button>
+        <button class="btn sm" onclick="importProgress()">${t('hist_import')}</button>
+      </div>
+    </div>
+    ${planSectionHTML()}`;
+  if (msg) setSyncMsg(msg);
+  wirePlan();
+  window.scrollTo(0, 0);
+}
+
+// The two numbers the sidebar counts down on: when the exam is, and how much is meant to
+// be answered a day. Both live in the synced profile, so the phone reads what is set here.
+function planSectionHTML() {
   const st = P();
   if (!st) return '';
-  const all = st.recentAttempts();
-  return `<div class="sec">
-    <h2>${t('hist_home_title')}</h2>
-    ${all.length ? `<div class="hist">${all.slice(0, 3).map(attemptFoldHTML).join('')}</div>` : `<div class="exp muted">${t('hist_none')}</div>`}
-    <div class="row">
-      <button class="btn sm" onclick="learnScreen()">${t('learn_open')}</button>
-      <button class="btn sm" onclick="bookScreen()">${t('book_open')}</button>
-      <button class="btn sm" onclick="historyScreen()">${all.length > 3 ? t('hist_all', all.length) : t('hist_open_screen')}</button>
-      <button class="btn sm" onclick="exportProgress()">${t('hist_export')}</button>
-      <button class="btn sm" onclick="importProgress()">${t('hist_import')}</button>
+  const plan = planState();
+  const left = plan.left;
+  const line = left === null ? t('plan_days_none')
+    : left < 0 ? t('plan_days_past')
+    : t('plan_days_left', left);
+  return `<div class="pcard">
+    <h2>${t('plan_title')}</h2>
+    <div class="planset">
+      <label class="goalset">${t('plan_exam_date')}
+        <input id="examdate" type="date" value="${attrEsc(st.profile.examDate || '')}"></label>
+      <label class="goalset">${t('learn_goal_set')}
+        <input id="goal" type="number" min="1" max="500" step="5" value="${st.goalOf(st.profile)}"></label>
     </div>
+    <div class="plan-note">${mockLine(plan)} · ${line}</div>
   </div>`;
 }
 
-function historyScreen(msg = '') {
-  SCREEN = historyScreen;
+// Committed on change rather than on every keystroke: typing "40" passes through "4", and
+// a goal of 4 written to the synced profile on the way is not what was meant. A half-typed
+// date is the same story — an <input type=date> reports '' until all three parts are in.
+function wirePlan() {
   const st = P();
-  const all = st ? st.recentAttempts() : [];
-  app().innerHTML = `<h1>${t('hist_title')}</h1>
-    <div class="sub">${t('hist_transfer_note')}</div>
-    ${transferRowHTML()}
-    ${syncSectionHTML()}
-    <div class="sec">${all.length
-      ? `${attemptGroupsHTML(all)}<div class="exp muted" style="margin-top:10px">${t('hist_retention')}</div>`
-      : `<div class="exp muted">${t('hist_none')}</div>`}</div>
-    <div class="nav"><button class="btn" onclick="home()">${t('nav_home')}</button></div>`;
-  wireHistory(historyScreen);
-  if (msg) setSyncMsg(msg);
-  window.scrollTo(0, 0);
+  if (!st) return;
+  // Both numbers are also drawn in the sidebar's countdown, which is not part of the
+  // screen being redrawn — hence renderSide() alongside.
+  const redraw = () => { progressScreen(); renderSide(); };
+  const goal = document.getElementById('goal');
+  if (goal) goal.onchange = () => { st.setGoal(parseInt(goal.value, 10)); redraw(); };
+  const date = document.getElementById('examdate');
+  if (date) date.onchange = () => { st.setExamDate(date.value); redraw(); };
 }
 
 // Re-open a stored attempt on the screen it was first shown on. Questions the bank no
@@ -1279,7 +1834,8 @@ function importProgress() {
       try { data = JSON.parse(reader.result); } catch { alert(t('hist_import_bad')); return; }
       try { st.restore(data); } catch { alert(t('hist_import_bad')); return; }
       alert(t('hist_imported', st.attempts.length));
-      historyScreen();
+      progressScreen();
+      renderSide();
     };
     reader.onerror = () => alert(t('hist_import_bad'));
     reader.readAsText(file);
@@ -1312,9 +1868,8 @@ function syncSectionHTML() {
   const st = P();
   if (!st) return '';
   const key = st.sync.key || '';
-  return `<div class="sec">
+  return `<div class="pcard">
     <h2>${t('sync_title')}</h2>
-    <div class="exp muted">${t('sync_note')}</div>
     <div class="row">
       <input class="synckey" id="synckey" type="text" spellcheck="false" autocomplete="off"
              autocapitalize="off" placeholder="${t('sync_key_ph')}" value="${attrEsc(key)}">
@@ -1334,7 +1889,7 @@ function syncSectionHTML() {
 function makeSyncKey() {
   const st = P(); if (!st) return;
   st.setSync({ key: st.newSyncKey() });
-  historyScreen(t('sync_created'));
+  progressScreen(t('sync_created'));
 }
 
 function copySyncKey() {
@@ -1349,7 +1904,7 @@ function forgetSyncKey() {
   const st = P(); if (!st) return;
   if (!confirm(t('sync_forget_confirm'))) return;
   st.setSync({ key: null, syncedAt: 0, rev: 0 });
-  historyScreen();
+  progressScreen();
 }
 
 async function runSync() {
@@ -1364,7 +1919,7 @@ async function runSync() {
     // what just happened.
     const { wrote, pulled } = await st.syncNow();
     // The history above the button is now someone else's too — redraw it, then say so.
-    historyScreen(t(wrote || pulled ? 'sync_done' : 'sync_nochange', st.attempts.length));
+    progressScreen(t(wrote || pulled ? 'sync_done' : 'sync_nochange', st.attempts.length));
   } catch (err) {
     setSyncMsg(t(SYNC_ERR[err && err.code] || 'sync_err_server'));
   }
@@ -1387,18 +1942,21 @@ const learnWrong = () => {
 };
 
 // One bar per day, tallest where the most was answered. Deliberately plain: fourteen divs
-// say what a chart library would, and the scale is relative to the busiest day rather than
-// to a goal the site has no way to set.
-function activityStripHTML(days) {
+// say what a chart library would. Height is relative to the busiest day; colour says
+// whether the day's goal was met, which height alone cannot — a 40-answer day is short
+// beside a 90-answer one and was still a full day's work.
+function activityStripHTML(days, goal) {
   const peak = Math.max(1, ...days.map(d => d.total));
   return `<div class="strip" role="img" aria-label="${t('learn_days')}">${days.map(d => {
     const h = d.total ? Math.max(8, Math.round((d.total / peak) * 100)) : 3;
-    return `<i class="${d.total ? 'on' : ''}" style="height:${h}%" title="${esc(d.key)} · ${d.total}"></i>`;
+    const tone = !d.total ? '' : d.total >= goal ? 'on' : 'part';
+    return `<i class="${tone}" style="height:${h}%" title="${esc(d.key)} · ${d.total}"></i>`;
   }).join('')}</div>`;
 }
 
-function learnScreen() {
-  SCREEN = learnScreen;
+function weakScreen() {
+  SCREEN = weakScreen;
+  NAV_AT = 'weak';
   const st = P();
   // Without the bank every queue reads as empty, and an empty queue here says «everything
   // is repeated» — a lie that would send someone away from work they have waiting. Staying
@@ -1407,74 +1965,86 @@ function learnScreen() {
   // wrong and home() would fail on the same missing data.
   if (!st || !byN().size) return;
 
-  const now = Date.now();
-  const today = st.dayStats(st.activity, now);
-  const streak = st.streakDays(st.activity, now);
+  const r = readyNow();
+  const plan = weakMixPlan();
   const due = learnDue();
   const wrong = learnWrong();
   const next = st.nextDueAt(st.srs, { has: n => byN().has(n) });
   const topics = st.weakTopics(st.attempts, byN(), isCorrect);
-  const goal = st.goalOf(st.profile);
+  const sample = r ? r.sample : 0;
 
-  const srsBody = due.length
-    ? `<button class="btn" onclick="startSrsRun()">${t('learn_srs_go', due.length)}</button>`
-    : `<div class="exp muted">${Object.keys(st.srs).length
-        ? `${t('learn_srs_empty')} ${next ? t('learn_srs_next', esc(stampFull(next))) : ''}`
-        : t('learn_srs_none')}</div>`;
+  app().innerHTML = `
+  <div>
+    <h1>${t('weak_title')}</h1>
+    <div class="sub">${t('learn_topics_note')}</div>
+  </div>
 
-  app().innerHTML = `<h1>${t('learn_title')}</h1>
-
-    <div class="sec">
-      <h2>${t('learn_today')}</h2>
-      <div class="dbar">
-        <div class="top"><span class="nm">${t('learn_goal_line', today.total, goal)}</span>
-          <span class="vl ${today.total >= goal ? 'g' : ''}">${Math.min(100, Math.round(today.total / goal * 100))}%</span></div>
-        <div class="track"><div class="fill ${today.total >= goal ? 'g' : ''}" style="width:${Math.min(100, Math.round(today.total / goal * 100))}%"></div></div>
-      </div>
-      <div class="exp">${t('learn_today_line', today.total, today.wrong, today.srs)}</div>
-      <div class="exp muted">${streak ? t('learn_streak', streak) : t('learn_streak_none')}</div>
-      <div class="row"><label class="goalset">${t('learn_goal_set')}
-        <input id="goal" type="number" min="1" max="500" step="5" value="${goal}"></label></div>
-      ${activityStripHTML(st.recentDays(st.activity, now, 14))}
+  <div class="mixbar">
+    <div class="tx">
+      <div class="kick">${t('weak_mix_title')}</div>
+      ${plan.length
+        ? `<div class="mx">${esc(mixLine(plan))}</div>
+           <div class="rule">${t('weak_mix_rule', sample)}</div>`
+        : `<div class="mx">${r && r.forecast !== null ? t('weak_mix_none') : t('ready_empty')}</div>`}
     </div>
+    ${plan.length ? `<button class="go" data-act="weak-run">${t('weak_go')}</button>` : ''}
+  </div>
 
-    <div class="sec">
+  ${plan.length ? `<div class="sec">
+    <h2>${t('weak_doms_title')}</h2>
+    ${plan.map(d => {
+      const qn = domainChapterQ(d.id);
+      // What this domain is costing on the 300..1000 scale: its blueprint weight times
+      // the share of it that went wrong, over the 700 points the scale spans.
+      const cost = Math.round(d.weight * (1 - d.pct / 100) * 700);
+      return `<div class="wdom">
+        <div class="wdom-top">
+          <span class="nm">${domNameHTML(d.id)}</span>
+          <span class="sc">${d.ok} / ${d.tot} · ${d.pct}%</span>
+        </div>
+        <div class="track"><div class="fill r" style="width:${d.pct}%"></div></div>
+        <div class="cost">${t('weak_dom_cost', Math.round(d.weight * 100), n_(d.tot - d.ok, 'mistake'), d.tot, n_(cost, 'point'))}</div>
+        <div class="acts">
+          <button class="tiny lg" data-drill="${d.id}">${t('weak_dom_go', d.mix)}</button>
+          ${chapterSlot(qn)}
+        </div>
+      </div>`;
+    }).join('')}
+  </div>` : ''}
+
+  ${topics.length ? `<div class="sec">
+    <h2>${t('learn_topics')}</h2>
+    ${topics.map(x => `<div class="wtopic">
+      <span class="nm">${esc(x.topic)}</span>
+      <span class="cnt">${t('learn_topic_row', x.ok, x.tot, x.pct).split(' · ')[0]}</span>
+      <span class="pc${x.pct >= 60 ? ' a' : ''}">${x.pct}%</span>
+      <span class="acts">
+        <button class="tiny" data-topic="${attrEsc(x.topic)}">${t('learn_topic_go')}</button>
+        ${chapterSlot(anyQOf(q => (q.tp || '') === x.topic))}
+      </span>
+    </div>`).join('')}
+  </div>` : ''}
+
+  <div class="dgrid">
+    <div class="pcard">
       <h2>${t('learn_srs')}</h2>
       <div class="exp muted">${t('learn_srs_note')}</div>
-      ${srsBody}
+      ${due.length
+        ? `<button class="tiny lg" style="align-self:flex-start" data-act="srs">${t('learn_srs_go', due.length)}</button>`
+        : `<div class="plan-note">${Object.keys(st.srs).length
+            ? `${t('learn_srs_empty')} ${next ? t('learn_srs_next', esc(stampFull(next))) : ''}`
+            : t('learn_srs_none')}</div>`}
     </div>
-
-    <div class="sec">
+    <div class="pcard">
       <h2>${t('learn_wrong')}</h2>
       <div class="exp muted">${t('learn_wrong_note')}</div>
       ${wrong.length
-        ? `<button class="btn" onclick="startWrongRun()">${t('learn_wrong_go', wrong.length)}</button>`
-        : `<div class="exp muted">${t('learn_wrong_empty')}</div>`}
+        ? `<button class="tiny lg" style="align-self:flex-start" data-act="wrong">${t('learn_wrong_go', wrong.length)}</button>`
+        : `<div class="plan-note">${t('learn_wrong_empty')}</div>`}
     </div>
+  </div>`;
 
-    <div class="sec">
-      <h2>${t('learn_topics')}</h2>
-      <div class="exp muted">${t('learn_topics_note')}</div>
-      ${topics.length ? `<div class="hist">${topics.map(r => `<div class="hist-row">
-        <div class="hist-what">${esc(r.topic)}</div>
-        <div class="hist-score ${r.pct >= 75 ? 'pass' : ''}">${t('learn_topic_row', r.ok, r.tot, r.pct)}</div>
-        <button class="btn sm" data-topic="${attrEsc(r.topic)}">${t('learn_topic_go')}</button>
-      </div>`).join('')}</div>` : `<div class="exp muted">${t('learn_topics_empty')}</div>`}
-    </div>
-
-    <div class="nav">
-      <button class="btn" onclick="home()">${t('nav_home')}</button>
-      <button class="btn" onclick="bookScreen()">${t('book_open')}</button>
-      <button class="btn" onclick="historyScreen()">${t('hist_open_screen')}</button>
-    </div>`;
-
-  // Topic names come out of the bank, so they are wired rather than inlined — same reason
-  // the history rows are.
-  document.querySelectorAll('[data-topic]').forEach(b => b.onclick = () => startTopicRun(b.dataset.topic));
-  // Committed on change rather than on every keystroke: typing "40" passes through "4",
-  // and a goal of 4 written to the synced profile on the way is not what was meant.
-  const goalBox = document.getElementById('goal');
-  if (goalBox) goalBox.onchange = () => { st.setGoal(parseInt(goalBox.value, 10)); learnScreen(); };
+  wireDash();
   window.scrollTo(0, 0);
 }
 
@@ -1483,6 +2053,7 @@ function learnScreen() {
 function startRun(numbers, { srs = false } = {}) {
   const qs = numbers.map(n => byN().get(n)).filter(Boolean);
   if (!qs.length) return;
+  narrow();
   S = { mode: 'pr', qs, i: 0, ans: {}, ok: 0, done: 0, srsRun: srs, ...practiceRun() };
   renderPractice();
 }
@@ -1549,8 +2120,7 @@ function bookLoading(title) {
 function bookFailed(err) {
   app().innerHTML = `<h1>${t('book_title')}</h1>
     <div class="exp muted">${t('book_failed', esc(err.message || String(err)))}</div>
-    <div class="nav"><button class="btn" onclick="bookScreen()">${t('book_retry')}</button>
-      <button class="btn" onclick="home()">${t('nav_home')}</button></div>`;
+    <div class="nav"><button class="btn" onclick="bookScreen()">${t('book_retry')}</button></div>`;
 }
 
 // ---- contents ----
@@ -1561,6 +2131,8 @@ const bookMatches = (tp, q) => !q
 
 function bookScreen() {
   SCREEN = bookScreen;
+  NAV_AT = 'book';
+  narrow();
   const token = ++bookToken;
   bookLoading(t('book_title'));
   bookLoadIndex().then(index => {
@@ -1614,8 +2186,7 @@ function renderBookList(index) {
     <input class="bk-search" type="search" placeholder="${t('book_search')}" value="${attrEsc(bookQuery)}" autocomplete="off">
     ${groups || `<div class="exp muted">${t('book_nothing')}</div>`}
 
-    <div class="nav"><button class="btn" onclick="home()">${t('nav_home')}</button>
-      <button class="btn" onclick="learnScreen()">${t('learn_open')}</button></div>`;
+    <div class="nav"><button class="btn" onclick="weakScreen()">${t('weak_title')}</button></div>`;
 
   wireBookRows();
 
@@ -1636,6 +2207,7 @@ function renderBookList(index) {
     st.book.open[box2.dataset.dom] = box2.open;
     st.setBook({});
   }, true);
+  renderSide();
   window.scrollTo(0, 0);
 }
 
@@ -1645,6 +2217,7 @@ const wireBookRows = () =>
 // ---- one chapter ----
 function chapterScreen(id) {
   SCREEN = () => chapterScreen(id);
+  narrow();
   const token = ++bookToken;
   const known = bookIndex && bookIndex.topics.find(tp => tp.id === id);
   bookLoading(known ? known.title : t('book_title'));
@@ -1684,8 +2257,7 @@ function renderChapter(tp, index) {
 
     ${next ? `<button class="btn bk-next" data-chapter="${attrEsc(next.id)}">${t('book_next', esc(next.title))}</button>` : ''}
 
-    <div class="nav"><button class="btn" onclick="bookScreen()">${t('book_back')}</button>
-      <button class="btn" onclick="home()">${t('nav_home')}</button></div>
+    <div class="nav"><button class="btn" onclick="bookScreen()">${t('book_back')}</button></div>
   </article>`;
 
   wireBookRows();
@@ -1693,6 +2265,7 @@ function renderChapter(tp, index) {
   app().querySelector('[data-act="read"]').onclick = () => {
     st.markRead(tp.id, !st.isRead(tp.id));
     renderChapter(tp, index);
+    renderSide();                       // the sidebar counts chapters read
   };
   const pr = app().querySelector('[data-act="practice"]');
   // The chapter's own questions, which is the whole point of a textbook inside a trainer:
@@ -1746,7 +2319,8 @@ function bookChapterFor(qn, into) {
     const id = st.topicOf(map, qn);
     if (!id) return;
     const title = bookIndex && bookIndex.topics.find(tp => tp.id === id);
-    into.innerHTML = `<button class="btn sm" data-chapter="${attrEsc(id)}">${t('book_open_for_q', esc(title ? title.title : id))}</button>`;
+    const cls = into.parentElement && into.parentElement.classList.contains('acts') ? 'tiny lg' : 'btn sm';
+    into.innerHTML = `<button class="${cls}" data-chapter="${attrEsc(id)}">${t('book_open_for_q', esc(title ? title.title : id))}</button>`;
     wireBookRows();
   };
   if (bookMap) return show(bookMap);
@@ -1886,13 +2460,17 @@ function pMove(d) {
 }
 // Practice has no timer/scale like the exam — just tally what was answered so far
 // (works mid-session via "Разбор ошибок" too, not only after the last question).
-function finishPractice() {
+// `leave` is walking out through the sidebar rather than pressing finish: what was
+// answered is still filed — a practice run has no all-or-nothing about it — but the
+// results sheet is not what the click asked for, so it is not drawn.
+function finishPractice({ leave = false } = {}) {
   const rev = S.qs.filter(q => S.ans[q.n] !== undefined).map(q => ({ q, good: S.ans[q.n].ok }));
   S.result = { rev, ok: rev.filter(r => r.good).length };
   S.reviewFilter = rev.some(r => !r.good) ? 'bad' : 'all';
   S.mode = 'pr-done';
   savePracticeAttempt(rev);
-  renderPracticeResults();
+  renderSide();
+  if (!leave) renderPracticeResults();
 }
 function renderPracticeResults() {
   SCREEN = renderPracticeResults;
@@ -2070,6 +2648,7 @@ function ddCorrect(q, placement) {
 // ============================ EXAM ============================
 function beginExam(qs, mins, { preset = 'custom', weighted = false } = {}) {
   if (!qs.length) { alert(t('no_questions_filtered')); return; }
+  narrow();
   const startedAt = Date.now();
   S = { mode: 'ex', qs, i: 0, ans: {}, flags: new Set(), end: mins ? startedAt + mins * 60000 : 0, tid: null,
     preset, weighted, startedAt, attemptId: attemptId(startedAt) };
@@ -2188,6 +2767,12 @@ function finishExam() {
   S.result = { rev, perDom: gone ? perDomainIn(att) : perDom, ok, pct, scaled,
     pass: pass && !gone, total: S.qs.length, abandoned: gone, asked: askedIn(att) };
   saveExamAttempt(rev, perDom, ok, pct, scaled);
+  // The attempt is over and filed. Saying so matters beyond tidiness: leaving through the
+  // sidebar asks "выйти без результата?" while a run is live, and there is no result left
+  // to lose here — it is on the screen. Same mode a replayed exam opens in, so the arrow
+  // keys cannot walk a finished attempt back into the exam either.
+  S.mode = 'ex-done';
+  renderSide();                         // the forecast, the queues and the history all moved
   // Default to "работа над ошибками" — jump straight to what needs fixing.
   S.reviewFilter = rev.some(r => !r.good) ? 'bad' : 'all';
   renderResults();
@@ -2294,10 +2879,13 @@ document.addEventListener('keydown', e => {
 });
 
 // expose for inline onclick
-Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, setReviewFilter, setLang, applyLang, openMode, segPick, historyScreen, learnScreen, startSrsRun, startWrongRun, startTopicRun, startAttemptRun, bookScreen, chapterScreen, openAttempt, exportProgress, importProgress, runSync, makeSyncKey, copySyncKey, forgetSyncKey });
+Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, finishPractice, setReviewFilter, setLang, openMode, goScreen, segPick, browseSims, historyScreen, progressScreen, weakScreen, startSrsRun, startWrongRun, startTopicRun, startAttemptRun, startWeakRun, bookScreen, chapterScreen, openAttempt, exportProgress, importProgress, runSync, makeSyncKey, copySyncKey, forgetSyncKey });
 // An automatic sync that changed the history redraws the screen showing it — and only
 // that screen: pulling the ground out from under someone mid-question would be worse than
 // a stale list.
-addEventListener('ccna:synced', () => { if (SCREEN === historyScreen || SCREEN === home) SCREEN(); });
+addEventListener('ccna:synced', () => {
+  renderSide();
+  if (SCREEN === historyScreen || SCREEN === progressScreen || SCREEN === home || SCREEN === weakScreen) SCREEN();
+});
 
 window.addEventListener('DOMContentLoaded', route);

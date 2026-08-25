@@ -29,10 +29,22 @@ moves between devices as a file. [Russian version](README.ru.md).
 - **Custom Exam** — filter by domain and question type (text / exhibit / drag-and-drop),
   pick question count and timer.
 - **Practice** — one question at a time, instant feedback.
-- **Learn** — the queue of questions that are due for repetition (Leitner boxes
-  1/3/7/16/35 days), the ones whose last answer was wrong, and the topics that keep
-  costing points, plus what was answered today, the streak, and a fortnight's activity.
-  The same rules the Android app schedules from, out of `assets/js/shared/`.
+- **Dashboard** — the screen the site opens on. A readiness forecast on the same
+  300–1000 scale the exam reports, computed over the last 200 answers in the history and
+  weighted by the blueprint (a domain nobody has answered anything in is assumed weak
+  rather than ignored), how far it is from 825 and how far it moved this week; the six
+  domains as they actually went; the day's count against its goal with a fortnight
+  behind it; the repetition and mistake queues; and the scaled score of the last seven
+  weighted attempts.
+- **Weak spots** — one button that builds a 20-question run out of whatever is currently
+  costing the most: each domain below 75% takes a share of the mix equal to its blueprint
+  weight times how much of it went wrong, weak topics first inside each. Beside it, every
+  domain under the threshold with what it is costing the forecast in points, the weak
+  topics, a link into the chapter that covers each, and the two queues — the questions
+  due for repetition (Leitner boxes 1/3/7/16/35 days) and the ones whose last answer was
+  wrong. Every rule here is the one the Android app schedules from, out of
+  `assets/js/shared/`; a run started from this screen is practice and never claims a
+  300–1000 score.
 - **Textbook** — all 47 chapters of [`ccna-book`](../ccna-book), the ones the Android app
   ships: contents by domain with a search, a read mark that syncs, a remembered scroll
   position, the bank's questions on the chapter as a practice run, and a link from any
@@ -42,6 +54,8 @@ moves between devices as a file. [Russian version](README.ru.md).
   mistakes, and a run over exactly those mistakes. Any attempt can be re-opened with its
   full review. Attempts are kept for six months and then drop by themselves; the
   repetition map is not touched by that — a question learned last year stays learned.
+  The same screen holds the study plan: an exam date and a daily goal, both carried in
+  the synced profile, and the weekly mock the sidebar counts down to.
 - **Transfer** — export/import of the whole progress as one `v:1` JSON file, the same
   format the [Android app](../ccna-mobile) reads and writes: export in the browser, open
   it on the phone (Progress → Backup) — or the other way round. No account, no server.

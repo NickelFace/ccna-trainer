@@ -10,7 +10,7 @@
 // from the web root, and the site serves data/theory/ from the same directory as the
 // bank. What differs is caching — the phone reads a file it shipped with, the browser
 // reads over HTTP from Pages — hence the version stamp below.
-import { normalizeTset, tsetEntries, tsetHas, tsetMark } from './tset.js?v=15';
+import { normalizeTset, tsetEntries, tsetHas, tsetMark } from './tset.js?v=16';
 
 const BASE = 'data/theory';
 
