@@ -2485,14 +2485,14 @@ function renderChapter(tp, index, at = null) {
 
     ${st.bodyMarkup(tp)}
 
-    <div class="nav bk-actions">
-      <button class="btn ${read ? '' : 'primary'}" data-act="read">${read ? t('book_read_done') : t('book_read_mark')}</button>
-      ${tp.qs.length ? `<button class="btn" data-act="practice">${t('book_practice', Math.min(20, tp.qs.length))}</button>` : ''}
+    <div class="bk-foot">
+      <div class="nav bk-actions">
+        <button class="btn ${read ? '' : 'primary'}" data-act="read">${read ? t('book_read_done') : t('book_read_mark')}</button>
+        ${tp.qs.length ? `<button class="btn" data-act="practice">${t('book_practice', Math.min(20, tp.qs.length))}</button>` : ''}
+      </div>
+      ${next ? `<button class="btn bk-next" data-chapter="${attrEsc(next.id)}">${t('book_next', esc(next.title))}</button>` : ''}
+      <div class="nav"><button class="btn" onclick="bookScreen()">${t('book_back')}</button></div>
     </div>
-
-    ${next ? `<button class="btn bk-next" data-chapter="${attrEsc(next.id)}">${t('book_next', esc(next.title))}</button>` : ''}
-
-    <div class="nav"><button class="btn" onclick="bookScreen()">${t('book_back')}</button></div>
   </article>`;
 
   wireBookRows();

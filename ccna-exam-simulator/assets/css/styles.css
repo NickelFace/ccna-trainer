@@ -844,8 +844,14 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .bk-toc li{margin:5px 0;break-inside:avoid;font-size:13px}
 .bk-toc a{color:var(--teal-text);text-decoration:none}
 .bk-toc a:hover{color:var(--ink)}
-.bk-actions{margin-top:26px}
-.bk-next{margin-top:14px;justify-content:flex-start;text-align:left}
+/* The rows that close a chapter — read it, practise it, next one, back to the list — are
+   one block and get one rhythm. The generous space belongs above the block, where it parts
+   from the prose; inside it, three hand-tuned margins had already drifted to 26 / 14 / 4,
+   which is why the last button looked stuck to the one above it. One `gap` now, so there
+   is a single number to change rather than three that can disagree. */
+.bk-foot{display:flex;flex-direction:column;gap:14px;margin-top:26px}
+.bk-foot .nav{margin-top:0}
+.bk-next{justify-content:flex-start;text-align:left}
 
 .bk-section{margin-top:30px;scroll-margin-top:20px}
 .bk-h2{font-family:var(--serif);font-size:25px;font-weight:400;line-height:1.15;
