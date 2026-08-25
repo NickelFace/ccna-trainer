@@ -5,7 +5,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildBook } from '../../ccna-book/build.mjs';
-import { sectionOf, topicOf } from '../../ccna-exam-simulator/assets/js/shared/theory.js?v=16';
+import { sectionOf, topicOf } from '../../ccna-exam-simulator/assets/js/shared/theory.js?v=17';
 import { loadBank } from './helpers.js';
 
 const book = await buildBook({});
