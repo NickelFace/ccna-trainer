@@ -2,6 +2,6 @@
 // which draws the same countdown in its sidebar. The rule itself is in
 // ccna-exam-simulator/assets/js/shared/localdate.js; this re-exports it so the app's
 // imports stay inside src/engine/.
-import { daysUntil, isExamDate } from '../../../ccna-exam-simulator/assets/js/shared/localdate.js?v=17';
+import { daysUntil, isExamDate } from '../../../ccna-exam-simulator/assets/js/shared/localdate.js?v=18';
 
 export { daysUntil, isExamDate };

@@ -5,7 +5,7 @@
 // src/engine/srs.js; the web trainer reaches them through window.Store.
 //
 // State per question: { box: 1..5, dueAt, lastResult, seenCount, at }.
-import { MAX_BOX } from './srs.js?v=17';
+import { MAX_BOX } from './srs.js?v=18';
 export const isDue = (state, now) => !!state && state.dueAt <= now;
 
 // Everything due, weakest first: box 1 before box 5, and within a box the one that has

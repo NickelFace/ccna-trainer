@@ -19,7 +19,7 @@
 // progress.js: the web trainer grades inside app.js, a classic script that cannot load a
 // module, and putting the grading behind a module that might not load would take the exam
 // down with it. ccna-mobile/src/engine/readiness.js binds its own and re-exports.
-import { toScaled } from './score.js?v=17';
+import { toScaled } from './score.js?v=18';
 
 export const WINDOW = 200;
 export const UNSEEN_FACTOR = 0.7;
