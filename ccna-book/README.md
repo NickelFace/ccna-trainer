@@ -14,7 +14,8 @@ build.mjs              ← parse + classify + emit
    │
    ├── index.json      ← chapter list, no bodies (loaded when the Теория tab opens)
    ├── t/<id>.json     ← one chapter body, fetched when it is opened
-   ├── map.json        ← question number → chapter id (used by "теория по этому вопросу")
+   ├── map.json        ← question number → where its answer is explained: `chapterId`, or
+   │                     `chapterId#sectionId` when one section could be named (see below)
    └── coverage.md     ← report: questions per chapter, thin chapters, fallbacks
 ```
 
@@ -42,6 +43,33 @@ node ccna-book/build.mjs --out /tmp/book
 Prints the coverage summary and writes the JSON. `--strict` (used by the tests) turns
 warnings — a chapter nobody's questions reached, a question that only matched a fallback —
 into a non-zero exit.
+
+## Which chapter, and where in it
+
+Every question is scored against the chapters of its own domain by the `match:` patterns in
+their frontmatter, and takes the best one — or its domain's `fallback:` chapter when nothing
+matched. A domain with neither is a build error.
+
+A chapter is three thousand words, though, so the same pass also tries to name **one
+section** of it, and `map.json` carries that after a `#`. Nothing about this is
+hand-authored — 1395 questions times a section each is not a list anyone would keep true.
+Two signals decide it (`pickSection` in `build.mjs`):
+
+- the chapter's own `match:` patterns, which are hand-written and precise: a pattern that
+  matches both the question and one section says that section owns the subject;
+- word overlap between the section and the question's stem plus **the text of its correct
+  answer** — distractors are deliberately about something else, and feeding them in is how
+  a question about hubs ends up pointing at the section on routing tables.
+
+Sections are only named when the winner clears a floor and leads the runner-up (`5` and
+`1.25`, tuned by hand against samples); about a third of the bank clears it, and the rest
+carry the chapter alone, which is still the place to read. The two trailer sections every
+chapter ends with are never named: «Что спрашивают» is built out of paraphrased exam stems
+and would otherwise win in nearly every chapter, and «Проверь себя» explains nothing.
+
+Read a map entry through `topicOf` / `sectionOf` in
+`ccna-exam-simulator/assets/js/shared/theory.js`, never by indexing it — the `#` form is not
+a chapter id, and both clients go through those two accessors.
 
 ## The Markdown subset
 
@@ -86,6 +114,9 @@ the app ships offline and renders these blocks itself.
 - Explain the mechanism before the command. A chapter that lists commands without saying
   what the box does with them does not survive an exam question that rewords them.
 - Every chapter ends with «Что спрашивают» — the shapes the bank actually asks in, and
-  «Проверь себя» — a `check` block.
+  «Проверь себя» — a `check` block. Those two titles are matched literally by the build and
+  are never offered as "the answer is here" (see above), so keep them exactly as written.
+- Section headings are what the trainer prints beside a question as where to look, so name
+  them after the thing explained («Выборы DR/BDR»), not after the position («Продолжение»).
 - Numbers that get asked (AD values, timers, port ranges, standards) go in a table, not in
   the middle of a sentence.

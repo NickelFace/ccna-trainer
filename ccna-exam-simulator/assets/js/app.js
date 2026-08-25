@@ -257,6 +257,7 @@ const I18N = {
     book_back: '← к оглавлению',
     book_open: 'Учебник',
     book_open_for_q: 'Глава: {0}',
+    book_open_at: 'Раздел: {0}',
     hist_mode_srs: 'Повторение',
     hist_group_exams: 'Экзамены',
     hist_group_practice: 'Тренировки',
@@ -521,6 +522,7 @@ const I18N = {
     book_back: '← contents',
     book_open: 'Textbook',
     book_open_for_q: 'Chapter: {0}',
+    book_open_at: 'Section: {0}',
     hist_mode_srs: 'Repetition',
     hist_group_exams: 'Exams',
     hist_group_practice: 'Practice',
@@ -899,15 +901,28 @@ function startDomainRun(id) {
 // against — bookChapterFor maps a question, not a subject. For a domain the pick is not
 // arbitrary: it comes from the weakest topic inside it, which is the chapter actually
 // worth opening, and only falls back to the first question when nothing is flagged yet.
-const anyQOf = pick => { const q = POOL.find(pick); return q ? q.n : 0; };
+//
+// A topic pick is narrowed to the topic's own domain first. `tp` is the source dump's own
+// tag and is frequently wrong (see CLAUDE.md); a question tagged "OSPF" that this project
+// classified into Automation would otherwise hand the OSPF row a chapter about SDN.
+// A handful rather than one: a topic or a domain is not a question, and the chapter it
+// belongs in is settled by a vote among its questions (see bookChapterFor). Taking the
+// first match instead put the BGP row in the chapter on routing tables, because that is
+// where question #2 happens to live.
+const someQOf = (pick, limit = 25) => {
+  const out = [];
+  for (const q of POOL) { if (pick(q)) { out.push(q.n); if (out.length >= limit) break; } }
+  return out;
+};
 
-function domainChapterQ(id) {
+function domainChapterQs(id) {
   const st = P();
   const weak = st ? st.weakTopics(st.attempts, byN(), isCorrect, { limit: 12 }) : [];
   const hit = weak.find(r => r.dom === id);
-  return (hit && anyQOf(q => q.dom === id && q.tp === hit.topic)) || anyQOf(q => q.dom === id);
+  const inTopic = hit ? someQOf(q => q.dom === id && q.tp === hit.topic) : [];
+  return inTopic.length ? inTopic : someQOf(q => q.dom === id);
 }
-const chapterSlot = qn => qn ? `<span data-forq="${qn}"></span>` : '';
+const chapterSlot = qns => qns && qns.length ? `<span data-forq="${qns.join(',')}"></span>` : '';
 
 // ============================ DASHBOARD ============================
 // Where am I, and what should I do right now — in that order, and above the fold.
@@ -1993,7 +2008,7 @@ function weakScreen() {
   ${plan.length ? `<div class="sec">
     <h2>${t('weak_doms_title')}</h2>
     ${plan.map(d => {
-      const qn = domainChapterQ(d.id);
+      const qns = domainChapterQs(d.id);
       // What this domain is costing on the 300..1000 scale: its blueprint weight times
       // the share of it that went wrong, over the 700 points the scale spans.
       const cost = Math.round(d.weight * (1 - d.pct / 100) * 700);
@@ -2006,7 +2021,7 @@ function weakScreen() {
         <div class="cost">${t('weak_dom_cost', Math.round(d.weight * 100), n_(d.tot - d.ok, 'mistake'), d.tot, n_(cost, 'point'))}</div>
         <div class="acts">
           <button class="tiny lg" data-drill="${d.id}">${t('weak_dom_go', d.mix)}</button>
-          ${chapterSlot(qn)}
+          ${chapterSlot(qns)}
         </div>
       </div>`;
     }).join('')}
@@ -2020,7 +2035,7 @@ function weakScreen() {
       <span class="pc${x.pct >= 60 ? ' a' : ''}">${x.pct}%</span>
       <span class="acts">
         <button class="tiny" data-topic="${attrEsc(x.topic)}">${t('learn_topic_go')}</button>
-        ${chapterSlot(anyQOf(q => (q.tp || '') === x.topic))}
+        ${chapterSlot(someQOf(q => q.tp === x.topic && q.dom === x.dom))}
       </span>
     </div>`).join('')}
   </div>` : ''}
@@ -2085,8 +2100,10 @@ function startAttemptRun(id) {
 // hence the token — so clicking through chapters quickly cannot leave an older one
 // painting over a newer.
 
-// Bumped when the chapters are rebuilt: Pages caches data/ like any other file.
-const BOOK_V = '1';
+// Bumped when the chapters are rebuilt: Pages caches data/ like any other file. Now at 2
+// because map.json changed shape — an entry can carry a section after a '#', and a cached
+// v1 map beside new code simply has no sections in it.
+const BOOK_V = '2';
 let bookIndex = null;      // the resolved index.json, once
 let bookQuery = '';        // the search box, remembered across renders
 let bookOpen = null;       // the chapter on screen: { id, topic }
@@ -2212,11 +2229,14 @@ function renderBookList(index) {
 }
 
 const wireBookRows = () =>
-  document.querySelectorAll('[data-chapter]').forEach(b => b.onclick = () => chapterScreen(b.dataset.chapter));
+  document.querySelectorAll('[data-chapter]').forEach(b =>
+    b.onclick = () => chapterScreen(b.dataset.chapter, b.dataset.sec || null));
 
 // ---- one chapter ----
-function chapterScreen(id) {
-  SCREEN = () => chapterScreen(id);
+// `at` is a section id: arriving from a question opens the chapter where that question is
+// answered rather than where this chapter was last left off.
+function chapterScreen(id, at = null) {
+  SCREEN = () => chapterScreen(id, at);
   narrow();
   const token = ++bookToken;
   const known = bookIndex && bookIndex.topics.find(tp => tp.id === id);
@@ -2226,11 +2246,11 @@ function chapterScreen(id) {
     if (token !== bookToken) return;
     bookOpen = { id, topic: tp };
     st.setBook({ last: id });
-    renderChapter(tp, index);
+    renderChapter(tp, index, at);
   }).catch(err => { if (token === bookToken) bookFailed(err); });
 }
 
-function renderChapter(tp, index) {
+function renderChapter(tp, index, at = null) {
   const st = P();
   const meta = index.topics.find(x => x.id === tp.id);
   const order = index.topics.map(x => x.id);
@@ -2263,15 +2283,24 @@ function renderChapter(tp, index) {
   wireBookRows();
   bindChecks(app());
   app().querySelector('[data-act="read"]').onclick = () => {
+    // Marking read redraws the chapter, and a redraw that carries `at` would scroll back
+    // up to the section this was opened at — often several screens above where the button
+    // was just pressed. Hold the position: the tap was about the mark, not the place.
+    const y = window.scrollY;
     st.markRead(tp.id, !st.isRead(tp.id));
-    renderChapter(tp, index);
+    renderChapter(tp, index, at);
+    window.scrollTo(0, y);
     renderSide();                       // the sidebar counts chapters read
   };
   const pr = app().querySelector('[data-act="practice"]');
   // The chapter's own questions, which is the whole point of a textbook inside a trainer:
   // read it, then answer exactly what the bank asks about it.
   if (pr) pr.onclick = () => startRun(shuffle(tp.qs.slice()).slice(0, 20));
-  restoreBookScroll(tp.id);
+  const target = at && app().querySelector(`#sec-${CSS.escape('' + at)}`);
+  // Marked so the section that was asked for is visible as such — landing mid-chapter with
+  // nothing highlighted reads as the page having scrolled by itself.
+  if (target) { target.classList.add('bk-at'); target.scrollIntoView(); }
+  else restoreBookScroll(tp.id);
 }
 
 // Self-check answers reveal on click. The markup comes from shared/book.js; this is the
@@ -2307,20 +2336,42 @@ addEventListener('scroll', () => {
 
 // Every reviewed question on screen gets the link to its chapter, once the map is here.
 const wireChapterLinks = () =>
-  document.querySelectorAll('[data-forq]').forEach(el => bookChapterFor(+el.dataset.forq, el));
+  document.querySelectorAll('[data-forq]').forEach(el =>
+    bookChapterFor(el.dataset.forq.split(',').map(Number), el));
 
-// Which chapter covers a question — used by the review sheet's "read the chapter" link.
-// The map is 1395 short entries; it loads on the first review that needs it.
+// Where in the book a question is answered — offered beside every graded answer, right or
+// wrong, because the reason to open a chapter is as often "remind me why" as "I got that
+// wrong". The map is 1395 short entries; it loads on the first answer that needs it.
+//
+// A chapter is three thousand words, so the pointer names one section of it when
+// ccna-book/build.mjs could name one (about a third of the bank — see pickSection there).
+// That is a signpost, not a promise: the section is derived, and when the build was not
+// sure enough the link is the chapter alone, which is still the place to read.
 let bookMap = null;
-function bookChapterFor(qn, into) {
+function bookChapterFor(qns, into) {
   const st = P();
   if (!st || bookMap === false) return;
+  const list = Array.isArray(qns) ? qns : [qns];
   const show = map => {
-    const id = st.topicOf(map, qn);
-    if (!id) return;
-    const title = bookIndex && bookIndex.topics.find(tp => tp.id === id);
+    // One question points at its own chapter. A whole topic or domain points at the
+    // chapter most of its questions land in — the bank is not sorted by subject, so the
+    // first match is an arbitrary vote of one.
+    const votes = new Map();
+    for (const n of list) { const at = st.topicOf(map, n); if (at) votes.set(at, (votes.get(at) || 0) + 1); }
+    if (!votes.size) return;
+    const id = [...votes].sort((a, b) => b[1] - a[1])[0][0];
+    const tp = bookIndex && bookIndex.topics.find(x => x.id === id);
+    // A section is only named when this stands for one question. "Somewhere in this
+    // chapter" is the honest answer for a subject that spans dozens of them.
+    const secId = list.length === 1 ? st.sectionOf(map, list[0]) : null;
+    const sec = secId && tp && tp.sections.find(x => x.id === secId);
+    // The weak-spots screen puts this among its own pill buttons; everywhere else it is a
+    // row of `.btn.sm` and matches them.
     const cls = into.parentElement && into.parentElement.classList.contains('acts') ? 'tiny lg' : 'btn sm';
-    into.innerHTML = `<button class="${cls}" data-chapter="${attrEsc(id)}">${t('book_open_for_q', esc(title ? title.title : id))}</button>`;
+    into.innerHTML = `<button class="${cls} bk-goto" data-chapter="${attrEsc(id)}"${sec ? ` data-sec="${attrEsc(secId)}"` : ''}>
+      <span class="ch">${t('book_open_for_q', esc(tp ? tp.title : id))}</span>
+      ${sec ? `<span class="sc">${t('book_open_at', esc(sec.title))}</span>` : ''}
+    </button>`;
     wireBookRows();
   };
   if (bookMap) return show(bookMap);
@@ -2423,11 +2474,16 @@ function renderPractice() {
   if (st) {
     h += `<div class="verdict ${st.ok ? 'ok' : 'bad'}">${st.ok ? t('verdict_correct') : t('verdict_incorrect')}${q.y !== 'dd' ? t('key_inline', q.a.split('').join(', ')) : ''}</div>`;
     h += rationale(q, st.given);
-    h += `<div class="row" style="margin-top:8px"><button class="btn sm" onclick="copyQuestion(this, ${q.n})">${t('copy_for_ai')}</button></div>`;
+    // Right or wrong: the reason to open the chapter is as often "remind me why this is
+    // the answer" as it is "I got that wrong". Filled in asynchronously by bookChapterFor,
+    // or left empty on a deployment with no textbook.
+    h += `<div class="row" style="margin-top:8px"><button class="btn sm" onclick="copyQuestion(this, ${q.n})">${t('copy_for_ai')}</button>
+      <span class="bk-forq" data-forq="${q.n}"></span></div>`;
   }
   h += `<div class="nav"><button class="btn" onclick="pMove(-1)" ${S.i === 0 ? 'disabled' : ''}>${t('nav_prev')}</button>
     <button class="btn" onclick="pMove(1)">${S.i === S.qs.length - 1 ? t('nav_finish') : t('nav_next')}</button></div></div>`;
   app().innerHTML = h;
+  if (st) wireChapterLinks();
 
   if (q.y === 'dd') { if (!st) wireDD(q, given => gradeDD(q, given)); }
   else if (q.y === 'sim') { /* reference card, nothing to wire or grade */ }

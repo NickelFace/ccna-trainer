@@ -47,8 +47,13 @@ moves between devices as a file. [Russian version](README.ru.md).
   300–1000 score.
 - **Textbook** — all 47 chapters of [`ccna-book`](../ccna-book), the ones the Android app
   ships: contents by domain with a search, a read mark that syncs, a remembered scroll
-  position, the bank's questions on the chapter as a practice run, and a link from any
-  reviewed question to the chapter that covers it. Written in Russian.
+  position, and the bank's questions on the chapter as a practice run. Written in Russian.
+- **Where to read it up** — every graded answer, right or wrong, carries a link into the
+  chapter that explains it, and for about a third of the bank into one **section** of that
+  chapter; following it opens the chapter at that section rather than at the top. The
+  section is derived at build time from the chapter's own keyword patterns and the text of
+  the correct answer (see [`ccna-book`](../ccna-book)) — a signpost, not a promise, and
+  when the build could not name one with confidence the link is the chapter alone.
 - **Progress** — every finished run is kept in `localStorage`: the attempt history folds
   into exams and practice, and each attempt opens onto its per-domain breakdown, its
   mistakes, and a run over exactly those mistakes. Any attempt can be re-opened with its

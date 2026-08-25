@@ -269,20 +269,116 @@ export function scoreTopic(topic, q, cache) {
   return score;
 }
 
+// ---------------------------------------------------------------- which section
+// A chapter is 2-4 thousand words; "the answer is in this chapter somewhere" is a worse
+// answer than a page number. So each question also gets pointed at one section of it —
+// derived, never hand-authored, because 1395 questions times a section each is not a list
+// anyone would keep true.
+//
+// Two signals, and the strong one is the author's own work. The chapter's `match` patterns
+// are hand-written high-precision phrases; running each of them against each section says
+// which section of this chapter owns that phrase, and we already know which of them the
+// question matched. Word overlap is the weak signal underneath, for the questions no
+// pattern picked out.
+
+// Words worth matching on: three letters or more, or anything with a digit or a dot in it
+// (`2WAY`, `224.0.0.5`, `/30`, `802.1X`). The stop list is what every section would share.
+const STOP = new Set(`
+which what where when does will would should could that this these those with without from
+into about over under between during before after have has been being are was were the and
+but for not you your его она они это как что где чем для при над под без через между
+если или так там тот эта эти этот весь все всё уже ещё чтобы также только более менее
+выберите верно неверно вариант варианты ответ ответы вопрос следующих следующее указан
+администратор инженер сеть сети сетевой команда команды устройство устройства
+`.trim().split(/\s+/));
+
+const terms = text => new Set(
+  String(text || '').toLowerCase().match(/[\wа-яё][\wа-яё.\/-]*/g)
+    ?.filter(w => (w.length >= 3 || /[\d.]/.test(w)) && !STOP.has(w)) || []);
+
+const sectionHay = s => [s.title, ...s.blocks.flatMap(blockText)].join(' ');
+
+// Enough of a lead over the runner-up to be worth printing. A section named on a coin toss
+// sends someone to the wrong page with a straight face, which is worse than naming none —
+// the chapter link alone is already useful.
+// Tuned by hand against samples of what comes out: tighter than this and two thirds of the
+// bank gets no section at all, looser and the pointer starts naming a neighbouring section
+// of the right chapter often enough to stop being worth reading. At 5/1.25 about a third
+// of the bank is pointed at a section, and the misses land in the right chapter anyway.
+const SECTION_MIN = 5;
+const SECTION_LEAD = 1.25;
+
+// Every chapter ends with these two, and neither is where an answer is explained: one is a
+// list of how the exam words its questions, the other a self-check. They are also the two
+// that any lexical scorer picks every time, because "Что спрашивают" is built out of
+// paraphrased exam stems — left in, they win in almost every chapter and the pointer stops
+// meaning anything. Both stay one tap away in the chapter's own contents.
+const TRAILER = new Set(['что спрашивают', 'проверь себя']);
+const teaching = sec => !TRAILER.has(sec.title.trim().toLowerCase());
+
+export function pickSection(topic, q, cache) {
+  const secs = topic.sections;
+  if (secs.length < 2) return secs[0]?.id || null;
+  const hays = cache.sec.get(topic.id);
+  // The question's own words, plus the text of the *right* answer and nothing else. A stem
+  // like "which two statements are true" carries no subject at all, and the correct option
+  // is the one sentence that says what this question is actually about. Distractors are
+  // deliberately about something else — feeding them in is how a question about hubs ends
+  // up pointing at the section on routing tables.
+  const right = (q.a || '').split('').map(k => (q.o || {})[k] || '').join(' ');
+  const qTerms = terms(`${q.t || ''} ${q.tp || ''} ${right}`);
+  const stem = `${q.t || ''} ${q.tp || ''} ${right} ${q.cli || ''}`;
+
+  const scores = secs.map((sec, i) => {
+    if (!teaching(sec)) return { id: sec.id, score: 0 };
+    let score = 0;
+    // The author's phrases: a `key` pattern that matches both the question and this
+    // section is the strongest thing available, and `re` is the same idea one notch down.
+    for (const r of cache.key.get(topic.id) || []) {
+      if (r.test(stem) && r.test(hays[i].text)) score += 5;
+    }
+    for (const r of cache.re.get(topic.id) || []) {
+      if (r.test(stem) && r.test(hays[i].text)) score += 2;
+    }
+    // Word overlap. Counted once per distinct term, so a long section cannot win on
+    // volume; a hit in the heading counts for more because that is what the section is
+    // announced as being about.
+    for (const w of qTerms) {
+      if (hays[i].title.has(w)) score += 3;
+      else if (hays[i].terms.has(w)) score += 1;
+    }
+    return { id: sec.id, score };
+  }).sort((a, b) => b.score - a.score);
+
+  const [top, next] = scores;
+  if (top.score < SECTION_MIN) return null;
+  if (next && next.score && top.score < next.score * SECTION_LEAD) return null;
+  return top.id;
+}
+
 // Every question gets exactly one chapter: the best-scoring one inside its own domain,
 // or that domain's fallback chapter when nothing matched. A domain with no fallback and
 // an unmatched question is a build error — that is the whole promise of this folder.
+//
+// The value is `topicId`, or `topicId#sectionId` when a section could be named with any
+// confidence. One string rather than a second file: shared/theory.js splits it, and the
+// map is fetched on the first "теория по этому вопросу" tap on both clients.
 export function mapQuestions(topics, questions) {
-  const cache = { key: new Map(), re: new Map(), not: new Map() };
+  const cache = { key: new Map(), re: new Map(), not: new Map(), sec: new Map() };
   for (const t of topics) {
     cache.key.set(t.id, (t.match.key || []).map(rx));
     cache.re.set(t.id, (t.match.re || []).map(rx));
     cache.not.set(t.id, (t.match.not || []).map(rx));
+    // Each section's searchable form, built once: every question in this chapter is scored
+    // against all of them, and re-tokenising 3000 words per question is minutes of build.
+    cache.sec.set(t.id, t.sections.map(sec => ({
+      text: sectionHay(sec), title: terms(sec.title), terms: terms(sectionHay(sec)),
+    })));
   }
   const byDom = new Map(DOMAINS.map(d => [d, topics.filter(t => t.dom === d)]));
   const map = {};
   const perTopic = new Map(topics.map(t => [t.id, []]));
-  const stats = { matched: 0, fallback: 0, orphan: 0, orphanDomains: new Set() };
+  const stats = { matched: 0, fallback: 0, orphan: 0, orphanDomains: new Set(), sectioned: 0 };
 
   for (const q of questions) {
     const pool = byDom.get(q.dom) || [];
@@ -296,7 +392,9 @@ export function mapQuestions(topics, questions) {
       if (best) stats.fallback++;
       else { stats.orphan++; stats.orphanDomains.add(q.dom); continue; }
     } else stats.matched++;
-    map[q.n] = best.id;
+    const sec = pickSection(best, q, cache);
+    if (sec) stats.sectioned++;
+    map[q.n] = sec ? `${best.id}#${sec}` : best.id;
     perTopic.get(best.id).push(q.n);
   }
   return { map, perTopic, stats };
@@ -353,6 +451,7 @@ export function coverageReport({ topics, index, stats, questions }) {
     '',
     `Вопросов в банке: **${questions.length}** · глав: **${topics.length}** ·`
     + ` по ключевым словам легло **${stats.matched}**, в общую главу домена — **${stats.fallback}**`
+    + ` · с точным разделом **${stats.sectioned}**`
     + (stats.orphan ? ` · **без главы: ${stats.orphan}**` : ''),
     '',
     '| Глава | Домен | Вопросов | Слов | Минут |',

@@ -75,14 +75,23 @@ export function loadTopic(id) {
   return bodies.get(id);
 }
 
-// Question number → chapter id. Used by "теория по этому вопросу" in the review sheet,
-// so it loads on the first tap there rather than with the reader.
+// Question number → where in the book its answer is explained. Used by "теория по этому
+// вопросу" beside every graded answer, so it loads on the first one rather than with the
+// reader. A value is `topicId`, or `topicId#sectionId` when ccna-book/build.mjs could name
+// one section of that chapter with any confidence — read it through the two accessors
+// below rather than indexing the map, or the '#' form arrives as a chapter id nothing has.
 export function loadMap() {
   mapPromise ||= get(`${BASE}/map.json`).catch(err => { mapPromise = null; throw err; });
   return mapPromise;
 }
 
-export const topicOf = (map, qn) => map?.[qn] || null;
+const entryOf = (map, qn) => map?.[qn] || null;
+
+export const topicOf = (map, qn) => entryOf(map, qn)?.split('#')[0] || null;
+
+// Which section of that chapter, when the build could tell. Null is the common answer and
+// not a defect: the chapter on its own is still the place to read.
+export const sectionOf = (map, qn) => entryOf(map, qn)?.split('#')[1] || null;
 
 // How much of the bank the chapters marked read cover. This is the number that makes the
 // textbook worth reading in a trainer: not "8 of 47 chapters" but "412 questions of 1395

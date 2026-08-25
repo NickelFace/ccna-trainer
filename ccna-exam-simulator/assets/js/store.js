@@ -29,8 +29,8 @@ import { autoSyncer, isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared
 import { bodyMarkup } from './shared/book.js?v=16';
 import { normalizeTset, tsetEntries, tsetHas, tsetMark } from './shared/tset.js?v=16';
 import {
-  coverage, DEFAULT_BOOK, isRead, loadIndex, loadMap, loadTopic, normalizeBook, readMap, setBookVersion,
-  setRead, topicOf,
+  coverage, DEFAULT_BOOK, isRead, loadIndex, loadMap, loadTopic, normalizeBook, readMap, sectionOf,
+  setBookVersion, setRead, topicOf,
 } from './shared/theory.js?v=16';
 
 const KEY = {
@@ -110,6 +110,7 @@ const Store = {
   loadTopic,
   loadMap,
   topicOf,
+  sectionOf,
   coverage,
   readMap,
   setBookVersion,

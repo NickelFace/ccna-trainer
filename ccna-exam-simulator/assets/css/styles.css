@@ -801,6 +801,23 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .bk-search::placeholder{color:var(--grey)}
 .bk-search:focus{outline:none;border-color:var(--edge-strong)}
 
+/* Where in the book this question is answered — beside every graded answer. Two lines when
+   the build could name a section: the chapter, then where inside it to look. The second
+   line is a signpost and says so by being quieter than the first. */
+.bk-goto{display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px;
+  text-align:left;line-height:1.35}
+.bk-goto .sc{font-size:11px;font-weight:600;color:var(--grey-text)}
+.bk-goto:hover .sc{color:var(--ink)}
+.tiny.bk-goto{padding-top:7px;padding-bottom:7px}
+/* Arriving from a question lands mid-chapter. Without a mark that reads as the page having
+   scrolled on its own; the rule fades out so it does not stay shouting while it is read. */
+.bk-section.bk-at{scroll-margin-top:28px;position:relative}
+.bk-section.bk-at::before{content:'';position:absolute;left:-16px;top:2px;bottom:0;width:3px;
+  border-radius:2px;background:var(--gold);animation:bk-at-fade 6s ease forwards}
+@keyframes bk-at-fade{0%,55%{opacity:1}100%{opacity:.25}}
+@media(max-width:640px){.bk-section.bk-at::before{left:-10px}}
+@media(prefers-reduced-motion:reduce){.bk-section.bk-at::before{animation:none;opacity:.5}}
+
 /* ---- chapter ---- */
 .bk{display:flex;flex-direction:column;gap:0}
 .bk-kicker{font-family:var(--num);font-size:11px;font-weight:700;letter-spacing:.08em;

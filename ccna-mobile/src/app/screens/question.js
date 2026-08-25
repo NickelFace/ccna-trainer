@@ -8,7 +8,7 @@ import { store } from '../store.js';
 import { confirmDialog, closeDialogs } from '../dialog.js';
 import { openSheet, closeSheet } from '../sheet.js';
 import { openExhibit } from '../exhibit.js';
-import { loadIndex, loadMap } from '../theory.js';
+import { loadIndex, loadMap, topicOf } from '../theory.js';
 import { topic as topicScreen } from './topic.js';
 import { isCorrect, ddNeeded } from '../../engine/grade.js';
 import {
@@ -631,7 +631,9 @@ function openReview(ctx, q, s) {
   // book loads on demand, so the sheet is already on screen when the link appears; it
   // opens as a modal over the question, and Android back returns to the session.
   Promise.all([loadMap(), loadIndex()]).then(([map, index]) => {
-    const t = index.byId.get(map[q.n]);
+    // Through topicOf, not map[q.n]: an entry can carry a section after a '#', and the
+    // raw string is not a chapter id.
+    const t = index.byId.get(topicOf(map, q.n));
     const slot = t && content.querySelector('.review-theory');
     if (!slot) return;
     slot.innerHTML = `<button class="btn soft wide" data-act="theory" type="button">
