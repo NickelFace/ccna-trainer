@@ -156,7 +156,17 @@ function openAt(id, at, node) {
   const target = [...node.querySelectorAll('.bk-section')].find(s => s.id === `sec-${at}`);
   if (!target) return restoreScroll(id);       // rebuilt book, section gone: top of chapter
   target.classList.add('bk-at');
-  requestAnimationFrame(() => target.scrollIntoView());
+  // Smooth, and asked for here rather than set on the scroller, because the two kinds of
+  // movement want opposite things. Arriving at a screen should simply put the reader where
+  // they left off — restoreScroll assigns scrollTop for that, and a scroller declared
+  // smooth would animate even that, turning a return into a journey. Being *taken*
+  // somewhere is the opposite case: a cut to an unfamiliar place several screens down
+  // costs the eye its bearings, while watching the way there keeps them. The site has
+  // scrolled like this since the pointers were added (html{scroll-behavior:smooth}); the
+  // app jumped.
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  requestAnimationFrame(() =>
+    target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' }));
 }
 
 function chapter({ topic: t, index }, ctx) {
