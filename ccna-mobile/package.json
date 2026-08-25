@@ -11,6 +11,7 @@
     "android": "npm run build && npx cap sync android",
     "android:open": "npm run android && npx cap open android",
     "android:release": "npm run android && cd android && ./gradlew bundleRelease",
+    "assets:lock": "node scripts/asset-lock.mjs",
     "test": "node --test"
   },
   "license": "UNLICENSED",

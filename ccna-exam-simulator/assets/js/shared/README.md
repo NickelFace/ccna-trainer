@@ -12,6 +12,19 @@ server (`python3 -m http.server --directory ccna-exam-simulator`) and the Pages 
 Nothing here may touch the DOM, `localStorage`, or Capacitor — these files run unchanged in
 a browser, in the WebView, and under `node --test`.
 
+Every import of these modules carries `?v=N`, the same number `index.html` puts on
+`store.js`. Without it a browser is free to pair a fresh store with a module it still has
+in cache, which is how a whole branch of progress once disappeared on a sync. Editing
+anything here therefore means moving that number everywhere at once:
+
+```bash
+cd ccna-mobile && npm run assets:lock -- --bump
+```
+
+The same command records a fingerprint of these files beside the stamp
+(`ccna-mobile/tests/asset-version.lock.json`), and `tests/asset-version.test.js` fails when
+the code has moved and the number has not.
+
 **Progress**
 
 - `srs.js` — Leitner boxes: the intervals and the state transition of one graded answer.
