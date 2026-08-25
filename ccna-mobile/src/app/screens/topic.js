@@ -112,7 +112,7 @@ export const topic = {
       store.setBook({ last: id });
       node.replaceChildren(...chapter(loaded, ctx).childNodes);
       ctx.router.renderFooter();
-      openAt(id, ctx.params.at);
+      openAt(id, ctx.params.at, node);
     }).catch(err => {
       node.replaceChildren(...h(`<p class="muted">Глава не открылась: ${esc(err.message)}</p>`).childNodes);
     });
@@ -122,7 +122,7 @@ export const topic = {
 
   mount(node, ctx) {
     node.style.setProperty('--bk-scale', scaleOf());
-    if (loaded?.topic.id === ctx.params.id) openAt(ctx.params.id, ctx.params.at);
+    if (loaded?.topic.id === ctx.params.id) openAt(ctx.params.id, ctx.params.at, node);
   },
 
   unmount() {
@@ -145,14 +145,18 @@ function restoreScroll(id) {
 // instead of at the top — and marks it on the way in, because landing mid-chapter with
 // nothing highlighted reads as the page having scrolled by itself rather than as an answer.
 // The anchors come from shared/book.js, so they are the same ones the site jumps to.
-function openAt(id, at) {
+//
+// The section is looked up inside `node` rather than by document id: that is the tree this
+// screen just built, it needs no escaping for the Cyrillic slugs, and it does not care
+// whether the router has attached the node yet. The scroll itself still waits a frame, for
+// the same reason restoreScroll does — the router sets the scroller to 0 at the end of its
+// own render, after mount() has run.
+function openAt(id, at, node) {
   if (!at) return restoreScroll(id);
-  requestAnimationFrame(() => {
-    const target = document.getElementById(`sec-${at}`);
-    if (!target) return restoreScroll(id);     // rebuilt book, section gone: top of chapter
-    target.classList.add('bk-at');
-    target.scrollIntoView();
-  });
+  const target = [...node.querySelectorAll('.bk-section')].find(s => s.id === `sec-${at}`);
+  if (!target) return restoreScroll(id);       // rebuilt book, section gone: top of chapter
+  target.classList.add('bk-at');
+  requestAnimationFrame(() => target.scrollIntoView());
 }
 
 function chapter({ topic: t, index }, ctx) {
