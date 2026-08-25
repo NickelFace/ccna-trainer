@@ -840,7 +840,11 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .bk p{font-size:16px;line-height:1.68;color:var(--ink);margin:12px 0}
 .bk strong{font-weight:700}
 .bk em{font-style:italic}
-.bk code{font-family:var(--mono);font-size:13.5px;background:var(--cream-warm);
+/* The chip is for a command named inside a sentence. Not for a block: book.js renders
+   those as <pre class="bk-code"><code>, and a cream chip there sits under text coloured
+   for the dark block above it — near-white on near-white, so the whole listing reads as
+   an empty white bar. */
+.bk :not(pre) > code{font-family:var(--mono);font-size:13.5px;background:var(--cream-warm);
   border-radius:5px;padding:1px 5px;overflow-wrap:anywhere}
 .bk-list{margin:12px 0;padding-left:24px;font-size:16px;line-height:1.65}
 .bk-list li{margin:8px 0}

@@ -174,7 +174,10 @@
 }
 .bk strong { color: var(--text); font-weight: 600; }
 .bk em { font-style: italic; color: var(--text); }
-.bk code {
+/* Inline only. The <code> inside <pre class="bk-code"> has to keep the block's own
+   colour, or every listing renders as an accent chip and the .cli / .txt variants below
+   never take effect. */
+.bk :not(pre) > code {
   font-family: var(--font-mono);
   font-size: calc(12.5px * var(--bk-scale));
   color: var(--primary-text);
