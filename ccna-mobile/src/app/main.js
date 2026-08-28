@@ -3,10 +3,11 @@
 // progress sync, and only when a sync key has been set up.
 import { router } from './router.js';
 import { store, bindPersistOnPause, bindResume } from './store.js';
-import { autoSyncer } from '../../../ccna-exam-simulator/assets/js/shared/sync.js?v=19';
+import { autoSyncer } from '../../../ccna-exam-simulator/assets/js/shared/sync.js?v=20';
 import { reschedule, initNotificationListener } from './notify.js';
 import { scorable } from '../engine/select.js';
 import { sessionIsValid } from './session.js';
+import { t } from './i18n.js';
 import { home } from './screens/home.js';
 import { theory } from './screens/theory.js';
 import { learn } from './screens/learn.js';
@@ -15,11 +16,11 @@ import { progress } from './screens/progress.js';
 import { onboarding } from './screens/onboarding.js';
 
 const TABS = [
-  { id: 'home', label: 'Главная', screen: home },
-  { id: 'theory', label: 'Теория', screen: theory },
-  { id: 'learn', label: 'Учить', screen: learn },
-  { id: 'exam', label: 'Экзамен', screen: exam },
-  { id: 'progress', label: 'Прогресс', screen: progress },
+  { id: 'home', labelKey: 'tab.home', screen: home },
+  { id: 'theory', labelKey: 'tab.theory', screen: theory },
+  { id: 'learn', labelKey: 'tab.learn', screen: learn },
+  { id: 'exam', labelKey: 'tab.exam', screen: exam },
+  { id: 'progress', labelKey: 'tab.progress', screen: progress },
 ];
 
 async function loadBank() {
@@ -96,8 +97,8 @@ async function boot() {
     autoSync('start');
   } catch (err) {
     document.getElementById('scroll').innerHTML =
-      `<h1 class="screen-title">Не удалось запуститься</h1>
-       <p class="muted">${err.message}. Проверь, что перед сборкой отработал <code>npm run sync-data</code>.</p>`;
+      `<h1 class="screen-title">${t('boot.failTitle')}</h1>
+       <p class="muted">${t('boot.failBody', { message: err.message })}</p>`;
   }
 }
 

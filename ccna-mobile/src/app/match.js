@@ -8,6 +8,7 @@ import { esc } from './dom.js';
 import { store } from './store.js';
 import { ddCorrect, ddFilled, ddItemRight, ddNeeded } from '../engine/grade.js';
 import { gradesImmediately } from './session.js';
+import { t, pluralWord, WORDS } from './i18n.js';
 
 // { qn, placement: { itemIndex: bucketIndex }, selected: itemIndex | null }
 let state = { qn: null, placement: {}, selected: null };
@@ -77,7 +78,7 @@ export function matchBody(q, graded) {
       // Under interchangeable targets a right characteristic is right wherever it sits, so
       // the mark comes from ddItemRight rather than from this bucket's index.
       if (graded) cls.push(ddItemRight(q, state.placement, i) ? 'correct' : 'wrong');
-      return `<span class="${cls.join(' ')}">${esc(q.dd.items[i])}${graded ? '' : `<button class="chip-x" data-unplace="${i}" type="button" aria-label="Убрать">✕</button>`}</span>`;
+      return `<span class="${cls.join(' ')}">${esc(q.dd.items[i])}${graded ? '' : `<button class="chip-x" data-unplace="${i}" type="button" aria-label="${esc(t('match.removeAria'))}">✕</button>`}</span>`;
     }).join('');
 
     const armed = state.selected !== null && !graded;
@@ -85,27 +86,20 @@ export function matchBody(q, graded) {
       <div class="bucket${armed ? ' armed' : ''}" data-bucket="${bi}">
         <div class="bucket-head">
           <span class="bucket-title mono">${esc(b.label)}</span>
-          ${armed ? `<span class="bucket-hint">тапни, чтобы положить</span>` : ''}
+          ${armed ? `<span class="bucket-hint">${esc(t('match.tapToPlace'))}</span>` : ''}
         </div>
         ${chips ? `<div class="bucket-items">${chips}</div>` : ''}
-        ${free > 0 && !graded ? `<div class="bucket-free">${free} ${plural(free, 'место', 'места', 'мест')} свободно</div>` : ''}
+        ${free > 0 && !graded ? `<div class="bucket-free">${esc(t('match.freeSlot', { n: free, slots: pluralWord(free, WORDS.slots) }))}</div>` : ''}
       </div>`;
   }).join('');
 
   return `
     <div class="match">
-      <p class="match-hint">Тапни элемент, затем категорию. Тянуть ничего не нужно.</p>
+      <p class="match-hint">${esc(t('match.hint'))}</p>
       <div class="chips">${bank}</div>
       <div class="buckets">${buckets}</div>
     </div>`;
 }
-
-const plural = (n, one, few, many) => {
-  const m10 = n % 10, m100 = n % 100;
-  if (m10 === 1 && m100 !== 11) return one;
-  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
-  return many;
-};
 
 // ---------------------------------------------------------------- behaviour
 // onChange re-renders the screen; the caller owns rendering, this module owns the state.

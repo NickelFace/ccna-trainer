@@ -10,7 +10,7 @@
 // from the web root, and the site serves data/theory/ from the same directory as the
 // bank. What differs is caching — the phone reads a file it shipped with, the browser
 // reads over HTTP from Pages — hence the version stamp below.
-import { normalizeTset, tsetEntries, tsetHas, tsetMark } from './tset.js?v=19';
+import { normalizeTset, tsetEntries, tsetHas, tsetMark } from './tset.js?v=20';
 
 const BASE = 'data/theory';
 
@@ -20,9 +20,18 @@ const BASE = 'data/theory';
 let stamp = '';
 export const setBookVersion = v => { stamp = v ? `?v=${encodeURIComponent(v)}` : ''; };
 
-let indexPromise = null;
-let mapPromise = null;
-const bodies = new Map();
+// Every loader below takes an optional `base`, defaulting to BASE — the web trainer's own
+// calls (no second argument) fetch exactly what they always have, from exactly the same
+// path, so its single-language "Учебник" screen is untouched. ccna-mobile is the only
+// caller that passes one: `data/theory/ru` or `data/theory/en` (see src/app/theory.js),
+// because it ships one tree per locale (ccna-book/build.mjs) and switches at runtime — so
+// the caches below are keyed by `base` too, or a language switch would keep serving
+// whichever locale happened to load first.
+let indexCache = new Map();     // base -> Promise<index>
+let mapCache = new Map();       // base -> Promise<map>  (map.json itself is locale-independent;
+                                 // see the build.mjs note — but callers may still pass different
+                                 // bases, so this stays keyed the same way for consistency)
+const bodies = new Map();       // `${base}:${id}` -> Promise<body>
 
 const get = url => fetch(url + stamp).then(r => {
   if (!r.ok) throw new Error(`${url}: ${r.status}`);
@@ -60,19 +69,22 @@ export const isRead = (book, id) => tsetHas(book?.read, book?.readOff, id);
 export const readMap = book => tsetEntries(book?.read, book?.readOff);
 export const setRead = (book, id, on, now = Date.now()) => tsetMark(book.read, book.readOff, id, on, now);
 
-export function loadIndex() {
-  indexPromise ||= get(`${BASE}/index.json`).then(idx => {
-    idx.byId = new Map(idx.topics.map(t => [t.id, t]));
-    return idx;
-  }).catch(err => { indexPromise = null; throw err; });
-  return indexPromise;
+export function loadIndex(base = BASE) {
+  if (!indexCache.has(base)) {
+    indexCache.set(base, get(`${base}/index.json`).then(idx => {
+      idx.byId = new Map(idx.topics.map(t => [t.id, t]));
+      return idx;
+    }).catch(err => { indexCache.delete(base); throw err; }));
+  }
+  return indexCache.get(base);
 }
 
-export function loadTopic(id) {
-  if (!bodies.has(id)) {
-    bodies.set(id, get(`${BASE}/t/${id}.json`).catch(err => { bodies.delete(id); throw err; }));
+export function loadTopic(id, base = BASE) {
+  const key = `${base}:${id}`;
+  if (!bodies.has(key)) {
+    bodies.set(key, get(`${base}/t/${id}.json`).catch(err => { bodies.delete(key); throw err; }));
   }
-  return bodies.get(id);
+  return bodies.get(key);
 }
 
 // Question number → where in the book its answer is explained. Used by "теория по этому
@@ -80,9 +92,11 @@ export function loadTopic(id) {
 // reader. A value is `topicId`, or `topicId#sectionId` when ccna-book/build.mjs could name
 // one section of that chapter with any confidence — read it through the two accessors
 // below rather than indexing the map, or the '#' form arrives as a chapter id nothing has.
-export function loadMap() {
-  mapPromise ||= get(`${BASE}/map.json`).catch(err => { mapPromise = null; throw err; });
-  return mapPromise;
+export function loadMap(base = BASE) {
+  if (!mapCache.has(base)) {
+    mapCache.set(base, get(`${base}/map.json`).catch(err => { mapCache.delete(base); throw err; }));
+  }
+  return mapCache.get(base);
 }
 
 const entryOf = (map, qn) => map?.[qn] || null;

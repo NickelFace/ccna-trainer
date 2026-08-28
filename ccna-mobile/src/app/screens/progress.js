@@ -16,13 +16,14 @@ import { syncCard, wireSync } from '../sync-ui.js';
 import { toast } from '../toast.js';
 import { question as questionScreen } from './question.js';
 import { result as resultScreen } from './result.js';
+import { t, pluralWord, WORDS } from '../i18n.js';
 
 const CHART_H = 104;
 const MAX_BARS = 8;
 const STRIP_H = 64;
 const STRIP_DAYS = 14;
 
-const MODE_LABEL = { practice: 'Тренировка', srs: 'Повторение' };
+const MODE_LABEL = () => ({ practice: t('progress.mode.practice'), srs: t('progress.mode.srs') });
 
 const barHeight = scaled =>
   Math.max(3, Math.round(((scaled - SCALE_MIN) / (SCALE_MAX - SCALE_MIN)) * CHART_H));
@@ -33,13 +34,6 @@ const fmtMinSec = ms => {
 };
 
 const fmtDate = ts => new Date(ts).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
-
-const plural = (n, one, few, many) => {
-  const m10 = n % 10, m100 = n % 100;
-  if (m10 === 1 && m100 !== 11) return one;
-  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
-  return many;
-};
 
 // Only a blueprint-weighted attempt (see isScored in stats.js) belongs on the score
 // chart — the pass threshold and the 300..1000 scale are calibrated to that sample.
@@ -72,11 +66,11 @@ function chart(attempts) {
 function todayCard(activity, goal, now) {
   const d = dayStats(activity, now);
   return `
-    <div class="label spaced">Сегодня · ${d.total} из ${goal}</div>
+    <div class="label spaced">${esc(t('progress.today', { n: d.total, goal }))}</div>
     <div class="mini-stats">
-      <div class="card mini"><b class="mono">${d.total}</b><span>отвечено</span></div>
-      <div class="card mini"><b class="mono${d.wrong ? ' err' : ''}">${d.wrong}</b><span>${plural(d.wrong, 'ошибка', 'ошибки', 'ошибок')}</span></div>
-      <div class="card mini"><b class="mono">${d.srs}</b><span>работа над ошибками</span></div>
+      <div class="card mini"><b class="mono">${d.total}</b><span>${esc(t('progress.today.answered'))}</span></div>
+      <div class="card mini"><b class="mono${d.wrong ? ' err' : ''}">${d.wrong}</b><span>${esc(pluralWord(d.wrong, WORDS.mistakes))}</span></div>
+      <div class="card mini"><b class="mono">${d.srs}</b><span>${esc(t('progress.today.srs'))}</span></div>
     </div>`;
 }
 
@@ -89,7 +83,7 @@ function activityStrip(activity, goal, now) {
   const bars = days.map(d => {
     const height = Math.max(3, Math.round((d.total / cap) * STRIP_H));
     const tone = d.total === 0 ? '' : d.total >= goal ? 'ok' : 'warn';
-    const title = `${esc(fmtDate(d.ts))}: ${d.total}, ошибок ${d.wrong}`;
+    const title = `${esc(fmtDate(d.ts))}: ${d.total}, ${esc(pluralWord(d.wrong, WORDS.mistakes))} ${d.wrong}`;
     return `<div class="bar ${tone}" style="height:${height}px" title="${title}"></div>`;
   }).join('');
 
@@ -108,8 +102,8 @@ function historyRows(attempts) {
   return attempts.slice().reverse().map(a => {
     const dropped = isAbandoned(a);
     const label = a.mode === 'exam'
-      ? (a.weighted ? 'Экзамен' : 'Свой экзамен')
-      : (MODE_LABEL[a.mode] || 'Тренировка');
+      ? (a.weighted ? t('progress.history.exam') : t('progress.history.customExam'))
+      : (MODE_LABEL()[a.mode] || t('progress.history.practice'));
     // A weighted attempt shows the 300..1000 score, same as everywhere else it appears;
     // anything else shows its percentage — never a scaled number that would look
     // comparable to a real exam result but was drawn from a biased or tiny sample. An
@@ -124,8 +118,8 @@ function historyRows(attempts) {
         <span class="history-main">
           <span>${esc(label)} · ${esc(fmtDate(a.date))}</span>
           <span class="muted">${dropped
-            ? `не засчитана · ${a.ok}/${asked} верно из ${a.total}`
-            : `${a.ok}/${a.total} верно · ${fmtMinSec(msPerQuestion(a))} на вопрос`}</span>
+            ? esc(t('progress.history.notCounted', { ok: a.ok, asked, total: a.total }))
+            : esc(t('progress.history.correctPerQuestion', { ok: a.ok, total: a.total, time: fmtMinSec(msPerQuestion(a)) }))}</span>
         </span>
         ${value}
       </button>`;
@@ -138,26 +132,24 @@ function historyRows(attempts) {
 function backupCard() {
   return `
     <div class="card backup-card">
-      <div class="card-head"><span>Резервная копия</span></div>
-      <p class="muted">Прогресс хранится только на этом телефоне. Сохрани копию перед
-      переустановкой или сменой телефона — импорт вернёт всё как было, включая профиль
-      и закладки.</p>
+      <div class="card-head"><span>${esc(t('progress.backup.title'))}</span></div>
+      <p class="muted">${esc(t('progress.backup.body'))}</p>
       <div class="backup-actions">
-        <button class="btn" data-act="export" type="button">Экспорт</button>
-        <button class="btn" data-act="import" type="button">Импорт</button>
+        <button class="btn" data-act="export" type="button">${esc(t('progress.backup.export'))}</button>
+        <button class="btn" data-act="import" type="button">${esc(t('progress.backup.import'))}</button>
       </div>
       <input class="backup-file" type="file" accept="application/json" hidden>
     </div>`;
 }
 
 function topicCards(topics) {
-  return topics.map(t => `
+  return topics.map(t2 => `
     <div class="topic-card">
       <span class="topic-main">
-        <span class="topic-name">${esc(t.topic)}</span>
-        <span class="muted">${t.ok} из ${t.tot} верно · ${t.pct}%</span>
+        <span class="topic-name">${esc(t2.topic)}</span>
+        <span class="muted">${esc(t('progress.topic.correct', { ok: t2.ok, tot: t2.tot, pct: t2.pct }))}</span>
       </span>
-      <button class="btn soft small" data-topic="${esc(t.topic)}" type="button">Учить</button>
+      <button class="btn soft small" data-topic="${esc(t2.topic)}" type="button">${esc(t('progress.topic.learn'))}</button>
     </div>`).join('');
 }
 
@@ -175,18 +167,17 @@ export const progress = {
     const activityBlock = `
       ${todayCard(store.activity, goal, now)}
       <div class="card chart-card">
-        <div class="card-head"><span>Активность за ${STRIP_DAYS} дней</span></div>
+        <div class="card-head"><span>${esc(t('progress.activityDays', { n: STRIP_DAYS }))}</span></div>
         ${activityStrip(store.activity, goal, now)}
       </div>`;
 
     if (!attempts.length) {
       const node = h(`
-        <h1 class="screen-title">Прогресс</h1>
+        <h1 class="screen-title">${esc(t('progress.title'))}</h1>
         ${activityBlock}
         <div class="card empty">
-          <p>Здесь появится график баллов, средняя скорость и темы, которые проседают.</p>
-          <p class="muted">Пройди первый пробный экзамен — одной попытки уже хватит, чтобы
-          увидеть расклад по доменам.</p>
+          <p>${esc(t('progress.empty.body'))}</p>
+          <p class="muted">${esc(t('progress.empty.hint'))}</p>
         </div>
         ${syncCard()}
         ${backupCard()}`);
@@ -209,29 +200,28 @@ export const progress = {
     const topics = weakTopics(attempts, bank.byN);
 
     const node = h(`
-      <h1 class="screen-title">Прогресс</h1>
+      <h1 class="screen-title">${esc(t('progress.title'))}</h1>
       ${activityBlock}
       ${scored.length ? `
         <div class="card chart-card">
           <div class="card-head">
-            <span>Баллы за ${scored.length} ${scored.length === 1 ? 'попытку' : 'попыток'}</span>
+            <span>${esc(t('progress.scoresFor', { n: scored.length, attempts: pluralWord(scored.length, WORDS.attemptsAcc) }))}</span>
             ${delta === null ? '' : `<span class="mono ${delta >= 0 ? 'ok' : 'err'}">${delta > 0 ? '+' : ''}${delta}</span>`}
           </div>
           ${chart(scored)}
         </div>` : `
         <div class="card chart-card">
-          <div class="card-head"><span>Баллы</span></div>
-          <p class="muted">Появятся после «Как на экзамене» или «Короткий прогон» — это
-          единственные режимы, взвешенные по блюпринту так же, как настоящий тест.</p>
+          <div class="card-head"><span>${esc(t('progress.scores.title'))}</span></div>
+          <p class="muted">${esc(t('progress.scores.empty'))}</p>
         </div>`}
       <div class="mini-stats">
-        <div class="card mini"><b class="mono">${fmtMinSec(avgMs)}</b><span>средн. на вопрос</span></div>
-        <div class="card mini"><b class="mono">${lastCounted.pct}%</b><span>в последней попытке</span></div>
+        <div class="card mini"><b class="mono">${fmtMinSec(avgMs)}</b><span>${esc(t('progress.avgPerQuestion'))}</span></div>
+        <div class="card mini"><b class="mono">${lastCounted.pct}%</b><span>${esc(t('progress.lastAttemptPct'))}</span></div>
       </div>
       ${topics.length ? `
-        <div class="label spaced">Слабые темы</div>
+        <div class="label spaced">${esc(t('progress.weakTopics'))}</div>
         <div class="topics">${topicCards(topics)}</div>` : ''}
-      <div class="label spaced">Все попытки</div>
+      <div class="label spaced">${esc(t('progress.allAttempts'))}</div>
       <div class="card tight">${historyRows(attempts)}</div>
       ${syncCard()}
       ${backupCard()}
@@ -242,9 +232,9 @@ export const progress = {
       if (topicBtn) {
         if (store.session) {
           const yes = await confirmDialog({
-            title: 'Начать тренировку?',
-            text: 'Незаконченная сессия будет потеряна.',
-            ok: 'Начать', cancel: 'Отмена',
+            title: t('common.startTraining.title'),
+            text: t('common.unfinishedLost'),
+            ok: t('common.start'), cancel: t('common.cancel'),
           });
           if (!yes) return;
         }
@@ -281,15 +271,15 @@ function wireBackup(node) {
     try {
       const data = await readBackupFile(file);
       const yes = await confirmDialog({
-        title: 'Восстановить резервную копию?',
-        text: 'Текущий прогресс на телефоне будет заменён тем, что в файле.',
-        ok: 'Восстановить', cancel: 'Отмена',
+        title: t('progress.restore.title'),
+        text: t('progress.restore.body'),
+        ok: t('progress.restore.ok'), cancel: t('common.cancel'),
       });
       if (!yes) return;
       await store.restore(data);
       location.reload();
     } catch (err) {
-      toast(err.message || 'Не удалось восстановить копию.');
+      toast(err.message || t('backup.readFailed'));
     }
   });
 }

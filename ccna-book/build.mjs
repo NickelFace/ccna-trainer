@@ -6,6 +6,7 @@
 // Markdown subset is small enough (see README) that a hand-rolled block parser is
 // shorter and more predictable than pulling a full CommonMark implementation in.
 import { readdir, readFile, mkdir, writeFile, rm } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -177,8 +178,12 @@ const slug = (s, i) => s.toLowerCase().replace(/[^a-zа-я0-9]+/gi, '-').replace
 
 const DOMAINS = ['NF', 'NA', 'IPC', 'IPS', 'SEC', 'AUT'];
 
+// `<id>.md` only — `<id>.en.md` (and any other future `<id>.<locale>.md`) is a translation
+// overlay, not a chapter of its own, and is read separately by loadTopicsLocale below.
+const CANONICAL_MD = /^[\w-]+\.md$/;
+
 export async function loadTopics(dir = join(ROOT, 'topics')) {
-  const files = (await readdir(dir)).filter(f => f.endsWith('.md')).sort();
+  const files = (await readdir(dir)).filter(f => CANONICAL_MD.test(f)).sort();
   const topics = [];
   for (const file of files) {
     const { front, body } = parseFrontmatter(await readFile(join(dir, file), 'utf8'), file);
@@ -226,6 +231,48 @@ const countWords = sections => textOf(sections).split(/\s+/).filter(Boolean).len
 // 130 words/minute for technical Russian, plus a minute per code block for the CLI.
 const estimateMinutes = sections =>
   Math.max(5, Math.round(countWords(sections) / 130 + sections.flatMap(s => s.blocks).filter(b => b.t === 'code').length));
+
+// ---------------------------------------------------------------- locale overlays
+//
+// A translated chapter is `<id>.en.md` beside its Russian original — same id, dom,
+// blueprint and match patterns are NOT re-declared there (only `title`/`lead`, and
+// optionally `minutes`); the question binding (mapQuestions below) always runs against the
+// Russian topics, so a translated chapter can never accidentally change which questions
+// it claims. See ccna-book/topics/README (or the CCNA_MOBILE_I18N notes) for the format.
+//
+// Section ids in the translated body are reassigned from the Russian chapter's own
+// sections, positionally, rather than re-slugged from the English headings: map.json's
+// `topicId#sectionId` values are computed once, from the Russian text, and a translated
+// chapter has to answer to the same ids or every "теория по этому вопросу" deep link into
+// it breaks. A chapter whose section count does not match its Russian original cannot be
+// mapped this way and is skipped — see loadTopicsLocale's warning — falling back to the
+// Russian content for that one chapter rather than shipping a broken jump target.
+export async function loadTopicsLocale(ruTopics, dir, locale, warn = console.warn) {
+  const overlay = new Map();
+  for (const t of ruTopics) {
+    const file = join(dir, `${t.id}.${locale}.md`);
+    if (!existsSync(file)) {
+      warn(`buildBook: no ${locale} translation for ${t.id} — falling back to Russian`);
+      continue;
+    }
+    const { front, body } = parseFrontmatter(await readFile(file, 'utf8'), `${t.id}.${locale}.md`);
+    const sections = parseBody(body, `${t.id}.${locale}.md`);
+    if (sections.length !== t.sections.length) {
+      warn(`buildBook: ${file} has ${sections.length} sections, Russian original has `
+        + `${t.sections.length} — section anchors would not line up, falling back to Russian`);
+      continue;
+    }
+    const aligned = sections.map((s, i) => ({ ...s, id: t.sections[i].id }));
+    overlay.set(t.id, {
+      title: front.title || t.title,
+      lead: front.lead || t.lead,
+      minutes: front.minutes || estimateMinutes(aligned),
+      words: countWords(aligned),
+      sections: aligned,
+    });
+  }
+  return overlay;
+}
 
 // ---------------------------------------------------------------- question binding
 
@@ -402,21 +449,34 @@ export function mapQuestions(topics, questions) {
 
 // ---------------------------------------------------------------- emit
 
-export async function buildBook({ dir, bankPath = BANK, metaPath = META } = {}) {
+// `locale` swaps the *content* shipped in `index`/`bodies` (title, lead, section text) for
+// a translated one when available — never the question binding: `map`/`stats` are always
+// computed from the Russian topics (their `match` patterns are the canonical, hand-tuned
+// ones — see the module note at the top of this file), so a translated chapter can never
+// steer questions differently than its Russian original does.
+export async function buildBook({ dir, bankPath = BANK, metaPath = META, locale = 'ru' } = {}) {
   const topics = await loadTopics(dir);
   const questions = JSON.parse(await readFile(bankPath, 'utf8'));
   const meta = JSON.parse(await readFile(metaPath, 'utf8'));
   const { map, perTopic, stats } = mapQuestions(topics, questions);
 
+  const overlay = locale === 'ru' ? null : await loadTopicsLocale(topics, dir || join(ROOT, 'topics'), locale);
+  const content = topics.map(t => {
+    const o = overlay?.get(t.id);
+    return o ? { ...t, ...o } : t;
+  });
+  const missing = overlay ? topics.filter(t => !overlay.has(t.id)).length : 0;
+
   const index = {
     v: 1,
+    locale,
     builtFrom: { questions: questions.length },
     domains: meta.domains.map(d => ({
       id: d.id,
       name: d.name,
-      topics: topics.filter(t => t.dom === d.id).map(t => t.id),
+      topics: content.filter(t => t.dom === d.id).map(t => t.id),
     })),
-    topics: topics.map(t => ({
+    topics: content.map(t => ({
       id: t.id,
       dom: t.dom,
       title: t.title,
@@ -430,7 +490,7 @@ export async function buildBook({ dir, bankPath = BANK, metaPath = META } = {}) 
     })),
   };
 
-  const bodies = new Map(topics.map(t => [t.id, {
+  const bodies = new Map(content.map(t => [t.id, {
     id: t.id,
     dom: t.dom,
     title: t.title,
@@ -441,7 +501,7 @@ export async function buildBook({ dir, bankPath = BANK, metaPath = META } = {}) 
     qs: perTopic.get(t.id),
   }]));
 
-  return { topics, index, bodies, map, stats, questions };
+  return { topics: content, index, bodies, map, stats: { ...stats, missingTranslations: missing }, questions };
 }
 
 export function coverageReport({ topics, index, stats, questions }) {
@@ -470,13 +530,18 @@ export function coverageReport({ topics, index, stats, questions }) {
   return lines.join('\n');
 }
 
-export async function writeBook(out, book) {
-  await rm(join(out, 't'), { recursive: true, force: true });
-  await mkdir(join(out, 't'), { recursive: true });
-  await writeFile(join(out, 'index.json'), JSON.stringify(book.index));
+// `out/map.json` is locale-independent (see the buildBook note) and lands directly under
+// `out`; `index.json` and the chapter bodies are locale-specific and nest under
+// `out/<locale>/`, so RU and EN builds can be written side by side without one clobbering
+// the other — see sync-data.mjs, which calls this once per locale.
+export async function writeBook(out, book, locale = 'ru') {
+  const localeDir = join(out, locale);
+  await rm(join(localeDir, 't'), { recursive: true, force: true });
+  await mkdir(join(localeDir, 't'), { recursive: true });
+  await writeFile(join(localeDir, 'index.json'), JSON.stringify(book.index));
   await writeFile(join(out, 'map.json'), JSON.stringify(book.map));
   for (const [id, body] of book.bodies) {
-    await writeFile(join(out, 't', `${id}.json`), JSON.stringify(body));
+    await writeFile(join(localeDir, 't', `${id}.json`), JSON.stringify(body));
   }
 }
 
@@ -487,12 +552,24 @@ if (isMain) {
   const args = process.argv.slice(2);
   const out = args.includes('--out') ? args[args.indexOf('--out') + 1] : join(ROOT, 'dist');
   const strict = args.includes('--strict');
-  const book = await buildBook({});
-  await writeBook(out, book);
+  // No --locale: build both. Each writeBook call nests under out/<locale>/ and shares one
+  // out/map.json (see writeBook) — sync-data.mjs does the same two calls for the app build.
+  const locales = args.includes('--locale') ? [args[args.indexOf('--locale') + 1]] : ['ru', 'en'];
+
+  let book;
+  for (const locale of locales) {
+    book = await buildBook({ locale });
+    await writeBook(out, book, locale);
+    if (book.stats.missingTranslations) {
+      console.warn(`build: ${book.stats.missingTranslations} chapter(s) have no ${locale} translation yet — served in Russian`);
+    }
+  }
+  // Coverage is about the question↔chapter binding, which is locale-independent — one
+  // report, from whichever locale built last, is enough.
   const report = coverageReport(book);
   await writeFile(join(out, 'coverage.md'), report + '\n');
   console.log(report);
-  console.log(`\nwritten → ${out}`);
+  console.log(`\nwritten → ${out} (${locales.join(', ')})`);
   if (strict && book.stats.orphan) {
     console.error(`\n${book.stats.orphan} question(s) in ${[...book.stats.orphanDomains].join(', ')} have no chapter`);
     process.exit(1);

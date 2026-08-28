@@ -5,10 +5,11 @@ import { store } from '../store.js';
 import { startPractice } from '../session.js';
 import { confirmDialog } from '../dialog.js';
 import { question } from './question.js';
+import { t } from '../i18n.js';
 
-const SETS = [
-  { count: 10, label: 'Разминка', note: '10 вопросов · с разбором после каждого' },
-  { count: 20, label: 'Тренировка', note: '20 вопросов · с разбором после каждого' },
+const SETS = () => [
+  { count: 10, label: t('learn.warmup.title'), note: t('learn.warmup.note') },
+  { count: 20, label: t('learn.practice.title'), note: t('learn.practice.note') },
 ];
 
 export const learn = {
@@ -22,15 +23,15 @@ export const learn = {
       </button>`).join('');
 
     const node = h(`
-      <h1 class="screen-title">Учить</h1>
+      <h1 class="screen-title">${esc(t('learn.title'))}</h1>
       <div class="presets">
-        ${SETS.map(s => `
+        ${SETS().map(s => `
           <button class="preset" data-count="${s.count}" type="button">
             <span class="preset-title">${esc(s.label)}</span>
             <span class="preset-note">${esc(s.note)}</span>
           </button>`).join('')}
       </div>
-      <div class="label spaced">По домену · 20 вопросов</div>
+      <div class="label spaced">${esc(t('learn.byDomain'))}</div>
       <div class="card tight">${byDomain}</div>
     `);
 
@@ -40,10 +41,10 @@ export const learn = {
       if (!set && !dom) return;
       if (store.session) {
         const yes = await confirmDialog({
-          title: 'Начать тренировку?',
-          text: 'Незаконченная сессия будет потеряна.',
-          ok: 'Начать',
-          cancel: 'Отмена',
+          title: t('common.startTraining.title'),
+          text: t('common.unfinishedLost'),
+          ok: t('common.start'),
+          cancel: t('common.cancel'),
         });
         if (!yes) return;
       }

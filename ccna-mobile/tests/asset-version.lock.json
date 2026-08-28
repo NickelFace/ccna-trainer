@@ -1,9 +1,9 @@
 {
-  "version": "19",
+  "version": "20",
   "files": {
     "ccna-exam-simulator/assets/js/shared/activity.js": "c9bf7288b2e96c3e",
     "ccna-exam-simulator/assets/js/shared/backup.js": "47e36e8476f4558c",
-    "ccna-exam-simulator/assets/js/shared/book.js": "35c4638bfd770696",
+    "ccna-exam-simulator/assets/js/shared/book.js": "ac1003e32aa2cd55",
     "ccna-exam-simulator/assets/js/shared/localdate.js": "108b88c4f58f414e",
     "ccna-exam-simulator/assets/js/shared/merge.js": "8d8a2a2d9f47b9f9",
     "ccna-exam-simulator/assets/js/shared/plan.js": "f40d89a42839a62f",
@@ -14,7 +14,7 @@
     "ccna-exam-simulator/assets/js/shared/srs-queue.js": "e22948f9deedf68e",
     "ccna-exam-simulator/assets/js/shared/srs.js": "ef4d1fbb55bd1e45",
     "ccna-exam-simulator/assets/js/shared/sync.js": "b1c157e8418150e6",
-    "ccna-exam-simulator/assets/js/shared/theory.js": "a69bdcb8036cbe20",
+    "ccna-exam-simulator/assets/js/shared/theory.js": "b96c99f2bec30547",
     "ccna-exam-simulator/assets/js/shared/tset.js": "4709c5f5bde474bf",
     "ccna-exam-simulator/assets/js/store.js": "ce5115e3e60cb2bd"
   }

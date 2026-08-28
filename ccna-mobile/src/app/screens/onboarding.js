@@ -1,36 +1,48 @@
-// First launch (spec 01). Two questions, because both change what the app does:
-// the level goes into the AI prompt, and the exam date sets the daily quota and the
-// countdown on the home screen.
+// First launch (spec 01). Three questions, because all three change what the app does:
+// the level goes into the AI prompt, the exam date sets the daily quota and the countdown
+// on the home screen, and the language switches the whole UI plus which rationale/theory
+// fields get read.
 //
-// The spec's third step — RU/EN interface language — is not here. The mobile app has no
-// string table yet; adding a language switch that changes nothing would be a lie in the
-// UI. See the note in ANDROID_APP.md terms: it needs an i18n layer first.
+// The third step used to be a stub — the spec always asked for it, but the mobile app had
+// no string table yet, and a language switch that changed nothing would have been a lie in
+// the UI. It is real now that i18n.js exists.
 import { esc, h } from '../dom.js';
 import { store } from '../store.js';
 import { dayKey } from '../../engine/stats.js';
+import { t, getLang, setLang } from '../i18n.js';
 
-const STEPS = [
+const STEPS = () => [
   {
     key: 'level',
-    title: 'С чего начинаешь?',
-    lead: 'От этого зависит, как ИИ будет объяснять разбор ошибок.',
-    hint: 'Поменять можно в любой момент: главная → «план · изменить». Ничего не пересчитывается задним числом.',
+    title: t('onboarding.level.title'),
+    lead: t('onboarding.level.lead'),
+    hint: t('onboarding.level.hint'),
     options: [
-      { value: 'first', title: 'Первый раз', note: 'CCNA ещё не сдавал' },
-      { value: 'again', title: 'Готовился раньше', note: 'база есть, нужно освежить' },
-      { value: 'retake', title: 'Пересдача', note: 'знаю, где провалился' },
+      { value: 'first', title: t('onboarding.level.first.title'), note: t('onboarding.level.first.note') },
+      { value: 'again', title: t('onboarding.level.again.title'), note: t('onboarding.level.again.note') },
+      { value: 'retake', title: t('onboarding.level.retake.title'), note: t('onboarding.level.retake.note') },
     ],
   },
   {
     key: 'examDate',
-    title: 'Когда экзамен?',
-    lead: 'От даты зависит дневная норма и приоритет плана.',
-    hint: 'Точную дату и норму задаёшь в «Профиле»: главная → «план · изменить». Там же виден обратный отсчёт.',
+    title: t('onboarding.date.title'),
+    lead: t('onboarding.date.lead'),
+    hint: t('onboarding.date.hint'),
     options: [
-      { value: 14, title: 'Через 2 недели', note: 'спринт · 60 вопросов в день', goal: 60 },
-      { value: 30, title: 'Через месяц', note: '30 вопросов в день · 1 пробный в неделю', goal: 30 },
-      { value: 90, title: 'Через 3 месяца и больше', note: 'спокойный темп · 15 вопросов в день', goal: 15 },
-      { value: null, title: 'Даты пока нет', note: 'без нормы, только тренировка', goal: 20 },
+      { value: 14, title: t('onboarding.date.2w.title'), note: t('onboarding.date.2w.note'), goal: 60 },
+      { value: 30, title: t('onboarding.date.1m.title'), note: t('onboarding.date.1m.note'), goal: 30 },
+      { value: 90, title: t('onboarding.date.3m.title'), note: t('onboarding.date.3m.note'), goal: 15 },
+      { value: null, title: t('onboarding.date.none.title'), note: t('onboarding.date.none.note'), goal: 20 },
+    ],
+  },
+  {
+    key: 'lang',
+    title: t('onboarding.lang.title'),
+    lead: t('onboarding.lang.lead'),
+    hint: t('onboarding.lang.hint'),
+    options: [
+      { value: 'ru', title: t('onboarding.lang.ru'), note: t('onboarding.lang.ru.note') },
+      { value: 'en', title: t('onboarding.lang.en'), note: t('onboarding.lang.en.note') },
     ],
   },
 ];
@@ -50,7 +62,7 @@ const optionMarkup = (o, selected) => `
 function commit(ctx) {
   const patch = { level: picked.level ?? null };
   const days = picked.examDate;
-  const option = STEPS[1].options.find(o => o.value === (days ?? null));
+  const option = STEPS()[1].options.find(o => o.value === (days ?? null));
   patch.dailyGoal = option?.goal ?? 30;
   // Local calendar date, not `toISOString().slice(0, 10)` — that reads the UTC day, which
   // east of UTC (Sydney) is already tomorrow in the evening, so "через месяц" landed a day
@@ -61,23 +73,29 @@ function commit(ctx) {
   patch.examDate = days ? dayKey(future.getTime()) : null;
   patch.onboarded = true;
   store.patchProfile(patch);
+  // The pick already flipped the live language (see the click handler below) so the rest
+  // of onboarding itself is shown in the chosen language; this just makes sure the profile
+  // patch above didn't race the one setLang() already wrote.
+  if (picked.lang) store.patchProfile({ lang: picked.lang });
   store.flush();
   ctx.router.back({ force: true });
+  ctx.router.renderTabs();
 }
 
 export const onboarding = {
   id: 'onboarding',
 
   footer(ctx) {
-    const current = STEPS[step];
+    const steps = STEPS();
+    const current = steps[step];
     const chosen = picked[current.key] !== undefined;
-    const last = step === STEPS.length - 1;
+    const last = step === steps.length - 1;
 
     const node = h(`
       <div class="action-bar">
-        ${step > 0 ? '<button class="btn" data-act="back" type="button">Назад</button>' : ''}
+        ${step > 0 ? `<button class="btn" data-act="back" type="button">${esc(t('common.back'))}</button>` : ''}
         <button class="btn primary grow" data-act="next" type="button" ${chosen ? '' : 'disabled'}>
-          ${last ? 'Готово' : 'Дальше'}
+          ${last ? esc(t('common.done')) : esc(t('common.next'))}
         </button>
       </div>`);
 
@@ -94,12 +112,13 @@ export const onboarding = {
   },
 
   render(ctx) {
-    const current = STEPS[step];
+    const steps = STEPS();
+    const current = steps[step];
     const value = picked[current.key];
 
     const node = h(`
       <div class="onboard">
-        <div class="label onboard-step">Шаг ${step + 1} из ${STEPS.length}</div>
+        <div class="label onboard-step">${esc(t('onboarding.step', { step: step + 1, total: steps.length }))}</div>
         <h1 class="onboard-title">${esc(current.title)}</h1>
         <p class="onboard-lead">${esc(current.lead)}</p>
         <div class="choices">
@@ -113,6 +132,13 @@ export const onboarding = {
       if (!btn) return;
       const raw = btn.dataset.value;
       picked[current.key] = raw === '' ? null : (current.key === 'examDate' ? Number(raw) : raw);
+      // The language step takes effect immediately — the point of asking is to let the
+      // learner see the rest of the flow, and the rest of the app, in the language they
+      // just picked, not to file it away for later.
+      if (current.key === 'lang') {
+        setLang(picked.lang);
+        ctx.router.renderTabs();
+      }
       ctx.router.render();
     });
 

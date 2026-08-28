@@ -65,10 +65,21 @@ console.log(`sync-data: ${copied} copied, ${skipped} up to date → dist/`);
 // so an edited chapter reaches the APK through the same one command as a fixed question.
 // The build also binds every chapter to the bank questions it covers — a chapter list and
 // a question bank that disagree would make the Теория tab lie about its coverage.
-const book = await buildBook({});
-await writeBook(join(DIST, 'data', 'theory'), book);
-await writeFile(join(BOOK, 'coverage.md'), coverageReport(book) + '\n');
-const chapters = book.index.topics.length;
-console.log(`sync-data: ${chapters} chapters → dist/data/theory/`
-  + ` (${book.stats.matched} questions matched, ${book.stats.fallback} to a domain catch-all`
-  + (book.stats.orphan ? `, ${book.stats.orphan} WITHOUT A CHAPTER` : '') + ')');
+//
+// One locale drives the question↔chapter binding (Russian, the canonical `match` data —
+// see ccna-book/build.mjs); both locales get their own index.json + chapter bodies under
+// dist/data/theory/<locale>/, sharing the one map.json — see writeBook. The Theory reader
+// (src/app/theory.js) picks the tree by store.profile.lang at fetch time.
+const THEORY = join(DIST, 'data', 'theory');
+const ruBook = await buildBook({});
+await writeBook(THEORY, ruBook, 'ru');
+const enBook = await buildBook({ locale: 'en' });
+await writeBook(THEORY, enBook, 'en');
+await writeFile(join(BOOK, 'coverage.md'), coverageReport(ruBook) + '\n');
+const chapters = ruBook.index.topics.length;
+console.log(`sync-data: ${chapters} chapters × 2 locales → dist/data/theory/{ru,en}/`
+  + ` (${ruBook.stats.matched} questions matched, ${ruBook.stats.fallback} to a domain catch-all`
+  + (ruBook.stats.orphan ? `, ${ruBook.stats.orphan} WITHOUT A CHAPTER` : '') + ')');
+if (enBook.stats.missingTranslations) {
+  console.warn(`sync-data: ${enBook.stats.missingTranslations} chapter(s) have no English translation yet — served in Russian in EN mode`);
+}
