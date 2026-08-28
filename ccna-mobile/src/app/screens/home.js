@@ -14,25 +14,19 @@ import { confirmDialog } from '../dialog.js';
 import { question as questionScreen } from './question.js';
 import { result as resultScreen } from './result.js';
 import { profile as profileScreen } from './profile.js';
+import { t, pluralWord, WORDS } from '../i18n.js';
 
-const MODE_LABEL = { exam: 'Пробный экзамен', practice: 'Тренировка', srs: 'Повторение' };
+const MODE_LABEL = () => ({ exam: t('home.mode.exam'), practice: t('home.mode.practice'), srs: t('home.mode.srs') });
 
 const agoLabel = ms => {
   const min = Math.round(ms / 60000);
-  if (min < 1) return 'только что';
-  if (min < 60) return `${min} мин назад`;
+  if (min < 1) return t('home.ago.now');
+  if (min < 60) return t('home.ago.min', { n: min });
   const hrs = Math.round(min / 60);
-  return hrs < 24 ? `${hrs} ч назад` : `${Math.round(hrs / 24)} дн назад`;
+  return hrs < 24 ? t('home.ago.hr', { n: hrs }) : t('home.ago.day', { n: Math.round(hrs / 24) });
 };
 
 const clock = ms => `${Math.floor(ms / 60000)}:${String(Math.floor(ms % 60000 / 1000)).padStart(2, '0')}`;
-
-const plural = (n, one, few, many) => {
-  const m10 = n % 10, m100 = n % 100;
-  if (m10 === 1 && m100 !== 11) return one;
-  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
-  return many;
-};
 
 const groupThousands = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
@@ -40,11 +34,11 @@ const groupThousands = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 function readinessBlock(r, delta, profile) {
   const left = daysUntil(profile.examDate);
   const sub = [
-    left === null ? 'дата экзамена не задана'
-      : left < 0 ? `дата экзамена прошла, ${-left} ${plural(-left, 'день', 'дня', 'дней')} назад`
-      : left === 0 ? 'экзамен сегодня'
-      : `экзамен через ${left} ${plural(left, 'день', 'дня', 'дней')}`,
-    'порог 825',
+    left === null ? t('home.readiness.examDateNone')
+      : left < 0 ? t('home.readiness.examDatePassed', { n: -left, days: pluralWord(-left, WORDS.days) })
+      : left === 0 ? t('home.readiness.examToday')
+      : t('home.readiness.examIn', { n: left, days: pluralWord(left, WORDS.days) }),
+    t('home.readiness.threshold'),
   ].join(' · ');
 
   // The countdown and the daily quota are the whole plan, and both were set once during
@@ -52,29 +46,30 @@ function readinessBlock(r, delta, profile) {
   // them. A settings screen filed under a tab nobody opens would not be found.
   const planRow = `
     <div class="muted readiness-sub">${esc(sub)}
-      <button class="plan-btn" data-act="profile" type="button">план · изменить</button>
+      <button class="plan-btn" data-act="profile" type="button">${esc(t('home.readiness.planEdit'))}</button>
     </div>`;
 
   if (r.forecast === null) {
     return `
       <div class="readiness">
-        <div class="readiness-head"><span class="readiness-pct">Готовность —</span></div>
+        <div class="readiness-head"><span class="readiness-pct">${esc(t('home.readiness.titleEmpty'))}</span></div>
         ${planRow}
-        <p class="muted lead">Прогноз появится после первых ответов: он считается по
-        последним 200 ответам, взвешенным по шести доменам Cisco.</p>
+        <p class="muted lead">${esc(t('home.readiness.forecastHint'))}</p>
       </div>`;
   }
 
   return `
     <div class="readiness">
       <div class="readiness-head">
-        <span class="readiness-pct">Готовность ${r.pct}%</span>
+        <span class="readiness-pct">${esc(t('home.readiness.title', { pct: r.pct }))}</span>
       </div>
       ${planRow}
       <div class="readiness-track"><i style="width:${Math.min(100, r.pct)}%"></i></div>
       <div class="readiness-foot mono">
-        <span>прогноз ${r.forecast} / 1000</span>
-        <span>${delta === null ? `по ${r.sample} ответам` : `${delta > 0 ? '+' : ''}${delta} за неделю`}</span>
+        <span>${esc(t('home.readiness.forecast', { n: r.forecast }))}</span>
+        <span>${delta === null
+          ? esc(t('home.readiness.bySample', { n: r.sample, answers: pluralWord(r.sample, WORDS.answers) }))
+          : esc(t('home.readiness.deltaWeek', { sign: delta > 0 ? '+' : '', n: delta }))}</span>
       </div>
     </div>`;
 }
@@ -83,16 +78,16 @@ function readinessBlock(r, delta, profile) {
 function resumeCard(session) {
   const left = remainingMs(session);
   const parts = [];
-  if (left !== null) parts.push(left > 0 ? `осталось ${clock(left)}` : 'время вышло');
-  parts.push(`сохранено ${agoLabel(Date.now() - session.savedAt)}`);
+  if (left !== null) parts.push(left > 0 ? t('home.resume.timeLeft', { clock: clock(left) }) : t('home.resume.timeUp'));
+  parts.push(t('home.resume.savedAgo', { ago: agoLabel(Date.now() - session.savedAt) }));
 
   return `
     <div class="card resume">
-      <div class="label">Продолжить</div>
-      <div class="resume-title">${esc(MODE_LABEL[session.mode] || session.mode)} · вопрос ${session.i + 1} из ${session.qs.length}</div>
+      <div class="label">${esc(t('home.resume.title'))}</div>
+      <div class="resume-title">${esc(t('home.resume.question', { mode: MODE_LABEL()[session.mode] || session.mode, i: session.i + 1, total: session.qs.length }))}</div>
       <div class="resume-meta">${esc(parts.join(' · '))}</div>
       <button class="btn primary wide" data-act="resume" type="button">
-        ${left === 0 ? 'Посмотреть результат' : 'Вернуться'}
+        ${left === 0 ? esc(t('home.resume.viewResult')) : esc(t('home.resume.return'))}
       </button>
     </div>`;
 }
@@ -115,18 +110,18 @@ function mockRow(mock) {
   if (mock.due) {
     return planRow({
       act: 'mock', badge: '!', tone: 'warn',
-      title: 'Пробный экзамен',
+      title: t('home.plan.mock.due'),
       note: mock.last
-        ? `последний ${mock.daysSince} ${plural(mock.daysSince, 'день', 'дня', 'дней')} назад — пора`
-        : 'ещё не проходил — одна попытка покажет расклад по доменам',
+        ? t('home.plan.mock.dueLast', { n: mock.daysSince, days: pluralWord(mock.daysSince, WORDS.days) })
+        : t('home.plan.mock.dueNever'),
     });
   }
   return `
     <div class="plan-row static">
       <span class="plan-badge ok">✓</span>
       <span class="plan-text">
-        <span class="plan-title">Пробный экзамен пройден</span>
-        <span class="plan-note">${esc(`следующий через ${mock.daysLeft} ${plural(mock.daysLeft, 'день', 'дня', 'дней')}`)}</span>
+        <span class="plan-title">${esc(t('home.plan.mock.done'))}</span>
+        <span class="plan-note">${esc(t('home.plan.mock.doneNote', { n: mock.daysLeft, days: pluralWord(mock.daysLeft, WORDS.days) }))}</span>
       </span>
     </div>`;
 }
@@ -137,18 +132,18 @@ function planCards({ due, nextDue, weakDomain, ddDone, mock }) {
   if (due) {
     rows.push(planRow({
       act: 'srs', badge: String(due), tone: 'err',
-      title: 'Повторить ошибки',
-      note: 'вопросы, у которых подошёл срок повтора',
+      title: t('home.plan.srs.title'),
+      note: t('home.plan.srs.note'),
     }));
   } else {
     const when = nextDue
-      ? `следующий повтор ${nextDue <= 1 ? 'завтра' : `через ${nextDue} ${plural(nextDue, 'день', 'дня', 'дней')}`}`
-      : 'здесь появятся вопросы, в которых ошибёшься';
+      ? (nextDue <= 1 ? t('home.plan.srs.nextTomorrow') : t('home.plan.srs.nextIn', { n: nextDue, days: pluralWord(nextDue, WORDS.days) }))
+      : t('home.plan.srs.nextEmpty');
     rows.push(`
       <div class="plan-row static">
         <span class="plan-badge ok">✓</span>
         <span class="plan-text">
-          <span class="plan-title">Всё повторено</span>
+          <span class="plan-title">${esc(t('home.plan.srs.doneTitle'))}</span>
           <span class="plan-note">${esc(when)}</span>
         </span>
       </div>`);
@@ -160,14 +155,14 @@ function planCards({ due, nextDue, weakDomain, ddDone, mock }) {
     rows.push(planRow({
       act: 'weak', badge: `${weakDomain.pct}%`, tone: toneFor(weakDomain.pct),
       title: weakDomain.name.replace(/^\d+\.\d+\s+/, ''),
-      note: 'самый слабый домен по последним ответам',
+      note: t('home.plan.weakest'),
     }));
   }
 
   rows.push(planRow({
     act: 'dd', badge: 'D&D', tone: 'ok',
-    title: 'Тренажёр сопоставлений',
-    note: ddDone ? 'сопоставления тапом, 10 вопросов' : 'разложить элементы по категориям тапом',
+    title: t('home.plan.dd.title'),
+    note: ddDone ? t('home.plan.dd.noteDone') : t('home.plan.dd.note'),
   }));
 
   return `<div class="plan">${rows.join('')}</div>`;
@@ -205,11 +200,11 @@ export const home = {
     const node = h(`
       ${readinessBlock(r, delta, store.profile)}
       ${s ? resumeCard(s) : ''}
-      <div class="label spaced">План на сегодня · ${today} из ${goal}</div>
+      <div class="label spaced">${esc(t('home.plan.today', { today, goal }))}</div>
       ${planCards({ due, nextDue, weakDomain, ddDone: false, mock: mockState(store.attempts, now) })}
       <div class="mini-stats">
-        <div class="card mini"><b class="mono">${streak}</b><span>${plural(streak, 'день подряд', 'дня подряд', 'дней подряд')}</span></div>
-        <div class="card mini"><b class="mono">${groupThousands(total)}</b><span>пройдено вопросов</span></div>
+        <div class="card mini"><b class="mono">${streak}</b><span>${esc(t('home.stats.streak', { n: streak, days: pluralWord(streak, WORDS.daysStreak) }))}</span></div>
+        <div class="card mini"><b class="mono">${groupThousands(total)}</b><span>${esc(t('home.stats.total'))}</span></div>
       </div>
     `);
 
@@ -236,9 +231,9 @@ export const home = {
 
       if (store.session) {
         const yes = await confirmDialog({
-          title: 'Начать новую сессию?',
-          text: 'Незаконченная сессия будет потеряна.',
-          ok: 'Начать', cancel: 'Отмена',
+          title: t('common.startSession.title'),
+          text: t('common.unfinishedLost'),
+          ok: t('common.start'), cancel: t('common.cancel'),
         });
         if (!yes) return;
       }

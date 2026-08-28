@@ -7,21 +7,22 @@ import { esc, h } from '../dom.js';
 import { store } from '../store.js';
 import { loadIndex, coverage, readMap } from '../theory.js';
 import { topic as topicScreen } from './topic.js';
+import { t } from '../i18n.js';
 
 let query = '';
 
-const matches = (t, q) => !q
-  || t.title.toLowerCase().includes(q)
-  || t.lead.toLowerCase().includes(q)
-  || t.sections.some(s => s.title.toLowerCase().includes(q));
+const matches = (t2, q) => !q
+  || t2.title.toLowerCase().includes(q)
+  || t2.lead.toLowerCase().includes(q)
+  || t2.sections.some(s => s.title.toLowerCase().includes(q));
 
-const row = (t, read) => `
-  <button class="bk-row${read ? ' read' : ''}" data-topic="${esc(t.id)}" type="button">
+const row = (t2, read) => `
+  <button class="bk-row${read ? ' read' : ''}" data-topic="${esc(t2.id)}" type="button">
     <span class="bk-row-mark mono">${read ? '✓' : ''}</span>
     <span class="bk-row-main">
-      <span class="bk-row-title">${esc(t.title)}</span>
-      <span class="bk-row-note">${esc(t.lead)}</span>
-      <span class="bk-row-meta mono">${t.minutes} мин · ${t.qn} вопр.</span>
+      <span class="bk-row-title">${esc(t2.title)}</span>
+      <span class="bk-row-note">${esc(t2.lead)}</span>
+      <span class="bk-row-meta mono">${esc(t('theoryList.rowMeta', { minutes: t2.minutes, n: t2.qn }))}</span>
     </span>
   </button>`;
 
@@ -29,7 +30,7 @@ export const theory = {
   id: 'theory',
 
   render(ctx) {
-    const node = h('<h1 class="screen-title">Теория</h1><p class="muted">Загружаю учебник…</p>');
+    const node = h(`<h1 class="screen-title">${esc(t('theoryList.title'))}</h1><p class="muted">${esc(t('theoryList.loading'))}</p>`);
 
     loadIndex().then(index => {
       // Resolved once per render: "read" is a mark weighed against a tombstone, not a
@@ -38,16 +39,16 @@ export const theory = {
       const cov = coverage(index, read);
       const q = query.trim().toLowerCase();
       const last = store.book.last && index.byId.get(store.book.last);
-      const doneCount = index.topics.filter(t => read[t.id]).length;
+      const doneCount = index.topics.filter(t2 => read[t2.id]).length;
 
       // Six domains and 47 chapters do not fit on a phone screen, so each domain folds.
       // A search always unfolds what it found, and the domain holding the chapter being
       // read opens on its own — otherwise "Продолжить" would point into a closed box.
       const lastDom = last ? last.dom : null;
       const groups = index.domains.map(d => {
-        const list = d.topics.map(id => index.byId.get(id)).filter(t => t && matches(t, q));
+        const list = d.topics.map(id => index.byId.get(id)).filter(t2 => t2 && matches(t2, q));
         if (!list.length) return '';
-        const readHere = list.filter(t => read[t.id]).length;
+        const readHere = list.filter(t2 => read[t2.id]).length;
         const open = q ? true : (store.book.open[d.id] ?? d.id === lastDom);
         return `
           <details class="bk-dom" data-dom="${esc(d.id)}"${open ? ' open' : ''}>
@@ -56,36 +57,35 @@ export const theory = {
               <span class="mono bk-dom-count">${readHere}/${d.topics.length}</span>
               <span class="bk-dom-chev mono">›</span>
             </summary>
-            <div class="card tight">${list.map(t => row(t, !!read[t.id])).join('')}</div>
+            <div class="card tight">${list.map(t2 => row(t2, !!read[t2.id])).join('')}</div>
           </details>`;
       }).join('');
 
       node.replaceChildren(...h(`
-        <h1 class="screen-title">Теория</h1>
+        <h1 class="screen-title">${esc(t('theoryList.title'))}</h1>
         <div class="card bk-cov">
           <div class="bk-cov-top">
-            <span>Покрыто вопросов банка</span>
+            <span>${esc(t('theoryList.coverageTitle'))}</span>
             <span class="mono bk-cov-pct">${cov.pct}%</span>
           </div>
           <div class="bk-cov-track"><i style="width:${cov.pct}%"></i></div>
           <div class="bk-cov-foot muted">
-            ${cov.done} из ${cov.total} вопросов · прочитано ${doneCount} из ${index.topics.length} глав
+            ${esc(t('theoryList.coverageFoot', { done: cov.done, total: cov.total, read: doneCount, chapters: index.topics.length }))}
           </div>
         </div>
         ${last && !q ? `
           <button class="bk-resume" data-topic="${esc(last.id)}" type="button">
-            <span class="bk-resume-label">Продолжить</span>
+            <span class="bk-resume-label">${esc(t('theoryList.resume'))}</span>
             <span class="bk-resume-title">${esc(last.title)}</span>
           </button>` : ''}
-        <input class="bk-search" type="search" placeholder="Поиск по темам" value="${esc(query)}"
+        <input class="bk-search" type="search" placeholder="${esc(t('theoryList.searchPlaceholder'))}" value="${esc(query)}"
                autocomplete="off" enterkeyhint="search">
-        ${groups || '<p class="muted">Ничего не нашлось. Попробуй другое слово.</p>'}
+        ${groups || `<p class="muted">${esc(t('theoryList.empty'))}</p>`}
       `).childNodes);
     }).catch(err => {
       node.replaceChildren(...h(`
-        <h1 class="screen-title">Теория</h1>
-        <p class="muted">Учебник не загрузился: ${esc(err.message)}.
-        Проверь, что перед сборкой отработал <code>npm run sync-data</code>.</p>`).childNodes);
+        <h1 class="screen-title">${esc(t('theoryList.title'))}</h1>
+        <p class="muted">${t('theoryList.loadFailed', { message: esc(err.message) })}</p>`).childNodes);
     });
 
     // The input is re-created on every render, so keep the caret where it was: only the

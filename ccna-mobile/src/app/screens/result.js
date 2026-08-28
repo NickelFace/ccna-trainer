@@ -11,8 +11,9 @@ import {
 import { store } from '../store.js';
 import { review as reviewScreen } from './review.js';
 import { aiPrompt as aiPromptScreen } from './ai-prompt.js';
+import { t, pluralWord, WORDS } from '../i18n.js';
 
-const MODE_LABEL = { practice: 'Тренировка', srs: 'Повторение' };
+const MODE_LABEL = () => ({ practice: t('result.mode.practice'), srs: t('result.mode.srs') });
 
 const scalePct = scaled => ((scaled - SCALE_MIN) / (SCALE_MAX - SCALE_MIN)) * 100;
 
@@ -21,19 +22,12 @@ const fmtMinSec = ms => {
   return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
 };
 
-const plural = (n, one, few, many) => {
-  const m10 = n % 10, m100 = n % 100;
-  if (m10 === 1 && m100 !== 11) return one;
-  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
-  return many;
-};
-
 // The line under the score: how far from the threshold, in either direction.
 function gapLine(attempt) {
   const gap = pointsToPass(attempt);
-  if (gap > 0) return `не хватило ${gap} ${plural(gap, 'балла', 'баллов', 'баллов')} до порога ${PASS_SCALED}`;
-  if (gap === 0) return `ровно порог ${PASS_SCALED}`;
-  return `запас ${-gap} ${plural(-gap, 'балл', 'балла', 'баллов')} над порогом ${PASS_SCALED}`;
+  if (gap > 0) return t('result.shortOfThreshold', { n: gap, points: pluralWord(gap, WORDS.points), threshold: PASS_SCALED });
+  if (gap === 0) return t('result.exactThreshold', { threshold: PASS_SCALED });
+  return t('result.aboveThreshold', { n: -gap, points: pluralWord(-gap, WORDS.points), threshold: PASS_SCALED });
 }
 
 // The 300..1000 score, the threshold gap and the scale bar only mean something for a
@@ -50,13 +44,13 @@ function scoreCard(attempt, delta) {
           <span class="scale-mark" style="left:${scalePct(PASS_SCALED)}%"></span>
         </div>
         <div class="scale-labels mono">
-          <span>${SCALE_MIN}</span><span>порог ${PASS_SCALED}</span><span>${SCALE_MAX}</span>
+          <span>${SCALE_MIN}</span><span>${esc(t('result.thresholdLabel', { n: PASS_SCALED }))}</span><span>${SCALE_MAX}</span>
         </div>
       </div>
       <div class="score-stats">
-        <div class="stat"><b class="mono">${attempt.ok}/${attempt.total}</b><span>верно</span></div>
-        <div class="stat"><b class="mono">${fmtMinSec(msPerQuestion(attempt))}</b><span>мин / вопрос</span></div>
-        <div class="stat"><b class="mono">${delta === null ? '—' : `${delta > 0 ? '+' : ''}${delta}`}</b><span>к прошлой</span></div>
+        <div class="stat"><b class="mono">${attempt.ok}/${attempt.total}</b><span>${esc(t('result.correct'))}</span></div>
+        <div class="stat"><b class="mono">${fmtMinSec(msPerQuestion(attempt))}</b><span>${esc(t('result.minPerQuestion'))}</span></div>
+        <div class="stat"><b class="mono">${delta === null ? '—' : `${delta > 0 ? '+' : ''}${delta}`}</b><span>${esc(t('result.vsLast'))}</span></div>
       </div>
     </div>`;
 }
@@ -75,15 +69,15 @@ function plainCard(attempt) {
   const asked = dropped ? answeredIn(attempt) : attempt.total;
   const pct = asked ? Math.round((attempt.ok / asked) * 100) : 0;
   const label = dropped
-    ? `Не засчитана · отвечено ${answeredIn(attempt)} из ${attempt.total}`
-    : (attempt.mode === 'exam' ? 'Свой экзамен' : (MODE_LABEL[attempt.mode] || 'Тренировка'));
+    ? t('result.notCounted', { n: answeredIn(attempt), total: attempt.total })
+    : (attempt.mode === 'exam' ? t('result.customExam') : (MODE_LABEL()[attempt.mode] || t('result.practice')));
   return `
     <div class="card score-card plain">
       <div class="score mono ${toneFor(pct)}">${attempt.ok}/${asked}</div>
-      <div class="muted">${esc(label)} · ${pct}% верно</div>
+      <div class="muted">${esc(label)} · ${pct}% ${esc(t('result.correct'))}</div>
       <div class="score-stats">
-        <div class="stat"><b class="mono">${pct}%</b><span>точность</span></div>
-        <div class="stat"><b class="mono">${fmtMinSec(msPerQuestion(attempt))}</b><span>мин / вопрос</span></div>
+        <div class="stat"><b class="mono">${pct}%</b><span>${esc(t('result.accuracy'))}</span></div>
+        <div class="stat"><b class="mono">${fmtMinSec(msPerQuestion(attempt))}</b><span>${esc(t('result.minPerQuestion'))}</span></div>
       </div>
     </div>`;
 }
@@ -91,17 +85,17 @@ function plainCard(attempt) {
 function nextStepCard(attempt, perDomain, bank, mistakes) {
   const weak = weakDomains({ ...attempt, perDomain }, bank.meta.domains);
   const detail = weak.length
-    ? `Слабее всего ${weak.map(d => `${d.name.replace(/^\d+\.\d+\s+/, '')} (${d.pct}%)`).join(' и ')}.`
-    : 'По доменам ровно — добирай объёмом.';
+    ? t('result.weakest', { domains: weak.map(d => `${d.name.replace(/^\d+\.\d+\s+/, '')} (${d.pct}%)`).join(', ') })
+    : t('result.evenAcrossDomains');
 
   return `
     <div class="card next-step">
-      <div class="next-step-title">Что делать дальше</div>
+      <div class="next-step-title">${esc(t('result.nextStep'))}</div>
       <p class="next-step-text">${mistakes.length
-        ? `${mistakes.length} ${plural(mistakes.length, 'ошибка', 'ошибки', 'ошибок')} в этой попытке. ${esc(detail)}`
-        : 'Ни одной ошибки — бери следующий домен или подними объём.'}</p>
+        ? esc(t('result.mistakesLine', { n: mistakes.length, mistakes: pluralWord(mistakes.length, WORDS.mistakes), detail }))
+        : esc(t('result.noMistakes'))}</p>
       ${mistakes.length
-        ? `<button class="btn primary wide" data-act="mistakes" type="button">Работа над ошибками · ${mistakes.length}</button>`
+        ? `<button class="btn primary wide" data-act="mistakes" type="button">${esc(t('result.reviewMistakes', { n: mistakes.length }))}</button>`
         : ''}
     </div>`;
 }
@@ -129,7 +123,7 @@ export const result = {
     const b = document.createElement('button');
     b.className = 'back-btn';
     b.type = 'button';
-    b.innerHTML = '<span class="mono">←</span> Готово';
+    b.innerHTML = `<span class="mono">←</span> ${esc(t('result.doneHeader'))}`;
     b.addEventListener('click', () => ctx.router.back());
     return b;
   },
@@ -138,9 +132,9 @@ export const result = {
     const { attempt } = ctx.params;
     const node = h(`
       <div class="action-bar">
-        <button class="btn grow" data-act="all" type="button">Разбор всех ${attempt.total}</button>
+        <button class="btn grow" data-act="all" type="button">${esc(t('result.reviewAll', { n: attempt.total }))}</button>
         ${mistakesOf(attempt, ctx.bank.byN).length
-          ? '<button class="btn soft grow" data-act="ai" type="button">Ошибки в ИИ</button>' : ''}
+          ? `<button class="btn soft grow" data-act="ai" type="button">${esc(t('result.mistakesToAi'))}</button>` : ''}
       </div>`);
     node.querySelector('[data-act="all"]').addEventListener('click', () =>
       ctx.router.modal(reviewScreen, { attempt, filter: 'all' }));
@@ -174,7 +168,7 @@ export const result = {
     const node = h(`
       ${scored ? scoreCard(attempt, delta) : plainCard(attempt)}
       ${nextStepCard(attempt, perDomain, bank, mistakes)}
-      <div class="label spaced">По доменам</div>
+      <div class="label spaced">${esc(t('result.byDomain'))}</div>
       <div class="card">${domainRows(perDomain, bank.meta.domains)}</div>
     `);
 

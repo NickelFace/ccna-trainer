@@ -12,13 +12,14 @@ import { Preferences } from '@capacitor/preferences';
 import { nextState, pruneGhosts } from '../engine/srs.js';
 import { dayKey, normalizeActivity } from '../engine/stats.js';
 import { isEmptyAnswer } from '../engine/grade.js';
-import { ACTIVITY_DAYS, bumpActivity, pruneActivity } from '../../../ccna-exam-simulator/assets/js/shared/activity.js?v=19';
-import { BRANCHES, packBackup, isBackup } from '../../../ccna-exam-simulator/assets/js/shared/backup.js?v=19';
-import { pruneAttempts } from '../../../ccna-exam-simulator/assets/js/shared/retention.js?v=19';
-import { isSyncKey, newSyncKey, syncOnce } from '../../../ccna-exam-simulator/assets/js/shared/sync.js?v=19';
+import { ACTIVITY_DAYS, bumpActivity, pruneActivity } from '../../../ccna-exam-simulator/assets/js/shared/activity.js?v=20';
+import { BRANCHES, packBackup, isBackup } from '../../../ccna-exam-simulator/assets/js/shared/backup.js?v=20';
+import { pruneAttempts } from '../../../ccna-exam-simulator/assets/js/shared/retention.js?v=20';
+import { isSyncKey, newSyncKey, syncOnce } from '../../../ccna-exam-simulator/assets/js/shared/sync.js?v=20';
 import { DEFAULT_BOOK, isRead, normalizeBook, setRead } from './theory.js';
-import { normalizeTset, tsetEntries, tsetHas, tsetMark } from '../../../ccna-exam-simulator/assets/js/shared/tset.js?v=19';
-import { DEFAULT_GOAL, validGoal } from '../../../ccna-exam-simulator/assets/js/shared/progress.js?v=19';
+import { normalizeTset, tsetEntries, tsetHas, tsetMark } from '../../../ccna-exam-simulator/assets/js/shared/tset.js?v=20';
+import { DEFAULT_GOAL, validGoal } from '../../../ccna-exam-simulator/assets/js/shared/progress.js?v=20';
+import { initLang, t } from './i18n.js';
 
 const KEY = {
   profile: 'ccna.profile',
@@ -122,6 +123,10 @@ export const store = {
       this.profile.deviceId = newDeviceId();
       this._touch('profile');
     }
+    // Adopt the persisted language before anything renders — setLang() (screens/profile.js,
+    // onboarding) is what changes it afterwards; this is just picking up where the phone
+    // left off.
+    initLang(this.profile.lang);
     this.session = session;
     // Six months, and then by itself — see shared/retention.js. Done here as well as in
     // the sync so a phone that never syncs still forgets on schedule.
@@ -309,6 +314,9 @@ export const store = {
         : state[k];
       this._queue(k);
     }
+    // A sync can bring in a language choice made on the other device — adopt it so the two
+    // stay in step. The caller (autoSync's redrawIfSafe in main.js) repaints afterwards.
+    if ('profile' in state) initLang(this.profile.lang);
   },
 
   // ---- backup ----
@@ -327,7 +335,7 @@ export const store = {
   // file is a real way this arrives (the clipboard fallback exists for exactly that path).
   async restore(data) {
     if (!isBackup(data)) {
-      throw new Error('Файл не похож на резервную копию CCNA Trainer.');
+      throw new Error(t('backup.notABackup'));
     }
     this.profile = mergeProfile(data.profile);
     this.session = data.session ?? null;

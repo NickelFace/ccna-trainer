@@ -14,15 +14,23 @@ const sortedKey = a => String(a || '').split('').sort().join('');
 //   { mode: 'key',     key, exp, disputed }         options exist but the bank has no per-option why
 //   { mode: 'options', key, options, disputed }     the normal case
 // where option = { key, text, why, correct, picked, missed }.
-export function rationaleView(q, given = []) {
+//
+// `lang` picks which rationale fields to read — 'ru' (the default, and the only shape the
+// bank had for a long time) reads `why`/`exp` directly; 'en' reads `why_en`/`exp_en` and
+// falls back to the Russian field per option (or per question, for `exp`) whenever a
+// translation is missing, so a still-untranslated entry shows something rather than a gap.
+export function rationaleView(q, given = [], lang = 'ru') {
   const disputed = !!q.disp;
   const key = String(q.a || '').split('');
+  const exp = (lang === 'en' && q.exp_en) || q.exp || null;
+  const why = (lang === 'en' && q.why_en) || q.why || null;
+  const whyEn = lang === 'en' ? q.why_en : null;
 
   if (q.y === 'dd' || !q.o || !Object.keys(q.o).length) {
-    return { mode: 'prose', exp: q.exp || null, disputed };
+    return { mode: 'prose', exp, disputed };
   }
-  if (!q.why) {
-    return { mode: 'key', key, exp: q.exp || null, disputed };
+  if (!why) {
+    return { mode: 'key', key, exp, disputed };
   }
 
   const multi = q.a.length > 1;
@@ -37,7 +45,10 @@ export function rationaleView(q, given = []) {
     options.push({
       key: k,
       text: q.o[k],
-      why: q.why[k] || null,
+      // Per-option fallback: an entry can have why_en for most keys and be missing one —
+      // falling back key by key beats falling back to the whole Russian object, which
+      // would silently drop the English translation on every other option too.
+      why: (whyEn && whyEn[k]) || (q.why && q.why[k]) || null,
       correct,
       picked,
       // "пропущен": a correct option the learner failed to tick on a multi-answer question.

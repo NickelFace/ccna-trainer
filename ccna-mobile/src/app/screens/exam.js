@@ -6,33 +6,42 @@ import { EXAM_PRESETS, startExam } from '../session.js';
 import { readiness } from '../../engine/readiness.js';
 import { confirmDialog } from '../dialog.js';
 import { question } from './question.js';
+import { t } from '../i18n.js';
 
 // Runtime switches. "Скрыть уведомления" from the mockup is absent on purpose: Android
 // only silences notifications through Do Not Disturb, which needs a system-level policy
 // grant the user has to give in Settings. A switch that quietly does nothing is worse
 // than no switch.
-const RUN_SWITCHES = [
-  { id: 'keepAwake', label: 'Не гасить экран', note: 'пока идёт экзамен', on: true },
-  { id: 'instant', label: 'Показывать ответ сразу', note: 'разбор после каждого вопроса', on: false },
+const RUN_SWITCHES = () => [
+  { id: 'keepAwake', label: t('exam.switch.keepAwake.label'), note: t('exam.switch.keepAwake.note'), on: true },
+  { id: 'instant', label: t('exam.switch.instant.label'), note: t('exam.switch.instant.note'), on: false },
 ];
 
 let manualOpen = false;
 let manual = { domains: new Set(), types: new Set(), count: 60, minutes: 90, shuffle: true };
 
-const QTYPES = [
-  { id: 'txt', label: 'Текст' },
-  { id: 'ex', label: 'Со схемой' },
-  { id: 'dd', label: 'Сопоставление' },
+const QTYPES = () => [
+  { id: 'txt', label: t('exam.qtype.txt') },
+  { id: 'ex', label: t('exam.qtype.ex') },
+  { id: 'dd', label: t('exam.qtype.dd') },
 ];
 
-const examSettings = () => ({ ...Object.fromEntries(RUN_SWITCHES.map(s => [s.id, s.on])), ...store.profile.exam });
+const PRESET_LABEL = () => ({
+  full: { label: t('exam.preset.full.label'), note: t('exam.preset.full.note') },
+  short: { label: t('exam.preset.short.label'), note: t('exam.preset.short.note') },
+  weak: { label: t('exam.preset.weak.label'), note: t('exam.preset.weak.note') },
+  manual: { label: t('exam.preset.manual.label'), note: t('exam.preset.manual.note') },
+});
+
+const examSettings = () => ({ ...Object.fromEntries(RUN_SWITCHES().map(s => [s.id, s.on])), ...store.profile.exam });
 
 function presetCards(selected) {
-  return Object.entries(EXAM_PRESETS).map(([id, p]) => `
+  const labels = PRESET_LABEL();
+  return Object.keys(EXAM_PRESETS).map(id => `
     <button class="choice${id === selected ? ' on' : ''}" data-preset="${id}" type="button">
       <span class="choice-text">
-        <span class="choice-title">${esc(p.label)}</span>
-        <span class="choice-note">${esc(p.note)}</span>
+        <span class="choice-title">${esc(labels[id].label)}</span>
+        <span class="choice-note">${esc(labels[id].note)}</span>
       </span>
       <span class="choice-mark">${id === selected ? '✓' : ''}</span>
     </button>`).join('');
@@ -47,21 +56,21 @@ function manualPanel(bank) {
 
   return `
     <div class="manual">
-      <div class="label">Домены · пусто = все</div>
+      <div class="label">${esc(t('exam.manual.domains'))}</div>
       <div class="ai-chips">${chips(domains, manual.domains, 'domain')}</div>
-      <div class="label spaced">Тип вопросов · пусто = все</div>
-      <div class="ai-chips">${chips(QTYPES, manual.types, 'type')}</div>
-      <div class="label spaced">Сколько вопросов</div>
+      <div class="label spaced">${esc(t('exam.manual.types'))}</div>
+      <div class="ai-chips">${chips(QTYPES(), manual.types, 'type')}</div>
+      <div class="label spaced">${esc(t('exam.manual.count'))}</div>
       <div class="ai-chips">${[30, 60, 100].map(n =>
         `<button class="pill${manual.count === n ? ' on' : ''}" data-count="${n}" type="button">${n}</button>`).join('')}</div>
-      <div class="label spaced">Время</div>
-      <div class="ai-chips">${[[30, '30 мин'], [90, '90 мин'], [120, '120 мин'], [0, 'без таймера']].map(([v, l]) =>
-        `<button class="pill${manual.minutes === v ? ' on' : ''}" data-minutes="${v}" type="button">${l}</button>`).join('')}</div>
+      <div class="label spaced">${esc(t('exam.manual.time'))}</div>
+      <div class="ai-chips">${[[30, t('exam.manual.min', { n: 30 })], [90, t('exam.manual.min', { n: 90 })], [120, t('exam.manual.min', { n: 120 })], [0, t('exam.manual.noTimer')]].map(([v, l]) =>
+        `<button class="pill${manual.minutes === v ? ' on' : ''}" data-minutes="${v}" type="button">${esc(l)}</button>`).join('')}</div>
     </div>`;
 }
 
 function switchRows(settings) {
-  return RUN_SWITCHES.map(s => `
+  return RUN_SWITCHES().map(s => `
     <div class="switch-row">
       <span class="switch-text">
         <span class="switch-label">${esc(s.label)}</span>
@@ -80,15 +89,15 @@ export const exam = {
     const count = preset === 'manual' ? manual.count : EXAM_PRESETS[preset].count;
     const node = h(`
       <div class="action-bar">
-        <button class="btn primary grow" data-act="start" type="button">Начать · ${count} вопросов</button>
+        <button class="btn primary grow" data-act="start" type="button">${esc(t('exam.start', { n: count }))}</button>
       </div>`);
 
     node.querySelector('[data-act="start"]').addEventListener('click', async () => {
       if (store.session) {
         const yes = await confirmDialog({
-          title: 'Начать новый экзамен?',
-          text: 'Незаконченная сессия будет потеряна.',
-          ok: 'Начать', cancel: 'Отмена',
+          title: t('exam.newExam.title'),
+          text: t('common.unfinishedLost'),
+          ok: t('common.start'), cancel: t('common.cancel'),
         });
         if (!yes) return;
       }
@@ -107,45 +116,45 @@ export const exam = {
     const settings = examSettings();
 
     const node = h(`
-      <h1 class="screen-title">Экзамен</h1>
-      <p class="muted lead">Пресеты сверху покрывают 90% случаев. Тонкая настройка — ниже, свёрнута.</p>
+      <h1 class="screen-title">${esc(t('exam.title'))}</h1>
+      <p class="muted lead">${esc(t('exam.lead'))}</p>
       <div class="choices">${presetCards(preset)}</div>
       <button class="accordion${manualOpen ? ' open' : ''}" data-act="manual" type="button">
         <span class="accordion-text">
-          <span class="accordion-title">Настроить вручную ${manualOpen ? '▴' : '▾'}</span>
-          <span class="accordion-note">домены · типы вопросов · количество · таймер</span>
+          <span class="accordion-title">${esc(t('exam.manual.toggle'))} ${manualOpen ? '▴' : '▾'}</span>
+          <span class="accordion-note">${esc(t('exam.manual.note'))}</span>
         </span>
       </button>
       ${manualOpen ? manualPanel(ctx.bank) : ''}
-      <div class="label spaced">На время экзамена</div>
+      <div class="label spaced">${esc(t('exam.runSettings'))}</div>
       <div class="switches">${switchRows(settings)}</div>
     `);
 
     node.addEventListener('click', e => {
-      const t = e.target;
+      const t2 = e.target;
 
-      const presetId = t.closest('[data-preset]')?.dataset.preset;
+      const presetId = t2.closest('[data-preset]')?.dataset.preset;
       if (presetId) { store.patchProfile({ examPreset: presetId }); return ctx.router.render(); }
 
-      if (t.closest('[data-act="manual"]')) {
+      if (t2.closest('[data-act="manual"]')) {
         manualOpen = !manualOpen;
         if (manualOpen) store.patchProfile({ examPreset: 'manual' });
         return ctx.router.render();
       }
 
-      const sw = t.closest('[data-switch]')?.dataset.switch;
+      const sw = t2.closest('[data-switch]')?.dataset.switch;
       if (sw) {
         store.patchProfile({ exam: { ...store.profile.exam, [sw]: !settings[sw] } });
         return ctx.router.render();
       }
 
-      const dom = t.closest('[data-domain]')?.dataset.domain;
+      const dom = t2.closest('[data-domain]')?.dataset.domain;
       if (dom) { toggle(manual.domains, dom); return ctx.router.render(); }
-      const type = t.closest('[data-type]')?.dataset.type;
+      const type = t2.closest('[data-type]')?.dataset.type;
       if (type) { toggle(manual.types, type); return ctx.router.render(); }
-      const count = t.closest('[data-count]')?.dataset.count;
+      const count = t2.closest('[data-count]')?.dataset.count;
       if (count) { manual.count = Number(count); return ctx.router.render(); }
-      const minutes = t.closest('[data-minutes]')?.dataset.minutes;
+      const minutes = t2.closest('[data-minutes]')?.dataset.minutes;
       if (minutes !== undefined) { manual.minutes = Number(minutes); return ctx.router.render(); }
     });
 

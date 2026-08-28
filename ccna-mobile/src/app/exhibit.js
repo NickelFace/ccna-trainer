@@ -12,6 +12,8 @@
 //   • Zooming toward the centre is nearly useless for reading an address in a corner;
 //     the double tap zooms toward the point that was tapped.
 
+import { t } from './i18n.js';
+
 const MIN = 1, MAX = 5;
 const DOUBLE_TAP_MS = 350;
 const DOUBLE_TAP_SCALE = 2.5;
@@ -20,9 +22,9 @@ export function openExhibit(src, alt = '') {
   const root = document.createElement('div');
   root.className = 'exhibit-viewer';
   root.innerHTML = `
-    <button class="exhibit-close" type="button" aria-label="Закрыть">✕</button>
+    <button class="exhibit-close" type="button" aria-label="${t('question.close')}">✕</button>
     <div class="exhibit-stage"><img src="${src}" alt="${alt}" draggable="false"></div>
-    <div class="exhibit-hint">двойной тап — приблизить · щипок — точнее</div>`;
+    <div class="exhibit-hint">${t('exhibit.hint')}</div>`;
 
   const stage = root.querySelector('.exhibit-stage');
   const img = root.querySelector('img');

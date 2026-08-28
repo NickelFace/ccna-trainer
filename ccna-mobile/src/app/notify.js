@@ -19,6 +19,7 @@ import { LocalNotifications } from '@capacitor/local-notifications';
 import { store } from './store.js';
 import { answeredOn } from '../engine/stats.js';
 import { mockState, nextMockAt, examDatePassed, parseTime } from '../engine/plan.js';
+import { t, pluralWord, WORDS } from './i18n.js';
 
 export const DEFAULT_TIME = '19:00';
 
@@ -66,8 +67,8 @@ export function plan(profile, activity, attempts, now) {
     const { h, m } = parseTime(time);
     out.push({
       id: ID.daily,
-      title: 'Норма на сегодня',
-      body: `${goal} ${goal % 10 === 1 && goal % 100 !== 11 ? 'вопрос' : 'вопросов'} — а сделано ${answeredOn(activity, now)}. Успеешь?`,
+      title: t('notify.daily.title'),
+      body: t('notify.daily.body', { n: goal, questions: pluralWord(goal, WORDS.questions), done: answeredOn(activity, now) }),
       // allowWhileIdle, because without it Doze can hold a reminder until the phone is
       // picked up — which on a study reminder is the whole evening. The plugin falls back
       // to an inexact alarm when Android 12+ withholds the exact-alarm permission, so this
@@ -88,10 +89,10 @@ export function plan(profile, activity, attempts, now) {
     const state = mockState(attempts, now);
     out.push({
       id: ID.mock,
-      title: 'Пробный экзамен',
+      title: t('notify.mock.title'),
       body: state.last
-        ? `С прошлого прошло ${state.daysSince} дн. Проверь, где стоишь.`
-        : 'Ты ещё не проходил пробный — одна попытка покажет расклад по доменам.',
+        ? t('notify.mock.bodyLast', { n: state.daysSince })
+        : t('notify.mock.bodyNever'),
       schedule: { at: new Date(nextMockAt(time, now, state)), allowWhileIdle: true },
     });
   }

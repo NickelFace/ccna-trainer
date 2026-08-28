@@ -8,6 +8,7 @@
 // by hand.
 import { store } from './store.js';
 import { toast } from './toast.js';
+import { t } from './i18n.js';
 
 const stamp = () => new Date().toISOString().slice(0, 10);
 
@@ -17,7 +18,7 @@ export async function exportBackup() {
 
   if (navigator.canShare?.({ files: [file] })) {
     try {
-      await navigator.share({ files: [file], title: 'CCNA Trainer — резервная копия' });
+      await navigator.share({ files: [file], title: t('backup.shareTitle') });
       return;
     } catch (err) {
       if (err?.name === 'AbortError') return;   // the user closed the share sheet — not a failure
@@ -27,9 +28,9 @@ export async function exportBackup() {
 
   try {
     await navigator.clipboard.writeText(json);
-    toast('Скопировано — вставь в заметки или письмо себе');
+    toast(t('backup.copied'));
   } catch {
-    toast('Не удалось сохранить копию. Попробуй ещё раз.');
+    toast(t('backup.copyFailed'));
   }
 }
 
@@ -38,9 +39,9 @@ export function readBackupFile(file) {
     const reader = new FileReader();
     reader.onload = () => {
       try { resolve(JSON.parse(reader.result)); }
-      catch { reject(new Error('Файл повреждён или это не резервная копия.')); }
+      catch { reject(new Error(t('backup.badFile'))); }
     };
-    reader.onerror = () => reject(new Error('Не удалось прочитать файл.'));
+    reader.onerror = () => reject(new Error(t('backup.readFailed')));
     reader.readAsText(file);
   });
 }

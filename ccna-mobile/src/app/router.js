@@ -9,6 +9,11 @@
 //     unmount?(), beforeBack?(ctx) -> boolean }
 // beforeBack returning false blocks the pop — the screen has taken over (e.g. the exam
 // asks for confirmation first and calls router.back() itself once the user agrees).
+//
+// Tabs carry a `labelKey` (an i18n key), not a baked-in string — renderTabs() looks it up
+// through t() on every call, which is what lets a language switch repaint the tab bar
+// without an app restart. See i18n.js `setLang`.
+import { t } from './i18n.js';
 
 const TAB_IDS = ['home', 'theory', 'learn', 'exam', 'progress'];
 
@@ -146,15 +151,15 @@ export const router = {
   },
 
   renderTabs() {
-    this.els.tabbar.replaceChildren(...this.tabs.map(t => {
+    this.els.tabbar.replaceChildren(...this.tabs.map(tab => {
       const b = document.createElement('button');
       b.className = 'tab';
       b.type = 'button';
       b.role = 'tab';
-      b.dataset.tab = t.id;
+      b.dataset.tab = tab.id;
       b.innerHTML = `<span class="ind"></span><span class="lbl"></span>`;
-      b.querySelector('.lbl').textContent = t.label;
-      b.addEventListener('click', () => this.selectTab(t.id));
+      b.querySelector('.lbl').textContent = t(tab.labelKey);
+      b.addEventListener('click', () => this.selectTab(tab.id));
       return b;
     }));
   },

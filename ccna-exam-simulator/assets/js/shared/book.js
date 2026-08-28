@@ -22,9 +22,18 @@ export const inline = s => esc(s)
   .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
   .replace(/(^|[\s(«—])\*([^*\n]+)\*/g, '$1<em>$2</em>');
 
-const NOTE_TITLE = { key: 'Запомнить', trap: 'Ловушка', note: 'Заметка', lab: 'На практике' };
+// Note-kind labels only — everything else in a chapter (headings, paragraphs, tables,
+// self-checks) is the chapter's own text, already written in whichever language the JSON
+// being rendered was compiled from (ccna-book/build.mjs, one tree per locale). This map is
+// the one piece of chrome the renderer adds on its own, so it is the one piece that needs a
+// `lang` switch. Defaulting to 'ru' keeps every existing call site — the web trainer's own
+// "Учебник" screen calls these with no third argument — rendering exactly as before.
+const NOTE_TITLE = {
+  ru: { key: 'Запомнить', trap: 'Ловушка', note: 'Заметка', lab: 'На практике' },
+  en: { key: 'Remember', trap: 'Gotcha', note: 'Note', lab: 'Hands-on' },
+};
 
-const block = b => {
+const block = (b, lang = 'ru') => {
   switch (b.t) {
     case 'p':
       return `<p>${inline(b.text)}</p>`;
@@ -43,7 +52,7 @@ const block = b => {
       return `<pre class="bk-code ${esc(b.lang)}"><code>${esc(b.text)}</code></pre>`;
     case 'note':
       return `<div class="bk-note ${esc(b.kind)}">
-        <div class="bk-note-h">${esc(b.title || NOTE_TITLE[b.kind] || '')}</div>
+        <div class="bk-note-h">${esc(b.title || (NOTE_TITLE[lang] || NOTE_TITLE.ru)[b.kind] || '')}</div>
         ${b.paras.map(p => `<p>${inline(p)}</p>`).join('')}
       </div>`;
     case 'check':
@@ -59,10 +68,10 @@ const block = b => {
   }
 };
 
-export const sectionMarkup = (s, i) => `
+export const sectionMarkup = (s, i, lang = 'ru') => `
   <section class="bk-section" id="sec-${esc(s.id)}" data-sec="${i}">
     <h2 class="bk-h2">${inline(s.title)}</h2>
-    ${s.blocks.map(block).join('')}
+    ${s.blocks.map(b => block(b, lang)).join('')}
   </section>`;
 
-export const bodyMarkup = topic => topic.sections.map(sectionMarkup).join('');
+export const bodyMarkup = (topic, lang = 'ru') => topic.sections.map((s, i) => sectionMarkup(s, i, lang)).join('');

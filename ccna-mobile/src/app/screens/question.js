@@ -26,6 +26,7 @@ import {
 import { keepScreenOn, releaseScreen } from '../wakelock.js';
 import { result as resultScreen } from './result.js';
 import { aiPrompt as aiPromptScreen } from './ai-prompt.js';
+import { t, getLang, pluralWord, WORDS } from '../i18n.js';
 
 const FONT_STEPS = [1, 1.12, 1.25];
 const LOW_TIME_MS = 120000;      // timer turns red and blinks under two minutes
@@ -115,7 +116,7 @@ function header(ctx) {
   // question that slot shows how much of the board is filled instead (spec 05).
   const rightSlot = s.endsAt
     ? '<span class="mono q-timer" data-role="timer"></span>'
-    : q.y === 'dd' ? `<span class="mono q-placed">${filledCount(q)} из ${ddNeeded(q)}</span>` : '<span></span>';
+    : q.y === 'dd' ? `<span class="mono q-placed">${t('question.placedShort', { filled: filledCount(q), needed: ddNeeded(q) })}</span>` : '<span></span>';
 
   // The header is rebuilt from scratch on every render, so the bar starts at the width it
   // last had and grows to the new one on the next frame — otherwise it would jump.
@@ -123,7 +124,7 @@ function header(ctx) {
 
   const node = h(`
     <div class="q-head">
-      <button class="q-icon" data-act="close" type="button" aria-label="Закрыть">✕</button>
+      <button class="q-icon" data-act="close" type="button" aria-label="${esc(t('question.close'))}">✕</button>
       <div class="q-meter">
         <div class="q-meter-row">
           <span class="mono">${s.i + 1} / ${s.qs.length}</span>
@@ -131,7 +132,7 @@ function header(ctx) {
         </div>
         <div class="q-progress"><i style="width:${shownPct ?? pct}%"></i></div>
       </div>
-      <button class="q-icon" data-act="grid" type="button" aria-label="Список вопросов">☰</button>
+      <button class="q-icon" data-act="grid" type="button" aria-label="${esc(t('question.grid'))}">☰</button>
     </div>`);
 
   node.querySelector('[data-act="close"]').addEventListener('click', () => ctx.router.back());
@@ -167,17 +168,17 @@ function render(ctx) {
       <div class="q-badges">
         <span class="badge-dom">${esc(domShort(bank, q.dom))}</span>
         <span class="mono q-num">№${q.n}</span>
-        ${multi ? `<span class="badge-multi">выбери ${q.a.length}</span>` : ''}
-        ${q.disp ? '<span class="badge-warn">спорный ключ</span>' : ''}
+        ${multi ? `<span class="badge-multi">${esc(t('question.chooseN', { n: q.a.length }))}</span>` : ''}
+        ${q.disp ? `<span class="badge-warn">${esc(t('question.disputed'))}</span>` : ''}
       </div>
       ${exhibitMarkup(q)}
       <div class="q-text">${esc(questionText(q))}</div>
       ${cliMarkup(q.cli, q.n)}
       ${q.y === 'dd' ? matchBody(q, graded) : optionsMarkup(q, s, given, graded)}
       <div class="q-tools">
-        <button class="q-tool" data-act="bookmark" type="button">${isFlagged(s, q) ? '★ Отложен' : '☆ Отложить'}</button>
-        <button class="q-tool" data-act="font" type="button">Aa Размер</button>
-        <span class="q-hint mono">свайп → далее</span>
+        <button class="q-tool" data-act="bookmark" type="button">${isFlagged(s, q) ? esc(t('question.bookmark.on')) : esc(t('question.bookmark.off'))}</button>
+        <button class="q-tool" data-act="font" type="button">${esc(t('question.fontSize'))}</button>
+        <span class="q-hint mono">${esc(t('question.swipeHint'))}</span>
       </div>
     </div>`, 'div', 'q-pane');
 
@@ -196,9 +197,9 @@ function optionsMarkup(q, session, given, graded) {
     const classes = ['opt'];
     let tag = '';
     if (graded) {
-      if (isCorrect && isPicked) { classes.push('correct', 'picked'); tag = '✓ твой'; }
-      else if (isCorrect) { classes.push('correct'); tag = 'пропущен'; }
-      else if (isPicked) { classes.push('wrong'); tag = '✗ твой'; }
+      if (isCorrect && isPicked) { classes.push('correct', 'picked'); tag = t('question.tag.yours'); }
+      else if (isCorrect) { classes.push('correct'); tag = t('question.tag.missed'); }
+      else if (isPicked) { classes.push('wrong'); tag = t('question.tag.wrongYours'); }
       else classes.push('muted');
     } else if (isPicked) classes.push('sel');
     return `<button class="${classes.join(' ')}" data-k="${k}" type="button" ${graded ? 'disabled' : ''}>
@@ -214,7 +215,7 @@ function wireBody(node, ctx, q, s, graded) {
   els.repaintMatch = null;
 
   node.querySelector('.q-exhibit')?.addEventListener('click', e =>
-    openExhibit(e.currentTarget.src, `Схема к вопросу ${q.n}`));
+    openExhibit(e.currentTarget.src, t('question.exhibitAlt', { n: q.n })));
 
   node.querySelector('details.cli')?.addEventListener('toggle', e =>
     setCliOpen(q.n, e.currentTarget.open));
@@ -227,7 +228,7 @@ function wireBody(node, ctx, q, s, graded) {
     const board = node.querySelector('.match');
     els.repaintMatch = () => {
       board.replaceChildren(...h(matchBody(q, false)).firstElementChild.childNodes);
-      if (els.placed) els.placed.textContent = `${filledCount(q)} из ${ddNeeded(q)}`;
+      if (els.placed) els.placed.textContent = t('question.placedShort', { filled: filledCount(q), needed: ddNeeded(q) });
       ctx.router.renderFooter();
     };
     wireMatch(board, q, s, els.repaintMatch);
@@ -250,7 +251,7 @@ function wireBody(node, ctx, q, s, graded) {
   const bookmark = node.querySelector('[data-act="bookmark"]');
   bookmark.addEventListener('click', () => {
     toggleFlag(s, q);
-    bookmark.textContent = isFlagged(s, q) ? '★ Отложен' : '☆ Отложить';
+    bookmark.textContent = isFlagged(s, q) ? t('question.bookmark.on') : t('question.bookmark.off');
   });
 
   node.querySelector('[data-act="font"]').addEventListener('click', () => {
@@ -424,8 +425,8 @@ function reviewFooter(ctx, s, q) {
   const last = s.i === s.qs.length - 1;
   const node = h(`
     <div class="action-bar">
-      <button class="btn" data-act="review" type="button">Разбор</button>
-      <button class="btn primary grow" data-act="main" type="button">${last ? 'Завершить' : 'Следующий →'}</button>
+      <button class="btn" data-act="review" type="button">${esc(t('question.rationale'))}</button>
+      <button class="btn primary grow" data-act="main" type="button">${last ? esc(t('question.finish')) : esc(t('question.nextArrow'))}</button>
     </div>`);
 
   node.querySelector('[data-act="review"]').addEventListener('click', () => {
@@ -445,7 +446,7 @@ function choiceFooter(ctx, s, q) {
   const last = s.i === s.qs.length - 1;
   const checks = gradesImmediately(s);
   const canAct = !checks || pending.size > 0;
-  const label = checks ? 'Ответить' : (last ? 'Завершить' : 'Дальше');
+  const label = checks ? t('question.answer') : (last ? t('question.finish') : t('question.next'));
 
   const node = h(`
     <div class="action-bar">
@@ -477,10 +478,10 @@ function matchFooter(ctx, s, q) {
   const canGrade = canCheck();
 
   const buttons = gradesImmediately(s)
-    ? `<button class="btn" data-act="reset" type="button" ${placedCount() ? '' : 'disabled'}>Сброс</button>
-       <button class="btn primary grow" data-act="check" type="button" ${canGrade ? '' : 'disabled'}>Проверить</button>`
+    ? `<button class="btn" data-act="reset" type="button" ${placedCount() ? '' : 'disabled'}>${esc(t('question.reset'))}</button>
+       <button class="btn primary grow" data-act="check" type="button" ${canGrade ? '' : 'disabled'}>${esc(t('question.check'))}</button>`
     : `<button class="btn icon" data-act="prev" type="button" ${s.i === 0 ? 'disabled' : ''}>←</button>
-       <button class="btn primary grow" data-act="main" type="button">${last ? 'Завершить' : 'Дальше'}</button>`;
+       <button class="btn primary grow" data-act="main" type="button">${last ? esc(t('question.finish')) : esc(t('question.next'))}</button>`;
 
   const { filled, needed, extra } = matchProgress(q);
 
@@ -488,13 +489,13 @@ function matchFooter(ctx, s, q) {
     <div class="match-bar">
       ${picked ? `
         <div class="match-status">
-          <span><b class="mono">${esc(shorten(picked))}</b> выбран — выбери категорию</span>
-          <button class="match-cancel" data-act="cancel" type="button">Отменить</button>
+          <span>${t('question.matchSelected', { item: `<b class="mono">${esc(shorten(picked))}</b>` })}</span>
+          <button class="match-cancel" data-act="cancel" type="button">${esc(t('question.matchCancel'))}</button>
         </div>`
       : gradesImmediately(s) ? `
         <div class="match-status">
-          <span>Разложено <b>${filled}</b> из <b>${needed}</b></span>
-          ${extra > 0 ? `<span class="match-extra">${extra === 1 ? 'один элемент лишний' : `лишних элементов: ${extra}`}</span>` : ''}
+          <span>${t('question.matchPlaced', { filled: `<b>${filled}</b>`, needed: `<b>${needed}</b>` })}</span>
+          ${extra > 0 ? `<span class="match-extra">${extra === 1 ? esc(t('question.matchExtraOne')) : esc(t('question.matchExtra', { n: extra, items: pluralWord(extra, WORDS.items) }))}</span>` : ''}
         </div>` : ''}
       <div class="action-bar">${buttons}</div>
     </div>`);
@@ -562,10 +563,10 @@ function tryFinish(ctx) {
 
   const left = s.qs.length - answeredCount(s);
   confirmDialog({
-    title: 'Остались вопросы без ответа',
-    text: `Пропущено: ${left} из ${s.qs.length}. Без ответа они засчитаются как неверные.`,
-    ok: `К вопросу ${gap + 1}`,
-    cancel: 'Всё равно завершить',
+    title: t('question.unfinishedGap'),
+    text: t('question.unfinishedBody', { left, total: s.qs.length }),
+    ok: t('question.gotoGap', { n: gap + 1 }),
+    cancel: t('question.finishAnyway'),
   }).then(answer => {
     if (answer === null) return;                 // dismissed: stay where we are
     if (answer === false) return finish(ctx);
@@ -605,14 +606,14 @@ function openReview(ctx, q, s) {
   const content = h(`
     <div class="review">
       <div class="review-verdict">
-        <span class="${given.ok ? 'ok' : 'err'}">${given.ok ? 'Верно' : 'Неверно'}</span>
+        <span class="${given.ok ? 'ok' : 'err'}">${given.ok ? esc(t('question.review.verdict.ok')) : esc(t('question.review.verdict.bad'))}</span>
         <span class="muted">${esc(answerSummary(q, given))}</span>
       </div>
       ${rationaleBlocks(q, given)}
       <div class="review-theory"></div>
       <div class="review-actions">
-        <button class="btn soft" data-act="ai" type="button">Разобрать с ИИ</button>
-        <button class="btn primary grow" data-act="next" type="button">${last ? 'Завершить' : 'Следующий →'}</button>
+        <button class="btn soft" data-act="ai" type="button">${esc(t('question.review.aiButton'))}</button>
+        <button class="btn primary grow" data-act="next" type="button">${last ? esc(t('question.finish')) : esc(t('question.nextArrow'))}</button>
       </div>
     </div>`);
 
@@ -633,8 +634,8 @@ function openReview(ctx, q, s) {
   Promise.all([loadMap(), loadIndex()]).then(([map, index]) => {
     // Through topicOf, not map[q.n]: an entry can carry a section after a '#', and the
     // raw string is not a chapter id.
-    const t = index.byId.get(topicOf(map, q.n));
-    const slot = t && content.querySelector('.review-theory');
+    const chTopic = index.byId.get(topicOf(map, q.n));
+    const slot = chTopic && content.querySelector('.review-theory');
     if (!slot) return;
     // ccna-book/build.mjs can often name one section of that chapter, not just the chapter
     // — roughly a third of the bank. Where it can, say so and open the chapter there: a
@@ -642,13 +643,13 @@ function openReview(ctx, q, s) {
     // Where it cannot, "somewhere in this chapter" is the honest answer and the second
     // line is simply absent.
     const secId = sectionOf(map, q.n);
-    const sec = secId && (t.sections || []).find(x => x.id === secId);
+    const sec = secId && (chTopic.sections || []).find(x => x.id === secId);
     slot.innerHTML = `<button class="btn soft wide bk-goto" data-act="theory" type="button">
-      <span class="ch">Теория: ${esc(t.title)}</span>
-      ${sec ? `<span class="sc">Раздел: ${esc(sec.title)}</span>` : ''}</button>`;
+      <span class="ch">${esc(t('question.review.theoryChapter', { title: chTopic.title }))}</span>
+      ${sec ? `<span class="sc">${esc(t('question.review.theorySection', { title: sec.title }))}</span>` : ''}</button>`;
     slot.querySelector('button').addEventListener('click', () => {
       closeReview();
-      ctx.router.modal(topicScreen, { id: t.id, at: sec ? sec.id : null });
+      ctx.router.modal(topicScreen, { id: chTopic.id, at: sec ? sec.id : null });
     });
   }).catch(() => {});
 
@@ -700,7 +701,7 @@ function openGrid(ctx) {
 
   const content = h(`
     <div class="grid-sheet">
-      <div class="label">Вопросы · отвечено ${s.qs.filter(n => s.answers[n] !== undefined).length} из ${s.qs.length}</div>
+      <div class="label">${esc(t('question.grid.title', { n: s.qs.filter(n => s.answers[n] !== undefined).length, total: s.qs.length }))}</div>
       <div class="grid">${cells}</div>
     </div>`);
 
@@ -785,10 +786,10 @@ export const question = {
   beforeBack(ctx) {
     if (store.session?.mode !== 'exam') return true;
     confirmDialog({
-      title: 'Выйти из экзамена?',
-      text: 'Прогресс сохранится — вернуться можно с главной.',
-      ok: 'Выйти',
-      cancel: 'Остаться',
+      title: t('question.leaveExam.title'),
+      text: t('question.leaveExam.body'),
+      ok: t('question.leaveExam.ok'),
+      cancel: t('question.leaveExam.cancel'),
     }).then(yes => {
       if (!yes) return;
       store.flush();

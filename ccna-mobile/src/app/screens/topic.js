@@ -8,6 +8,7 @@ import { startPractice } from '../session.js';
 import { confirmDialog } from '../dialog.js';
 import { question } from './question.js';
 import { toast } from '../toast.js';
+import { t } from '../i18n.js';
 
 const SCALES = [0.95, 1, 1.12, 1.28];
 const PRACTICE = 20;
@@ -27,14 +28,14 @@ export const topic = {
     const back = document.createElement('button');
     back.className = 'back-btn';
     back.type = 'button';
-    back.innerHTML = '<span class="mono">←</span> Теория';
+    back.innerHTML = `<span class="mono">←</span> ${esc(t('topic.header'))}`;
     back.addEventListener('click', () => ctx.router.back());
 
     const aa = document.createElement('button');
     aa.className = 'q-tool';
     aa.type = 'button';
     aa.textContent = 'Aa';
-    aa.title = 'Размер текста';
+    aa.title = t('topic.textSize');
     aa.addEventListener('click', () => {
       store.setBook({ scale: (store.book.scale + 1) % SCALES.length });
       ctx.router.render();
@@ -45,37 +46,37 @@ export const topic = {
   },
 
   footer(ctx) {
-    const t = loaded?.topic;
-    if (!t || t.id !== ctx.params.id) return null;
-    const read = store.isRead(t.id);
+    const t2 = loaded?.topic;
+    if (!t2 || t2.id !== ctx.params.id) return null;
+    const read = store.isRead(t2.id);
 
     const bar = h(`
       <button class="btn ${read ? '' : 'primary '}grow" data-act="read" type="button">
-        ${read ? '✓ Прочитано' : 'Прочитано'}
+        ${read ? esc(t('topic.readDone')) : esc(t('topic.read'))}
       </button>
-      ${t.qs.length ? `<button class="btn grow" data-act="practice" type="button">
-        Вопросы · ${Math.min(PRACTICE, t.qs.length)}
+      ${t2.qs.length ? `<button class="btn grow" data-act="practice" type="button">
+        ${esc(t('topic.questionsN', { n: Math.min(PRACTICE, t2.qs.length) }))}
       </button>` : ''}
     `, 'div', 'action-bar');
 
     bar.addEventListener('click', async e => {
       if (e.target.closest('[data-act="read"]')) {
-        const now = !store.isRead(t.id);
-        store.markRead(t.id, now);
-        toast(now ? 'Глава отмечена прочитанной' : 'Отметка снята');
+        const now = !store.isRead(t2.id);
+        store.markRead(t2.id, now);
+        toast(now ? t('topic.markedRead') : t('topic.markedUnread'));
         return ctx.router.render();
       }
       if (e.target.closest('[data-act="practice"]')) {
         if (store.session) {
           const yes = await confirmDialog({
-            title: 'Начать тренировку?',
-            text: 'Незаконченная сессия будет потеряна.',
-            ok: 'Начать',
-            cancel: 'Отмена',
+            title: t('common.startTraining.title'),
+            text: t('common.unfinishedLost'),
+            ok: t('common.start'),
+            cancel: t('common.cancel'),
           });
           if (!yes) return;
         }
-        startPractice(ctx.bank, { ns: t.qs, count: PRACTICE });
+        startPractice(ctx.bank, { ns: t2.qs, count: PRACTICE });
         ctx.router.modal(question);
       }
     });
@@ -84,7 +85,7 @@ export const topic = {
 
   render(ctx) {
     const id = ctx.params.id;
-    const node = h('<p class="muted">Загружаю главу…</p>');
+    const node = h(`<p class="muted">${esc(t('topic.loading'))}</p>`);
 
     bindChecks(node);
     // Reading the next chapter replaces this one on the stack instead of piling onto it:
@@ -106,15 +107,15 @@ export const topic = {
     }
 
     pendingId = id;
-    Promise.all([loadTopic(id), loadIndex()]).then(([t, index]) => {
+    Promise.all([loadTopic(id), loadIndex()]).then(([tp, index]) => {
       if (pendingId !== id) return;              // user left before it arrived
-      loaded = { topic: t, index };
+      loaded = { topic: tp, index };
       store.setBook({ last: id });
       node.replaceChildren(...chapter(loaded, ctx).childNodes);
       ctx.router.renderFooter();
       openAt(id, ctx.params.at, node);
     }).catch(err => {
-      node.replaceChildren(...h(`<p class="muted">Глава не открылась: ${esc(err.message)}</p>`).childNodes);
+      node.replaceChildren(...h(`<p class="muted">${esc(t('topic.loadFailed', { message: err.message }))}</p>`).childNodes);
     });
 
     return node;
@@ -126,8 +127,8 @@ export const topic = {
   },
 
   unmount() {
-    const t = loaded?.topic;
-    if (t) store.setPos(t.id, document.getElementById('scroll')?.scrollTop || 0);
+    const t2 = loaded?.topic;
+    if (t2) store.setPos(t2.id, document.getElementById('scroll')?.scrollTop || 0);
     pendingId = null;
   },
 };
@@ -169,29 +170,29 @@ function openAt(id, at, node) {
     target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' }));
 }
 
-function chapter({ topic: t, index }, ctx) {
-  const meta = index.byId.get(t.id);
+function chapter({ topic: t2, index }, ctx) {
+  const meta = index.byId.get(t2.id);
   const order = index.topics.map(x => x.id);
-  const next = index.byId.get(order[order.indexOf(t.id) + 1]);
-  const dom = index.domains.find(d => d.id === t.dom);
+  const next = index.byId.get(order[order.indexOf(t2.id) + 1]);
+  const dom = index.domains.find(d => d.id === t2.dom);
 
   return h(`
     <article class="bk" style="--bk-scale:${scaleOf()}">
-      <div class="bk-kicker mono">${esc(dom ? dom.name : t.dom)}${t.blueprint.length
-        ? ` · экзамен ${t.blueprint.map(esc).join(', ')}` : ''}</div>
-      <h1 class="bk-title">${esc(t.title)}</h1>
-      <p class="bk-lead">${esc(t.lead)}</p>
-      <div class="bk-meta mono">${t.minutes} мин · ${meta ? meta.qn : t.qs.length} вопросов банка по теме</div>
+      <div class="bk-kicker mono">${esc(dom ? dom.name : t2.dom)}${t2.blueprint.length
+        ? ` · ${esc(t('topic.examBadge', { list: t2.blueprint.join(', ') }))}` : ''}</div>
+      <h1 class="bk-title">${esc(t2.title)}</h1>
+      <p class="bk-lead">${esc(t2.lead)}</p>
+      <div class="bk-meta mono">${esc(t('topic.meta', { minutes: t2.minutes, n: meta ? meta.qn : t2.qs.length }))}</div>
 
       <details class="bk-toc">
-        <summary>Содержание · ${t.sections.length}</summary>
-        <ol>${t.sections.map(s => `<li><a href="#sec-${esc(s.id)}">${esc(s.title)}</a></li>`).join('')}</ol>
+        <summary>${esc(t('topic.toc', { n: t2.sections.length }))}</summary>
+        <ol>${t2.sections.map(s => `<li><a href="#sec-${esc(s.id)}">${esc(s.title)}</a></li>`).join('')}</ol>
       </details>
 
-      ${bodyMarkup(t)}
+      ${bodyMarkup(t2)}
 
       ${next ? `<button class="bk-next" data-next="${esc(next.id)}" type="button">
-        <span class="bk-resume-label">Следующая глава</span>
+        <span class="bk-resume-label">${esc(t('topic.nextChapter'))}</span>
         <span class="bk-resume-title">${esc(next.title)}</span>
       </button>` : ''}
     </article>

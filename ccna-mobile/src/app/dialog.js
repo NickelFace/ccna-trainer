@@ -7,6 +7,7 @@
 // both buttons do something needs to tell «chose the other one» from «asked to be left
 // alone» — see tryFinish in the question screen.
 import { esc } from './dom.js';
+import { t } from './i18n.js';
 
 // Every live dialog, so the app can take one down itself. The exam clock does not stop for
 // a dialog: it can run out while «Остались вопросы без ответа» or «Выйти из экзамена?» is
@@ -14,7 +15,7 @@ import { esc } from './dom.js';
 // scored and filed. See closeDialogs.
 const openDialogs = new Set();
 
-export function confirmDialog({ title, text, ok = 'Да', cancel = 'Отмена' }) {
+export function confirmDialog({ title, text, ok = t('common.yes'), cancel = t('common.cancel') }) {
   return new Promise(resolve => {
     const root = document.createElement('div');
     root.className = 'dialog-backdrop';

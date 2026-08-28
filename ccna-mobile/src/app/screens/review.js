@@ -4,11 +4,12 @@ import { esc, h } from '../dom.js';
 import { isCorrect } from '../../engine/grade.js';
 import { domShort, questionText, exhibitMarkup, cliMarkup, answerSummary, rationaleBlocks } from '../qmarkup.js';
 import { openExhibit } from '../exhibit.js';
+import { t } from '../i18n.js';
 
-const FILTERS = [
-  { id: 'bad', label: 'Ошибки' },
-  { id: 'all', label: 'Все' },
-  { id: 'ok', label: 'Верно' },
+const FILTERS = () => [
+  { id: 'bad', label: t('review.filter.bad') },
+  { id: 'all', label: t('review.filter.all') },
+  { id: 'ok', label: t('review.filter.ok') },
 ];
 
 // Rendering 100 questions with full rationale at once is a second of jank on a phone;
@@ -31,7 +32,7 @@ const itemMarkup = ({ q, given, good }, bank) => `
     <div class="q-badges">
       <span class="badge-dom">${esc(domShort(bank, q.dom))}</span>
       <span class="mono q-num">№${q.n}</span>
-      <span class="verdict-badge ${good ? 'ok' : 'bad'}">${good ? 'верно' : 'ошибка'}</span>
+      <span class="verdict-badge ${good ? 'ok' : 'bad'}">${good ? esc(t('review.verdict.ok')) : esc(t('review.verdict.bad'))}</span>
     </div>
     ${exhibitMarkup(q)}
     <div class="review-qtext">${esc(questionText(q))}</div>
@@ -47,7 +48,7 @@ export const review = {
     const b = document.createElement('button');
     b.className = 'back-btn';
     b.type = 'button';
-    b.innerHTML = '<span class="mono">←</span> Разбор';
+    b.innerHTML = `<span class="mono">←</span> ${esc(t('review.header'))}`;
     b.addEventListener('click', () => ctx.router.back());
     return b;
   },
@@ -62,18 +63,18 @@ export const review = {
     const list = all.filter(r => filter === 'all' || (filter === 'bad' ? !r.good : r.good));
     const page = list.slice(0, shown);
 
-    const chips = FILTERS.map(f =>
+    const chips = FILTERS().map(f =>
       `<button class="pill${f.id === filter ? ' on' : ''}" data-filter="${f.id}" type="button">
-         ${f.label}<span class="pill-count mono">${counts[f.id]}</span>
+         ${esc(f.label)}<span class="pill-count mono">${counts[f.id]}</span>
        </button>`).join('');
 
     const node = h(`
       <div class="review-filters">${chips}</div>
       ${page.length
         ? page.map(r => itemMarkup(r, bank)).join('')
-        : `<p class="muted">${filter === 'bad' ? 'Ошибок нет — можно выдохнуть.' : 'Здесь пусто.'}</p>`}
+        : `<p class="muted">${filter === 'bad' ? esc(t('review.noMistakes')) : esc(t('review.empty'))}</p>`}
       ${list.length > page.length
-        ? `<button class="btn wide" data-act="more" type="button">Показать ещё ${Math.min(PAGE, list.length - page.length)}</button>`
+        ? `<button class="btn wide" data-act="more" type="button">${esc(t('review.showMore', { n: Math.min(PAGE, list.length - page.length) }))}</button>`
         : ''}
     `);
 

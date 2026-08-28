@@ -4,6 +4,7 @@ import { esc } from './dom.js';
 import { parseCli } from '../engine/cli.js';
 import { ddExpected, ddNeeded } from '../engine/grade.js';
 import { rationaleView } from '../engine/rationale.js';
+import { t, getLang } from './i18n.js';
 
 export const domShort = (bank, id) => {
   const d = bank.meta.domains.find(x => x.id === id);
@@ -14,7 +15,7 @@ export const domShort = (bank, id) => {
 export { questionText } from '../engine/ai-prompt.js';
 
 export const exhibitMarkup = q => q.img
-  ? `<img class="q-exhibit" src="images/exhibits/${esc(q.img)}" alt="Схема к вопросу ${q.n}" loading="lazy">`
+  ? `<img class="q-exhibit" src="images/exhibits/${esc(q.img)}" alt="${esc(t('question.exhibitAlt', { n: q.n }))}" loading="lazy">`
   : '';
 
 // Whether the reader has the command output open. A screen that rebuilds itself — grading
@@ -29,7 +30,7 @@ export function cliMarkup(text, qn) {
   const cli = parseCli(text);
   if (!cli) return '';
   return cli.long
-    ? `<details class="cli"${cliOpen.has(qn) ? ' open' : ''}><summary>Показать вывод команды (${cli.lines.length} стр.)</summary><pre>${esc(cli.text)}</pre></details>`
+    ? `<details class="cli"${cliOpen.has(qn) ? ' open' : ''}><summary>${esc(t('question.showOutput', { n: cli.lines.length }))}</summary><pre>${esc(cli.text)}</pre></details>`
     : `<pre class="cli plain">${esc(cli.text)}</pre>`;
 }
 
@@ -47,17 +48,15 @@ export function answerSummary(q, given) {
     const right = countRight(q, placement);
     const strays = expected.filter((bucket, i) => bucket === null && placement[i] !== undefined).length;
     if (right === needed && strays) {
-      return strays === 1
-        ? 'лишний элемент попал в категорию — ему место в банке'
-        : 'лишние элементы попали в категории — им место в банке';
+      return strays === 1 ? t('qmarkup.extraItem') : t('qmarkup.extraItems');
     }
-    return `разложено верно ${right} из ${needed}`;
+    return t('qmarkup.placedRight', { right, needed });
   }
   const keys = String(q.a || '').split('');
   const texts = keys.map(k => q.o?.[k]).filter(Boolean);
-  const multiline = texts.some(t => t.includes('\n'));
+  const multiline = texts.some(x => x.includes('\n'));
   const text = texts.join(multiline ? '\n' : ' · ');
-  return `правильный ответ ${keys.join(', ')}${text ? (multiline ? `\n${text}` : ` · ${text}`) : ''}`;
+  return t('qmarkup.correctAnswer', { keys: keys.join(', ') }) + (text ? (multiline ? `\n${text}` : ` · ${text}`) : '');
 }
 
 // The full key laid out per category, ticking what was placed right — the information
@@ -76,28 +75,27 @@ export function ddAnswerMarkup(q, placement) {
   const expected = ddExpected(q);
   const distractors = q.dd.items.filter((_, i) => expected[i] === null);
   return `<div class="buckets review-buckets">${rows}</div>` + (distractors.length
-    ? `<p class="match-hint">Лишние элементы, которым не место ни в одной категории:
-       ${esc(distractors.join(' · '))}</p>`
+    ? `<p class="match-hint">${esc(t('qmarkup.extraNotPlaced', { items: distractors.join(' · ') }))}</p>`
     : '');
 }
 
 // Why-blocks for the review sheet and the review list.
 export function rationaleBlocks(q, given) {
-  const view = rationaleView(q, given?.given || []);
+  const view = rationaleView(q, given?.given || [], getLang());
   if (view.mode === 'options') {
     return view.options.map(o => `
       <div class="why">
-        <div class="why-h${o.correct ? '' : ' bad'}">Почему${o.correct ? '' : ' не'} ${o.key}</div>
-        ${o.why ? `<p>${esc(o.why)}</p>` : '<p class="muted">Пояснение для этого варианта пока не готово.</p>'}
+        <div class="why-h${o.correct ? '' : ' bad'}">${esc(o.correct ? t('qmarkup.why', { key: o.key }) : t('qmarkup.whyNot', { key: o.key }))}</div>
+        ${o.why ? `<p>${esc(o.why)}</p>` : `<p class="muted">${esc(t('qmarkup.whyMissing'))}</p>`}
       </div>`).join('') + disputedNote(view);
   }
   const board = q.y === 'dd' ? ddAnswerMarkup(q, given?.placement || {}) : '';
   const prose = view.exp
     ? `<p>${esc(view.exp)}</p>`
-    : '<p class="muted">Подробное пояснение пока не готово для этого вопроса.</p>';
+    : `<p class="muted">${esc(t('qmarkup.expMissing'))}</p>`;
   return `${board}<div class="why">${prose}</div>${disputedNote(view)}`;
 }
 
 const disputedNote = view => view.disputed
-  ? '<div class="why disputed"><p>Спорный ключ — сверь по схеме.</p></div>'
+  ? `<div class="why disputed"><p>${esc(t('qmarkup.disputed'))}</p></div>`
   : '';

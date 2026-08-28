@@ -7,11 +7,15 @@ import { weightedPick, scorable, shuffle } from '../engine/select.js';
 import { scoreAttempt } from '../engine/score.js';
 import { store } from './store.js';
 
+// The label/note text for each preset lives in i18n.js (screens/exam.js's PRESET_LABEL) —
+// this object only carries what session.js itself needs to start a run. Keeping the
+// display copy out of here means a translation can never drift out of sync with a preset's
+// actual count/minutes.
 export const EXAM_PRESETS = {
-  full: { label: 'Как на экзамене', count: 100, minutes: 120, note: '100 вопросов · 120 мин · вес по 6 доменам Cisco' },
-  short: { label: 'Короткий прогон', count: 30, minutes: 35, note: '30 вопросов · 35 мин' },
-  weak: { label: 'Только слабые домены', count: 40, minutes: 0, note: '40 вопросов · домены из статистики · без таймера' },
-  manual: { label: 'Своя настройка', count: 60, minutes: 90, note: 'домены, типы, количество и таймер — вручную' },
+  full: { count: 100, minutes: 120 },
+  short: { count: 30, minutes: 35 },
+  weak: { count: 40, minutes: 0 },
+  manual: { count: 60, minutes: 90 },
 };
 
 // mode 'exam'  — no feedback until the end, timer, answers editable while it runs
