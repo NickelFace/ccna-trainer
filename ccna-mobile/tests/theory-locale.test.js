@@ -9,12 +9,35 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { buildBook, loadTopicsLocale, loadTopics } from '../../ccna-book/build.mjs';
 
-test('with no .en.md files at all, the English build falls back to Russian everywhere', async () => {
+test('with every chapter translated, the English build has no fallback chapters left', async () => {
   const ru = await buildBook({});
   const en = await buildBook({ locale: 'en' });
-  assert.equal(en.stats.missingTranslations, ru.topics.length);
+  assert.equal(en.stats.missingTranslations, 0);
   assert.deepEqual(en.map, ru.map);                 // the binding never moves
-  assert.equal(en.index.topics[0].title, ru.index.topics[0].title);   // fell back verbatim
+  assert.notEqual(en.index.topics[0].title, ru.index.topics[0].title);   // real translation, not a fallback
+});
+
+test('a chapter with no .en.md translation falls back to Russian for that one chapter', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'ccna-book-locale-'));
+  try {
+    await writeFile(join(dir, 'nf-99-fixture.md'), [
+      '---',
+      'id: nf-99-fixture',
+      'dom: NF',
+      'title: Тестовая глава',
+      'lead: Проверка отсутствия перевода.',
+      '---',
+      '## Первый раздел',
+      '',
+      'Текст первого раздела, достаточно длинный для парсера.',
+    ].join('\n'));
+
+    const [ruTopic] = await loadTopics(dir);
+    const overlay = await loadTopicsLocale([ruTopic], dir, 'en', () => {});
+    assert.equal(overlay.has('nf-99-fixture'), false);   // no .en.md written — falls back
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
 });
 
 test('an English build never changes which questions map to which chapter', async () => {

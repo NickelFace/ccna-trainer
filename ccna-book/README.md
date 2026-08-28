@@ -107,6 +107,39 @@ Body blocks — everything else is a paragraph:
 Inline: `**bold**`, `` `code` ``, `*italic*`. No HTML, no images, no links to the network —
 the app ships offline and renders these blocks itself.
 
+## English chapters (`<id>.en.md`)
+
+The mobile app reads a full English tree alongside the Russian one (see
+`ccna-mobile/scripts/sync-data.mjs` and `buildBook({ locale })`/`writeBook` in
+`build.mjs`). A translated chapter lives next to its Russian original, same directory,
+named `<id>.en.md` — e.g. `ipc-04-ospf.en.md` beside `ipc-04-ospf.md`.
+
+```yaml
+---
+title: OSPFv2 in a Single Area
+lead: One sentence on what the topic covers.
+---
+```
+
+Only `title` and `lead` (optionally `minutes`) — **not** `id`, `dom`, `blueprint`,
+`match`, or `fallback`. The question↔chapter binding (`map.json`) is always computed
+from the Russian chapter's `match:` patterns, never from the translation, so a
+translated chapter can never accidentally steer questions differently than its
+Russian original does.
+
+The English body must have the **same number of `##` sections, in the same order**,
+as the Russian original — `build.mjs` reassigns each English section's id from its
+Russian counterpart positionally, which is what keeps `map.json`'s
+`chapterId#sectionId` deep links resolvable against the English tree. A translation
+whose section count does not match is skipped at build time (with a warning) and that
+one chapter falls back to Russian in English mode, rather than shipping a broken
+anchor — `npm run sync-data` prints a summary of how many chapters are still missing
+their English version.
+
+A chapter with no `<id>.en.md` at all falls back to Russian content the same way, so a
+partially-translated book is never a build error — see `ccna-book/build.mjs`'s
+`loadTopicsLocale`.
+
 ## Writing rules
 
 - Russian prose, English terms kept in English (`native VLAN`, not «родная VLAN»), commands

@@ -1,0 +1,238 @@
+---
+title: IPv4 and IPv6 Static Routing
+lead: Network, host, default, and floating static routes - syntax, when each applies, and how to verify them.
+---
+
+## When static routing makes sense
+
+A routing protocol is needed where the network changes. If the network is small and
+stable, static routes are cheaper: no control-plane traffic exchange, no neighbor
+relationships, fully predictable behavior.
+
+Typical cases:
+
+- **Stub network** — a branch with a single exit: a default route is all it needs.
+- **Default route to the provider** — the single most common static route of all.
+- **Backup path** (floating static) for when the primary fails.
+- Targeted fix where a protocol picks the wrong path.
+
+The downsides are just as obvious: nobody recalculates anything when the topology
+changes, and in a large network the number of entries grows quadratically.
+
+## IPv4 syntax
+
+```cfg
+! network route via a next hop
+ip route 192.168.5.0 255.255.255.0 10.1.1.2
+
+! via an outgoing interface
+ip route 192.168.5.0 255.255.255.0 GigabitEthernet0/1
+
+! recommended form on Ethernet: interface + next hop
+ip route 192.168.5.0 255.255.255.0 GigabitEthernet0/1 10.1.1.2
+
+! default route
+ip route 0.0.0.0 0.0.0.0 203.0.113.1
+
+! host route (/32) — to a single address only
+ip route 10.9.9.9 255.255.255.255 10.1.1.2
+
+! floating static: AD 5 instead of 1 — kicks in once the primary is gone
+ip route 192.168.5.0 255.255.255.0 10.1.1.6 5
+```
+
+The last number on the line is the **administrative distance**. By default static gets
+an AD of 1, so a static route beats almost any protocol. That's exactly what floating
+static exploits: set the AD higher than the dynamic source's (say, 130 against OSPF's
+110), and the route quietly waits its turn.
+
+> [!key] Remember
+> **Floating static** = a static route with a raised AD. It won't show up in the table
+> while the primary route is alive, and it picks up traffic once the primary
+> disappears. It won't appear in `show ip route` output normally — that's expected;
+> check `show ip route <network>` or the configuration instead.
+
+## IPv6 syntax
+
+```cfg
+ipv6 unicast-routing
+!
+ipv6 route 2001:db8:acad:5::/64 2001:db8:acad:1::2
+ipv6 route ::/0 GigabitEthernet0/0 fe80::2        ! default via a link-local address
+ipv6 route 2001:db8:acad:9::1/128 2001:db8:acad:1::2
+```
+
+The distinction that gets asked about: if the next hop is a **link-local address**, the
+outgoing interface must also be specified — a link-local address isn't unique across
+the router, and without the interface there's no way to know where to send it.
+
+## Verification
+
+```cli
+R1# show ip route static
+S     192.168.5.0/24 [1/0] via 10.1.1.2
+S*    0.0.0.0/0 [1/0] via 203.0.113.1
+
+R1# show ipv6 route static
+S   2001:DB8:ACAD:5::/64 [1/0]
+     via 2001:DB8:ACAD:1::2
+
+R1# show ip route 192.168.5.10
+Routing entry for 192.168.5.0/24
+  Known via "static", distance 1, metric 0
+```
+
+## Why a route doesn't work
+
+| Symptom | Cause |
+|---|---|
+| Route missing from the table | next-hop interface down; no route to the next hop (recursion); typo in the mask |
+| Route present, traffic doesn't flow | no return route on the far side |
+| Works in one direction only | classic case: the remote router has no path back |
+| Disappeared when the link failed | expected: a route through a down interface is withdrawn |
+| Backup didn't activate | backup's AD isn't higher than the primary's, or the primary is technically still "alive" |
+
+The **return route** is the number-one cause in troubleshooting scenarios. Ping fails
+not because the request didn't arrive, but because the reply has nowhere to go back to.
+Verify with ping from both sides and `show ip route` on both ends.
+
+## One summary route instead of ten
+
+Instead of ten lines for 10.1.0.0/24 … 10.1.7.0/24, write one:
+
+```cfg
+ip route 10.1.0.0 255.255.248.0 10.0.0.2      ! a /21 covers eight networks
+```
+
+The same technique builds a "route to nowhere" for loop protection —
+`ip route 10.1.0.0 255.255.248.0 null0`: anything not covered by a more specific route
+gets dropped locally instead of looping around the network.
+
+## Worked example: static routing across three routers, step by step
+
+```txt
+   LAN-A          R1            R2            R3         LAN-B
+192.168.1.0/24 ── Gi0/0    Gi0/1═══Gi0/0   Gi0/1═══Gi0/0 ── 192.168.3.0/24
+                10.0.12.1  10.0.12.2    10.0.23.2  10.0.23.3
+```
+
+Connectivity between LAN-A and LAN-B is needed across both transit links. Work out the
+routes on each router separately — the typical beginner mistake is "configured R1,
+forgot about R3."
+
+**R1** knows its own LAN and the link to R2 directly (`connected`), but doesn't know
+about `10.0.23.0/24` or `192.168.3.0/24` — those need to be configured via next hop
+`10.0.12.2`:
+
+```cfg
+ip route 10.0.23.0 255.255.255.0 10.0.12.2
+ip route 192.168.3.0 255.255.255.0 10.0.12.2
+```
+
+**R2** knows both of its own links directly, but not the LANs at either end — one route
+in each direction:
+
+```cfg
+ip route 192.168.1.0 255.255.255.0 10.0.12.1
+ip route 192.168.3.0 255.255.255.0 10.0.23.3
+```
+
+**R3** mirrors R1; it needs routes back via `10.0.23.2`:
+
+```cfg
+ip route 10.0.12.0 255.255.255.0 10.0.23.2
+ip route 192.168.1.0 255.255.255.0 10.0.23.2
+```
+
+Stop here, and `ping` from LAN-A to LAN-B succeeds **in both directions** — precisely
+because every router has a path configured there and back. Skip the
+`192.168.1.0/24` route on R3 (configuring only "one way") and you get the classic
+failure: the request reaches LAN-B, but the reply has nowhere to go back to — `ping`
+shows a timeout even though the route "looks configured."
+
+## Troubleshooting: connectivity works in one direction only
+
+**Symptom.** From a host on LAN-A, `ping` to a server on LAN-B gets no reply, but a
+packet capture on the server itself shows an incoming ICMP Echo Request from that host.
+
+**What to check.** Since the request arrived, the forward path is fine. The problem is
+on the way back:
+
+```cli
+R3# show ip route 192.168.1.0
+% Network not in table
+```
+
+**What we found.** R3 (the router closest to LAN-B) has no route back to the LAN-A
+network — the echo reaches the server, but the ICMP Echo Reply can't get back out of
+`192.168.3.0/24` and gets dropped at the first router that lacks a path. This is exactly
+the "return route" problem that causes one-way connectivity: it's impossible to spot
+without checking the table on **both ends**, because from the sender's point of view it
+just looks like an ordinary timeout. The rule for troubleshooting static routing is to
+check `show ip route <network>` on every transit router in both directions, not just
+where the ping originates.
+
+## Troubleshooting: a route swallows more than intended
+
+**Symptom.** After adding a summary route, traffic to one of the subnets within its
+range started going somewhere different than before, even though a more specific route
+to it appears to still be in the configuration.
+
+**What to check.** Whether the mask actually configured matches what was intended:
+
+```cfg
+ip route 10.1.0.0 255.255.248.0 10.0.0.2   ! /21, intended to cover 10.1.0.0-10.1.7.0
+ip route 10.1.5.0 255.255.255.0 10.0.0.9   ! more specific /24 for one of those networks
+```
+
+**What we found.** There's actually no error here — this is longest prefix match
+working as expected: `/24` is longer than `/21`, so traffic to `10.1.5.0/24` will take
+the more specific route rather than the summary one, exactly as it should. The real
+version of this problem on the exam runs the other way: someone **typo'd the mask** of
+the summary route (for example, entering `255.255.240.0`, a /20, instead of
+`255.255.248.0`, a /21) and it unexpectedly covered a neighboring range that was
+supposed to be served by a different, more specific route. This is verified not by
+logic but by subnetting arithmetic: convert the mask to a magic number and block
+boundaries, and compare that against what was actually supposed to be covered.
+
+## What gets asked
+
+- "Which command configures a default route?" — `ip route 0.0.0.0 0.0.0.0 <next hop>`.
+- "What is a floating static route used for?" — a backup for when the primary path fails.
+- "Which static route is a host route?" — one with a /32 mask (255.255.255.255).
+- "Why is the static route not in the routing table?" — the interface is down or the
+  next hop is unreachable.
+- "Which command adds a backup route with AD 5?" — the same line with a trailing 5.
+- "What must be configured for an IPv6 static route via a link-local next hop?" — the
+  outgoing interface, along with the address.
+- "A ping to a remote network times out, but a capture on the destination server shows the
+  ICMP request arriving. Where is the problem?" — in the return route: somewhere on the
+  path back there's no entry for the sender's network.
+- "In a multi-hop static routing setup, what is a common configuration mistake?"
+  — configuring routes in only one direction on one or more transit routers, forgetting
+  the path back.
+- "A summary static route unexpectedly covers a network that should be reached by a more
+  specific route with a typo in its mask. What determines which route is actually used?"
+  — subnet arithmetic: compare the mask that's actually configured (not the intended
+  one) against the range that's supposed to be covered.
+
+## Check yourself
+
+```check
+?? How do you write a default route for IPv6?
+!! ipv6 route ::/0 <next hop> (with an interface, if the next hop is link-local).
+?? The primary path runs over OSPF (AD 110). What AD should the backup static route get?
+!! Higher than 110 — for example, 130; otherwise the static route would displace the working OSPF route.
+?? Ping from network A to network B fails, and the A→B route is configured and visible. What should be checked?
+!! The return route, B→A, on the far router.
+?? What's the difference between ip route … Gi0/1 and ip route … 10.1.1.2 on an Ethernet link?
+!! With just an interface, the router relies on proxy ARP for every destination address; specifying a next hop (or both) is more reliable.
+?? What does a route to null0 do?
+!! Drops packets to the covered range locally — that's how loops and "holes" in summarization get suppressed.
+?? Three routers in a row, static routes configured only "one way" — from LAN-A to LAN-B. What will the user see when pinging from LAN-A?
+!! A timeout: the request reaches LAN-B, but the reply has no return route at at least one of the transit routers.
+?? Which router in a chain of three should you check the table on, if ping works one way but not the other?
+!! All transit routers, in both directions — show ip route <network> for both the source and destination networks at each hop, not just where the ping was launched.
+?? A /21 summary route and a more specific /24 within its range are both configured correctly. Which one carries traffic to the network covered by the /24?
+!! The /24 — the longer prefix wins regardless of the /21 also formally matching.
+```

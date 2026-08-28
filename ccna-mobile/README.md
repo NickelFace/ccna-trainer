@@ -152,9 +152,12 @@ the run fails with a message naming the missing secrets instead.
 
 ## Known gaps
 
-- **Interface language is Russian only.** The profile carries a `lang` field and the
-  onboarding has a slot for the choice, but there is no string table yet, so neither the
-  language step nor `android:localeConfig` is wired up. That needs an i18n layer first.
+- **`android:localeConfig` is not wired up.** The app has a full RU/EN interface (see
+  `src/app/i18n.js`) and switches instantly from the Profile screen or onboarding step
+  3 — persisted in `profile.lang`, independent of the OS locale. What's still missing
+  is having a fresh install *default* to English on an English-language phone before
+  the user ever opens Профиль/Profile; today every install starts in Russian
+  regardless of device locale, same as before this landed.
 - **Lab simulations** (35 questions of type `sim` in the bank) have no screen here. They
   are not scorable and not runnable offline; the web app lists them for reference.
 - The app icon and splash are drawn from one vector glyph in the app palette. They are
