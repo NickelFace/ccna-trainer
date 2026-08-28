@@ -242,11 +242,11 @@ table decides the direction, not the mere existence of an interface.
 ?? What happens during IKE phase 1?
 !! The peers authenticate each other and build a protected control channel, negotiating the algorithms and Diffie-Hellman group.
 ?? What does the ACL in a crypto map describe?
-!! Interesting traffic -- what should be encrypted and sent into the tunnel.
+!! Interesting traffic — what should be encrypted and sent into the tunnel.
 ?? show crypto isakmp sa is stuck at MM_NO_STATE. Which phase is this, and what should be compared first?
-!! Phase 1: compare crypto isakmp policy on both sides -- encryption, hash, Diffie-Hellman group, and authentication method must match exactly.
+!! Phase 1: compare crypto isakmp policy on both sides — encryption, hash, Diffie-Hellman group, and authentication method must match exactly.
 ?? Phase 1 is in the QM_IDLE state, but traffic isn't being encrypted. Where should you look?
-!! At the interesting-traffic range (ACL) on both sides -- if it isn't a mirrored match in size, phase 2 won't come up for the mismatched part.
+!! At the interesting-traffic range (ACL) on both sides — if it isn't a mirrored match in size, phase 2 won't come up for the mismatched part.
 ?? Interface Tunnel0 shows up/up, IPsec is configured, but traffic to the remote network isn't flowing. What else should be checked besides the tunnel itself?
-!! Whether a route to that network exists via the tunnel interface specifically -- an up tunnel doesn't pull traffic into itself on its own.
+!! Whether a route to that network exists via the tunnel interface specifically — an up tunnel doesn't pull traffic into itself on its own.
 ```

@@ -7,7 +7,7 @@ import { isCorrect } from './grade.js';
 import {
   UNSEEN_FACTOR, WINDOW,
   readiness as readinessWith, readinessDelta as readinessDeltaWith,
-} from '../../../ccna-exam-simulator/assets/js/shared/readiness.js?v=20';
+} from '../../../ccna-exam-simulator/assets/js/shared/readiness.js?v=21';
 
 export { UNSEEN_FACTOR, WINDOW };
 

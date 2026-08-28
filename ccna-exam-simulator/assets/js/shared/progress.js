@@ -11,8 +11,8 @@
 // working because a sync helper failed is a bad trade. The two implementations are
 // equivalent today (ccna-mobile/src/engine/grade.js was lifted from app.js verbatim) and
 // tests/grade.test.js is what keeps the phone's honest.
-import { PASS_SCALED } from './score.js?v=20';
-import { daySum, dayKey } from './activity.js?v=20';
+import { PASS_SCALED } from './score.js?v=21';
+import { daySum, dayKey } from './activity.js?v=21';
 
 // Two different scales, two different thresholds — mixing them up paints a passing score
 // amber. Domain bars go by percentage (>=82 ok, 60..81 warn); the score itself goes by

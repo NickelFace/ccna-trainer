@@ -12,26 +12,26 @@
    Branches this app never touches (profile beyond its device id, bookmarks, book) are
    still loaded, kept, and exported verbatim: importing a phone backup here and exporting
    it back must not quietly strip the textbook progress. */
-import { nextState } from './shared/srs.js?v=20';
-import { ACTIVITY_DAYS, bumpActivity, dayKey, normalizeActivity, pruneActivity } from './shared/activity.js?v=20';
-import { BRANCHES, isBackup, packBackup } from './shared/backup.js?v=20';
-import { pruneAttempts } from './shared/retention.js?v=20';
-import { boxHistogram, dueCount, dueQueue, nextDueAt, wrongQueue } from './shared/srs-queue.js?v=20';
+import { nextState } from './shared/srs.js?v=21';
+import { ACTIVITY_DAYS, bumpActivity, dayKey, normalizeActivity, pruneActivity } from './shared/activity.js?v=21';
+import { BRANCHES, isBackup, packBackup } from './shared/backup.js?v=21';
+import { pruneAttempts } from './shared/retention.js?v=21';
+import { boxHistogram, dueCount, dueQueue, nextDueAt, wrongQueue } from './shared/srs-queue.js?v=21';
 import {
   answeredTotal, answeredIn, dayStats, goalOf, isAbandoned, mistakesOf, perDomainOf,
   recentDays, scoreTone, scoredAttempts, streakDays, toneFor, topicStats, validGoal, weakTopics,
-} from './shared/progress.js?v=20';
-import { PASS_SCALED, toScaled } from './shared/score.js?v=20';
-import { readiness, readinessDelta } from './shared/readiness.js?v=20';
-import { MOCK_EVERY_DAYS, mockState } from './shared/plan.js?v=20';
-import { daysUntil, isExamDate } from './shared/localdate.js?v=20';
-import { autoSyncer, isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js?v=20';
-import { bodyMarkup } from './shared/book.js?v=20';
-import { normalizeTset, tsetEntries, tsetHas, tsetMark } from './shared/tset.js?v=20';
+} from './shared/progress.js?v=21';
+import { PASS_SCALED, toScaled } from './shared/score.js?v=21';
+import { readiness, readinessDelta } from './shared/readiness.js?v=21';
+import { MOCK_EVERY_DAYS, mockState } from './shared/plan.js?v=21';
+import { daysUntil, isExamDate } from './shared/localdate.js?v=21';
+import { autoSyncer, isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js?v=21';
+import { bodyMarkup } from './shared/book.js?v=21';
+import { normalizeTset, tsetEntries, tsetHas, tsetMark } from './shared/tset.js?v=21';
 import {
   coverage, DEFAULT_BOOK, isRead, loadIndex, loadMap, loadTopic, normalizeBook, readMap, sectionOf,
   setBookVersion, setRead, topicOf,
-} from './shared/theory.js?v=20';
+} from './shared/theory.js?v=21';
 
 const KEY = {
   profile: 'ccna.profile',

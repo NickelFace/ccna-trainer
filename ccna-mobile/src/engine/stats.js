@@ -11,8 +11,8 @@ import {
   isAbandoned, answeredIn,
   topicStats as topicStatsWith, weakTopics as weakTopicsWith, mistakesOf as mistakesOfWith,
   perDomainOf as perDomainOfWith,
-} from '../../../ccna-exam-simulator/assets/js/shared/progress.js?v=20';
-import { dayKey, daySum, normalizeActivity } from '../../../ccna-exam-simulator/assets/js/shared/activity.js?v=20';
+} from '../../../ccna-exam-simulator/assets/js/shared/progress.js?v=21';
+import { dayKey, daySum, normalizeActivity } from '../../../ccna-exam-simulator/assets/js/shared/activity.js?v=21';
 
 export { dayKey, normalizeActivity, daySum };
 export {

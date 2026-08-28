@@ -4,6 +4,6 @@
 // stay inside src/engine/.
 import {
   MOCK_EVERY_DAYS, atTime, examDatePassed, lastMock, mockState, nextDailyAt, nextMockAt, parseTime,
-} from '../../../ccna-exam-simulator/assets/js/shared/plan.js?v=20';
+} from '../../../ccna-exam-simulator/assets/js/shared/plan.js?v=21';
 
 export { MOCK_EVERY_DAYS, atTime, examDatePassed, lastMock, mockState, nextDailyAt, nextMockAt, parseTime };

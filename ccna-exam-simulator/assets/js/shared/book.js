@@ -30,7 +30,7 @@ export const inline = s => esc(s)
 // "Учебник" screen calls these with no third argument — rendering exactly as before.
 const NOTE_TITLE = {
   ru: { key: 'Запомнить', trap: 'Ловушка', note: 'Заметка', lab: 'На практике' },
-  en: { key: 'Remember', trap: 'Gotcha', note: 'Note', lab: 'Hands-on' },
+  en: { key: 'Remember', trap: 'Trap', note: 'Note', lab: 'Hands-on' },
 };
 
 const block = (b, lang = 'ru') => {

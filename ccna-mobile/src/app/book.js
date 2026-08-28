@@ -1,10 +1,10 @@
 // The chapter reader's markup lives in shared/ — the web trainer renders the same
 // chapters and they have to come out identical. Only the click wiring and the locale pass-
 // through are local.
-import { bodyMarkup as sharedBodyMarkup } from '../../../ccna-exam-simulator/assets/js/shared/book.js?v=20';
+import { bodyMarkup as sharedBodyMarkup } from '../../../ccna-exam-simulator/assets/js/shared/book.js?v=21';
 import { getLang } from './i18n.js';
 
-export { inline, sectionMarkup } from '../../../ccna-exam-simulator/assets/js/shared/book.js?v=20';
+export { inline, sectionMarkup } from '../../../ccna-exam-simulator/assets/js/shared/book.js?v=21';
 
 // The chapter body itself (headings, paragraphs, tables, self-checks) is already in
 // whichever language its JSON was compiled for — see ccna-book/build.mjs's `en` tree and
