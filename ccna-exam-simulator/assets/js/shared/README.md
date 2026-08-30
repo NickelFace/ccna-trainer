@@ -55,6 +55,12 @@ the code has moved and the number has not.
 - `tset.js` — a set whose membership survives merging: every add and every removal is
   dated, and the later one wins. What read marks and bookmarks are made of.
 
+**Asking an AI**
+
+- `ai-prompt.js` — what a wrong answer turns into when it is handed to a chat: the parts
+  the toggles add, and the plain-text rendering of a question with the answer that was
+  given. The bank's own why/exp stay out of it on purpose.
+
 **The textbook**
 
 - `theory.js` — where the chapter files are, the shape of the reading branch, read marks.

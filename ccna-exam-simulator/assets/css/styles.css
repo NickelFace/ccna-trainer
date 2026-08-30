@@ -452,6 +452,21 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .review-item.bad{border-left-color:var(--red)}
 .review-item.ok{border-left-color:var(--teal)}
 
+/* «Разобрать с ИИ» — the step after the review rather than part of it, so it sits above
+   the list, folded away until it is wanted. */
+.ai-panel{background:var(--cream-warm);border:1px solid var(--edge);border-radius:16px;overflow:hidden}
+.ai-panel summary{cursor:pointer;user-select:none;padding:16px 20px;font-size:14px;font-weight:700;color:var(--ink)}
+.ai-panel summary::-webkit-details-marker{display:none}
+.ai-panel summary:before{content:'▸ ';color:var(--grey-text)}
+.ai-panel[open] summary:before{content:'▾ '}
+.ai-body{display:flex;flex-direction:column;gap:11px;padding:0 20px 20px}
+.ai-body .hint{margin:0}
+.ai-body .lbl{margin-top:4px}
+/* The chips sit on the panel's own warm ground, so they need the page colour to read as
+   unpicked — on var(--cream-warm) they would blend into it. */
+.ai-body .chip{background:var(--cream)}
+.ai-body .chip.on{background:var(--ink)}
+
 /* domain bars — on the home screen they show blueprint weight, in the report they show your
    result. Only in the report does the colour mean anything. */
 .dbar{display:flex;flex-direction:column;gap:7px;margin:0 0 15px}

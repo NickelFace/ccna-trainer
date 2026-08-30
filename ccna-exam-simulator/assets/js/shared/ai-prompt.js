@@ -1,10 +1,10 @@
-// Builds the prompt that gets pasted into an AI chat.
+// Builds the prompt that gets pasted into an AI chat. Shared by both clients: the phone
+// imports it through ccna-mobile/src/engine/ai-prompt.js, the site through store.js.
 //
-// The web app's "📋 Скопировать для ИИ" copies the question text and nothing else, so the
-// learner has to explain what they want every time. This assembles the whole request —
-// who is asking, what they got wrong, and what kind of answer would help — from a template
-// and a set of toggles. Generation is local, so it works with the device offline; sending
-// is always a manual paste.
+// Copying the question text alone leaves the learner explaining what they want every time.
+// This assembles the whole request — who is asking, what they got wrong, and what kind of
+// answer would help — from a template and a set of toggles. Generation is local, so it
+// works offline; sending is always a manual paste.
 //
 // Deliberately omits the bank's own why/exp: the point is an independent explanation, not
 // an echo of the one already on screen.
@@ -12,8 +12,8 @@
 // Every function here takes an optional `lang` ('ru' | 'en'), defaulting to 'ru' — the
 // engine stays pure and framework-free (see the module comments on stats.js/readiness.js
 // for why: this is imported by both a classic script and a bundled module, and neither may
-// depend on the UI layer). The caller (screens/ai-prompt.js) passes app/i18n.js's
-// getLang(); every existing call site that omits it keeps behaving exactly as before.
+// depend on the UI layer). The callers (the phone's screens/ai-prompt.js, the site's AI
+// review panel) pass their own current language.
 
 // Phrased to slot into "Я ..." / "I ..." without turning the sentence into a noun salad.
 export const LEVELS = {
@@ -118,7 +118,6 @@ const TXT = {
 const textFor = lang => TXT[lang] || TXT.ru;
 
 // Plain-text rendering of one question and, if there is one, the answer that was given.
-// Ported from qToAIText() in the web app so both produce the same paste.
 //
 // `imageAttached` is what the screen knows and the engine cannot: sharing through the
 // system sheet sends the exhibit alongside the text, and telling the model the picture is

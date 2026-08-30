@@ -3,7 +3,7 @@
 // progress sync, and only when a sync key has been set up.
 import { router } from './router.js';
 import { store, bindPersistOnPause, bindResume } from './store.js';
-import { autoSyncer } from '../../../ccna-exam-simulator/assets/js/shared/sync.js?v=22';
+import { autoSyncer } from '../../../ccna-exam-simulator/assets/js/shared/sync.js?v=23';
 import { reschedule, initNotificationListener } from './notify.js';
 import { scorable } from '../engine/select.js';
 import { sessionIsValid } from './session.js';

@@ -8,8 +8,8 @@
 //
 // Everything here is pure and takes `now` — the reminders are scheduled from a background
 // callback and tested without one.
-import { DAY_MS } from './srs.js?v=22';
-import { daysUntil } from './localdate.js?v=22';
+import { DAY_MS } from './srs.js?v=23';
+import { daysUntil } from './localdate.js?v=23';
 
 export const MOCK_EVERY_DAYS = 7;
 

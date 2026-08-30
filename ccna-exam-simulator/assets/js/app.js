@@ -144,20 +144,17 @@ const I18N = {
     tag_incorrect: '✗ неверно',
     your_choice: ' · твой выбор',
     missed: ' · пропущен',
-    ai_q_label: 'Вопрос {0} [{1}]',
-    ai_disputed: ' (спорный ключ)',
-    ai_exhibit_note: '[к вопросу приложена схема/скриншот — картинка не входит в этот текст]',
-    ai_dd_type: 'Тип: Drag & Drop',
-    ai_dd_items: 'Элементы: {0}',
-    ai_dd_placement: 'Мой вариант распределения:',
-    ai_correct_answer: 'Правильный ответ: {0}',
-    ai_my_answer: 'Мой ответ: {0}',
-    ai_mistakes_header: 'Ниже {0} вопрос(ов) CCNA 200-301, на которые я ответил неправильно. Разбери каждый: почему мой ответ неверный и почему верный вариант правильный.\n\n',
+    ai_panel_title: 'Разобрать с ИИ',
+    ai_lead_one: 'Промпт собирается прямо здесь: сам вопрос, твой ответ и верный ключ. Схема уходит текстовым описанием.',
+    ai_lead_multi: 'В промпт войдут все {0} вопр., где ты ошибся, — с твоими ответами и верным ключом. Схемы уходят текстовым описанием.',
+    ai_include: 'Что включить',
+    ai_where: 'Куда открывать',
+    ai_copy_open: 'Скопировать и открыть {0}',
+    ai_copy_only: 'Только скопировать',
     copied_label: '✓ скопировано',
     copy_failed: 'Не удалось скопировать в буфер обмена.',
-    copy_for_ai: '📋 Скопировать для ИИ',
-    copy_for_ai_short: '📋 для ИИ',
-    copy_mistakes: '📋 Скопировать ошибки для ИИ',
+    copy_for_ai: '📋 Разобрать с ИИ',
+    copy_for_ai_short: '📋 Разобрать',
     practice_review_btn: '📋 Разбор ошибок',
     jump_title: 'Перейти к вопросу по номеру',
     not_found_short: 'нет',
@@ -424,20 +421,17 @@ const I18N = {
     tag_incorrect: '✗ incorrect',
     your_choice: ' · your pick',
     missed: ' · missed',
-    ai_q_label: 'Question {0} [{1}]',
-    ai_disputed: ' (disputed key)',
-    ai_exhibit_note: '[this question has an exhibit/screenshot — the image isn’t included in this text]',
-    ai_dd_type: 'Type: Drag & Drop',
-    ai_dd_items: 'Items: {0}',
-    ai_dd_placement: 'My placement:',
-    ai_correct_answer: 'Correct answer: {0}',
-    ai_my_answer: 'My answer: {0}',
-    ai_mistakes_header: 'Below are {0} CCNA 200-301 question(s) I answered incorrectly. Go through each one: why my answer is wrong and why the correct option is right.\n\n',
+    ai_panel_title: 'Ask an AI',
+    ai_lead_one: 'The prompt is built right here: the question, your answer and the correct key. The diagram goes as a text description.',
+    ai_lead_multi: 'The prompt will carry all {0} questions you got wrong — with your answers and the correct key. Diagrams go as a text description.',
+    ai_include: 'What to include',
+    ai_where: 'Where to open',
+    ai_copy_open: 'Copy and open {0}',
+    ai_copy_only: 'Copy only',
     copied_label: '✓ copied',
     copy_failed: 'Could not copy to clipboard.',
-    copy_for_ai: '📋 Copy for AI',
-    copy_for_ai_short: '📋 for AI',
-    copy_mistakes: '📋 Copy mistakes for AI',
+    copy_for_ai: '📋 Ask an AI',
+    copy_for_ai_short: '📋 Ask an AI',
     practice_review_btn: '📋 Review mistakes',
     jump_title: 'Jump to a question by number',
     not_found_short: 'n/a',
@@ -2632,32 +2626,85 @@ function bookChapterFor(qns, into) {
     .catch(() => { bookMap = false; });   // no textbook on this deployment: say nothing
 }
 
-// ============================ SHARE FOR AI ============================
-// Plain-text rendering of a question (+ the user's answer, if any) — meant to be
-// pasted into an AI chat to get an independent explanation. Deliberately omits
-// the app's own exp/why, so the AI reasons from scratch instead of echoing it.
-function qToAIText(q, ans) {
-  const L = [t('ai_q_label', q.n, domShort(q.dom)) + (q.disp ? t('ai_disputed') : ''), q.t];
-  if (q.cli) L.push('', q.cli);
-  else if (q.img) L.push('', t('ai_exhibit_note'));
-  if (q.y === 'dd' && q.dd) {
-    L.push('', t('ai_dd_type'), t('ai_dd_items', q.dd.items.join(', ')));
-    q.dd.buckets.forEach(b => L.push(`${b.label}: ${b.correct.join(', ')}`));
-    const placement = ans && ans.placement;
-    if (placement) {
-      L.push('', t('ai_dd_placement'));
-      q.dd.items.forEach((t2, i) => {
-        if (placement[i] === undefined) return;
-        L.push(`  ${t2} → ${q.dd.buckets[placement[i]] ? q.dd.buckets[placement[i]].label : '?'}`);
-      });
-    }
-  } else if (q.o) {
-    L.push('');
-    Object.keys(q.o).forEach(k => L.push(`${k}. ${q.o[k]}`));
-    L.push('', t('ai_correct_answer', q.a.split('').join(', ')));
-    if (ans && ans.given && ans.given.length) L.push(t('ai_my_answer', ans.given.join(', ')));
-  }
-  return L.join('\n');
+// ============================ ASK AN AI ============================
+// The phone's «Разобрать с ИИ», on the site. The prompt itself is assembled by the rule
+// module both clients share (shared/ai-prompt.js), so a question sent from the browser
+// reads exactly like one sent from the phone: who is asking, what they got wrong, and
+// what kind of answer would help. The bank's own why/exp stay out of it on purpose — the
+// point is a second opinion, not an echo of the one already on screen.
+//
+// A browser cannot hand a chat the text, only the clipboard can, so the button says what
+// it actually does: copy, then open.
+const AI_TARGETS = [
+  { id: 'chatgpt', label: 'ChatGPT', url: 'https://chatgpt.com/' },
+  { id: 'claude', label: 'Claude', url: 'https://claude.ai/new' },
+  { id: 'gemini', label: 'Gemini', url: 'https://gemini.google.com/app' },
+];
+// Which parts are ticked survives redraws and screens within the page — the same promise
+// the phone's modal makes. The language decides the defaults, so switching it mid-session
+// starts them over rather than leaving an English set labelled in Russian.
+let aiParts = null, aiPartsLang = null;
+function aiPartsNow() {
+  const st = P(); if (!st) return null;
+  if (!aiParts || aiPartsLang !== LANG) { aiParts = st.defaultParts(LANG); aiPartsLang = LANG; }
+  return aiParts;
+}
+// The chat to open. Stored on the profile branch, so it is also the one the phone offers.
+const aiTarget = () => {
+  const st = P();
+  const id = st && st.profile ? st.profile.aiTarget : null;
+  return AI_TARGETS.find(x => x.id === id) || AI_TARGETS[0];
+};
+// items: [{ q, answer }] — the answer is this session's, in the shape S.ans stores.
+function aiPromptText(items) {
+  const st = P();
+  const weak = domainRows(readyNow()).slice().sort((a, b) => a.pct - b.pct)[0];
+  return st.buildPrompt({
+    items,
+    parts: aiPartsNow(),
+    profile: st.profile,
+    weakDomain: weak ? domShort(weak.id) : null,
+    domainName: id => domShort(id),
+    lang: LANG,
+  });
+}
+const aiMistakes = () => S.result.rev.filter(r => !r.good).map(r => ({ q: r.q, answer: S.ans[r.q.n] }));
+
+// Collapsed by default: after a run the review itself is the point, and this is the step
+// after it. Which is also why it is a <details> that remembers — reopening it on every
+// redraw of the results (the filter chips redraw them) would be a panel nobody closed.
+function aiPanelHTML(n) {
+  return P() ? `<details class="ai-panel"${keepAttrs('ai')}>${aiPanelInner(n)}</details>` : '';
+}
+function aiPanelInner(n) {
+  const st = P(), parts = aiPartsNow(), target = aiTarget();
+  const chip = (on, attr, label) => `<span class="chip${on ? ' on' : ''}" ${attr}>${esc(label)}</span>`;
+  return `<summary>${t('ai_panel_title')} · ${n_(n, 'mistake')}</summary>
+    <div class="ai-body">
+      <div class="hint">${n === 1 ? t('ai_lead_one') : t('ai_lead_multi', n)}</div>
+      <div class="lbl">${t('ai_include')}</div>
+      <div class="row">${st.promptParts(LANG).map(p => chip(parts.has(p.id), `data-part="${p.id}"`, p.label)).join('')}</div>
+      <div class="lbl">${t('ai_where')}</div>
+      <div class="row">${AI_TARGETS.map(x => chip(x.id === target.id, `data-target="${x.id}"`, x.label)).join('')}</div>
+      <div class="row">
+        <button class="btn primary" data-ai="open">${t('ai_copy_open', target.label)}</button>
+        <button class="btn" data-ai="copy">${t('ai_copy_only')}</button>
+      </div>
+    </div>`;
+}
+// One delegated listener on the panel itself: a toggled chip rewrites what is inside the
+// <details> and leaves the element — and with it the open state and this listener — alone.
+function wireAiPanel(items) {
+  const panel = $('.ai-panel'); if (!panel) return;
+  const redraw = () => { panel.innerHTML = aiPanelInner(items.length); };
+  panel.addEventListener('click', e => {
+    const el = e.target.closest('[data-part],[data-target],[data-ai]'); if (!el) return;
+    const { part, target, ai } = el.dataset;
+    if (part) { const set = aiPartsNow(); set.has(part) ? set.delete(part) : set.add(part); return redraw(); }
+    if (target) { P().setAiTarget(target); return redraw(); }
+    copyToClipboard(aiPromptText(items), el);
+    if (ai === 'open') window.open(aiTarget().url, '_blank', 'noopener');
+  });
 }
 function copyToClipboard(text, btn) {
   const done = () => {
@@ -2675,18 +2722,13 @@ function fallbackCopy(text, done) {
   try { document.execCommand('copy'); done(); } catch (e) { alert(t('copy_failed')); }
   document.body.removeChild(ta);
 }
+// One question, the same prompt, with whatever toggles the panel is set to. Without the
+// store there is no prompt builder, so the button falls back to the question itself
+// rather than doing nothing.
 function copyQuestion(btn, qn) {
-  const q = DATA.find(x => x.n === qn); if (!q) return;
-  copyToClipboard(qToAIText(q, S.ans && S.ans[qn]), btn);
-}
-// Bulk-export every wrong answer of the current review (practice or exam results)
-// as one paste-ready block, separated by "---", with a short instruction header.
-function copyMistakes(btn) {
-  const bad = S.result.rev.filter(r => !r.good);
-  if (!bad.length) return;
-  const header = t('ai_mistakes_header', bad.length);
-  const body = bad.map(r => qToAIText(r.q, S.ans[r.q.n])).join('\n\n---\n\n');
-  copyToClipboard(header + body, btn);
+  const q = byN().get(qn); if (!q) return;
+  const ans = S.ans && S.ans[qn];
+  copyToClipboard(P() ? aiPromptText([{ q, answer: ans }]) : `${q.n}\n${q.t}`, btn);
 }
 
 // ============================ PRACTICE ============================
@@ -2806,13 +2848,13 @@ function renderPracticeResults() {
     <span class="chip ${S.reviewFilter === 'bad' ? 'on' : ''}" onclick="setReviewFilter('bad')">${t('filter_errors')}<span class="c">${nBad}</span></span>
     <span class="chip ${S.reviewFilter === 'all' ? 'on' : ''}" onclick="setReviewFilter('all')">${t('filter_all')}<span class="c">${rev.length}</span></span>
     <span class="chip ${S.reviewFilter === 'ok' ? 'on' : ''}" onclick="setReviewFilter('ok')">${t('filter_correct')}<span class="c">${nOk}</span></span>
-    ${nBad ? `<div class="spacer"></div><button class="btn" onclick="copyMistakes(this)">${t('copy_mistakes')}</button>` : ''}
-  </div></div>`;
+  </div>${nBad ? aiPanelHTML(nBad) : ''}</div>`;
   const shown = rev.filter(r => S.reviewFilter === 'all' || (S.reviewFilter === 'bad' ? !r.good : r.good));
   if (!shown.length) h += emptyReview();
   for (const { q, good } of shown) h += reviewItemHTML(q, good, S.ans[q.n]);
   app().innerHTML = h; window.scrollTo(0, 0);
   wireChapterLinks();
+  if (nBad) wireAiPanel(aiMistakes());
 }
 
 // Jump to any question by its bank number. If it isn't in the current practice set,
@@ -3147,14 +3189,14 @@ function renderResults() {
     <span class="chip ${S.reviewFilter === 'bad' ? 'on' : ''}" onclick="setReviewFilter('bad')">${t('filter_errors')}<span class="c">${nBad}</span></span>
     <span class="chip ${S.reviewFilter === 'all' ? 'on' : ''}" onclick="setReviewFilter('all')">${t('filter_all')}<span class="c">${rev.length}</span></span>
     <span class="chip ${S.reviewFilter === 'ok' ? 'on' : ''}" onclick="setReviewFilter('ok')">${t('filter_correct')}<span class="c">${nOk}</span></span>
-    ${nBad ? `<div class="spacer"></div><button class="btn" onclick="copyMistakes(this)">${t('copy_mistakes')}</button>` : ''}
-  </div>`;
+  </div>${nBad ? aiPanelHTML(nBad) : ''}`;
 
   const shown = rev.filter(r => S.reviewFilter === 'all' || (S.reviewFilter === 'bad' ? !r.good : r.good));
   if (!shown.length) h += emptyReview();
   for (const { q, good } of shown) h += reviewItemHTML(q, good, S.ans[q.n]);
   app().innerHTML = h; window.scrollTo(0, 0);
   wireChapterLinks();
+  if (nBad) wireAiPanel(aiMistakes());
 }
 // Each filter deserves the sentence that fits it: "no errors" is good news, "no correct
 // answers" is not, and "no questions" is neither.

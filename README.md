@@ -5,8 +5,8 @@ Two applications over one question bank, both offline-first, both simulating the
 
 - a **web app** — wide layout, keyboard navigation, runs from any static host;
 - an **Android app** — its own UX built for a phone: tab navigation, saved sessions,
-  spaced repetition, tap-to-match instead of drag-and-drop, an AI prompt generator, and a
-  **textbook** whose 47 chapters are bound to the questions they answer.
+  spaced repetition, tap-to-match instead of drag-and-drop, and a **textbook** whose 47
+  chapters are bound to the questions they answer.
 
 Both hold the same progress. One key typed on both devices and the browser and the phone
 keep converging on their own — no accounts, no passwords, and no server that understands

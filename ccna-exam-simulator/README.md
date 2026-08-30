@@ -64,6 +64,15 @@ moves between devices as a file. [Russian version](README.ru.md).
 - **Transfer** — export/import of the whole progress as one `v:1` JSON file, the same
   format the [Android app](../ccna-mobile) reads and writes: export in the browser, open
   it on the phone (Progress → Backup) — or the other way round. No account, no server.
+- **Ask an AI** — after a run, the review offers the mistakes as one ready prompt:
+  the questions, what you answered, the correct key, and the topology written out as
+  text where the bank has it. Toggles pick what to ask for (theory, where your reasoning
+  breaks down, IOS examples, an everyday analogy, five follow-up questions, an answer in
+  Russian) and which chat to open — ChatGPT, Claude or Gemini, copied and opened in a new
+  tab. Any single question offers the same prompt on its own. The prompt is assembled by
+  the module the phone uses ([`shared/ai-prompt.js`](assets/js/shared/ai-prompt.js)), so
+  both devices send the same thing; the bank's own rationale is deliberately left out —
+  the point is a second opinion, not an echo.
 - **Per-option rationale** — every question with answer choices (1201/1201) explains
   why each option is right or wrong, not just the correct one. For multi-select
   ("choose N") questions, only the options where you actually erred (a wrong pick,
@@ -74,7 +83,8 @@ moves between devices as a file. [Russian version](README.ru.md).
   supports distractor items that don't belong in any bucket).
 - **CLI/config blocks** — command output and config listings render as real,
   selectable monospace text (not a screenshot); long ones collapse behind a
-  toggle, short ones show inline.
+  toggle, short ones show inline. A listing opened stays open while you answer —
+  the card is redrawn on every click, the toggle is not reset by it.
 - **Topology exhibits** — cropped straight from the original PDF dump
   (`images/exhibits/qN.jpg`), laid out exactly as in the source exam, plus a
   matching `cli` text block wherever the exhibit is a config/`show` output

@@ -42,7 +42,7 @@ src/
 │  ├─ stats.js      attempt history, weak topics, streaks
 │  ├─ rationale.js  which per-option explanations to show
 │  ├─ cli.js        show-output blocks
-│  └─ ai-prompt.js  the AI request, assembled from toggles
+│  └─ ai-prompt.js  re-export: the AI request lives in the web app's shared/
 ├─ app/             screens, router, persistence — everything that touches the DOM
 │  ├─ store.js      the seven branches of progress, their storage and the sync loop
 │  ├─ theory.js     loads the book: index on tab open, a chapter when opened

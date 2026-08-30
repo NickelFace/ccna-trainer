@@ -12,26 +12,27 @@
    Branches this app never touches (profile beyond its device id, bookmarks, book) are
    still loaded, kept, and exported verbatim: importing a phone backup here and exporting
    it back must not quietly strip the textbook progress. */
-import { nextState } from './shared/srs.js?v=22';
-import { ACTIVITY_DAYS, bumpActivity, dayKey, normalizeActivity, pruneActivity } from './shared/activity.js?v=22';
-import { BRANCHES, isBackup, packBackup } from './shared/backup.js?v=22';
-import { pruneAttempts } from './shared/retention.js?v=22';
-import { boxHistogram, dueCount, dueQueue, nextDueAt, wrongQueue } from './shared/srs-queue.js?v=22';
+import { nextState } from './shared/srs.js?v=23';
+import { ACTIVITY_DAYS, bumpActivity, dayKey, normalizeActivity, pruneActivity } from './shared/activity.js?v=23';
+import { BRANCHES, isBackup, packBackup } from './shared/backup.js?v=23';
+import { pruneAttempts } from './shared/retention.js?v=23';
+import { boxHistogram, dueCount, dueQueue, nextDueAt, wrongQueue } from './shared/srs-queue.js?v=23';
 import {
   answeredTotal, answeredIn, dayStats, goalOf, isAbandoned, mistakesOf, perDomainOf,
   recentDays, scoreTone, scoredAttempts, streakDays, toneFor, topicStats, validGoal, weakTopics,
-} from './shared/progress.js?v=22';
-import { PASS_SCALED, toScaled } from './shared/score.js?v=22';
-import { readiness, readinessDelta } from './shared/readiness.js?v=22';
-import { MOCK_EVERY_DAYS, mockState } from './shared/plan.js?v=22';
-import { daysUntil, isExamDate } from './shared/localdate.js?v=22';
-import { autoSyncer, isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js?v=22';
-import { bodyMarkup as sharedBodyMarkup } from './shared/book.js?v=22';
-import { normalizeTset, tsetEntries, tsetHas, tsetMark } from './shared/tset.js?v=22';
+} from './shared/progress.js?v=23';
+import { PASS_SCALED, toScaled } from './shared/score.js?v=23';
+import { readiness, readinessDelta } from './shared/readiness.js?v=23';
+import { MOCK_EVERY_DAYS, mockState } from './shared/plan.js?v=23';
+import { daysUntil, isExamDate } from './shared/localdate.js?v=23';
+import { autoSyncer, isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js?v=23';
+import { bodyMarkup as sharedBodyMarkup } from './shared/book.js?v=23';
+import { normalizeTset, tsetEntries, tsetHas, tsetMark } from './shared/tset.js?v=23';
+import { buildPrompt, defaultParts, PROMPT_PARTS, PROMPT_PARTS_EN } from './shared/ai-prompt.js?v=23';
 import {
   coverage, DEFAULT_BOOK, isRead, loadIndex as sharedLoadIndex, loadMap, loadTopic as sharedLoadTopic,
   normalizeBook, readMap, sectionOf, setBookVersion, setRead, topicOf,
-} from './shared/theory.js?v=22';
+} from './shared/theory.js?v=23';
 
 // ccna-book/build.mjs writes one content tree per locale (data/theory/ru/, data/theory/en/)
 // sharing one locale-independent data/theory/map.json — loadIndex/loadTopic go through the
@@ -123,6 +124,11 @@ const Store = {
   loadIndex,
   loadTopic,
   loadMap,
+  // The AI prompt: the phone's «Разобрать с ИИ» assembled by the same builder, so a
+  // question sent from the browser reads exactly like one sent from the phone.
+  buildPrompt,
+  defaultParts,
+  promptParts: lang => (lang === 'en' ? PROMPT_PARTS_EN : PROMPT_PARTS),
   topicOf,
   sectionOf,
   coverage,
@@ -192,6 +198,15 @@ const Store = {
     else delete this.profile.examDate;
     this._touch('profile');
     return next;
+  },
+
+  // ---- the AI chat to open ----
+  // Third and last profile field the site writes. The phone stores it under the same name
+  // and both read it back, so the target picked on one device is the one the other offers.
+  setAiTarget(id) {
+    this.profile.aiTarget = id;
+    this._touch('profile');
+    return id;
   },
 
   // ---- bookmarks ----

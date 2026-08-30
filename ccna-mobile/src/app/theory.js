@@ -13,7 +13,7 @@ import {
   DEFAULT_BOOK, normalizeBook, setBookVersion, isRead, readMap, setRead,
   loadIndex as sharedLoadIndex, loadTopic as sharedLoadTopic, loadMap as sharedLoadMap,
   topicOf, sectionOf, coverage,
-} from '../../../ccna-exam-simulator/assets/js/shared/theory.js?v=22';
+} from '../../../ccna-exam-simulator/assets/js/shared/theory.js?v=23';
 import { getLang } from './i18n.js';
 
 export { DEFAULT_BOOK, normalizeBook, setBookVersion, isRead, readMap, setRead, topicOf, sectionOf, coverage };
