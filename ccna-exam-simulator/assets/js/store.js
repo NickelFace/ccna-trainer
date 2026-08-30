@@ -12,26 +12,40 @@
    Branches this app never touches (profile beyond its device id, bookmarks, book) are
    still loaded, kept, and exported verbatim: importing a phone backup here and exporting
    it back must not quietly strip the textbook progress. */
-import { nextState } from './shared/srs.js?v=21';
-import { ACTIVITY_DAYS, bumpActivity, dayKey, normalizeActivity, pruneActivity } from './shared/activity.js?v=21';
-import { BRANCHES, isBackup, packBackup } from './shared/backup.js?v=21';
-import { pruneAttempts } from './shared/retention.js?v=21';
-import { boxHistogram, dueCount, dueQueue, nextDueAt, wrongQueue } from './shared/srs-queue.js?v=21';
+import { nextState } from './shared/srs.js?v=22';
+import { ACTIVITY_DAYS, bumpActivity, dayKey, normalizeActivity, pruneActivity } from './shared/activity.js?v=22';
+import { BRANCHES, isBackup, packBackup } from './shared/backup.js?v=22';
+import { pruneAttempts } from './shared/retention.js?v=22';
+import { boxHistogram, dueCount, dueQueue, nextDueAt, wrongQueue } from './shared/srs-queue.js?v=22';
 import {
   answeredTotal, answeredIn, dayStats, goalOf, isAbandoned, mistakesOf, perDomainOf,
   recentDays, scoreTone, scoredAttempts, streakDays, toneFor, topicStats, validGoal, weakTopics,
-} from './shared/progress.js?v=21';
-import { PASS_SCALED, toScaled } from './shared/score.js?v=21';
-import { readiness, readinessDelta } from './shared/readiness.js?v=21';
-import { MOCK_EVERY_DAYS, mockState } from './shared/plan.js?v=21';
-import { daysUntil, isExamDate } from './shared/localdate.js?v=21';
-import { autoSyncer, isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js?v=21';
-import { bodyMarkup } from './shared/book.js?v=21';
-import { normalizeTset, tsetEntries, tsetHas, tsetMark } from './shared/tset.js?v=21';
+} from './shared/progress.js?v=22';
+import { PASS_SCALED, toScaled } from './shared/score.js?v=22';
+import { readiness, readinessDelta } from './shared/readiness.js?v=22';
+import { MOCK_EVERY_DAYS, mockState } from './shared/plan.js?v=22';
+import { daysUntil, isExamDate } from './shared/localdate.js?v=22';
+import { autoSyncer, isSyncKey, newSyncKey, SYNC_BASE, syncOnce } from './shared/sync.js?v=22';
+import { bodyMarkup as sharedBodyMarkup } from './shared/book.js?v=22';
+import { normalizeTset, tsetEntries, tsetHas, tsetMark } from './shared/tset.js?v=22';
 import {
-  coverage, DEFAULT_BOOK, isRead, loadIndex, loadMap, loadTopic, normalizeBook, readMap, sectionOf,
-  setBookVersion, setRead, topicOf,
-} from './shared/theory.js?v=21';
+  coverage, DEFAULT_BOOK, isRead, loadIndex as sharedLoadIndex, loadMap, loadTopic as sharedLoadTopic,
+  normalizeBook, readMap, sectionOf, setBookVersion, setRead, topicOf,
+} from './shared/theory.js?v=22';
+
+// ccna-book/build.mjs writes one content tree per locale (data/theory/ru/, data/theory/en/)
+// sharing one locale-independent data/theory/map.json — loadIndex/loadTopic go through the
+// current locale's tree, loadMap always reads the shared one. Same split as
+// ccna-mobile/src/app/theory.js, which reads the locale off its own i18n module; this file
+// has no such module, so app.js passes LANG through explicitly at every call site instead.
+// bodyMarkup gets the same treatment for the same reason (see shared/book.js's note on
+// NOTE_TITLE) — the chrome labels are the one thing it renders that isn't already baked
+// into the chapter JSON for that locale.
+const BOOK_BASE = 'data/theory';
+const bookLocaleBase = lang => `${BOOK_BASE}/${lang === 'en' ? 'en' : 'ru'}`;
+const loadIndex = lang => sharedLoadIndex(bookLocaleBase(lang));
+const loadTopic = (id, lang) => sharedLoadTopic(id, bookLocaleBase(lang));
+const bodyMarkup = (tp, lang) => sharedBodyMarkup(tp, lang);
 
 const KEY = {
   profile: 'ccna.profile',

@@ -6,7 +6,7 @@
 // still a day away for the first ~10-11 hours of the exam day itself. Comparing local
 // midnights instead — rather than dividing a millisecond gap by a fixed 24h — also keeps
 // the answer right across a DST change, when a "day" is 23 or 25 hours long.
-import { DAY_MS } from './srs.js?v=21';
+import { DAY_MS } from './srs.js?v=22';
 
 const localMidnight = ts => {
   const d = new Date(ts);

@@ -531,7 +531,7 @@ const I18N = {
     hist_replay_note: 'Saved attempt · {0}',
     hist_open_screen: 'Progress and sync',
     book_title: 'Textbook',
-    book_sub: 'The same 47 chapters as in the Android app: theory for every blueprint topic, and the bank\'s questions on it at the end of each chapter. The "read" mark syncs along with the rest of the progress. The chapters themselves are written in Russian.',
+    book_sub: 'The same 47 chapters as in the Android app: theory for every blueprint topic, and the bank\'s questions on it at the end of each chapter. The "read" mark syncs along with the rest of the progress.',
     book_loading: 'Loading the textbook…',
     book_failed: 'The textbook did not load: {0}.',
     book_retry: 'Try again',
@@ -2320,6 +2320,7 @@ function startAttemptRun(id) {
 // v1 map beside new code simply has no sections in it.
 const BOOK_V = '2';
 let bookIndex = null;      // the resolved index.json, once
+let bookIndexLang = null;  // which locale bookIndex was resolved for — see bookLoadIndex
 let bookQuery = '';        // the search box, remembered across renders
 let bookOpen = null;       // the chapter on screen: { id, topic }
 let bookToken = 0;
@@ -2331,13 +2332,16 @@ const bookBase = () => {
 };
 
 // index.json plus the lookup the screens want. Failure is not cached: a chapter list that
-// failed once because the connection dropped must be retryable by opening it again.
+// failed once because the connection dropped must be retryable by opening it again. Keyed
+// by LANG too — a language switch replays the current screen (see setLang) and must not
+// keep showing whichever locale happened to load first.
 async function bookLoadIndex() {
-  if (bookIndex) return bookIndex;
+  if (bookIndex && bookIndexLang === LANG) return bookIndex;
   const st = bookBase();
   if (!st) throw new Error('store');
-  const idx = await st.loadIndex();
+  const idx = await st.loadIndex(LANG);
   bookIndex = idx;
+  bookIndexLang = LANG;
   return idx;
 }
 
@@ -2457,7 +2461,7 @@ function chapterScreen(id, at = null) {
   const known = bookIndex && bookIndex.topics.find(tp => tp.id === id);
   bookLoading(known ? known.title : t('book_title'));
   const st = bookBase();
-  Promise.all([st.loadTopic(id), bookLoadIndex()]).then(([tp, index]) => {
+  Promise.all([st.loadTopic(id, LANG), bookLoadIndex()]).then(([tp, index]) => {
     if (token !== bookToken) return;
     bookOpen = { id, topic: tp };
     st.setBook({ last: id });
@@ -2483,7 +2487,7 @@ function renderChapter(tp, index, at = null) {
       <ol>${tp.sections.map(s => `<li><a href="#sec-${attrEsc(s.id)}">${esc(s.title)}</a></li>`).join('')}</ol>
     </details>
 
-    ${st.bodyMarkup(tp)}
+    ${st.bodyMarkup(tp, LANG)}
 
     <div class="bk-foot">
       <div class="nav bk-actions">
@@ -2567,7 +2571,11 @@ function bookChapterFor(qns, into) {
   const st = P();
   if (!st || bookMap === false) return;
   const list = Array.isArray(qns) ? qns : [qns];
-  const show = map => {
+  // Takes `index` as an argument rather than reading the module-level `bookIndex` — the
+  // map is locale-independent and cached forever, but the index it looks titles up in is
+  // not, and reading the closure here would show a stale-language title after a language
+  // switch that happened between two calls (see bookLoadIndex).
+  const show = (map, index) => {
     // One question points at its own chapter. A whole topic or domain points at the
     // chapter most of its questions land in — the bank is not sorted by subject, so the
     // first match is an arbitrary vote of one.
@@ -2575,7 +2583,7 @@ function bookChapterFor(qns, into) {
     for (const n of list) { const at = st.topicOf(map, n); if (at) votes.set(at, (votes.get(at) || 0) + 1); }
     if (!votes.size) return;
     const id = [...votes].sort((a, b) => b[1] - a[1])[0][0];
-    const tp = bookIndex && bookIndex.topics.find(x => x.id === id);
+    const tp = index && index.topics.find(x => x.id === id);
     // A section is only named when this stands for one question. "Somewhere in this
     // chapter" is the honest answer for a subject that spans dozens of them.
     const secId = list.length === 1 ? st.sectionOf(map, list[0]) : null;
@@ -2589,10 +2597,10 @@ function bookChapterFor(qns, into) {
     </button>`;
     wireBookRows();
   };
-  if (bookMap) return show(bookMap);
+  if (bookMap && bookIndexLang === LANG) return show(bookMap, bookIndex);
   bookBase();
   Promise.all([st.loadMap(), bookLoadIndex()])
-    .then(([map]) => { bookMap = map; show(map); })
+    .then(([map, index]) => { bookMap = map; show(map, index); })
     .catch(() => { bookMap = false; });   // no textbook on this deployment: say nothing
 }
 
