@@ -8,13 +8,13 @@ import { startPractice } from '../session.js';
 import { confirmDialog } from '../dialog.js';
 import { question } from './question.js';
 import { toast } from '../toast.js';
-import { t } from '../i18n.js';
+import { t, getLang } from '../i18n.js';
 
 const SCALES = [0.95, 1, 1.12, 1.28];
 const PRACTICE = 20;
 
-let loaded = null;      // { topic, index } for the chapter currently on screen
-let pendingId = null;
+let loaded = null;      // { topic, index, lang } for the chapter currently on screen
+let pendingKey = null;  // `${lang}:${id}` while a fetch for it is in flight
 
 const scaleOf = () => SCALES[store.book.scale] ?? 1;
 
@@ -98,7 +98,8 @@ export const topic = {
       ctx.router.replace(topic, { id: btn.dataset.next });
     });
 
-    if (loaded?.topic.id === id) {
+    const lang = getLang();
+    if (loaded?.topic.id === id && loaded.lang === lang) {
       // replaceChildren, not append: the node was created holding "Загружаю главу…", and
       // a chapter that is already in memory renders instantly — appending under the
       // placeholder left it sitting above the title for as long as the chapter was open.
@@ -106,10 +107,15 @@ export const topic = {
       return node;
     }
 
-    pendingId = id;
+    // Keyed by language too, not just id — reopening the same chapter after switching
+    // language in Profile must refetch its EN/RU tree rather than repainting whatever
+    // locale happened to load first (loadTopic/loadIndex are themselves locale-aware, see
+    // ../theory.js, but this cache sits in front of them and would otherwise hide that).
+    const key = `${lang}:${id}`;
+    pendingKey = key;
     Promise.all([loadTopic(id), loadIndex()]).then(([tp, index]) => {
-      if (pendingId !== id) return;              // user left before it arrived
-      loaded = { topic: tp, index };
+      if (pendingKey !== key) return;              // user left before it arrived
+      loaded = { topic: tp, index, lang };
       store.setBook({ last: id });
       node.replaceChildren(...chapter(loaded, ctx).childNodes);
       ctx.router.renderFooter();
@@ -123,13 +129,13 @@ export const topic = {
 
   mount(node, ctx) {
     node.style.setProperty('--bk-scale', scaleOf());
-    if (loaded?.topic.id === ctx.params.id) openAt(ctx.params.id, ctx.params.at, node);
+    if (loaded?.topic.id === ctx.params.id && loaded.lang === getLang()) openAt(ctx.params.id, ctx.params.at, node);
   },
 
   unmount() {
     const t2 = loaded?.topic;
     if (t2) store.setPos(t2.id, document.getElementById('scroll')?.scrollTop || 0);
-    pendingId = null;
+    pendingKey = null;
   },
 };
 
