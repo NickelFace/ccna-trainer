@@ -39,9 +39,11 @@ const BRAND = 'NetPath';
 
 // ============================ I18N ============================
 // UI-chrome translation. Default stays Russian — EN is an opt-in toggle (the pill in the
-// sidebar), persisted in localStorage. The question bank's own explanations (`why`/`exp`)
-// exist only in Russian (~1200 entries) — translating them is out of scope, so EN mode
-// simply hides that prose instead of mixing languages; see rationale() below.
+// sidebar), persisted in localStorage. The question text and options themselves (`t`/`o`)
+// stay Russian-only by design — translating the bank itself is out of scope. The bank's
+// own explanations (`why`/`exp`) do have English fields (`why_en`/`exp_en`) added
+// separately from the bank build, with a per-key fallback to the Russian original for
+// anything not yet translated — see rationale() below.
 //
 // Stored choice first, then what the browser asks for, then Russian. There is no server to
 // read Accept-Language from — the site is static — so navigator.languages is the
@@ -1522,14 +1524,12 @@ function expParts(t) {
 // A readable explanation block: short ones render in full; long ones are collapsed
 // behind a real spoiler — nothing is shown until the summary is clicked, unlike the
 // old "first sentence always visible" preview, which read as a half-open spoiler.
-// The bank's why/exp prose is Russian-only — never called when LANG==='en' (callers
-// below gate on that), so its own "show explanation" label stays Russian too.
 function expHTML(text, wrapCls, wrapTag) {
   const parts = expParts(text);
   const P = p => `<p>${esc(p)}</p>`;
   const long = String(text).length > 240 && parts.length > 2;
   const inner = long
-    ? `<details class="exp-toggle"><summary>показать пояснение (${parts.length} предл.)</summary>` +
+    ? `<details class="exp-toggle"><summary>${t('exp_show', parts.length)}</summary>` +
       `<div class="exp-scroll">${parts.map(P).join('')}</div></details>`
     : parts.map(P).join('');
   return `<${wrapTag} class="${wrapCls}">${inner}</${wrapTag}>`;
@@ -1539,18 +1539,21 @@ const rtextBlock = text => text ? expHTML(text, 'rtext', 'div') : '';
 
 // Per-option rationale: q.why = {A:"...", B:"..."} — why each option is right/wrong.
 // Falls back to the older single-paragraph q.exp when q.why isn't available yet.
-// In EN mode the Russian prose (why/exp) is deliberately suppressed — see the I18N
-// comment at the top — only the structural verdict (✓/✗, the key) is shown.
+// In EN mode, `why_en`/`exp_en` are preferred over the Russian `why`/`exp` — added to the
+// bank separately (see ccna-exam-simulator/data/questions.json), not always present for
+// every entry, so both fall back to the Russian original rather than showing nothing:
+// per-option for `why` (an entry can have why_en for most keys and be missing one — falling
+// back key by key beats falling back to the whole Russian object, which would silently drop
+// the translation on every other option too), per-question for `exp`.
 function rationale(q, given) {
-  const showProse = LANG === 'ru';
+  const whyEn = LANG === 'en' ? q.why_en : null;
+  const exp = (LANG === 'en' && q.exp_en) || q.exp || null;
   if (q.y === 'dd' || !q.o || !Object.keys(q.o).length) {
-    if (!showProse) return q.disp ? `<div class="exp disp">${t('disputed_note')}</div>` : '';
-    return q.exp ? expBlock(q.exp, q.disp ? 'disp' : '') : (q.disp ? `<div class="exp disp">${t('disputed_note')}</div>` : '');
+    return exp ? expBlock(exp, q.disp ? 'disp' : '') : (q.disp ? `<div class="exp disp">${t('disputed_note')}</div>` : '');
   }
   if (!q.why) {
     let fb = `<div class="verdict ok" style="font-size:13px;margin:6px 0">${t('key_label', q.a.split('').join(', '))}</div>`;
-    if (showProse) fb += q.exp ? expBlock(q.exp, q.disp ? 'disp' : '') : (q.disp ? `<div class="exp disp">${t('disputed_note')}</div>` : `<div class="exp muted">${t('no_explanation_yet')}</div>`);
-    else if (q.disp) fb += `<div class="exp disp">${t('disputed_note')}</div>`;
+    fb += exp ? expBlock(exp, q.disp ? 'disp' : '') : (q.disp ? `<div class="exp disp">${t('disputed_note')}</div>` : `<div class="exp muted">${t('no_explanation_yet')}</div>`);
     return fb;
   }
   // Which option blocks to show:
@@ -1568,7 +1571,8 @@ function rationale(q, given) {
     if (picked && !ok) tag += t('your_choice');
     else if (multi && !picked && ok) tag += t('missed');
     h += `<div class="ropt ${ok ? 'ok' : 'bad'}"><div class="rhead"><b>${k}.</b> ${esc(q.o[k])} <span class="tag">${tag}</span></div>`;
-    if (showProse && q.why[k]) h += rtextBlock(q.why[k]);
+    const why = (whyEn && whyEn[k]) || (q.why && q.why[k]);
+    if (why) h += rtextBlock(why);
     h += `</div>`;
   }
   h += `</div>`;
