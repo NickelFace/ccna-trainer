@@ -1242,7 +1242,7 @@ function browseSims() {
     h += `<div class="card">${qBadges(q, `<span class="badge b-ex">${t('badge_sim')}</span>`)}
       <div class="exp muted" style="margin:6px 0">${t('sim_offline_short')}</div>
       ${exhibit(q)}
-      <div class="sim-body">${formatSimText(q.t)}</div>${cliBlock(q.cli)}
+      <div class="sim-body">${formatSimText(q.t)}</div>${cliBlock(q.cli, q.n)}
       <details class="cli-wrap sim-answer"><summary>${t('sim_show_answer')}</summary><div class="sim-body">${formatSimAnswer(q.answer)}</div></details></div>`;
   });
   app().innerHTML = h;
@@ -1503,15 +1503,39 @@ function exhibit(q) {
   return q.img ? `<img class="eximg" src="${IMG(q.n)}" alt="exhibit ${q.n}" loading="lazy">` : '';
 }
 
+// A question card is redrawn whole on every answer, and an <details> written out closed
+// comes back closed — which is how picking an option used to collapse the CLI listing the
+// question was about. Anything carrying `data-keep` is remembered by that key instead.
+// Page-lifetime only: this is where the reader was looking, not something to persist.
+const OPEN_DETAILS = new Set();
+// `toggle` does not bubble, so the one listener has to run in the capture phase. It is
+// also queued rather than fired on the spot, so it cannot be the only record: answering
+// fast enough redraws the card before the browser gets round to it. The element still on
+// screen is the truth while it is there, and this Set is what is left of it afterwards —
+// which is what makes a question opened, left and come back to open again.
+document.addEventListener('toggle', e => {
+  const key = e.target && e.target.dataset ? e.target.dataset.keep : null;
+  if (!key) return;
+  e.target.open ? OPEN_DETAILS.add(key) : OPEN_DETAILS.delete(key);
+}, true);
+const keepAttrs = key => {
+  if (!key) return '';
+  // Called while building the replacement markup, so the old screen is still up.
+  const live = document.querySelector(`[data-keep="${key}"]`);
+  const open = live ? live.open : OPEN_DETAILS.has(key);
+  return ` data-keep="${key}"${open ? ' open' : ''}`;
+};
+
 // CLI/config/show-output text, extracted from the exhibit or embedded question text.
-// Short snippets render as a plain code block; long ones collapse behind a toggle.
-function cliBlock(text) {
+// Short snippets render as a plain code block; long ones collapse behind a toggle —
+// one the reader opens once per question, not once per answer (see keepAttrs).
+function cliBlock(text, qn = null) {
   if (!text) return '';
   const lines = text.split('\n');
   const long = lines.length > 4 || text.length > 220;
   const body = `<pre class="cli">${esc(text)}</pre>`;
   if (!long) return `<div class="cli-wrap">${body}</div>`;
-  return `<details class="cli-wrap"><summary>${t('cli_show', lines.length)}</summary>${body}</details>`;
+  return `<details class="cli-wrap"${keepAttrs(qn === null ? null : `cli:${qn}`)}><summary>${t('cli_show', lines.length)}</summary>${body}</details>`;
 }
 
 // Split an explanation into sentence-level parts so it reads as separate lines
@@ -2679,7 +2703,7 @@ function renderPractice() {
     <input class="qjump" id="qjump" type="number" placeholder="№" title="${t('jump_title')}"
       onkeydown="if(event.key==='Enter')pGoto()">
     <button class="btn sm" onclick="pGoto()">→</button></div>`;
-  h += `<div class="card">${qBadges(q)}${exhibit(q)}${q.y === 'sim' ? '' : `<div class="qtext">${esc(q.t)}</div>`}${cliBlock(q.cli)}`;
+  h += `<div class="card">${qBadges(q)}${exhibit(q)}${q.y === 'sim' ? '' : `<div class="qtext">${esc(q.t)}</div>`}${cliBlock(q.cli, q.n)}`;
 
   if (q.y === 'dd') {
     h += ddMarkup(q, st);
@@ -2968,7 +2992,7 @@ function renderExam() {
       title="${t('nav_exit')}" aria-label="${t('nav_exit')}">✕</button>
     ${chromeProgress(S.i, S.qs.length)}
     ${S.end ? `<span class="timer" id="timer">${CLOCK_ICON}<span>--:--</span></span>` : ''}`);
-  h += `<div class="card">${qBadges(q)}${exhibit(q)}<div class="qtext">${esc(q.t)}</div>${cliBlock(q.cli)}`;
+  h += `<div class="card">${qBadges(q)}${exhibit(q)}<div class="qtext">${esc(q.t)}</div>${cliBlock(q.cli, q.n)}`;
 
   if (q.y === 'dd') {
     h += ddExamMarkup(q, cur);
@@ -3142,7 +3166,7 @@ function emptyReview() {
 // Shared by exam results and practice results: one reviewed question, with a
 // per-question "copy for AI" button alongside the built-in rationale.
 function reviewItemHTML(q, good, ans) {
-  let h = `<div class="review-item ${good ? 'ok' : 'bad'}">${qBadges(q, good ? `<span class="badge b-ok">${t('badge_ok')}</span>` : `<span class="badge b-disp">${t('badge_wrong')}</span>`)}${exhibit(q)}<div class="qtext">${esc(q.t)}</div>${cliBlock(q.cli)}`;
+  let h = `<div class="review-item ${good ? 'ok' : 'bad'}">${qBadges(q, good ? `<span class="badge b-ok">${t('badge_ok')}</span>` : `<span class="badge b-disp">${t('badge_wrong')}</span>`)}${exhibit(q)}<div class="qtext">${esc(q.t)}</div>${cliBlock(q.cli, q.n)}`;
   if (q.y === 'dd') h += ddReview(q, ans);
   else h += rationale(q, (ans && ans.given) || []);
   // Filled in asynchronously, or left empty if this deployment has no textbook — see
