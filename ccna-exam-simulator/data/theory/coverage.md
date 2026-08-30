@@ -4,53 +4,53 @@
 
 | Глава | Домен | Вопросов | Слов | Минут |
 |---|---|---:|---:|---:|
-| Из чего состоит сеть | NF | 9 | 2802 | 35 |
-| Архитектуры и топологии сетей | NF | 30 | 2207 | 30 |
-| Физические интерфейсы, кабели и ошибки на них | NF | 62 | 2544 | 40 |
-| Модели OSI и TCP/IP, инкапсуляция | NF | 15 | 3109 | 35 |
-| Как коммутатор принимает решение | NF | 42 | 3140 | 30 |
-| TCP и UDP | NF | 22 | 3021 | 30 |
-| IPv4-адресация: классы, маски, приватные диапазоны | NF | 34 | 1667 | 35 |
-| Подсети и VLSM — как считать быстро | NF | 24 | 1893 | 60 |
-| IPv6-адресация | NF | 86 | 1351 | 45 |
-| IP на клиентских ОС | NF | 4 | 1486 | 25 |
-| Основы беспроводных сетей | NF | 33 | 1740 | 40 |
-| Виртуализация, контейнеры и VRF | NF | 17 | 1511 | 30 |
-| VLAN и access-порты | NA | 30 | 1778 | 35 |
-| Транки 802.1Q и native VLAN | NA | 44 | 1942 | 35 |
-| Маршрутизация между VLAN | NA | 1 | 1462 | 30 |
-| CDP и LLDP | NA | 23 | 1470 | 25 |
-| EtherChannel | NA | 27 | 1564 | 30 |
-| Spanning Tree и Rapid PVST+ | NA | 62 | 1988 | 50 |
-| Архитектуры Cisco WLAN и режимы точек | NA | 58 | 1830 | 35 |
-| Проводная часть беспроводной сети | NA | 12 | 1237 | 30 |
-| Настройка WLAN в GUI контроллера | NA | 19 | 1740 | 30 |
-| Доступ к управлению устройством | NA | 20 | 1640 | 30 |
-| Таблица маршрутизации | IPC | 92 | 1718 | 40 |
-| Как принимается решение о пересылке | IPC | 3 | 1406 | 30 |
-| Статическая маршрутизация IPv4 и IPv6 | IPC | 47 | 1449 | 35 |
-| OSPFv2 в одной зоне | IPC | 60 | 2088 | 55 |
-| EIGRP и BGP в объёме экзамена | IPC | 16 | 1341 | 35 |
-| FHRP: HSRP, VRRP, GLBP | IPC | 26 | 1426 | 30 |
-| NAT и PAT | IPS | 18 | 1711 | 40 |
-| DHCP и DNS | IPS | 46 | 1663 | 35 |
-| NTP и точное время | IPS | 11 | 1252 | 20 |
-| SNMP и Syslog | IPS | 32 | 1308 | 30 |
-| QoS: классификация, маркировка, очереди | IPS | 27 | 1679 | 35 |
-| SSH, FTP и TFTP: управление устройством и файлами | IPS | 25 | 1365 | 25 |
-| Основные понятия безопасности | SEC | 35 | 1566 | 35 |
-| Пароли и защита доступа к устройству | SEC | 26 | 1496 | 30 |
-| Списки доступа (ACL) | SEC | 16 | 1628 | 45 |
-| Безопасность второго уровня | SEC | 24 | 1589 | 40 |
-| AAA, RADIUS, TACACS+ и 802.1X | SEC | 30 | 1160 | 30 |
-| VPN и IPsec | SEC | 15 | 1576 | 30 |
-| Безопасность беспроводных сетей | SEC | 27 | 1483 | 30 |
-| Зачем сети автоматизация | AUT | 35 | 1051 | 25 |
-| SDN, плоскости и фабрика | AUT | 40 | 1312 | 35 |
-| REST API | AUT | 23 | 1268 | 30 |
-| JSON, XML и YAML | AUT | 35 | 1159 | 30 |
-| Ansible, Terraform, Puppet и Chef | AUT | 12 | 1263 | 25 |
-| ИИ и машинное обучение в сетях | AUT | 0 | 1201 | 20 |
+| What a Network Is Made Of | NF | 9 | 3364 | 32 |
+| Network Architectures and Topologies | NF | 30 | 2666 | 25 |
+| Physical Interfaces, Cabling, and the Errors That Show Up on Them | NF | 62 | 3143 | 31 |
+| The OSI and TCP/IP Models, Encapsulation | NF | 15 | 3807 | 39 |
+| How a Switch Makes a Decision | NF | 42 | 3696 | 38 |
+| TCP and UDP | NF | 22 | 3582 | 40 |
+| IPv4 Addressing: Classes, Masks, Private Ranges | NF | 34 | 1997 | 21 |
+| Subnets and VLSM: How to Calculate Fast | NF | 24 | 2185 | 20 |
+| IPv6 Addressing | NF | 86 | 1602 | 19 |
+| IP on Client Operating Systems | NF | 4 | 1641 | 21 |
+| Wireless Networking Basics | NF | 33 | 2064 | 20 |
+| Virtualization, Containers, and VRF | NF | 17 | 1806 | 19 |
+| VLANs and Access Ports | NA | 30 | 2077 | 28 |
+| 802.1Q Trunks and the Native VLAN | NA | 44 | 2334 | 28 |
+| Inter-VLAN Routing | NA | 1 | 1685 | 22 |
+| CDP and LLDP | NA | 23 | 1629 | 19 |
+| EtherChannel | NA | 27 | 1794 | 22 |
+| Spanning Tree and Rapid PVST+ | NA | 62 | 2294 | 26 |
+| Cisco WLAN Architectures and AP Modes | NA | 58 | 2187 | 20 |
+| The Wired Side of the Wireless Network | NA | 12 | 1461 | 14 |
+| Configuring a WLAN in the Controller GUI | NA | 19 | 2016 | 18 |
+| Device Management Access | NA | 20 | 1922 | 21 |
+| The Routing Table | IPC | 92 | 2033 | 23 |
+| How the Forwarding Decision Gets Made | IPC | 3 | 1632 | 19 |
+| IPv4 and IPv6 Static Routing | IPC | 47 | 1695 | 23 |
+| Single-Area OSPFv2 | IPC | 60 | 2422 | 26 |
+| EIGRP and BGP for the Exam | IPC | 16 | 1594 | 19 |
+| FHRP: HSRP, VRRP, GLBP | IPC | 26 | 1678 | 19 |
+| NAT and PAT | IPS | 18 | 2013 | 26 |
+| DHCP and DNS | IPS | 46 | 1990 | 25 |
+| NTP and Accurate Time | IPS | 11 | 1470 | 17 |
+| SNMP and Syslog | IPS | 32 | 1520 | 19 |
+| QoS: Classification, Marking, Queuing | IPS | 27 | 2011 | 21 |
+| SSH, FTP, and TFTP: Device and File Management | IPS | 25 | 1549 | 19 |
+| Core Security Concepts | SEC | 35 | 1845 | 14 |
+| Passwords and Device Access Protection | SEC | 26 | 1754 | 21 |
+| Access Control Lists (ACL) | SEC | 16 | 1926 | 23 |
+| Layer 2 Security | SEC | 24 | 1860 | 22 |
+| AAA, RADIUS, TACACS+, and 802.1X | SEC | 30 | 1373 | 16 |
+| VPN and IPsec | SEC | 15 | 1825 | 18 |
+| Wireless Network Security | SEC | 27 | 1755 | 18 |
+| Why Networks Need Automation | AUT | 35 | 1279 | 11 |
+| SDN, Planes, and Fabric | AUT | 40 | 1565 | 16 |
+| REST API | AUT | 23 | 1481 | 15 |
+| JSON, XML, and YAML | AUT | 35 | 1321 | 20 |
+| Ansible, Terraform, Puppet, and Chef | AUT | 12 | 1527 | 17 |
+| AI and Machine Learning in Networking | AUT | 0 | 1438 | 14 |
 
 Мало вопросов (<5): nf-10-client-ip, na-03-intervlan, ipc-02-forwarding
 Тема блюпринта, которой нет в банке: aut-06-ai-ml
