@@ -282,6 +282,7 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--ink);outline-of
 .legend .sw{width:13px;height:13px;border-radius:4px;border:1px solid var(--edge);flex:none}
 .legend .sw.answered{background:var(--ink);border-color:var(--ink)}
 .legend .sw.flagged{background:rgba(201,162,74,.22);border-color:rgba(201,162,74,.6)}
+.legend .sw.partial{background:var(--cream);border:1.5px dashed var(--edge-strong)}
 
 /* badges */
 .badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
@@ -423,6 +424,9 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .cell:hover{border-color:var(--edge-strong)}
 .cell.answered{background:var(--ink);border-color:var(--ink);color:var(--cream-light)}
 .cell.flagged{background:rgba(201,162,74,.22);border-color:rgba(201,162,74,.6);color:var(--ink)}
+/* Ticked but short of the "choose N" count — not blank, not done either. A hollow ring
+   reads as "started" against the filled .answered cell without borrowing red or gold. */
+.cell.partial{background:var(--cream);border:1.5px dashed var(--edge-strong);color:var(--grey-text)}
 .cell.cur{background:var(--gold);border-color:var(--gold);color:var(--ink);box-shadow:0 0 0 2px rgba(201,162,74,.35)}
 
 /* score report — the one panel that is dark on a light screen, because the number on it is
@@ -513,6 +517,13 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .dd-foot{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:12px}
 .dd-count{font-size:12px;font-weight:600;color:var(--grey-text)}
 .dd-count b{font-family:var(--num);color:var(--ink)}
+
+/* Under a "choose N" option list: how many are ticked so far. Practice pairs it with the
+   Check button it gates; the exam has no button to gate, so it stands alone and just counts. */
+.opt-foot{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:12px}
+.pick-count{font-size:12px;font-weight:600;color:var(--grey-text);transition:color .15s}
+.pick-count.done{color:var(--teal-text)}
+.pick-count.warn{color:var(--red)}
 
 .hidden{display:none}
 .center{text-align:center}

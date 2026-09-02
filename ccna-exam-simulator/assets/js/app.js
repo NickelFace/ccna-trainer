@@ -189,6 +189,10 @@ const I18N = {
     dd_check: 'Проверить',
     dd_placed: 'Разложено {0} из {1}',
     dd_extra: 'лишних элементов: {0}',
+    pick_count: 'Отмечено {0} из {1}',
+    pick_max: 'Нужно ровно {0} — сними отметку с другого варианта',
+    grid_partial: 'не до конца',
+    finish_confirm_partial: 'Не до конца отвечено: {0} — там отмечено меньше вариантов, чем нужно. Всё равно завершить экзамен?',
     practice_results_title: 'Итоги тренировки',
     answered_pct: '{0} из {1} отвечено верно ({2}%)',
     continue_practice: 'Продолжить тренировку',
@@ -464,6 +468,10 @@ const I18N = {
     dd_check: 'Check',
     dd_placed: 'Placed {0} of {1}',
     dd_extra: 'extra items: {0}',
+    pick_count: 'Selected {0} of {1}',
+    pick_max: 'Exactly {0} — untick another option first',
+    grid_partial: 'incomplete',
+    finish_confirm_partial: 'Incomplete questions: {0} — fewer options ticked than the question asks for. Finish the exam anyway?',
     practice_results_title: 'Practice Results',
     answered_pct: '{0} of {1} answered correctly ({2}%)',
     continue_practice: 'Continue practice',
@@ -1471,13 +1479,33 @@ function chromeProgress(i, total) {
     <span class="chrome-pos">${i + 1}/${total}</span></div>`;
 }
 
+// "Choose two" with one option ticked is not an answer, it is a half-finished one — almost
+// always a click that missed rather than a decision. Both screens refuse the tick past the
+// count the question asks for; this says how far along the pick is.
+function partialPick(q) {
+  const a = S.ans[q.n];
+  if (!a || !a.given || q.y === 'dd' || q.a.length < 2) return false;
+  return a.given.length > 0 && a.given.length < q.a.length;
+}
+// The counter carries the refusal too: the option list stays as it was, and the line under
+// it says why the click did nothing, then goes back to counting.
+function flashPickCap(el, need, restore) {
+  if (!el) return;
+  el.textContent = t('pick_max', need);
+  el.classList.add('warn'); el.classList.remove('done');
+  clearTimeout(el._capT);
+  el._capT = setTimeout(restore, 1800);
+}
+
 // The grid's colours mean nothing on their own. This says what they mean and counts them.
 function gridLegend() {
-  const answered = S.qs.filter(q => S.ans[q.n] !== undefined).length;
+  const partial = S.qs.filter(partialPick).length;
+  const answered = S.qs.filter(q => S.ans[q.n] !== undefined).length - partial;
   const flagged = S.flags ? S.flags.size : 0;
-  const rest = S.qs.length - answered;
+  const rest = S.qs.length - answered - partial;
   return `<div class="legend">
     <span><i class="sw answered"></i>${t('grid_answered')} ${answered}</span>
+    ${partial ? `<span><i class="sw partial"></i>${t('grid_partial')} ${partial}</span>` : ''}
     <span><i class="sw flagged"></i>${t('grid_flagged')} ${flagged}</span>
     <span><i class="sw"></i>${t('grid_unanswered')} ${rest}</span></div>`;
 }
@@ -2761,7 +2789,8 @@ function renderPractice() {
       h += optHTML(k, q.o[k], { cls, disabled: !!st });
     }
     h += `</div>`;
-    if (multi && !st) h += `<button class="btn primary" id="chk" style="margin-top:12px">${t('dd_check')}</button>`;
+    if (multi && !st) h += `<div class="opt-foot"><span class="pick-count" id="pickcount"></span>
+      <button class="btn primary" id="chk" disabled>${t('dd_check')}</button></div>`;
   }
 
   if (st) {
@@ -2781,13 +2810,27 @@ function renderPractice() {
   if (q.y === 'dd') { if (!st) wireDD(q, given => gradeDD(q, given)); }
   else if (q.y === 'sim') { /* reference card, nothing to wire or grade */ }
   else if (!st) {
-    const multi = q.a.length > 1; let picked = new Set();
+    const need = q.a.length, multi = need > 1; let picked = new Set();
+    const chk = $('#chk'), count = $('#pickcount');
+    // Check waits for exactly as many options as the question asks for: an early press on
+    // one tick out of two is graded wrong, and the mistake it records is not the learner's.
+    const refresh = () => {
+      if (!count) return;
+      count.textContent = t('pick_count', picked.size, need);
+      count.classList.toggle('done', picked.size === need);
+      count.classList.remove('warn');
+      chk.disabled = picked.size !== need;
+    };
     document.querySelectorAll('.opt').forEach(b => b.onclick = () => {
       const k = b.dataset.k;
-      if (multi) { picked.has(k) ? picked.delete(k) : picked.add(k); b.classList.toggle('sel'); }
-      else grade(q, [k]);
+      if (!multi) return grade(q, [k]);
+      if (picked.has(k)) picked.delete(k);
+      else if (picked.size >= need) return flashPickCap(count, need, refresh);
+      else picked.add(k);
+      b.classList.toggle('sel', picked.has(k));
+      refresh();
     });
-    const c = $('#chk'); if (c) c.onclick = () => { if (picked.size) grade(q, [...picked].sort()); };
+    if (chk) { chk.onclick = () => { if (picked.size === need) grade(q, [...picked].sort()); }; refresh(); }
   }
 }
 function grade(q, given) {
@@ -3044,15 +3087,18 @@ function renderExam() {
     for (const k of Object.keys(q.o))
       h += optHTML(k, q.o[k], { cls: sel.includes(k) ? 'sel' : '' });
     h += `</div>`;
+    // Nothing is graded until the run ends, so the exam cannot gate a button — it counts
+    // out loud instead, and the grid marks the question until the count is met.
+    if (multi) h += `<div class="pick-count${sel.length === q.a.length ? ' done' : ''}" id="pickcount">${t('pick_count', sel.length, q.a.length)}</div>`;
   }
 
   h += `<div class="nav">
     <button class="btn" onclick="eMove(-1)" ${S.i === 0 ? 'disabled' : ''}>${t('nav_prev')}</button>
     <button class="btn" onclick="eMove(1)" ${S.i === S.qs.length - 1 ? 'disabled' : ''}>${t('nav_next')}</button>
     <button class="btn" onclick="eFlag()">${S.flags.has(q.n) ? t('flag_on') : t('flag_off')}</button>
-    <div class="spacer"></div><button class="btn primary" onclick="if(confirm('${t('finish_confirm')}'))finishExam()">${t('nav_finish_exam')}</button></div>`;
+    <div class="spacer"></div><button class="btn primary" onclick="eFinishAsk()">${t('nav_finish_exam')}</button></div>`;
   h += `<div class="grid">` + S.qs.map((qq, idx) => {
-    let c = 'cell'; if (idx === S.i) c += ' cur'; if (S.ans[qq.n] !== undefined) c += ' answered'; if (S.flags.has(qq.n)) c += ' flagged';
+    let c = 'cell'; if (idx === S.i) c += ' cur'; if (S.ans[qq.n] !== undefined) c += partialPick(qq) ? ' partial' : ' answered'; if (S.flags.has(qq.n)) c += ' flagged';
     return `<div class="${c}" onclick="eGo(${idx})">${idx + 1}</div>`;
   }).join('') + `</div>${gridLegend()}</div>`;
   app().innerHTML = h;
@@ -3063,10 +3109,24 @@ function renderExam() {
   } else {
     document.querySelectorAll('.opt').forEach(b => b.onclick = () => {
       const k = b.dataset.k; let a = new Set((S.ans[q.n] && S.ans[q.n].given) || []);
-      if (multi) { a.has(k) ? a.delete(k) : a.add(k); } else a = new Set([k]);
+      if (!multi) a = new Set([k]);
+      else if (a.has(k)) a.delete(k);
+      else if (a.size >= q.a.length) {
+        const el = $('#pickcount');
+        return flashPickCap(el, q.a.length, () => {
+          el.textContent = t('pick_count', a.size, q.a.length);
+          el.classList.remove('warn'); el.classList.toggle('done', a.size === q.a.length);
+        });
+      } else a.add(k);
       S.ans[q.n] = { given: [...a] }; keepSession(); renderExam();
     });
   }
+}
+// Handing the sheet in with a half-ticked "choose two" on it is worth naming, so the
+// confirm counts those questions instead of asking the blank question.
+function eFinishAsk() {
+  const part = S.qs.filter(partialPick).length;
+  if (confirm(part ? t('finish_confirm_partial', part) : t('finish_confirm'))) finishExam();
 }
 // exam dd: same board but persists placement in S.ans[q.n].placement, no grading yet
 function ddExamMarkup(q, cur) {
