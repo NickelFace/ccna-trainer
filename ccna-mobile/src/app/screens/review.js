@@ -4,6 +4,7 @@ import { esc, h } from '../dom.js';
 import { isCorrect } from '../../engine/grade.js';
 import { domShort, questionText, exhibitMarkup, cliMarkup, answerSummary, rationaleBlocks } from '../qmarkup.js';
 import { openExhibit } from '../exhibit.js';
+import { wireCli, closeCliZoom } from '../cliview.js';
 import { t } from '../i18n.js';
 
 const FILTERS = () => [
@@ -97,10 +98,12 @@ export const review = {
       }
     });
 
+    wireCli(node);
     return node;
   },
 
   unmount() {
+    closeCliZoom();
     shown = PAGE;
     filter = 'bad';
   },

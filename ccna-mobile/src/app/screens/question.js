@@ -16,9 +16,9 @@ import {
   firstUnansweredIndex, answeredCount,
 } from '../session.js';
 import {
-  domShort, questionText, exhibitMarkup, cliMarkup, setCliOpen, forgetCliOpen,
-  answerSummary, rationaleBlocks,
+  domShort, questionText, exhibitMarkup, cliMarkup, answerSummary, rationaleBlocks,
 } from '../qmarkup.js';
+import { wireCli, cliZoomOpen, closeCliZoom } from '../cliview.js';
 import {
   syncMatch, resetMatch, matchBody, wireMatch, gradeMatch,
   canCheck, matchProgress, placedCount, filledCount, selectedItem, clearSelection, resetPlacement,
@@ -173,7 +173,7 @@ function render(ctx) {
       </div>
       ${exhibitMarkup(q)}
       <div class="q-text">${esc(questionText(q))}</div>
-      ${cliMarkup(q.cli, q.n)}
+      ${cliMarkup(q.cli)}
       ${q.y === 'dd' ? matchBody(q, graded) : optionsMarkup(q, s, given, graded)}
       <div class="q-tools">
         <button class="q-tool" data-act="bookmark" type="button">${isFlagged(s, q) ? esc(t('question.bookmark.on')) : esc(t('question.bookmark.off'))}</button>
@@ -217,12 +217,11 @@ function wireBody(node, ctx, q, s, graded) {
   node.querySelector('.q-exhibit')?.addEventListener('click', e =>
     openExhibit(e.currentTarget.src, t('question.exhibitAlt', { n: q.n })));
 
-  node.querySelector('details.cli')?.addEventListener('toggle', e =>
-    setCliOpen(q.n, e.currentTarget.open));
+  wireCli(node);
 
   // The matching board repaints itself, for the same reason the options below do — and
-  // more so: a full render() re-collapses the <details> holding the CLI output and, since
-  // the question screen is a modal, drops the scroll back to the top on every single tap.
+  // more so: the question screen is a modal, so a full render() drops the scroll back to
+  // the top on every single tap.
   // The .match node itself is kept, so the delegated listener wireMatch put on it lives on.
   if (q.y === 'dd' && !graded) {
     const board = node.querySelector('.match');
@@ -301,6 +300,11 @@ function bindSwipe(node, ctx, mover = node) {
 
   node.addEventListener('touchstart', e => {
     if (e.touches.length !== 1 || animating || !store.session) return;
+    // A finger that lands on the command output is there to scroll it sideways, and the
+    // full-screen viewer owns every gesture while it is up. Refusing the gesture at its
+    // start is the only thing that works: the swipe is the distance between touchstart
+    // and touchend, so a touchmove that arrives after the start was recorded is too late.
+    if (cliZoomOpen() || e.target.closest('.cli-wrap')) { live = false; return; }
     // A finger arriving mid-entrance takes over: the keyframes outrank the inline
     // transform the drag is about to write, so the animation has to go first.
     mover.classList.remove('in-next', 'in-prev');
@@ -769,8 +773,8 @@ export const question = {
     stopTimer();
     releaseScreen();
     closeReview();
+    closeCliZoom();
     resetMatch();
-    forgetCliOpen();
     pending = new Set();
     pendingFor = null;
     els = {};

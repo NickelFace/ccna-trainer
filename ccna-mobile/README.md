@@ -41,10 +41,11 @@ src/
 │  ├─ readiness.js  weighted forecast over the last 200 answers
 │  ├─ stats.js      attempt history, weak topics, streaks
 │  ├─ rationale.js  which per-option explanations to show
-│  ├─ cli.js        show-output blocks
+│  ├─ cli.js        show-output blocks — when the output needs a scrolling window
 │  └─ ai-prompt.js  re-export: the AI request lives in the web app's shared/
 ├─ app/             screens, router, persistence — everything that touches the DOM
 │  ├─ store.js      the seven branches of progress, their storage and the sync loop
+│  ├─ cliview.js    command output: the double tap and the full-screen viewer
 │  ├─ theory.js     loads the book: index on tab open, a chapter when opened
 │  └─ book.js       renders chapter blocks (tables, CLI, callouts, self-checks)
 └─ styles/          tokens.css is the design system; nothing invents a value
@@ -64,6 +65,14 @@ it without a layout pass. Three rules the code holds itself to:
   way — hands off to the next question, and anything short of that springs back. The axis
   is decided once, after 10px, and vertical intent gives the gesture up to the scroller
   (`touch-action: pan-y` means the listeners never call `preventDefault`).
+- **Command output owns its own gesture.** `show ip route` is wider than a phone and must
+  not wrap — the columns are the answer — so the block scrolls sideways, and `bindSwipe`
+  refuses any touch that starts inside `.cli-wrap`. The refusal has to happen at
+  `touchstart`: the swipe is the distance between start and end, so a `touchmove` that
+  arrives after the start was recorded is already too late. Output longer than
+  `WINDOW_AFTER` lines (engine/cli.js) becomes a 45vh window rather than pushing the
+  options off the screen, and a double tap — or the button under the block — opens it
+  full screen, where landscape fits nearly twice the characters per line.
 - **Entrances are CSS animations, not rAF flips.** A backgrounded WebView stops serving
   frames, and a pane waiting for a callback that never comes would be an invisible screen.
   `.q-pane.in-next` / `.in-prev` use `animation-fill-mode: backwards`, so the resting state
