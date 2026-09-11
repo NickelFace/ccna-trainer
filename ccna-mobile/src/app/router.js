@@ -174,14 +174,19 @@ export { TAB_IDS };
 // If a bottom sheet (openSheet) is up on the current screen, Android back should close
 // the sheet first — otherwise the user would be teleported off the question screen with
 // the review still on their mind. Same reasoning as tap-outside on the sheet backdrop.
+// The full-screen command output is dismissed the same way, and first: it covers the
+// sheet as well as the question.
 function bindSystemBack(r) {
   const cap = window.Capacitor;
   if (cap?.isNativePlatform?.()) {
     import('@capacitor/app').then(({ App }) => {
       import('./sheet.js').then(({ sheetIsOpen, closeSheet }) => {
-        App.addListener('backButton', () => {
-          if (sheetIsOpen()) { closeSheet(); return; }
-          if (!r.back()) App.exitApp();
+        import('./cliview.js').then(({ cliZoomOpen, closeCliZoom }) => {
+          App.addListener('backButton', () => {
+            if (cliZoomOpen()) { closeCliZoom(); return; }
+            if (sheetIsOpen()) { closeSheet(); return; }
+            if (!r.back()) App.exitApp();
+          });
         });
       });
     });

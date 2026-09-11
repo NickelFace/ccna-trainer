@@ -96,6 +96,9 @@
   margin-bottom: 14px;
 }
 
+/* Command output. Never wrapped: the columns of `show interfaces trunk` are the answer,
+   and pre-wrap turns them into prose. It scrolls sideways instead — see .cli-wrap .cli
+   for why that scroll does not become a question swipe. */
 .cli {
   background: var(--surface-alt);
   border: 1px solid var(--border-soft);
@@ -108,8 +111,70 @@
   overflow-x: auto;
   white-space: pre;
 }
-.cli summary { cursor: pointer; color: var(--primary-text); white-space: normal; }
-.cli pre { margin-top: 10px; overflow-x: auto; }
+
+.cli-wrap { margin-bottom: 14px; }
+.cli-wrap .cli {
+  margin: 0;
+  -webkit-overflow-scrolling: touch;
+  /* Held on both axes: without this, scrolling the output to its edge carries on into
+     #scroll and the question slides away under the finger. */
+  overscroll-behavior: contain;
+  /* Both scroll axes stay with the block, and the browser stops claiming the double tap
+     for itself — that tap is ours, it opens the full-screen viewer. */
+  touch-action: pan-x pan-y;
+}
+/* Past WINDOW_AFTER lines (engine/cli.js) the block stops growing and becomes a window.
+   45vh leaves the question text and the options on screen with it: at 12.5px/1.6 that is
+   ~20 lines on an 800px-tall phone, and most output in the bank is shorter than that. */
+.cli-wrap .cli.windowed { max-height: 45vh; overflow: auto; }
+.cli-wrap .cli::-webkit-scrollbar, .cli-full::-webkit-scrollbar { height: 6px; width: 6px; }
+.cli-wrap .cli::-webkit-scrollbar-thumb, .cli-full::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.cli-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin-top: 6px;
+  font-size: var(--fs-caption);
+  color: var(--text-4);
+}
+/* The double tap is not discoverable and does not exist for a mouse; this is the same
+   door with a label on it. */
+.cli-expand { padding: 4px 0; color: var(--primary-text); font-size: var(--fs-caption); }
+
+/* ---- command output, full screen ---- */
+.cli-zoom {
+  position: fixed; inset: 0; z-index: 75;
+  display: flex; flex-direction: column;
+  background: var(--bg);
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+}
+.cli-zoom-bar {
+  flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 8px 6px 16px;
+  border-bottom: 1px solid var(--divider);
+}
+.cli-zoom-title { font-size: var(--fs-caption); color: var(--text-4); }
+.cli-zoom-close { width: var(--tap); height: var(--tap); font-size: 20px; color: var(--text); }
+/* No swipe-down to dismiss: that is the very gesture conflict this screen exists to
+   avoid. The ✕ and Escape are the way out. */
+.cli-full {
+  flex: 1 1 auto;
+  margin: 0;
+  padding: 12px 16px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-2);
+  white-space: pre;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-x pan-y;
+}
+/* Landscape fits nearly twice the characters per line, which is half the reason the
+   viewer is worth opening at all — the app must not be locked to portrait. */
+@media (orientation: landscape) { .cli-full { font-size: 12px; } }
 
 .opts { display: flex; flex-direction: column; gap: 8px; }
 .opt {

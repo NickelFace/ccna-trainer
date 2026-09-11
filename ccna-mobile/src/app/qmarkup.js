@@ -4,7 +4,7 @@ import { esc } from './dom.js';
 import { parseCli } from '../engine/cli.js';
 import { ddExpected, ddNeeded } from '../engine/grade.js';
 import { rationaleView } from '../engine/rationale.js';
-import { t, getLang } from './i18n.js';
+import { t, getLang, pluralWord } from './i18n.js';
 
 export const domShort = (bank, id) => {
   const d = bank.meta.domains.find(x => x.id === id);
@@ -18,20 +18,27 @@ export const exhibitMarkup = q => q.img
   ? `<img class="q-exhibit" src="images/exhibits/${esc(q.img)}" alt="${esc(t('question.exhibitAlt', { n: q.n }))}" loading="lazy">`
   : '';
 
-// Whether the reader has the command output open. A screen that rebuilds itself — grading
-// the answer, placing a chip — would otherwise hand back a collapsed block: the page gets
-// shorter, the scroll position it was holding no longer exists, and the whole thing reads
-// as a reload. Keyed by question, cleared when the run ends.
-const cliOpen = new Set();
-export const setCliOpen = (qn, open) => open ? cliOpen.add(qn) : cliOpen.delete(qn);
-export const forgetCliOpen = () => cliOpen.clear();
+const LINES = { ru: ['строка', 'строки', 'строк'], en: ['line', 'lines'] };
 
-export function cliMarkup(text, qn) {
+// The output is always open: it is what the question is asking about, and a tap to reveal
+// it was one step in front of every such question. Long output gets a scrolling window
+// instead (see parseCli), so it still cannot push the options off the screen.
+//
+// The footer is a caption plus a second way into the full-screen viewer — the double tap
+// that also opens it is not discoverable on its own, and it does not exist for a mouse.
+export function cliMarkup(text) {
   const cli = parseCli(text);
   if (!cli) return '';
-  return cli.long
-    ? `<details class="cli"${cliOpen.has(qn) ? ' open' : ''}><summary>${esc(t('question.showOutput', { n: cli.lines.length }))}</summary><pre>${esc(cli.text)}</pre></details>`
-    : `<pre class="cli plain">${esc(cli.text)}</pre>`;
+  const n = cli.lines.length;
+  const vars = { n, lines: pluralWord(n, LINES) };
+  const caption = t(cli.windowed ? 'question.cliLinesScroll' : 'question.cliLines', vars);
+  return `<div class="cli-wrap">
+      <pre class="cli${cli.windowed ? ' windowed' : ''}">${esc(cli.text)}</pre>
+      <div class="cli-foot">
+        <span class="cli-lines mono">${esc(caption)}</span>
+        <button class="cli-expand" type="button">${esc(t('question.cliOpen'))}</button>
+      </div>
+    </div>`;
 }
 
 export const countRight = (q, placement) => ddExpected(q)

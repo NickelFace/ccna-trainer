@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { rationaleView } from '../src/engine/rationale.js';
-import { parseCli } from '../src/engine/cli.js';
+import { parseCli, WINDOW_AFTER } from '../src/engine/cli.js';
 
 const q = (over = {}) => ({
   n: 1, y: 'txt', dom: 'NF', a: 'B',
@@ -58,13 +58,14 @@ test('the disputed-key flag is carried through every mode', () => {
   assert.equal(rationaleView(q()).disputed, false);
 });
 
-test('parseCli collapses long output and leaves short output open', () => {
+test('parseCli windows output only past the line threshold', () => {
+  const lines = n => Array.from({ length: n }, (_, i) => `line ${i}`).join('\n');
   assert.equal(parseCli(''), null);
   assert.equal(parseCli(null), null);
-  assert.equal(parseCli('R1#show ip route').long, false);
-  assert.equal(parseCli('a\nb\nc\nd').long, false);          // 4 lines is still short
-  assert.equal(parseCli('a\nb\nc\nd\ne').long, true);        // 5 crosses the line count
-  assert.equal(parseCli('x'.repeat(220)).long, false);
-  assert.equal(parseCli('x'.repeat(221)).long, true);        // 221 crosses the char count
+  assert.equal(parseCli('R1#show ip route').windowed, false);
+  assert.equal(parseCli(lines(WINDOW_AFTER)).windowed, false);
+  assert.equal(parseCli(lines(WINDOW_AFTER + 1)).windowed, true);
+  // Length alone never windows: one very long line still scrolls sideways, not down.
+  assert.equal(parseCli('x'.repeat(4000)).windowed, false);
   assert.equal(parseCli('a\nb').lines.length, 2);
 });
