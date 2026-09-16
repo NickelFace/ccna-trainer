@@ -233,7 +233,7 @@
 .chip.sel { background: var(--primary-bg); border-color: var(--primary-strong); color: var(--text); }
 .chip.placed {
   background: var(--surface-alt);
-  border: 1px dashed #2c3138;
+  border: 1px dashed var(--border2);
   color: var(--text-disabled);
   text-decoration: line-through;
 }
@@ -259,7 +259,7 @@
   padding: 7px 10px 7px 12px;
   border-radius: var(--r-chip);
   background: var(--elev);
-  border: 1px solid #2c3138;
+  border: 1px solid var(--border2);
   font-family: var(--font-mono);
   font-size: 13.5px;
   color: var(--text);
@@ -290,8 +290,8 @@
 /* ---------------------------------------------------------- bottom sheet */
 .sheet-backdrop { position: fixed; inset: 0; display: flex; align-items: flex-end; z-index: 40; touch-action: pan-y; }
 /* The dim fades in with the panel instead of appearing under it in one frame. */
-.sheet-backdrop.dim { background: rgba(0, 0, 0, 0); transition: background-color 500ms ease-out; }
-.sheet-backdrop.dim.in { background: rgba(0, 0, 0, .35); }
+.sheet-backdrop.dim { background: transparent; transition: background-color 500ms ease-out; }
+.sheet-backdrop.dim.in { background: var(--scrim-soft); }
 .sheet {
   width: 100%;
   max-height: 82%;
@@ -305,7 +305,7 @@
   transition: transform 500ms ease-out;
 }
 .sheet-backdrop.in .sheet { transform: translateY(0); }
-.sheet-handle { width: 36px; height: 4px; border-radius: 2px; background: #2c3138; margin: 0 auto 14px; }
+.sheet-handle { width: 36px; height: 4px; border-radius: 2px; background: var(--border2); margin: 0 auto 14px; }
 
 .review-verdict { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; margin-bottom: 14px; }
 .review-verdict > span:first-child { font-size: 17px; font-weight: 600; }
@@ -347,7 +347,7 @@
 .dialog-backdrop {
   position: fixed; inset: 0; z-index: 60;
   display: flex; align-items: center; justify-content: center;
-  padding: 24px; background: rgba(0, 0, 0, .55);
+  padding: 24px; background: var(--scrim);
 }
 .dialog {
   width: 100%; max-width: 340px;
@@ -361,7 +361,11 @@
 .dialog-actions { display: flex; gap: 10px; margin-top: 18px; }
 .dialog-actions .btn { flex: 1; }
 
-/* ---------------------------------------------------------- exhibit viewer */
+/* ---------------------------------------------------------- exhibit viewer
+   Full-screen image viewer — the ground is always black regardless of theme, so a
+   light-theme user pinch-zooming a schematic sees the same contrast around the image
+   as a dark-theme one. The close chip and hint pill on top of it stay black-scrim +
+   light text for the same reason: they sit on the image, not on --bg. */
 .exhibit-viewer { position: fixed; inset: 0; z-index: 70; background: #000; }
 .exhibit-stage {
   position: absolute; inset: 0;
@@ -516,7 +520,7 @@
 
 .chart-plot { position: relative; height: var(--chart-h); }
 .chart-bars { display: flex; align-items: flex-end; gap: 10px; height: 100%; }
-.bar { flex: 1; border-radius: 5px 5px 0 0; background: #2c3138; }
+.bar { flex: 1; border-radius: 5px 5px 0 0; background: var(--border2); }
 .bar.recent { background: var(--primary-strong); }
 .bar.now { background: var(--primary); }
 /* The daily-activity strip reads by goal met, not by recency — a day at or over the
@@ -528,7 +532,7 @@
 /* Drawn across the plot, with its label parked outside the bars on the right. */
 .chart-threshold {
   position: absolute; left: 0; right: 0;
-  border-top: 1px dashed #3a4048;
+  border-top: 1px dashed var(--border2);
   pointer-events: none;
 }
 .chart-threshold span {
@@ -683,8 +687,8 @@
 .onboard-lead { margin: 10px 0 22px; font-size: 14.5px; color: var(--text-2); line-height: 1.55; }
 .onboard-hint {
   margin-top: 18px; padding: 14px 16px;
-  background: #131720;
-  border: 1px dashed #2c3542;
+  background: var(--bg3);
+  border: 1px dashed var(--border2);
   border-radius: var(--r-sm);
   font-size: var(--fs-caption); color: var(--text-2); line-height: 1.6;
 }
@@ -707,8 +711,8 @@
   flex: 0 0 22px; height: 22px;
   display: flex; align-items: center; justify-content: center;
   border-radius: 50%;
-  border: 1.5px solid #3a4048;
-  font-size: 12px; color: #fff;
+  border: 1.5px solid var(--border2);
+  font-size: 12px; color: var(--on-primary);
 }
 .choice.on .choice-mark { background: var(--primary-strong); border-color: var(--primary-strong); }
 

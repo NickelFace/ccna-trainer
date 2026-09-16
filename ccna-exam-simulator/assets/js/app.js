@@ -28,11 +28,15 @@ const byN = () => BY_N || (BY_N = new Map(DATA.map(q => [q.n, q])));
 // kept as data rather than a pasted <svg> string. It used to live in landing.js and moved
 // here when the landing was removed — the sidebar lockup is the only place it is drawn now.
 const BARS = [[8, 58, 20, 20, 7], [33, 38, 20, 40, 7], [58, 12, 20, 66, 7]];
-const MARK_INK = ['#16181D', '#16181D', '#C9A24A'];
+// The two ink bars pick up the sidebar's ink token so the mark reads on both themes —
+// dark ink on cream in light, light ink on Slate in dark — while the gold accent bar
+// stays gold either way. `class` rather than inline `fill` so the CSS var resolves at
+// paint time and follows a theme swap without redrawing the sidebar.
+const MARK_CLS = ['mk-ink', 'mk-ink', 'mk-gold'];
 const mark = size =>
   `<svg width="${size}" height="${size}" viewBox="0 0 86 86" aria-hidden="true">` +
   BARS.map(([x, y, w, h, r], i) =>
-    `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${MARK_INK[i]}"/>`).join('') +
+    `<rect class="${MARK_CLS[i]}" x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}"/>`).join('') +
   '</svg>';
 
 const BRAND = 'NetPath';
