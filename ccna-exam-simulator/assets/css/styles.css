@@ -47,31 +47,127 @@
   src:url('../fonts/jetbrains-mono-latin.woff2') format('woff2');
   unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 
-:root{
-  --ink:#16181D; --cream:#FCFAF6; --cream-warm:#F4F0E8; --cream-light:#F7F4EE;
-  --gold:#C9A24A; --teal:#2E7D6F; --grey-text:#5C5850;
-  /* #8A8578 is a graphic tone here, not a text one: it measures 3.53:1 on cream and
-     3.24:1 on the warm ground, under AA for anything at normal size. Every label,
-     counter and grid number that used to take it now takes --grey-text. */
-  --grey:#8A8578;
-  /* Only ever the verdict of a wrong answer. Deliberately muted so it does not shout over
-     a palette that has no other red in it. */
-  --red:#B3453A;
+/* ---- Slate palette, shared with maks.top for cross-product consistency ----
+   The site has always run on a warm cream ground with gold + teal + red as brand
+   accents. That palette becomes the LIGHT theme; the DARK theme swaps to Slate greys
+   (cool, near-black) and mirrors the legacy `--ink` / `--cream-*` tokens so nothing
+   below has to be rewritten rule by rule — the same selector reads dark ink on cream
+   in light mode and Slate greys in dark mode.
 
-  /* Accent hues walked down until they read as text on a light ground. */
-  --gold-text:#846827; --teal-text:#2A7266;
-  /* And the mirror image: teal and red are too dark to read on the ink panel. */
-  --teal-on-dark:#7FD4C1; --red-on-dark:#E4B2AD;
+   Theme is set by `data-theme` on <html>; the pre-paint script in index.html resolves
+   System / Light / Dark from Preferences before first paint so there is no flash. */
+
+:root{
+  /* Slate canonical tokens (dark by default) — the shared vocabulary with maks.top. */
+  --bg:      #0E1319;
+  --bg2:     #141B23;
+  --bg3:     #1C242E;
+  --border:  #242D38;
+  --border2: #33404E;
+  --text:    #E6EBF1;
+  --text2:   #A2AEBB;
+  --text3:   #838F9C;
+  --accent:  oklch(0.75 0.10 232);
+  --accent2: oklch(0.74 0.09 168);
+  --accent3: #838F9C;
+  --glow:    oklch(0.75 0.10 232 / 0.14);
+  --tag-bg:  oklch(0.75 0.10 232 / 0.10);
+  --code-bg: #0A0E13;
+
+  /* Semantic — invariant across themes. --warn / --danger keep the app's amber and red;
+     --success maps to the green accent. */
+  --warn:    #f59e0b;
+  --danger:  #ef4444;
+  --success: var(--accent2);
+
+  /* ---- Legacy web tokens, in DARK values.
+         The trick that keeps existing rules working without a per-rule rewrite: pairs
+         that appear together (background:var(--ink); color:var(--cream-light)) flip
+         together. In light mode --ink is dark and --cream-light is light; in dark mode
+         they invert, so a "dark accent panel with cream text" reads as an inverted
+         light-on-dark chip. The design pattern survives; only the values swap. */
+  --ink:         var(--text);         /* dark theme: text is light, so --ink is light too */
+  --cream:       var(--bg);
+  --cream-warm:  var(--bg2);
+  --cream-light: #131A21;             /* text-on-ink role: dark, so it reads on the inverted --ink bg */
+
+  --gold:        #D9B461;             /* brand gold, lifted for AA on Slate --bg */
+  --teal:        var(--accent2);
+  --red:         var(--danger);
+
+  /* Accent variants used as text on light ground — in dark, they need to be readable on
+     --bg (very dark), so they step LIGHTER, not darker. */
+  --gold-text:   #E6C57A;
+  --teal-text:   color-mix(in oklab, var(--accent2) 80%, var(--text));
+  --grey-text:   var(--text2);
+  --grey:        var(--text3);
+
+  /* Text on the inverted --ink panels (light-on-dark in light mode, dark-on-light in
+     dark mode). Kept as separate tokens because the semantic is "text that reads on the
+     inverted callout", not "the current cream shade". */
+  --teal-on-dark: color-mix(in oklab, var(--accent2) 45%, var(--cream-light));
+  --red-on-dark:  color-mix(in oklab, var(--red) 45%, var(--cream-light));
+  --on-dark:      color-mix(in oklab, var(--cream-light) 70%, var(--ink));
+
+  /* Hairlines and borders — theme-aware via color-mix from --ink. .08/.12/.2 opacity
+     match the original design values. */
+  --line:        color-mix(in oklab, var(--ink) 8%, transparent);
+  --edge:        color-mix(in oklab, var(--ink) 12%, transparent);
+  --edge-strong: color-mix(in oklab, var(--ink) 20%, transparent);
 
   --serif:'Playfair Display',Georgia,'Times New Roman',serif;
   --ui:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
   --num:'Space Grotesk','Manrope',system-ui,sans-serif;
   --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
 
-  --line:rgba(22,24,29,.08);      /* hairline separators */
-  --edge:rgba(22,24,29,.12);      /* card and control borders */
-  --edge-strong:rgba(22,24,29,.2);
-  --on-dark:rgba(247,244,238,.7);
+  color-scheme:dark;
+}
+
+/* LIGHT — the cream/gold/teal identity the site has always had, restored intact.
+   `data-theme="light"` is set by theme.js when the user picks Light or when System is
+   the choice and prefers-color-scheme resolves to light. */
+:root[data-theme="light"]{
+  --bg:      #F7F9FB;
+  --bg2:     #EFF3F7;
+  --bg3:     #E4EAF1;
+  --border:  #D8E0E9;
+  --border2: #BFCAD6;
+  --text:    #131A21;
+  --text2:   #48555F;
+  --text3:   #616E78;
+  --accent:  oklch(0.51 0.12 232);
+  --accent2: oklch(0.52 0.09 168);
+  --accent3: #616E78;
+  --glow:    oklch(0.51 0.12 232 / 0.14);
+  --tag-bg:  oklch(0.51 0.12 232 / 0.10);
+  --code-bg: #ECF1F6;
+
+  /* Original NetPath web palette — warm cream ground with dark ink hero panels. */
+  --ink:         #16181D;
+  --cream:       #FCFAF6;
+  --cream-warm:  #F4F0E8;
+  --cream-light: #F7F4EE;
+
+  --gold:        #C9A24A;
+  --teal:        #2E7D6F;
+  --red:         #B3453A;
+
+  /* Accents walked down until they read as text on a light ground. */
+  --gold-text:   #846827;
+  --teal-text:   #2A7266;
+  --grey-text:   #5C5850;
+  /* 3.53:1 on cream, 3.24:1 on cream-warm — a graphic tone rather than a text one. */
+  --grey:        #8A8578;
+
+  /* Teal and red are too dark to read on the ink panel — the lifted mirrors go there. */
+  --teal-on-dark:#7FD4C1;
+  --red-on-dark: #E4B2AD;
+  --on-dark:     color-mix(in oklab, var(--cream-light) 70%, transparent);
+
+  --line:        color-mix(in oklab, var(--ink) 8%, transparent);
+  --edge:        color-mix(in oklab, var(--ink) 12%, transparent);
+  --edge-strong: color-mix(in oklab, var(--ink) 20%, transparent);
+
   color-scheme:light;
 }
 
@@ -98,6 +194,9 @@ body{
   background:var(--cream-light);border-right:1px solid var(--line)}
 .side-lockup{display:flex;align-items:center;gap:10px;padding:4px 8px}
 .side-lockup svg{display:block;flex:none}
+/* Brand mark bars — theme-aware via CSS so a theme swap does not redraw the sidebar. */
+.side-lockup svg .mk-ink{fill:var(--ink)}
+.side-lockup svg .mk-gold{fill:var(--gold)}
 .side-lockup span{font-size:19px;font-weight:800;letter-spacing:-.02em}
 .side-nav{display:flex;flex-direction:column;gap:3px}
 /* A nav item is a button, not a link: the trainer is one page and the screens are drawn in
@@ -106,13 +205,13 @@ body{
   cursor:pointer;border-radius:12px;padding:11px 14px;font:inherit;font-size:14px;
   font-weight:700;background:none;color:var(--grey-text);
   transition:background .15s,color .15s}
-.snav:hover{background:rgba(22,24,29,.06);color:var(--ink)}
+.snav:hover{background:color-mix(in oklab, var(--ink) 6%, transparent);color:var(--ink)}
 .snav .dot{flex:none;width:7px;height:7px;border-radius:999px;background:var(--edge-strong)}
 .snav .lb{flex:1}
 .snav .n{font-family:var(--num);font-size:12px;font-weight:700;color:var(--grey-text)}
 .snav.on{background:var(--ink);color:var(--cream-light)}
 .snav.on .dot{background:var(--gold)}
-.snav.on .n{color:rgba(247,244,238,.6)}
+.snav.on .n{color:color-mix(in oklab, var(--cream-light) 60%, transparent)}
 .snav:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 
 .side-foot{margin-top:auto;display:flex;flex-direction:column;gap:14px}
@@ -134,6 +233,12 @@ body{
 .plan-set:hover{color:var(--ink)}
 .side-lang{display:flex;align-items:center;gap:10px;padding:0 6px}
 .side-lang .note{font-size:11px;font-weight:600;color:var(--grey-text)}
+/* Theme segmented control sits under the language row; same track, same pill treatment,
+   so the two read as one settings block. Wraps under the sidebar on narrow ground so
+   'Как в системе' still fits without shrinking the whole row. */
+.side-theme{display:flex;flex-wrap:wrap;gap:6px;padding:0 6px}
+.side-theme .lang-switch{flex-wrap:wrap}
+.side-theme .lang-opt{white-space:nowrap}
 
 /* h1 titles a screen; h2 and h3 label a section inside one. app.js already uses them that
    way, so the split is by role, not by size alone. */
@@ -157,7 +262,7 @@ button{font-family:inherit;font-size:14px;cursor:pointer}
 .btn:hover:not(:disabled){border-color:var(--ink)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .btn.primary{background:var(--gold);border-color:var(--gold);color:var(--ink);padding:13px 26px}
-.btn.primary:hover:not(:disabled){background:#BD9846;border-color:#BD9846}
+.btn.primary:hover:not(:disabled){background:color-mix(in oklab, var(--gold) 88%, var(--ink));border-color:color-mix(in oklab, var(--gold) 88%, var(--ink))}
 .btn.sm{padding:8px 14px;font-size:12px}
 
 /* Mode cards on the home screen: title and blurb on the left, the action as a pill on the
@@ -173,13 +278,13 @@ button{font-family:inherit;font-size:14px;cursor:pointer}
 }
 .btn.big .tx{flex:1;display:flex;flex-direction:column;gap:5px}
 .btn.big .tx b{font-size:21px;font-weight:800;letter-spacing:-.02em;color:var(--cream-light)}
-.btn.big .tx span{font-size:13px;font-weight:400;line-height:1.5;color:rgba(247,244,238,.66)}
+.btn.big .tx span{font-size:13px;font-weight:400;line-height:1.5;color:color-mix(in oklab, var(--cream-light) 66%, transparent)}
 .btn.big .go{flex:none;padding:13px 26px;border-radius:999px;font-size:14px;font-weight:700;
   background:var(--gold);color:var(--ink)}
-.btn.big:hover{box-shadow:0 16px 34px -22px rgba(22,24,29,.6)}
+.btn.big:hover{box-shadow:0 16px 34px -22px color-mix(in oklab, var(--ink) 60%, transparent)}
 
 .btn.big.pu,.btn.big.gr{background:none;border-color:var(--edge);padding:22px 26px}
-.btn.big.pu:hover,.btn.big.gr:hover{border-color:var(--edge-strong);box-shadow:0 14px 30px -22px rgba(22,24,29,.45)}
+.btn.big.pu:hover,.btn.big.gr:hover{border-color:var(--edge-strong);box-shadow:0 14px 30px -22px color-mix(in oklab, var(--ink) 45%, transparent)}
 .btn.big.pu .tx b,.btn.big.gr .tx b{color:var(--ink);font-size:19px}
 .btn.big.pu .tx span,.btn.big.gr .tx span{color:var(--grey-text)}
 .btn.big.pu .go{background:var(--ink);color:var(--cream);padding:12px 24px}
@@ -214,7 +319,7 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--ink);outline-of
 /* A chip for something the app will show but never mark: dashed, so it does not read as an
    equal member of the set. */
 .chip.sim{border-style:dashed}
-.chip.sim.on{border-style:dashed;background:rgba(22,24,29,.07);color:var(--ink)}
+.chip.sim.on{border-style:dashed;background:color-mix(in oklab, var(--ink) 7%, transparent);color:var(--ink)}
 .chip.sim.on .c{color:var(--grey-text)}
 .hint{font-size:12px;color:var(--grey-text);margin-top:-8px}
 
@@ -240,7 +345,7 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--ink);outline-of
 /* Language switch — in the sidebar, redrawn with it on every screen change.
    The selected segment is filled, not tinted: a near-white pill on a 6% track separates the
    two states by about 1.1:1, which is not enough to see which language is on. */
-.lang-switch{display:flex;padding:3px;background:rgba(22,24,29,.06);border-radius:999px}
+.lang-switch{display:flex;padding:3px;background:color-mix(in oklab, var(--ink) 6%, transparent);border-radius:999px}
 .lang-opt{padding:5px 11px;font-size:12px;font-weight:700;color:var(--grey-text);
   border-radius:999px;cursor:pointer;user-select:none;transition:background .12s,color .12s}
 .lang-opt:hover{color:var(--ink)}
@@ -259,19 +364,19 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--ink);outline-of
   flex:none;width:32px;height:32px;border:0;border-radius:999px;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
   font-size:14px;font-weight:700;
-  background:rgba(22,24,29,.07);color:var(--grey-text);
+  background:color-mix(in oklab, var(--ink) 7%, transparent);color:var(--grey-text);
 }
-.chrome.dark .chrome-x{background:rgba(247,244,238,.1);color:var(--on-dark)}
-.chrome-x:hover{background:rgba(22,24,29,.14)}
-.chrome.dark .chrome-x:hover{background:rgba(247,244,238,.18)}
+.chrome.dark .chrome-x{background:color-mix(in oklab, var(--cream-light) 10%, transparent);color:var(--on-dark)}
+.chrome-x:hover{background:color-mix(in oklab, var(--ink) 14%, transparent)}
+.chrome.dark .chrome-x:hover{background:color-mix(in oklab, var(--cream-light) 18%, transparent)}
 
 .chrome-exit{flex:none;white-space:nowrap}
 .chrome-progress{flex:1;min-width:120px;display:flex;align-items:center;gap:11px}
-.chrome-bar{flex:1;height:5px;border-radius:3px;background:rgba(22,24,29,.12);overflow:hidden}
-.chrome.dark .chrome-bar{background:rgba(247,244,238,.14)}
+.chrome-bar{flex:1;height:5px;border-radius:3px;background:color-mix(in oklab, var(--ink) 12%, transparent);overflow:hidden}
+.chrome.dark .chrome-bar{background:color-mix(in oklab, var(--cream-light) 14%, transparent)}
 .chrome-bar i{display:block;height:100%;background:var(--gold);transition:width .3s ease}
 .chrome-pos{flex:none;font-family:var(--num);font-size:13px;font-weight:700;color:var(--grey-text)}
-.chrome.dark .chrome-pos{color:rgba(247,244,238,.6)}
+.chrome.dark .chrome-pos{color:color-mix(in oklab, var(--cream-light) 60%, transparent)}
 .chrome-score{flex:none;font-family:var(--num);font-size:13px;font-weight:700;color:var(--grey-text)}
 .chrome-score .ok{color:var(--teal-text)}
 .chrome-score .bad{color:var(--red)}
@@ -281,23 +386,26 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--ink);outline-of
 .legend span{display:flex;align-items:center;gap:8px}
 .legend .sw{width:13px;height:13px;border-radius:4px;border:1px solid var(--edge);flex:none}
 .legend .sw.answered{background:var(--ink);border-color:var(--ink)}
-.legend .sw.flagged{background:rgba(201,162,74,.22);border-color:rgba(201,162,74,.6)}
+.legend .sw.flagged{background:color-mix(in oklab, var(--gold) 22%, transparent);border-color:color-mix(in oklab, var(--gold) 60%, transparent)}
 .legend .sw.partial{background:var(--cream);border:1.5px dashed var(--edge-strong)}
 
 /* badges */
 .badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
 .badge{font-size:11px;font-weight:700;letter-spacing:.06em;padding:5px 12px;border-radius:999px;
   border:1px solid transparent;white-space:nowrap;text-transform:uppercase}
-.b-dom{background:rgba(46,125,111,.12);color:var(--teal-text)}
-.b-ex{background:rgba(22,24,29,.07);color:var(--grey-text)}
-.b-dd{background:rgba(22,24,29,.07);color:var(--grey-text)}
-.b-multi{border-color:rgba(201,162,74,.55);color:var(--gold-text)}
-.b-disp{border-color:rgba(179,69,58,.5);color:var(--red)}
-.b-ok{background:rgba(46,125,111,.12);color:var(--teal-text)}
+.b-dom{background:color-mix(in oklab, var(--teal) 12%, transparent);color:var(--teal-text)}
+.b-ex{background:color-mix(in oklab, var(--ink) 7%, transparent);color:var(--grey-text)}
+.b-dd{background:color-mix(in oklab, var(--ink) 7%, transparent);color:var(--grey-text)}
+.b-multi{border-color:color-mix(in oklab, var(--gold) 55%, transparent);color:var(--gold-text)}
+.b-disp{border-color:color-mix(in oklab, var(--red) 50%, transparent);color:var(--red)}
+.b-ok{background:color-mix(in oklab, var(--teal) 12%, transparent);color:var(--teal-text)}
 .qnum{font-family:var(--num);font-size:12px;font-weight:700;color:var(--grey-text)}
 
 /* question */
 .qtext{margin:0 0 4px;white-space:pre-wrap;font-size:20px;font-weight:600;line-height:1.45;text-wrap:pretty;overflow-wrap:anywhere}
+/* Raster exhibits are photos of Cisco docs — they carry their own light ground, so the
+   container stays theme-invariant white. SVG exhibits (.svgex) are drawn on ink instead,
+   so they read as diagrams rather than as clipped screenshots. */
 .eximg{max-width:100%;border:1px solid var(--edge);border-radius:13px;margin-bottom:14px;background:#fff;display:block}
 .eximg.svgex{background:var(--ink)}
 
@@ -335,12 +443,12 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .opt.sel{background:var(--ink);border-color:var(--ink)}
 .opt.sel .k{background:var(--gold);border-color:var(--gold);color:var(--ink)}
 .opt.sel span:last-child{color:var(--cream-light)}
-.opt.correct{border-color:var(--teal);background:rgba(46,125,111,.09)}
+.opt.correct{border-color:var(--teal);background:color-mix(in oklab, var(--teal) 9%, transparent)}
 .opt.correct{border-width:1.5px}
 .opt.correct .k{background:var(--teal);border-color:var(--teal);color:var(--cream)}
 .opt.correct span:last-child{font-weight:700}
 .opt.correct span:last-child{color:var(--ink)}
-.opt.wrong{border-color:var(--red);background:rgba(179,69,58,.08)}
+.opt.wrong{border-color:var(--red);background:color-mix(in oklab, var(--red) 8%, transparent)}
 .opt.wrong{border-width:1.5px}
 .opt.wrong .k{background:var(--red);border-color:var(--red);color:var(--cream)}
 .opt.wrong span:last-child{font-weight:600}
@@ -350,8 +458,8 @@ details.cli-wrap summary:hover{color:var(--ink)}
 
 /* verdict + explanation */
 .verdict{margin-top:14px;font-size:14px;font-weight:700;padding:12px 16px;border-radius:12px}
-.verdict.ok{color:var(--teal-text);background:rgba(46,125,111,.1)}
-.verdict.bad{color:var(--red);background:rgba(179,69,58,.09)}
+.verdict.ok{color:var(--teal-text);background:color-mix(in oklab, var(--teal) 10%, transparent)}
+.verdict.bad{color:var(--red);background:color-mix(in oklab, var(--red) 9%, transparent)}
 .exp{margin-top:12px;background:var(--cream-warm);border-left:3px solid var(--teal);border-radius:12px;
   padding:14px 16px;font-size:13px;line-height:1.6;color:var(--grey-text)}
 .exp.disp{border-left-color:var(--gold)}
@@ -375,8 +483,8 @@ details.cli-wrap summary:hover{color:var(--ink)}
 /* per-option rationale (why each answer is right/wrong) */
 .rationale{margin-top:14px;display:flex;flex-direction:column;gap:9px}
 .ropt{border-radius:12px;padding:13px 15px;background:var(--cream-warm);border-left:3px solid var(--edge-strong)}
-.ropt.ok{border-left-color:var(--teal);background:rgba(46,125,111,.08)}
-.ropt.bad{border-left-color:var(--red);background:rgba(179,69,58,.07)}
+.ropt.ok{border-left-color:var(--teal);background:color-mix(in oklab, var(--teal) 8%, transparent)}
+.ropt.bad{border-left-color:var(--red);background:color-mix(in oklab, var(--red) 7%, transparent)}
 .ropt .rhead{font-size:13.5px;white-space:pre-wrap;color:var(--ink)}
 .ropt .rhead b{color:var(--ink);font-family:var(--num)}
 .ropt.ok .tag{color:var(--teal-text);font-size:11px;font-weight:700;margin-left:4px}
@@ -406,7 +514,7 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .synckey{width:100%;max-width:420px;font-family:var(--num);font-size:13px;letter-spacing:.02em}
 .timer{
   flex:none;display:flex;align-items:center;gap:8px;
-  padding:7px 15px;border-radius:999px;background:rgba(247,244,238,.08);
+  padding:7px 15px;border-radius:999px;background:color-mix(in oklab, var(--cream-light) 8%, transparent);
   font-family:var(--num);font-size:15px;font-weight:700;
 }
 .timer .ico-clock{color:var(--gold)}
@@ -423,11 +531,11 @@ details.cli-wrap summary:hover{color:var(--ink)}
 }
 .cell:hover{border-color:var(--edge-strong)}
 .cell.answered{background:var(--ink);border-color:var(--ink);color:var(--cream-light)}
-.cell.flagged{background:rgba(201,162,74,.22);border-color:rgba(201,162,74,.6);color:var(--ink)}
+.cell.flagged{background:color-mix(in oklab, var(--gold) 22%, transparent);border-color:color-mix(in oklab, var(--gold) 60%, transparent);color:var(--ink)}
 /* Ticked but short of the "choose N" count — not blank, not done either. A hollow ring
    reads as "started" against the filled .answered cell without borrowing red or gold. */
 .cell.partial{background:var(--cream);border:1.5px dashed var(--edge-strong);color:var(--grey-text)}
-.cell.cur{background:var(--gold);border-color:var(--gold);color:var(--ink);box-shadow:0 0 0 2px rgba(201,162,74,.35)}
+.cell.cur{background:var(--gold);border-color:var(--gold);color:var(--ink);box-shadow:0 0 0 2px color-mix(in oklab, var(--gold) 35%, transparent)}
 
 /* score report — the one panel that is dark on a light screen, because the number on it is
    the whole point of the attempt. */
@@ -436,18 +544,18 @@ details.cli-wrap summary:hover{color:var(--ink)}
   padding:40px;border-radius:20px;background:var(--ink);color:var(--cream-light);
 }
 .score-main{flex:1;display:flex;flex-direction:column;gap:12px;min-width:240px}
-.score-kicker{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(247,244,238,.5)}
+.score-kicker{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:color-mix(in oklab, var(--cream-light) 50%, transparent)}
 .score-line{display:flex;align-items:baseline;gap:14px}
 .big-score{font-family:var(--num);font-size:68px;font-weight:700;line-height:1;color:var(--gold)}
-.score-of{font-size:18px;font-weight:600;color:rgba(247,244,238,.5)}
-.scaled{font-size:13px;color:rgba(247,244,238,.5)}
+.score-of{font-size:18px;font-weight:600;color:color-mix(in oklab, var(--cream-light) 50%, transparent)}
+.scaled{font-size:13px;color:color-mix(in oklab, var(--cream-light) 50%, transparent)}
 .score-side{display:flex;flex-direction:column;gap:14px;align-items:flex-start}
 .score-badge{padding:9px 18px;border-radius:999px;font-size:14px;font-weight:700}
-.score-badge.pass{background:rgba(46,125,111,.26);color:var(--teal-on-dark)}
-.score-badge.fail{background:rgba(179,69,58,.26);color:var(--red-on-dark)}
+.score-badge.pass{background:color-mix(in oklab, var(--teal) 26%, transparent);color:var(--teal-on-dark)}
+.score-badge.fail{background:color-mix(in oklab, var(--red) 26%, transparent);color:var(--red-on-dark)}
 /* Neither passed nor failed: an attempt that was walked away from, which the panel
    reports as answered-out-of-drawn rather than as a score. */
-.score-badge.none{background:rgba(255,255,255,.14);color:var(--on-dark)}
+.score-badge.none{background:color-mix(in oklab, var(--cream-light) 14%, transparent);color:var(--on-dark)}
 .score-pct{font-size:15px;font-weight:600;color:var(--on-dark)}
 .pass{color:var(--teal-text);font-weight:700}
 .fail{color:var(--red);font-weight:700}
@@ -483,7 +591,7 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .dbar .top .vl.g{color:var(--teal-text)}
 .dbar .top .vl.a{color:var(--gold-text)}
 .dbar .top .vl.r{color:var(--red)}
-.track{height:9px;background:rgba(22,24,29,.07);border-radius:5px;overflow:hidden;position:relative}
+.track{height:9px;background:color-mix(in oklab, var(--ink) 7%, transparent);border-radius:5px;overflow:hidden;position:relative}
 .fill{height:100%;border-radius:5px;background:var(--ink);transition:width .6s ease}
 .fill.g{background:var(--teal)}
 .fill.r{background:var(--red)}
@@ -503,15 +611,15 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .dd-item.dragging{opacity:.4}
 /* Tap-to-place on a phone: pick the element, then the slot. The picked state has to be
    obvious — it is the only feedback between the two taps. */
-.dd-item.sel{border-color:var(--gold);background:rgba(201,162,74,.16);box-shadow:0 0 0 2px rgba(201,162,74,.35)}
-.dd-item.correct{border-color:var(--teal);background:rgba(46,125,111,.09)}
-.dd-item.wrong{border-color:var(--red);background:rgba(179,69,58,.08)}
+.dd-item.sel{border-color:var(--gold);background:color-mix(in oklab, var(--gold) 16%, transparent);box-shadow:0 0 0 2px color-mix(in oklab, var(--gold) 35%, transparent)}
+.dd-item.correct{border-color:var(--teal);background:color-mix(in oklab, var(--teal) 9%, transparent)}
+.dd-item.wrong{border-color:var(--red);background:color-mix(in oklab, var(--red) 8%, transparent)}
 .dd-bucket{border:1px solid var(--edge);border-radius:13px;padding:14px;margin-bottom:10px;background:var(--cream)}
 .dd-bucket .bl{font-size:11px;color:var(--grey-text);margin-bottom:9px;font-weight:700;
   text-transform:uppercase;letter-spacing:.08em;overflow-wrap:anywhere}
 .dd-slot{display:flex;flex-direction:column;gap:9px;min-height:48px;
-  border:1px dashed rgba(22,24,29,.26);border-radius:11px;padding:9px;transition:border-color .12s,background .12s}
-.dd-slot.over{border:1.5px dashed var(--gold);background:rgba(201,162,74,.12)}
+  border:1px dashed color-mix(in oklab, var(--ink) 26%, transparent);border-radius:11px;padding:9px;transition:border-color .12s,background .12s}
+.dd-slot.over{border:1.5px dashed var(--gold);background:color-mix(in oklab, var(--gold) 12%, transparent)}
 .dd-note{font-size:12px;color:var(--grey-text);margin-top:8px}
 /* Under the board: how much of the answer stands, and how many items belong nowhere. */
 .dd-foot{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:12px}
@@ -569,7 +677,7 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .hgrp[open]>summary::before{content:'▾'}
 .hgrp>summary:hover{color:var(--ink)}
 .hgrp>summary .hgrp-n{font-family:var(--num);font-size:12px;font-weight:700;color:var(--grey-text);
-  background:rgba(22,24,29,.07);border-radius:999px;padding:2px 9px;letter-spacing:0}
+  background:color-mix(in oklab, var(--ink) 7%, transparent);border-radius:999px;padding:2px 9px;letter-spacing:0}
 .hgrp>.hist{padding:0 10px 12px}
 
 .hitem>summary{cursor:pointer;list-style:none}
@@ -580,10 +688,10 @@ details.cli-wrap summary:hover{color:var(--ink)}
   border-radius:0 0 13px 13px}
 .dchips{display:flex;flex-wrap:wrap;gap:6px}
 .dchip{font-family:var(--num);font-size:11px;font-weight:700;white-space:nowrap;
-  border-radius:999px;padding:4px 10px;background:rgba(22,24,29,.05);color:var(--grey-text)}
-.dchip.g{background:rgba(46,125,111,.12);color:var(--teal-text)}
-.dchip.a{background:rgba(201,162,74,.16);color:var(--gold-text)}
-.dchip.r{background:rgba(179,69,58,.1);color:var(--red)}
+  border-radius:999px;padding:4px 10px;background:color-mix(in oklab, var(--ink) 5%, transparent);color:var(--grey-text)}
+.dchip.g{background:color-mix(in oklab, var(--teal) 12%, transparent);color:var(--teal-text)}
+.dchip.a{background:color-mix(in oklab, var(--gold) 16%, transparent);color:var(--gold-text)}
+.dchip.r{background:color-mix(in oklab, var(--red) 10%, transparent);color:var(--red)}
 
 @media(max-width:640px){
   /* Two lines instead of a row of columns: the date with the score on the far edge, then
@@ -671,36 +779,36 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .ready-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
 .ready-l{display:flex;flex-direction:column;gap:10px}
 .kick{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
-  color:rgba(247,244,238,.5)}
+  color:color-mix(in oklab, var(--cream-light) 50%, transparent)}
 .ready-n{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap}
 .ready-n .v{font-family:var(--num);font-size:68px;font-weight:700;line-height:1;color:var(--gold)}
-.ready-n .of{font-size:18px;font-weight:600;color:rgba(247,244,238,.5)}
+.ready-n .of{font-size:18px;font-weight:600;color:color-mix(in oklab, var(--cream-light) 50%, transparent)}
 .ready-n .dl{font-family:var(--num);font-size:15px;font-weight:700;color:var(--teal-on-dark)}
 .ready-n .dl.down{color:var(--red-on-dark)}
-.ready-note{font-size:13px;color:rgba(247,244,238,.5)}
+.ready-note{font-size:13px;color:color-mix(in oklab, var(--cream-light) 50%, transparent)}
 .ready-pill{flex:none;white-space:nowrap;padding:9px 18px;border-radius:999px;font-size:14px;
-  font-weight:700;background:rgba(179,69,58,.26);color:var(--red-on-dark)}
-.ready-pill.pass{background:rgba(46,125,111,.26);color:var(--teal-on-dark)}
-.ready-rule{height:1px;background:rgba(247,244,238,.12)}
+  font-weight:700;background:color-mix(in oklab, var(--red) 26%, transparent);color:var(--red-on-dark)}
+.ready-pill.pass{background:color-mix(in oklab, var(--teal) 26%, transparent);color:var(--teal-on-dark)}
+.ready-rule{height:1px;background:color-mix(in oklab, var(--cream-light) 12%, transparent)}
 .ready-weak{display:flex;flex-direction:column;gap:9px}
 .wchips{display:flex;flex-wrap:wrap;gap:8px}
 .wchip{display:inline-flex;align-items:baseline;gap:7px;white-space:nowrap;padding:7px 13px;
-  border-radius:999px;border:1px solid rgba(201,162,74,.45);font-size:12px;font-weight:700;
+  border-radius:999px;border:1px solid color-mix(in oklab, var(--gold) 45%, transparent);font-size:12px;font-weight:700;
   letter-spacing:.04em;color:var(--gold)}
-.wchip .p{font-family:var(--num);color:rgba(247,244,238,.6)}
+.wchip .p{font-family:var(--num);color:color-mix(in oklab, var(--cream-light) 60%, transparent)}
 
 /* The main action, at the foot of the panel where the eye lands after the number. */
 .weakgo{margin-top:auto;display:flex;align-items:center;gap:20px;width:100%;text-align:left;
   cursor:pointer;border:0;border-radius:16px;padding:22px 24px;font:inherit;
-  background:rgba(247,244,238,.06);transition:background .15s}
-.weakgo:hover{background:rgba(247,244,238,.1)}
+  background:color-mix(in oklab, var(--cream-light) 6%, transparent);transition:background .15s}
+.weakgo:hover{background:color-mix(in oklab, var(--cream-light) 10%, transparent)}
 .weakgo .tx{flex:1;display:flex;flex-direction:column;gap:5px}
 .weakgo .tx b{font-size:21px;font-weight:800;letter-spacing:-.02em;color:var(--cream-light)}
-.weakgo .tx span{font-size:13px;font-weight:400;line-height:1.5;color:rgba(247,244,238,.66)}
+.weakgo .tx span{font-size:13px;font-weight:400;line-height:1.5;color:color-mix(in oklab, var(--cream-light) 66%, transparent)}
 .weakgo .go{flex:none;padding:13px 26px;border-radius:999px;font-size:14px;font-weight:700;
   background:var(--gold);color:var(--ink)}
 /* Nothing to forecast yet: the same panel, saying so, with the run that would fix it. */
-.ready-empty{font-size:15px;line-height:1.55;color:rgba(247,244,238,.66)}
+.ready-empty{font-size:15px;line-height:1.55;color:color-mix(in oklab, var(--cream-light) 66%, transparent)}
 .ready-empty + .weakgo .go{background:var(--gold)}
 
 /* A plain bordered card. app.js reuses it for "Сегодня" and the score chart. */
@@ -723,12 +831,12 @@ details.cli-wrap summary:hover{color:var(--ink)}
    sample the 300..1000 scale describes, and putting one on this chart would say it was. */
 .chart{position:relative;height:118px;display:flex;align-items:flex-end;gap:8px;
   border-bottom:1px solid var(--line)}
-.chart i{flex:1;border-radius:4px 4px 0 0;background:rgba(22,24,29,.18)}
+.chart i{flex:1;border-radius:4px 4px 0 0;background:color-mix(in oklab, var(--ink) 18%, transparent)}
 .chart i.near{background:var(--ink)}
 .chart i.last{background:var(--gold)}
 /* Over the bars, not under them: the line's whole job is saying which attempts cleared
    825, and its label is unreadable sitting behind a full-height column. */
-.chart-pass{position:absolute;left:0;right:0;z-index:1;border-top:1px dashed rgba(201,162,74,.6)}
+.chart-pass{position:absolute;left:0;right:0;z-index:1;border-top:1px dashed color-mix(in oklab, var(--gold) 60%, transparent)}
 .chart-pass span{position:absolute;right:0;top:-17px;padding:0 4px;border-radius:4px;
   background:var(--cream);font-family:var(--num);font-size:11px;
   font-weight:700;color:var(--gold-text)}
@@ -762,10 +870,10 @@ details.cli-wrap summary:hover{color:var(--ink)}
   display:flex;align-items:center;gap:24px;flex-wrap:wrap}
 .mixbar .tx{flex:1;min-width:240px;display:flex;flex-direction:column;gap:7px}
 .mixbar .mx{font-size:17px;font-weight:700}
-.mixbar .rule{font-size:13px;color:rgba(247,244,238,.5)}
+.mixbar .rule{font-size:13px;color:color-mix(in oklab, var(--cream-light) 50%, transparent)}
 .mixbar .go{flex:none;border:0;cursor:pointer;border-radius:999px;padding:15px 28px;font:inherit;
   font-size:15px;font-weight:700;background:var(--gold);color:var(--ink);transition:background .15s}
-.mixbar .go:hover{background:#BD9846}
+.mixbar .go:hover{background:color-mix(in oklab, var(--gold) 88%, var(--ink))}
 
 /* One domain below the threshold. The red edge is the same device .review-item.bad uses. */
 .wdom{border:1px solid var(--edge);border-left:4px solid var(--red);border-radius:16px;

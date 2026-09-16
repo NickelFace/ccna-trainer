@@ -1,52 +1,98 @@
-/* Design tokens — from design_handoff_ccna_android/README.md.
-   These replace the web app's neon-cyan scheme entirely: no gradient page background,
-   no grid pattern, no glow shadows. The only gradients allowed are the readiness bar
-   and the result scale; the only shadow is the review sheet's. */
+/* Design tokens — Slate palette, shared with maks.top for cross-product consistency.
+   Two themes: dark (default) and light, switched by `data-theme` on <html>. The user
+   picks System / Light / Dark in Settings; System is the default and follows
+   `prefers-color-scheme`, resolved before first paint by app/theme.js so there is no
+   flash when the app opens.
+
+   Legacy token names (--surface, --primary, --text-2, --ok-*, --err-*, --warn-*, and
+   the two permitted gradients) are aliased to the Slate scale below, so every selector
+   in base.css / screens.css / book.css keeps working without edits. */
 
 :root {
-  /* ---- surfaces ---- */
-  --bg: #0e1013;
-  --surface: #16191e;
-  --surface-alt: #111418;
-  --bar: #111418;
-  --sheet: #14171c;
-  --elev: #1a1e24;
+  /* ---- Slate (dark, default) ---- */
+  --bg:      #0E1319;
+  --bg2:     #141B23;
+  --bg3:     #1C242E;
+  --border:  #242D38;
+  --border2: #33404E;
+  --text:    #E6EBF1;
+  --text2:   #A2AEBB;
+  --text3:   #838F9C;
+  --accent:  oklch(0.75 0.10 232);
+  --accent2: oklch(0.74 0.09 168);      /* passed / correct — never for primary chrome */
+  --accent3: #838F9C;                    /* planned / neutral */
+  --glow:    oklch(0.75 0.10 232 / 0.14);
+  --tag-bg:  oklch(0.75 0.10 232 / 0.10);
+  --code-bg: #0A0E13;
+  --on-accent: #0B1017;                  /* text on filled accent (dark for bright accent) */
+  color-scheme: dark;
 
-  /* ---- lines ---- */
-  --border: #262b32;
-  --border-soft: #23272e;
-  --divider: #1c2027;
+  /* ---- semantic — one line, invariant across themes ---- */
+  --warn:    #f59e0b;
+  --danger:  #ef4444;
+  --success: var(--accent2);
 
-  /* ---- text ---- */
-  --text: #e8eaed;
-  --text-2: #a8afba;
-  --text-3: #8c939e;
-  --text-4: #6f7681;
-  --text-disabled: #4d545e;
+  /* ---- accent-derived surfaces (mixed once here so consumers don't repeat the recipe).
+         color-mix(in oklab, ...) needs WebView 87+ / iOS 15 / Chrome 111, all of which
+         Capacitor 7 already requires. */
+  --accent-bg:      color-mix(in oklab, var(--accent) 12%, var(--bg2));
+  --accent-border:  color-mix(in oklab, var(--accent) 40%, var(--border));
+  --accent-strong:  color-mix(in oklab, var(--accent) 85%, var(--bg));
+  --accent-text:    color-mix(in oklab, var(--accent) 90%, var(--text));
 
-  /* ---- accent ---- */
-  --primary: #7aa2ff;
-  --primary-strong: #3c6ae0;
-  --primary-bg: #182130;
-  --primary-border: #263457;
-  --primary-text: #9fb6e8;
-  --on-primary: #0e1013;
+  --success-bg:     color-mix(in oklab, var(--success) 14%, var(--bg2));
+  --success-border: color-mix(in oklab, var(--success) 40%, var(--border));
+  --success-text:   color-mix(in oklab, var(--success) 90%, var(--text));
 
-  /* ---- semantic ---- */
-  --ok: #58c08c;
-  --ok-text: #8fd4a8;
-  --ok-bg: #151f18;
-  --ok-border: #2f6b45;
-  --err: #f2777a;
-  --err-bg: #241a1c;
-  --err-border: #6b3236;
-  --warn: #e3b341;
-  --warn-bg: #221e14;
-  --warn-border: #4a3d1c;
+  --danger-bg:      color-mix(in oklab, var(--danger) 14%, var(--bg2));
+  --danger-border:  color-mix(in oklab, var(--danger) 40%, var(--border));
+  --danger-text:    color-mix(in oklab, var(--danger) 88%, var(--text));
 
-  /* ---- the two permitted gradients ---- */
-  --grad-readiness: linear-gradient(90deg, #3c6ae0, #7aa2ff);
-  --grad-scale: linear-gradient(90deg, #8a6a1e, #e3b341);
+  --warn-bg:        color-mix(in oklab, var(--warn) 14%, var(--bg2));
+  --warn-border:    color-mix(in oklab, var(--warn) 40%, var(--border));
+
+  /* Scrim used by sheet backdrop / exhibit viewer. In dark it is opaque black; in light
+     it is a deep slate at partial alpha so the viewer still reads as an overlay. */
+  --scrim:         rgba(0, 0, 0, .55);
+  --scrim-soft:    rgba(0, 0, 0, .35);
+
+  /* ---- LEGACY tokens (aliases so existing CSS keeps working) ---- */
+  --surface:       var(--bg2);
+  --surface-alt:   var(--bg3);
+  --bar:           var(--bg);
+  --sheet:         var(--bg2);
+  --elev:          var(--bg3);
+  --border-soft:   var(--border);
+  --divider:       var(--border);
+  --text-2:        var(--text2);
+  --text-3:        var(--text3);
+  --text-4:        var(--accent3);
+  --text-disabled: color-mix(in oklab, var(--text3) 55%, var(--bg2));
+
+  --primary:        var(--accent);
+  --primary-strong: var(--accent-strong);
+  --primary-bg:     var(--accent-bg);
+  --primary-border: var(--accent-border);
+  --primary-text:   var(--accent-text);
+  --on-primary:     var(--on-accent);
+
+  --ok:         var(--success);
+  --ok-text:    var(--success-text);
+  --ok-bg:      var(--success-bg);
+  --ok-border:  var(--success-border);
+
+  --err:        var(--danger);
+  --err-bg:     var(--danger-bg);
+  --err-border: var(--danger-border);
+
+  /* The two permitted gradients (readiness bar, result scale) — derived so the accent
+     hue leads them in both themes. */
+  --grad-readiness: linear-gradient(90deg,
+    color-mix(in oklab, var(--accent) 55%, var(--bg2)),
+    var(--accent));
+  --grad-scale: linear-gradient(90deg,
+    color-mix(in oklab, var(--warn) 45%, var(--bg2)),
+    var(--warn));
   --shadow-sheet: 0 -18px 40px rgba(0, 0, 0, .5);
 
   /* ---- type ----
@@ -92,4 +138,35 @@
   --safe-right: env(safe-area-inset-right, 0px);
 
   --tabbar-h: 64px;
+}
+
+/* Light theme — applied whenever <html data-theme="light"> is set. app/theme.js sets
+   this before first paint from either the saved user choice or (for System) the current
+   `prefers-color-scheme`, and updates it live when either changes. */
+:root[data-theme="light"] {
+  --bg:      #F7F9FB;
+  --bg2:     #EFF3F7;
+  --bg3:     #E4EAF1;
+  --border:  #D8E0E9;
+  --border2: #BFCAD6;
+  --text:    #131A21;
+  --text2:   #48555F;
+  --text3:   #616E78;
+  /* Accent chroma stepped down and lightness pulled darker so filled labels/badges hit
+     AA on the paler ground — 0.75 lightness fails contrast on #F7F9FB. */
+  --accent:  oklch(0.51 0.12 232);
+  --accent2: oklch(0.52 0.09 168);
+  --accent3: #616E78;
+  --glow:    oklch(0.51 0.12 232 / 0.14);
+  --tag-bg:  oklch(0.51 0.12 232 / 0.10);
+  --code-bg: #ECF1F6;
+  --on-accent: #FFFFFF;
+  color-scheme: light;
+
+  /* Sheet shadow is a slate cast rather than a pure black cast on a pale ground. */
+  --shadow-sheet: 0 -18px 40px rgba(19, 26, 33, .18);
+
+  /* Overlay scrims soften on the light ground — full black looks like a modal cutout. */
+  --scrim:      rgba(19, 26, 33, .40);
+  --scrim-soft: rgba(19, 26, 33, .22);
 }
