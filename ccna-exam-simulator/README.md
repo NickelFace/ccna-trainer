@@ -108,6 +108,32 @@ key without prose. Everything else — question stems, options, CLI blocks,
 exhibit images — is already in English, straight from the original Cisco exam
 dump.
 
+## Appearance
+
+Light and dark are one stylesheet. Every colour in `assets/css/styles.css` comes
+from a token declared on `:root`, and the two themes are two sets of values for
+the same tokens — so the switch is an attribute on `<html>` and nothing on screen
+is redrawn. The palette is Slate throughout: cool neutral greys, with gold kept
+as the brand accent and teal/red kept as the correct/wrong verdicts, because a
+verdict that drifts between themes is a verdict that stops meaning one thing.
+
+Two surfaces deliberately do **not** invert. `--panel` — the score report, the
+readiness forecast, the exam strip, every CLI and code block — is dark on a light
+screen and stays dark on a dark one, so nothing drawn on it has to change either.
+The exhibit plate stays white, because the exhibits are JPEGs of diagrams drawn
+on white and any other plate frames every one of them in grey.
+
+An **auto / day / night** switch sits under the RU/EN pills in the sidebar.
+`auto` follows `prefers-color-scheme`; the other two pin the choice and outrank
+the OS, remembered in `localStorage` (`ccna_theme`) across visits. A small inline
+script in `index.html` applies the stored choice before the first paint — app.js
+runs at the end of `<body>` and is far too late to keep the page from flashing
+the other theme.
+
+Every text/ground pair in both themes clears WCAG AA (4.5:1, or 3:1 where the
+type is large). The one exception is `--grey`, which the stylesheet documents as
+a graphic tone rather than a text one.
+
 ## Structure
 
 ```

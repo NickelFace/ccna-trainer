@@ -48,19 +48,47 @@
   unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 
 :root{
-  --ink:#16181D; --cream:#FCFAF6; --cream-warm:#F4F0E8; --cream-light:#F7F4EE;
-  --gold:#C9A24A; --teal:#2E7D6F; --grey-text:#5C5850;
-  /* #8A8578 is a graphic tone here, not a text one: it measures 3.53:1 on cream and
-     3.24:1 on the warm ground, under AA for anything at normal size. Every label,
-     counter and grid number that used to take it now takes --grey-text. */
-  --grey:#8A8578;
-  /* Only ever the verdict of a wrong answer. Deliberately muted so it does not shout over
-     a palette that has no other red in it. */
-  --red:#B3453A;
+  /* ---- the neutral ground: Slate ----
+     Two sets of values for one set of names. Only the neutrals and the three accent *text*
+     hues move between light and dark; the emphasis panel and the accents themselves are
+     declared once, below, because they are the same colour on either ground. */
+  --ink:#0F172A;        /* slate-900 — body text on the page ground */
+  --cream:#F8FAFC;      /* slate-50  — the page and every plain card */
+  --cream-light:#F1F5F9;/* slate-100 — the sidebar and other recessed grounds */
+  /* Between slate-100 and slate-200: a field has to read as a field, but the gold, teal
+     and red note headings sit on this ground and a full slate-200 step puts all three
+     under AA. At this value they land where the warm palette had them (4.6 / 5.0 / 4.8). */
+  --cream-warm:#ECF1F6; /* fields, explanation blocks, table heads */
+  --grey-text:#475569;  /* slate-600 — secondary text, AA on all three grounds */
+  /* A graphic tone, not a text one: 3.7:1 on the page ground, under AA at normal size.
+     Every label, counter and grid number that used to take it takes --grey-text. */
+  --grey:#6F8097;
 
-  /* Accent hues walked down until they read as text on a light ground. */
-  --gold-text:#846827; --teal-text:#2A7266;
-  /* And the mirror image: teal and red are too dark to read on the ink panel. */
+  /* ---- the accents, one set for both themes ----
+     Gold is the brand; teal and red are verdicts, so they cannot drift between themes
+     without the verdict drifting with them. */
+  --gold:#C9A24A; --gold-hover:#BD9846; --teal:#2E7D6F;
+  /* Only ever the verdict of a wrong answer, and deliberately muted so it does not shout
+     over a palette that has no other red in it. As a fill it is the same on both grounds;
+     as a *word* it needs --red-text, which does move. */
+  --red:#B3453A;
+  /* What goes on top of a solid accent fill. Fixed: the fill does not change with the
+     theme, so neither can the text on it. */
+  --on-gold:#0F172A; --on-teal:#F8FAFC; --on-red:#F8FAFC;
+
+  /* ---- the emphasis panel ----
+     The score, the forecast, the exam strip, every code block: the one surface that is
+     dark on a light screen and stays dark on a dark one, a shade below the page rather
+     than a shade above it. Because it does not invert, nothing drawn on it has to.
+     It also takes the small "on" states in the chrome — the nav item, the chip, the
+     segment, the language — which read as a recess pressed into their own track.
+     What it does *not* take is an answer: a picked option and an answered cell have to be
+     the loudest thing on the page in either theme, so those inverted fills stay --ink on
+     --cream and turn over with the rest of the text. */
+  --panel:#0F172A; --panel-fg:#F1F5F9; --panel-fg-rgb:241,245,249;
+  /* Accent hues walked down until they read as text on the page ground... */
+  --gold-text:#846827; --teal-text:#2A7266; --red-text:#B3453A;
+  /* ...and the mirror image, for the panel. */
   --teal-on-dark:#7FD4C1; --red-on-dark:#E4B2AD;
 
   --serif:'Playfair Display',Georgia,'Times New Roman',serif;
@@ -68,11 +96,46 @@
   --num:'Space Grotesk','Manrope',system-ui,sans-serif;
   --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
 
-  --line:rgba(22,24,29,.08);      /* hairline separators */
-  --edge:rgba(22,24,29,.12);      /* card and control borders */
-  --edge-strong:rgba(22,24,29,.2);
-  --on-dark:rgba(247,244,238,.7);
+  /* Hairlines, borders and hover washes are the text colour at low alpha, so they invert
+     with it and never need a value of their own per theme. */
+  --ink-rgb:15,23,42;
+  --line:rgba(var(--ink-rgb),.08);      /* hairline separators */
+  --edge:rgba(var(--ink-rgb),.12);      /* card and control borders */
+  --edge-strong:rgba(var(--ink-rgb),.2);
+  --on-dark:rgba(var(--panel-fg-rgb),.7);
+  /* A shadow is cast, not inherited: it stays dark on both grounds. */
+  --shadow-rgb:2,6,23;
+  --gold-rgb:201,162,74; --teal-rgb:46,125,111; --red-rgb:179,69,58;
   color-scheme:light;
+}
+
+/* The dark set. The media query is what the OS asks for and yields to a stored choice:
+   :not([data-theme="light"]) is how "auto" stays automatic without overruling someone who
+   picked light on purpose. index.html puts the attribute on <html> before the first paint,
+   so the page never shows one theme and swaps to the other. */
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ink:#F1F5F9; --cream:#0F172A; --cream-light:#1E293B;
+    /* A field has to read as a field on either ground, but a full slate-700 step is a
+       spotlight down here — this is the dark equivalent of the light one's 1.09. */
+    --cream-warm:#273448;
+    --grey-text:#A2B2C7; --grey:#94A3B8;
+    --panel:#020617;
+    --gold-text:#D4AF61; --teal-text:#7FD4C1; --red-text:#E4B2AD;
+    --ink-rgb:241,245,249;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#F1F5F9; --cream:#0F172A; --cream-light:#1E293B;
+  /* A field has to read as a field on either ground, but a full slate-700 step is a
+     spotlight down here — this is the dark equivalent of the light one's 1.09. */
+  --cream-warm:#273448;
+  --grey-text:#A2B2C7; --grey:#94A3B8;
+  --panel:#020617;
+  --gold-text:#D4AF61; --teal-text:#7FD4C1; --red-text:#E4B2AD;
+  --ink-rgb:241,245,249;
+  color-scheme:dark;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -106,13 +169,13 @@ body{
   cursor:pointer;border-radius:12px;padding:11px 14px;font:inherit;font-size:14px;
   font-weight:700;background:none;color:var(--grey-text);
   transition:background .15s,color .15s}
-.snav:hover{background:rgba(22,24,29,.06);color:var(--ink)}
+.snav:hover{background:rgba(var(--ink-rgb),.06);color:var(--ink)}
 .snav .dot{flex:none;width:7px;height:7px;border-radius:999px;background:var(--edge-strong)}
 .snav .lb{flex:1}
 .snav .n{font-family:var(--num);font-size:12px;font-weight:700;color:var(--grey-text)}
-.snav.on{background:var(--ink);color:var(--cream-light)}
+.snav.on{background:var(--panel);color:var(--panel-fg)}
 .snav.on .dot{background:var(--gold)}
-.snav.on .n{color:rgba(247,244,238,.6)}
+.snav.on .n{color:rgba(var(--panel-fg-rgb),.6)}
 .snav:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 
 .side-foot{margin-top:auto;display:flex;flex-direction:column;gap:14px}
@@ -132,7 +195,9 @@ body{
 .plan-set{align-self:flex-start;border:0;background:none;padding:0;cursor:pointer;font:inherit;
   font-size:12px;font-weight:700;color:var(--teal-text)}
 .plan-set:hover{color:var(--ink)}
-.side-lang{display:flex;align-items:center;gap:10px;padding:0 6px}
+/* Two switches and a note, which do not fit one 252px line together — so the note takes
+   the next one rather than squeezing the pills. */
+.side-lang{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:0 6px}
 .side-lang .note{font-size:11px;font-weight:600;color:var(--grey-text)}
 
 /* h1 titles a screen; h2 and h3 label a section inside one. app.js already uses them that
@@ -156,8 +221,8 @@ button{font-family:inherit;font-size:14px;cursor:pointer}
 }
 .btn:hover:not(:disabled){border-color:var(--ink)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
-.btn.primary{background:var(--gold);border-color:var(--gold);color:var(--ink);padding:13px 26px}
-.btn.primary:hover:not(:disabled){background:#BD9846;border-color:#BD9846}
+.btn.primary{background:var(--gold);border-color:var(--gold);color:var(--on-gold);padding:13px 26px}
+.btn.primary:hover:not(:disabled){background:var(--gold-hover);border-color:var(--gold-hover)}
 .btn.sm{padding:8px 14px;font-size:12px}
 
 /* Mode cards on the home screen: title and blurb on the left, the action as a pill on the
@@ -169,20 +234,20 @@ button{font-family:inherit;font-size:14px;cursor:pointer}
 .btn.big{
   width:100%;text-align:left;justify-content:flex-start;gap:20px;
   padding:24px 26px;border-radius:16px;
-  background:var(--ink);border-color:var(--ink);
+  background:var(--panel);border-color:var(--panel);
 }
 .btn.big .tx{flex:1;display:flex;flex-direction:column;gap:5px}
-.btn.big .tx b{font-size:21px;font-weight:800;letter-spacing:-.02em;color:var(--cream-light)}
-.btn.big .tx span{font-size:13px;font-weight:400;line-height:1.5;color:rgba(247,244,238,.66)}
+.btn.big .tx b{font-size:21px;font-weight:800;letter-spacing:-.02em;color:var(--panel-fg)}
+.btn.big .tx span{font-size:13px;font-weight:400;line-height:1.5;color:rgba(var(--panel-fg-rgb),.66)}
 .btn.big .go{flex:none;padding:13px 26px;border-radius:999px;font-size:14px;font-weight:700;
-  background:var(--gold);color:var(--ink)}
-.btn.big:hover{box-shadow:0 16px 34px -22px rgba(22,24,29,.6)}
+  background:var(--gold);color:var(--on-gold)}
+.btn.big:hover{box-shadow:0 16px 34px -22px rgba(var(--shadow-rgb),.6)}
 
 .btn.big.pu,.btn.big.gr{background:none;border-color:var(--edge);padding:22px 26px}
-.btn.big.pu:hover,.btn.big.gr:hover{border-color:var(--edge-strong);box-shadow:0 14px 30px -22px rgba(22,24,29,.45)}
+.btn.big.pu:hover,.btn.big.gr:hover{border-color:var(--edge-strong);box-shadow:0 14px 30px -22px rgba(var(--shadow-rgb),.45)}
 .btn.big.pu .tx b,.btn.big.gr .tx b{color:var(--ink);font-size:19px}
 .btn.big.pu .tx span,.btn.big.gr .tx span{color:var(--grey-text)}
-.btn.big.pu .go{background:var(--ink);color:var(--cream);padding:12px 24px}
+.btn.big.pu .go{background:var(--panel);color:var(--panel-fg);padding:12px 24px}
 .btn.big.gr .go{background:none;border:1px solid var(--edge-strong);color:var(--ink);padding:12px 24px}
 
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
@@ -207,14 +272,14 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--ink);outline-of
   transition:background .12s,border-color .12s,color .12s;
 }
 .chip:hover{border-color:var(--ink)}
-.chip.on{background:var(--ink);border-color:var(--ink);color:var(--cream-light)}
+.chip.on{background:var(--panel);border-color:var(--panel);color:var(--panel-fg)}
 .chip .c{color:var(--grey-text);margin-left:6px;font-family:var(--num);font-weight:700}
 .chip.on .c{color:var(--gold)}
 
 /* A chip for something the app will show but never mark: dashed, so it does not read as an
    equal member of the set. */
 .chip.sim{border-style:dashed}
-.chip.sim.on{border-style:dashed;background:rgba(22,24,29,.07);color:var(--ink)}
+.chip.sim.on{border-style:dashed;background:rgba(var(--ink-rgb),.07);color:var(--ink)}
 .chip.sim.on .c{color:var(--grey-text)}
 .hint{font-size:12px;color:var(--grey-text);margin-top:-8px}
 
@@ -226,11 +291,11 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--ink);outline-of
   transition:background .12s,color .12s;
 }
 .seg-b:hover{color:var(--ink)}
-.seg-b.on{background:var(--ink);color:var(--cream-light)}
+.seg-b.on{background:var(--panel);color:var(--panel-fg)}
 
 /* How many questions the filters leave, said before Start rather than in an alert after. */
 .cfg-count{font-size:13px;font-weight:600;color:var(--grey-text)}
-.cfg-count.empty{color:var(--red)}
+.cfg-count.empty{color:var(--red-text)}
 
 /* The jump-by-number field ignores every filter above it, so it sits on its own ground. */
 .jump{background:var(--cream-warm);border-radius:13px;padding:16px;display:flex;flex-direction:column;gap:10px}
@@ -240,11 +305,12 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--ink);outline-of
 /* Language switch — in the sidebar, redrawn with it on every screen change.
    The selected segment is filled, not tinted: a near-white pill on a 6% track separates the
    two states by about 1.1:1, which is not enough to see which language is on. */
-.lang-switch{display:flex;padding:3px;background:rgba(22,24,29,.06);border-radius:999px}
-.lang-opt{padding:5px 11px;font-size:12px;font-weight:700;color:var(--grey-text);
+.lang-switch,.theme-switch{display:flex;padding:3px;background:rgba(var(--ink-rgb),.06);border-radius:999px}
+.lang-opt,.theme-opt{padding:5px 11px;font-size:12px;font-weight:700;color:var(--grey-text);
   border-radius:999px;cursor:pointer;user-select:none;transition:background .12s,color .12s}
-.lang-opt:hover{color:var(--ink)}
-.lang-opt.on{background:var(--ink);color:var(--cream-light)}
+.lang-opt:hover,.theme-opt:hover{color:var(--ink)}
+.theme-opt:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.lang-opt.on,.theme-opt.on{background:var(--panel);color:var(--panel-fg)}
 
 /* ---------------------------------------------------------------- chrome --
    The strip at the top of an attempt. Dark means exam (there is a timer, nothing is
@@ -254,57 +320,61 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--ink);outline-of
   display:flex;align-items:center;gap:18px;flex-wrap:wrap;
   padding:13px 22px;border-radius:14px;background:var(--cream-warm);color:var(--ink);
 }
-.chrome.dark{background:var(--ink);color:var(--cream-light)}
+.chrome.dark{background:var(--panel);color:var(--panel-fg)}
 .chrome-x{
   flex:none;width:32px;height:32px;border:0;border-radius:999px;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
   font-size:14px;font-weight:700;
-  background:rgba(22,24,29,.07);color:var(--grey-text);
+  background:rgba(var(--ink-rgb),.07);color:var(--grey-text);
 }
-.chrome.dark .chrome-x{background:rgba(247,244,238,.1);color:var(--on-dark)}
-.chrome-x:hover{background:rgba(22,24,29,.14)}
-.chrome.dark .chrome-x:hover{background:rgba(247,244,238,.18)}
+.chrome.dark .chrome-x{background:rgba(var(--panel-fg-rgb),.1);color:var(--on-dark)}
+.chrome-x:hover{background:rgba(var(--ink-rgb),.14)}
+.chrome.dark .chrome-x:hover{background:rgba(var(--panel-fg-rgb),.18)}
 
 .chrome-exit{flex:none;white-space:nowrap}
 .chrome-progress{flex:1;min-width:120px;display:flex;align-items:center;gap:11px}
-.chrome-bar{flex:1;height:5px;border-radius:3px;background:rgba(22,24,29,.12);overflow:hidden}
-.chrome.dark .chrome-bar{background:rgba(247,244,238,.14)}
+.chrome-bar{flex:1;height:5px;border-radius:3px;background:rgba(var(--ink-rgb),.12);overflow:hidden}
+.chrome.dark .chrome-bar{background:rgba(var(--panel-fg-rgb),.14)}
 .chrome-bar i{display:block;height:100%;background:var(--gold);transition:width .3s ease}
 .chrome-pos{flex:none;font-family:var(--num);font-size:13px;font-weight:700;color:var(--grey-text)}
-.chrome.dark .chrome-pos{color:rgba(247,244,238,.6)}
+.chrome.dark .chrome-pos{color:rgba(var(--panel-fg-rgb),.6)}
 .chrome-score{flex:none;font-family:var(--num);font-size:13px;font-weight:700;color:var(--grey-text)}
 .chrome-score .ok{color:var(--teal-text)}
-.chrome-score .bad{color:var(--red)}
+.chrome-score .bad{color:var(--red-text)}
 
 /* Legend for the question grid — the cell colours carry state and nothing said so. */
 .legend{display:flex;flex-wrap:wrap;gap:18px;font-size:12px;font-weight:600;color:var(--grey-text)}
 .legend span{display:flex;align-items:center;gap:8px}
 .legend .sw{width:13px;height:13px;border-radius:4px;border:1px solid var(--edge);flex:none}
 .legend .sw.answered{background:var(--ink);border-color:var(--ink)}
-.legend .sw.flagged{background:rgba(201,162,74,.22);border-color:rgba(201,162,74,.6)}
+.legend .sw.flagged{background:rgba(var(--gold-rgb),.22);border-color:rgba(var(--gold-rgb),.6)}
 .legend .sw.partial{background:var(--cream);border:1.5px dashed var(--edge-strong)}
 
 /* badges */
 .badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
 .badge{font-size:11px;font-weight:700;letter-spacing:.06em;padding:5px 12px;border-radius:999px;
   border:1px solid transparent;white-space:nowrap;text-transform:uppercase}
-.b-dom{background:rgba(46,125,111,.12);color:var(--teal-text)}
-.b-ex{background:rgba(22,24,29,.07);color:var(--grey-text)}
-.b-dd{background:rgba(22,24,29,.07);color:var(--grey-text)}
-.b-multi{border-color:rgba(201,162,74,.55);color:var(--gold-text)}
-.b-disp{border-color:rgba(179,69,58,.5);color:var(--red)}
-.b-ok{background:rgba(46,125,111,.12);color:var(--teal-text)}
+.b-dom{background:rgba(var(--teal-rgb),.12);color:var(--teal-text)}
+.b-ex{background:rgba(var(--ink-rgb),.07);color:var(--grey-text)}
+.b-dd{background:rgba(var(--ink-rgb),.07);color:var(--grey-text)}
+.b-multi{border-color:rgba(var(--gold-rgb),.55);color:var(--gold-text)}
+.b-disp{border-color:rgba(var(--red-rgb),.5);color:var(--red-text)}
+.b-ok{background:rgba(var(--teal-rgb),.12);color:var(--teal-text)}
 .qnum{font-family:var(--num);font-size:12px;font-weight:700;color:var(--grey-text)}
 
 /* question */
 .qtext{margin:0 0 4px;white-space:pre-wrap;font-size:20px;font-weight:600;line-height:1.45;text-wrap:pretty;overflow-wrap:anywhere}
+/* The one colour here that is not a token and stays that way in both themes: the exhibits
+   are JPEGs of diagrams drawn on white, so the plate has to be that same white or a grey
+   frame appears around every one of them. The SVG exhibits are drawn for a dark plate
+   instead, which is what --panel already is. */
 .eximg{max-width:100%;border:1px solid var(--edge);border-radius:13px;margin-bottom:14px;background:#fff;display:block}
-.eximg.svgex{background:var(--ink)}
+.eximg.svgex{background:var(--panel)}
 
 /* CLI / config / show-command output blocks. Real selectable text, never a screenshot. */
 .cli-wrap{margin:0 0 14px}
-.cli{background:var(--ink);border:none;border-radius:13px;padding:18px 20px;
-  font-family:var(--mono);font-size:13px;line-height:1.7;color:var(--cream-light);
+.cli{background:var(--panel);border:none;border-radius:13px;padding:18px 20px;
+  font-family:var(--mono);font-size:13px;line-height:1.7;color:var(--panel-fg);
   white-space:pre;overflow-x:auto;max-width:100%;margin:0}
 details.cli-wrap{border:1px solid var(--edge);border-radius:13px;overflow:hidden}
 details.cli-wrap .cli{border-radius:0;margin:0}
@@ -333,16 +403,16 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .opt span.cmd{font-family:var(--mono);font-size:14px}
 .opt .k svg{width:12px;height:12px}
 .opt.sel{background:var(--ink);border-color:var(--ink)}
-.opt.sel .k{background:var(--gold);border-color:var(--gold);color:var(--ink)}
-.opt.sel span:last-child{color:var(--cream-light)}
-.opt.correct{border-color:var(--teal);background:rgba(46,125,111,.09)}
+.opt.sel .k{background:var(--gold);border-color:var(--gold);color:var(--on-gold)}
+.opt.sel span:last-child{color:var(--cream)}
+.opt.correct{border-color:var(--teal);background:rgba(var(--teal-rgb),.09)}
 .opt.correct{border-width:1.5px}
-.opt.correct .k{background:var(--teal);border-color:var(--teal);color:var(--cream)}
+.opt.correct .k{background:var(--teal);border-color:var(--teal);color:var(--on-teal)}
 .opt.correct span:last-child{font-weight:700}
 .opt.correct span:last-child{color:var(--ink)}
-.opt.wrong{border-color:var(--red);background:rgba(179,69,58,.08)}
+.opt.wrong{border-color:var(--red);background:rgba(var(--red-rgb),.08)}
 .opt.wrong{border-width:1.5px}
-.opt.wrong .k{background:var(--red);border-color:var(--red);color:var(--cream)}
+.opt.wrong .k{background:var(--red);border-color:var(--red);color:var(--on-red)}
 .opt.wrong span:last-child{font-weight:600}
 .opt.wrong span:last-child{color:var(--ink)}
 .opt:disabled{cursor:default}
@@ -350,8 +420,8 @@ details.cli-wrap summary:hover{color:var(--ink)}
 
 /* verdict + explanation */
 .verdict{margin-top:14px;font-size:14px;font-weight:700;padding:12px 16px;border-radius:12px}
-.verdict.ok{color:var(--teal-text);background:rgba(46,125,111,.1)}
-.verdict.bad{color:var(--red);background:rgba(179,69,58,.09)}
+.verdict.ok{color:var(--teal-text);background:rgba(var(--teal-rgb),.1)}
+.verdict.bad{color:var(--red-text);background:rgba(var(--red-rgb),.09)}
 .exp{margin-top:12px;background:var(--cream-warm);border-left:3px solid var(--teal);border-radius:12px;
   padding:14px 16px;font-size:13px;line-height:1.6;color:var(--grey-text)}
 .exp.disp{border-left-color:var(--gold)}
@@ -375,12 +445,12 @@ details.cli-wrap summary:hover{color:var(--ink)}
 /* per-option rationale (why each answer is right/wrong) */
 .rationale{margin-top:14px;display:flex;flex-direction:column;gap:9px}
 .ropt{border-radius:12px;padding:13px 15px;background:var(--cream-warm);border-left:3px solid var(--edge-strong)}
-.ropt.ok{border-left-color:var(--teal);background:rgba(46,125,111,.08)}
-.ropt.bad{border-left-color:var(--red);background:rgba(179,69,58,.07)}
+.ropt.ok{border-left-color:var(--teal);background:rgba(var(--teal-rgb),.08)}
+.ropt.bad{border-left-color:var(--red);background:rgba(var(--red-rgb),.07)}
 .ropt .rhead{font-size:13.5px;white-space:pre-wrap;color:var(--ink)}
 .ropt .rhead b{color:var(--ink);font-family:var(--num)}
 .ropt.ok .tag{color:var(--teal-text);font-size:11px;font-weight:700;margin-left:4px}
-.ropt.bad .tag{color:var(--red);font-size:11px;font-weight:700;margin-left:4px}
+.ropt.bad .tag{color:var(--red-text);font-size:11px;font-weight:700;margin-left:4px}
 .ropt .rtext{margin-top:6px;font-size:13px;color:var(--grey-text);line-height:1.55}
 .ropt.quiet{padding:9px 15px;opacity:.75}
 .ropt.quiet .rhead{font-size:12.5px}
@@ -390,7 +460,7 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .stat{background:var(--cream-warm);border-radius:999px;padding:8px 14px;font-size:13px;font-weight:600;color:var(--grey-text)}
 .stat b{color:var(--ink);font-family:var(--num)}
 .stat .ok{color:var(--teal-text);font-family:var(--num);font-weight:700}
-.stat .bad{color:var(--red);font-family:var(--num);font-weight:700}
+.stat .bad{color:var(--red-text);font-family:var(--num);font-weight:700}
 .qjump{width:74px;padding:8px;font-size:13px;text-align:center;font-family:var(--num)}
 .qstart{width:100%;max-width:420px}
 /* fourteen days of work, one bar each — relative to the busiest day, because the site has
@@ -406,11 +476,11 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .synckey{width:100%;max-width:420px;font-family:var(--num);font-size:13px;letter-spacing:.02em}
 .timer{
   flex:none;display:flex;align-items:center;gap:8px;
-  padding:7px 15px;border-radius:999px;background:rgba(247,244,238,.08);
+  padding:7px 15px;border-radius:999px;background:rgba(var(--panel-fg-rgb),.08);
   font-family:var(--num);font-size:15px;font-weight:700;
 }
 .timer .ico-clock{color:var(--gold)}
-.timer.low,.timer.low .ico-clock{color:var(--red)}
+.timer.low,.timer.low .ico-clock{color:var(--red-on-dark)}
 
 /* question grid — stays under the answers, not in a sidebar: there is no sidebar on a phone
    and the grid is wanted in both views. */
@@ -422,35 +492,35 @@ details.cli-wrap summary:hover{color:var(--ink)}
   cursor:pointer;transition:border-color .1s,background .1s;
 }
 .cell:hover{border-color:var(--edge-strong)}
-.cell.answered{background:var(--ink);border-color:var(--ink);color:var(--cream-light)}
-.cell.flagged{background:rgba(201,162,74,.22);border-color:rgba(201,162,74,.6);color:var(--ink)}
+.cell.answered{background:var(--ink);border-color:var(--ink);color:var(--cream)}
+.cell.flagged{background:rgba(var(--gold-rgb),.22);border-color:rgba(var(--gold-rgb),.6);color:var(--ink)}
 /* Ticked but short of the "choose N" count — not blank, not done either. A hollow ring
    reads as "started" against the filled .answered cell without borrowing red or gold. */
 .cell.partial{background:var(--cream);border:1.5px dashed var(--edge-strong);color:var(--grey-text)}
-.cell.cur{background:var(--gold);border-color:var(--gold);color:var(--ink);box-shadow:0 0 0 2px rgba(201,162,74,.35)}
+.cell.cur{background:var(--gold);border-color:var(--gold);color:var(--on-gold);box-shadow:0 0 0 2px rgba(var(--gold-rgb),.35)}
 
-/* score report — the one panel that is dark on a light screen, because the number on it is
-   the whole point of the attempt. */
+/* score report — the panel that is dark whichever theme is on, because the number on it is
+   the whole point of the attempt and should not change weight with the wallpaper. */
 .score-panel{
   display:flex;align-items:center;gap:40px;flex-wrap:wrap;
-  padding:40px;border-radius:20px;background:var(--ink);color:var(--cream-light);
+  padding:40px;border-radius:20px;background:var(--panel);color:var(--panel-fg);
 }
 .score-main{flex:1;display:flex;flex-direction:column;gap:12px;min-width:240px}
-.score-kicker{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(247,244,238,.5)}
+.score-kicker{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(var(--panel-fg-rgb),.5)}
 .score-line{display:flex;align-items:baseline;gap:14px}
 .big-score{font-family:var(--num);font-size:68px;font-weight:700;line-height:1;color:var(--gold)}
-.score-of{font-size:18px;font-weight:600;color:rgba(247,244,238,.5)}
-.scaled{font-size:13px;color:rgba(247,244,238,.5)}
+.score-of{font-size:18px;font-weight:600;color:rgba(var(--panel-fg-rgb),.5)}
+.scaled{font-size:13px;color:rgba(var(--panel-fg-rgb),.5)}
 .score-side{display:flex;flex-direction:column;gap:14px;align-items:flex-start}
 .score-badge{padding:9px 18px;border-radius:999px;font-size:14px;font-weight:700}
-.score-badge.pass{background:rgba(46,125,111,.26);color:var(--teal-on-dark)}
-.score-badge.fail{background:rgba(179,69,58,.26);color:var(--red-on-dark)}
+.score-badge.pass{background:rgba(var(--teal-rgb),.26);color:var(--teal-on-dark)}
+.score-badge.fail{background:rgba(var(--red-rgb),.26);color:var(--red-on-dark)}
 /* Neither passed nor failed: an attempt that was walked away from, which the panel
    reports as answered-out-of-drawn rather than as a score. */
-.score-badge.none{background:rgba(255,255,255,.14);color:var(--on-dark)}
+.score-badge.none{background:rgba(var(--panel-fg-rgb),.14);color:var(--on-dark)}
 .score-pct{font-size:15px;font-weight:600;color:var(--on-dark)}
 .pass{color:var(--teal-text);font-weight:700}
-.fail{color:var(--red);font-weight:700}
+.fail{color:var(--red-text);font-weight:700}
 .review-item{background:var(--cream);border:1px solid var(--edge);border-left:4px solid var(--edge-strong);
   border-radius:16px;padding:22px;margin-bottom:20px}
 .review-item.bad{border-left-color:var(--red)}
@@ -469,7 +539,7 @@ details.cli-wrap summary:hover{color:var(--ink)}
 /* The chips sit on the panel's own warm ground, so they need the page colour to read as
    unpicked — on var(--cream-warm) they would blend into it. */
 .ai-body .chip{background:var(--cream)}
-.ai-body .chip.on{background:var(--ink)}
+.ai-body .chip.on{background:var(--panel)}
 
 /* domain bars — on the home screen they show blueprint weight, in the report they show your
    result. Only in the report does the colour mean anything. */
@@ -482,8 +552,8 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .dbar .top .vl.g,.dbar .top .vl.a,.dbar .top .vl.r{font-family:var(--num);font-size:14px;font-weight:700}
 .dbar .top .vl.g{color:var(--teal-text)}
 .dbar .top .vl.a{color:var(--gold-text)}
-.dbar .top .vl.r{color:var(--red)}
-.track{height:9px;background:rgba(22,24,29,.07);border-radius:5px;overflow:hidden;position:relative}
+.dbar .top .vl.r{color:var(--red-text)}
+.track{height:9px;background:rgba(var(--ink-rgb),.07);border-radius:5px;overflow:hidden;position:relative}
 .fill{height:100%;border-radius:5px;background:var(--ink);transition:width .6s ease}
 .fill.g{background:var(--teal)}
 .fill.r{background:var(--red)}
@@ -503,15 +573,15 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .dd-item.dragging{opacity:.4}
 /* Tap-to-place on a phone: pick the element, then the slot. The picked state has to be
    obvious — it is the only feedback between the two taps. */
-.dd-item.sel{border-color:var(--gold);background:rgba(201,162,74,.16);box-shadow:0 0 0 2px rgba(201,162,74,.35)}
-.dd-item.correct{border-color:var(--teal);background:rgba(46,125,111,.09)}
-.dd-item.wrong{border-color:var(--red);background:rgba(179,69,58,.08)}
+.dd-item.sel{border-color:var(--gold);background:rgba(var(--gold-rgb),.16);box-shadow:0 0 0 2px rgba(var(--gold-rgb),.35)}
+.dd-item.correct{border-color:var(--teal);background:rgba(var(--teal-rgb),.09)}
+.dd-item.wrong{border-color:var(--red);background:rgba(var(--red-rgb),.08)}
 .dd-bucket{border:1px solid var(--edge);border-radius:13px;padding:14px;margin-bottom:10px;background:var(--cream)}
 .dd-bucket .bl{font-size:11px;color:var(--grey-text);margin-bottom:9px;font-weight:700;
   text-transform:uppercase;letter-spacing:.08em;overflow-wrap:anywhere}
 .dd-slot{display:flex;flex-direction:column;gap:9px;min-height:48px;
-  border:1px dashed rgba(22,24,29,.26);border-radius:11px;padding:9px;transition:border-color .12s,background .12s}
-.dd-slot.over{border:1.5px dashed var(--gold);background:rgba(201,162,74,.12)}
+  border:1px dashed rgba(var(--ink-rgb),.26);border-radius:11px;padding:9px;transition:border-color .12s,background .12s}
+.dd-slot.over{border:1.5px dashed var(--gold);background:rgba(var(--gold-rgb),.12)}
 .dd-note{font-size:12px;color:var(--grey-text);margin-top:8px}
 /* Under the board: how much of the answer stands, and how many items belong nowhere. */
 .dd-foot{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:12px}
@@ -523,7 +593,7 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .opt-foot{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:12px}
 .pick-count{font-size:12px;font-weight:600;color:var(--grey-text);transition:color .15s}
 .pick-count.done{color:var(--teal-text)}
-.pick-count.warn{color:var(--red)}
+.pick-count.warn{color:var(--red-text)}
 
 .hidden{display:none}
 .center{text-align:center}
@@ -569,7 +639,7 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .hgrp[open]>summary::before{content:'▾'}
 .hgrp>summary:hover{color:var(--ink)}
 .hgrp>summary .hgrp-n{font-family:var(--num);font-size:12px;font-weight:700;color:var(--grey-text);
-  background:rgba(22,24,29,.07);border-radius:999px;padding:2px 9px;letter-spacing:0}
+  background:rgba(var(--ink-rgb),.07);border-radius:999px;padding:2px 9px;letter-spacing:0}
 .hgrp>.hist{padding:0 10px 12px}
 
 .hitem>summary{cursor:pointer;list-style:none}
@@ -580,10 +650,10 @@ details.cli-wrap summary:hover{color:var(--ink)}
   border-radius:0 0 13px 13px}
 .dchips{display:flex;flex-wrap:wrap;gap:6px}
 .dchip{font-family:var(--num);font-size:11px;font-weight:700;white-space:nowrap;
-  border-radius:999px;padding:4px 10px;background:rgba(22,24,29,.05);color:var(--grey-text)}
-.dchip.g{background:rgba(46,125,111,.12);color:var(--teal-text)}
-.dchip.a{background:rgba(201,162,74,.16);color:var(--gold-text)}
-.dchip.r{background:rgba(179,69,58,.1);color:var(--red)}
+  border-radius:999px;padding:4px 10px;background:rgba(var(--ink-rgb),.05);color:var(--grey-text)}
+.dchip.g{background:rgba(var(--teal-rgb),.12);color:var(--teal-text)}
+.dchip.a{background:rgba(var(--gold-rgb),.16);color:var(--gold-text)}
+.dchip.r{background:rgba(var(--red-rgb),.1);color:var(--red-text)}
 
 @media(max-width:640px){
   /* Two lines instead of a row of columns: the date with the score on the far edge, then
@@ -631,10 +701,10 @@ details.cli-wrap summary:hover{color:var(--ink)}
      their text; on a phone every one of them is hit with a thumb, so they get a floor. */
   .grid{grid-template-columns:repeat(auto-fill,minmax(44px,1fr))}
   .dd-item{padding:14px}
-  .btn,.chip,.seg-b,.qjump,.qstart,.lang-opt,.tiny,.snav,select,input{min-height:44px}
-  .chip,.lang-opt{display:inline-flex;align-items:center}
+  .btn,.chip,.seg-b,.qjump,.qstart,.lang-opt,.theme-opt,.tiny,.snav,select,input{min-height:44px}
+  .chip,.lang-opt,.theme-opt{display:inline-flex;align-items:center}
   /* Two-letter pills and the → button are narrow by their text, not by intent. */
-  .lang-opt,.btn.sm{min-width:44px;justify-content:center}
+  .lang-opt,.theme-opt,.btn.sm{min-width:44px;justify-content:center}
   .chrome-x{width:44px;height:44px}
   .qjump{width:84px}
 }
@@ -656,8 +726,8 @@ details.cli-wrap summary:hover{color:var(--ink)}
    answer. Sticky, because the way into the textbook is a question and the way out of it is
    this, and a long chapter should not put one out of reach of the other. */
 .backrun{position:sticky;top:10px;z-index:5;margin-bottom:14px;
-  background:var(--ink);color:var(--cream-light);border-color:var(--ink)}
-.backrun:hover{background:var(--ink);border-color:var(--gold);color:var(--cream-light)}
+  background:var(--panel);color:var(--panel-fg);border-color:var(--panel)}
+.backrun:hover{background:var(--panel);border-color:var(--gold);color:var(--panel-fg)}
 
 /* Two columns that fold together at 1100px. The left one carries more, hence 1.35fr. */
 .dgrid{display:grid;grid-template-columns:1.35fr 1fr;gap:22px;align-items:stretch}
@@ -666,41 +736,41 @@ details.cli-wrap summary:hover{color:var(--ink)}
 
 /* The forecast panel — the one dark thing on the dashboard, because the number on it is
    the answer to the only question worth asking before an exam. */
-.ready{border-radius:20px;background:var(--ink);color:var(--cream-light);padding:32px;
+.ready{border-radius:20px;background:var(--panel);color:var(--panel-fg);padding:32px;
   display:flex;flex-direction:column;gap:22px}
 .ready-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
 .ready-l{display:flex;flex-direction:column;gap:10px}
 .kick{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
-  color:rgba(247,244,238,.5)}
+  color:rgba(var(--panel-fg-rgb),.5)}
 .ready-n{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap}
 .ready-n .v{font-family:var(--num);font-size:68px;font-weight:700;line-height:1;color:var(--gold)}
-.ready-n .of{font-size:18px;font-weight:600;color:rgba(247,244,238,.5)}
+.ready-n .of{font-size:18px;font-weight:600;color:rgba(var(--panel-fg-rgb),.5)}
 .ready-n .dl{font-family:var(--num);font-size:15px;font-weight:700;color:var(--teal-on-dark)}
 .ready-n .dl.down{color:var(--red-on-dark)}
-.ready-note{font-size:13px;color:rgba(247,244,238,.5)}
+.ready-note{font-size:13px;color:rgba(var(--panel-fg-rgb),.5)}
 .ready-pill{flex:none;white-space:nowrap;padding:9px 18px;border-radius:999px;font-size:14px;
-  font-weight:700;background:rgba(179,69,58,.26);color:var(--red-on-dark)}
-.ready-pill.pass{background:rgba(46,125,111,.26);color:var(--teal-on-dark)}
-.ready-rule{height:1px;background:rgba(247,244,238,.12)}
+  font-weight:700;background:rgba(var(--red-rgb),.26);color:var(--red-on-dark)}
+.ready-pill.pass{background:rgba(var(--teal-rgb),.26);color:var(--teal-on-dark)}
+.ready-rule{height:1px;background:rgba(var(--panel-fg-rgb),.12)}
 .ready-weak{display:flex;flex-direction:column;gap:9px}
 .wchips{display:flex;flex-wrap:wrap;gap:8px}
 .wchip{display:inline-flex;align-items:baseline;gap:7px;white-space:nowrap;padding:7px 13px;
-  border-radius:999px;border:1px solid rgba(201,162,74,.45);font-size:12px;font-weight:700;
+  border-radius:999px;border:1px solid rgba(var(--gold-rgb),.45);font-size:12px;font-weight:700;
   letter-spacing:.04em;color:var(--gold)}
-.wchip .p{font-family:var(--num);color:rgba(247,244,238,.6)}
+.wchip .p{font-family:var(--num);color:rgba(var(--panel-fg-rgb),.6)}
 
 /* The main action, at the foot of the panel where the eye lands after the number. */
 .weakgo{margin-top:auto;display:flex;align-items:center;gap:20px;width:100%;text-align:left;
   cursor:pointer;border:0;border-radius:16px;padding:22px 24px;font:inherit;
-  background:rgba(247,244,238,.06);transition:background .15s}
-.weakgo:hover{background:rgba(247,244,238,.1)}
+  background:rgba(var(--panel-fg-rgb),.06);transition:background .15s}
+.weakgo:hover{background:rgba(var(--panel-fg-rgb),.1)}
 .weakgo .tx{flex:1;display:flex;flex-direction:column;gap:5px}
-.weakgo .tx b{font-size:21px;font-weight:800;letter-spacing:-.02em;color:var(--cream-light)}
-.weakgo .tx span{font-size:13px;font-weight:400;line-height:1.5;color:rgba(247,244,238,.66)}
+.weakgo .tx b{font-size:21px;font-weight:800;letter-spacing:-.02em;color:var(--panel-fg)}
+.weakgo .tx span{font-size:13px;font-weight:400;line-height:1.5;color:rgba(var(--panel-fg-rgb),.66)}
 .weakgo .go{flex:none;padding:13px 26px;border-radius:999px;font-size:14px;font-weight:700;
-  background:var(--gold);color:var(--ink)}
+  background:var(--gold);color:var(--on-gold)}
 /* Nothing to forecast yet: the same panel, saying so, with the run that would fix it. */
-.ready-empty{font-size:15px;line-height:1.55;color:rgba(247,244,238,.66)}
+.ready-empty{font-size:15px;line-height:1.55;color:rgba(var(--panel-fg-rgb),.66)}
 .ready-empty + .weakgo .go{background:var(--gold)}
 
 /* A plain bordered card. app.js reuses it for "Сегодня" and the score chart. */
@@ -717,18 +787,18 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .rowbtn .tx b{font-size:16px;font-weight:800}
 .rowbtn .tx span{font-size:13px;font-weight:600;color:var(--grey-text)}
 .rowbtn .n{flex:none;font-family:var(--num);font-size:24px;font-weight:700;color:var(--teal-text)}
-.rowbtn .n.r{color:var(--red)}
+.rowbtn .n.r{color:var(--red-text)}
 
 /* Scores over the last few weighted attempts. Only those: a filtered pick is not the
    sample the 300..1000 scale describes, and putting one on this chart would say it was. */
 .chart{position:relative;height:118px;display:flex;align-items:flex-end;gap:8px;
   border-bottom:1px solid var(--line)}
-.chart i{flex:1;border-radius:4px 4px 0 0;background:rgba(22,24,29,.18)}
+.chart i{flex:1;border-radius:4px 4px 0 0;background:rgba(var(--ink-rgb),.18)}
 .chart i.near{background:var(--ink)}
 .chart i.last{background:var(--gold)}
 /* Over the bars, not under them: the line's whole job is saying which attempts cleared
    825, and its label is unreadable sitting behind a full-height column. */
-.chart-pass{position:absolute;left:0;right:0;z-index:1;border-top:1px dashed rgba(201,162,74,.6)}
+.chart-pass{position:absolute;left:0;right:0;z-index:1;border-top:1px dashed rgba(var(--gold-rgb),.6)}
 .chart-pass span{position:absolute;right:0;top:-17px;padding:0 4px;border-radius:4px;
   background:var(--cream);font-family:var(--num);font-size:11px;
   font-weight:700;color:var(--gold-text)}
@@ -758,14 +828,14 @@ details.cli-wrap summary:hover{color:var(--ink)}
 
 /* ---- the weak-spots screen ---- */
 /* Today's mix and the button that starts it, stated as one sentence and one action. */
-.mixbar{border-radius:20px;background:var(--ink);color:var(--cream-light);padding:28px;
+.mixbar{border-radius:20px;background:var(--panel);color:var(--panel-fg);padding:28px;
   display:flex;align-items:center;gap:24px;flex-wrap:wrap}
 .mixbar .tx{flex:1;min-width:240px;display:flex;flex-direction:column;gap:7px}
 .mixbar .mx{font-size:17px;font-weight:700}
-.mixbar .rule{font-size:13px;color:rgba(247,244,238,.5)}
+.mixbar .rule{font-size:13px;color:rgba(var(--panel-fg-rgb),.5)}
 .mixbar .go{flex:none;border:0;cursor:pointer;border-radius:999px;padding:15px 28px;font:inherit;
-  font-size:15px;font-weight:700;background:var(--gold);color:var(--ink);transition:background .15s}
-.mixbar .go:hover{background:#BD9846}
+  font-size:15px;font-weight:700;background:var(--gold);color:var(--on-gold);transition:background .15s}
+.mixbar .go:hover{background:var(--gold-hover)}
 
 /* One domain below the threshold. The red edge is the same device .review-item.bad uses. */
 .wdom{border:1px solid var(--edge);border-left:4px solid var(--red);border-radius:16px;
@@ -773,7 +843,7 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .wdom-top{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
 .wdom-top .nm{font-size:17px;font-weight:800;letter-spacing:-.01em}
 .wdom-top .nm .dn{font-family:var(--num);font-weight:500;color:var(--grey-text)}
-.wdom-top .sc{font-family:var(--num);font-size:15px;font-weight:700;color:var(--red)}
+.wdom-top .sc{font-family:var(--num);font-size:15px;font-weight:700;color:var(--red-text)}
 .wdom .cost{font-size:13px;font-weight:600;color:var(--grey-text)}
 .wdom .acts{display:flex;gap:9px;flex-wrap:wrap}
 
@@ -786,7 +856,7 @@ details.cli-wrap summary:hover{color:var(--ink)}
   border:1px solid var(--edge);border-radius:13px;padding:13px 16px}
 .wtopic .nm{font-size:14px;font-weight:700}
 .wtopic .cnt{font-size:13px;font-weight:600;color:var(--grey-text);text-align:right}
-.wtopic .pc{font-family:var(--num);font-size:17px;font-weight:700;color:var(--red);text-align:right}
+.wtopic .pc{font-family:var(--num);font-size:17px;font-weight:700;color:var(--red-text);text-align:right}
 .wtopic .pc.a{color:var(--gold-text)}
 /* One line, both buttons: it is the chapter title that should wrap when it is long, not
    the pair of buttons — a "учить" alone on the line above reads as a heading for it. */
@@ -905,9 +975,9 @@ details.cli-wrap summary:hover{color:var(--ink)}
   border-bottom:1px solid var(--line);line-height:1.5}
 .bk-table th{font-weight:700;background:var(--cream-warm);white-space:nowrap}
 .bk-table tr:last-child td{border-bottom:0}
-.bk-code{margin:16px 0;padding:14px 15px;overflow-x:auto;background:var(--ink);
+.bk-code{margin:16px 0;padding:14px 15px;overflow-x:auto;background:var(--panel);
   border-radius:13px;font-family:var(--mono);font-size:13px;line-height:1.55;
-  color:var(--cream-light);white-space:pre}
+  color:var(--panel-fg);white-space:pre}
 .bk-code.cfg{border-left:3px solid var(--teal)}
 .bk-code.cli{border-left:3px solid var(--gold)}
 
@@ -919,7 +989,7 @@ details.cli-wrap summary:hover{color:var(--ink)}
 .bk-note.key{border-left-color:var(--teal)}
 .bk-note.key .bk-note-h{color:var(--teal-text)}
 .bk-note.trap{border-left-color:var(--red)}
-.bk-note.trap .bk-note-h{color:var(--red)}
+.bk-note.trap .bk-note-h{color:var(--red-text)}
 .bk-note.lab{border-left-color:var(--gold)}
 .bk-note.lab .bk-note-h{color:var(--gold-text)}
 
