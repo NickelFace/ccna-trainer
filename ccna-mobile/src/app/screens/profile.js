@@ -17,6 +17,7 @@ import { daysUntil } from '../../engine/localdate.js';
 import { dayKey } from '../../engine/stats.js';
 import { DEFAULT_TIME, requestPermission, reschedule } from '../notify.js';
 import { t, getLang, setLang, pluralWord, WORDS } from '../i18n.js';
+import { getTheme, setTheme } from '../theme.js';
 
 // The onboarding presets, as a plain list — the pace a learner picks is one of these four
 // far more often than an arbitrary number, and a number pad for "вопросов в день" invites
@@ -96,6 +97,20 @@ function langRows(lang) {
   ).join('')}</div>`;
 }
 
+// Three pills — System / Light / Dark — same styling as the language row above so the
+// two settings read as siblings. The active one wears .on; setTheme() persists the choice
+// and repaints all data-theme rules before the render below finishes.
+function themeRows(theme) {
+  const OPTS = [
+    { id: 'system', label: t('profile.theme.system') },
+    { id: 'light',  label: t('profile.theme.light') },
+    { id: 'dark',   label: t('profile.theme.dark') },
+  ];
+  return `<div class="ai-chips">${OPTS.map(o =>
+    `<button class="pill${theme === o.id ? ' on' : ''}" data-theme="${o.id}" type="button">${esc(o.label)}</button>`
+  ).join('')}</div>`;
+}
+
 // Reported rather than assumed: Android 13+ can refuse the permission outright, and a row
 // of switches that look armed while the OS drops every notification is the worst outcome.
 let permissionNote = '';
@@ -166,6 +181,10 @@ export const profile = {
       <div class="label spaced">${esc(t('profile.language'))}</div>
       ${langRows(getLang())}
       <p class="muted lead">${esc(t('profile.language.hint'))}</p>
+
+      <div class="label spaced">${esc(t('profile.theme'))}</div>
+      ${themeRows(getTheme())}
+      <p class="muted lead">${esc(t('profile.theme.hint'))}</p>
     `);
 
     node.addEventListener('click', async e => {
@@ -174,6 +193,12 @@ export const profile = {
         setLang(langBtn);
         ctx.router.renderTabs();
         return ctx.router.render();
+      }
+
+      const themeBtn = e.target.closest('[data-theme]')?.dataset.theme;
+      if (themeBtn) {
+        await setTheme(themeBtn);        // applies data-theme + persists to Preferences
+        return ctx.router.render();      // repaint the row so the .on pill moves
       }
 
       const sw = e.target.closest('[data-notify]')?.dataset.notify;

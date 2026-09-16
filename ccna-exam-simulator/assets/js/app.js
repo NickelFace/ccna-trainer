@@ -324,6 +324,10 @@ const I18N = {
     nav_history: 'История',
     nav_progress: 'Прогресс',
     side_offline: 'офлайн · без бэкенда',
+    theme_group_label: 'Тема / Theme',
+    theme_system: 'Система',
+    theme_light: 'Светлая',
+    theme_dark: 'Тёмная',
     ready_title: 'Прогноз готовности',
     ready_scale: 'шкала 300–1000 · порог 825 · по последним {0} ответам',
     ready_delta: '{0} за неделю',
@@ -603,6 +607,10 @@ const I18N = {
     nav_history: 'History',
     nav_progress: 'Progress',
     side_offline: 'offline · no backend',
+    theme_group_label: 'Theme',
+    theme_system: 'System',
+    theme_light: 'Light',
+    theme_dark: 'Dark',
     ready_title: 'Readiness forecast',
     ready_scale: 'scale 300–1000 · pass 825 · over the last {0} answers',
     ready_delta: '{0} this week',
@@ -816,9 +824,25 @@ function renderSide() {
         </div>
         <span class="note">${t('side_offline')}</span>
       </div>
+      <div class="side-theme">
+        <!-- Three chips, one row: System / Light / Dark. Same segmented look as the
+             language switch above so the two settings read as siblings. window.Theme
+             is set up by theme.js as a classic-script global. -->
+        <div class="lang-switch" role="group" aria-label="${esc(t('theme_group_label'))}">
+          ${[
+            ['system', t('theme_system')],
+            ['light',  t('theme_light')],
+            ['dark',   t('theme_dark')],
+          ].map(([id, label]) => `<span class="lang-opt${id === (window.Theme && window.Theme.get()) ? ' on' : ''}"
+            data-theme="${id}">${esc(label)}</span>`).join('')}
+        </div>
+      </div>
     </div>`;
   box.querySelectorAll('[data-nav]').forEach(b => b.onclick = () => goScreen(b.dataset.nav));
   box.querySelectorAll('[data-lang]').forEach(b => b.onclick = () => setLang(b.dataset.lang));
+  box.querySelectorAll('[data-theme]').forEach(b => b.onclick = () => {
+    if (window.Theme) { window.Theme.set(b.dataset.theme); renderSide(); }
+  });
 }
 
 // Leaving a running exam through the sidebar is the same decision as leaving it through
