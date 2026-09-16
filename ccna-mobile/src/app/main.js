@@ -4,6 +4,7 @@
 import { router } from './router.js';
 import { store, bindPersistOnPause, bindResume } from './store.js';
 import { autoSyncer } from '../../../ccna-exam-simulator/assets/js/shared/sync.js?v=23';
+import { initTheme } from './theme.js';
 import { reschedule, initNotificationListener } from './notify.js';
 import { scorable } from '../engine/select.js';
 import { sessionIsValid } from './session.js';
@@ -54,7 +55,10 @@ function redrawIfSafe() {
 
 async function boot() {
   try {
-    const [bank] = await Promise.all([loadBank(), store.load()]);
+    // Theme comes up first so the page paints with the saved --bg/--text and there is
+    // no white-flash while the bank loads. The inline script in index.html sets a
+    // reasonable default before this awaits; here we upgrade to the persisted choice.
+    const [bank] = await Promise.all([loadBank(), store.load(), initTheme()]);
 
     // A session stored against an older bank (build_data.py renumbers questions) would
     // resolve to undefined mid-exam. Drop it rather than crash on the first render.
