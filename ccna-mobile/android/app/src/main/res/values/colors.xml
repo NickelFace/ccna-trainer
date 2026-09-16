@@ -4,5 +4,5 @@
          match and there is no flash of a different colour on launch. The glyph's own two
          colours live in the drawable, which brand/generate.py writes from the mark's
          geometry — there is no second place to keep them in step. -->
-    <color name="splashBackground">#0e1013</color>
+    <color name="splashBackground">#0F172A</color>
 </resources>

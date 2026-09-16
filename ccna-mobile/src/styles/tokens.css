@@ -1,52 +1,81 @@
-/* Design tokens — from design_handoff_ccna_android/README.md.
-   These replace the web app's neon-cyan scheme entirely: no gradient page background,
-   no grid pattern, no glow shadows. The only gradients allowed are the readiness bar
-   and the result scale; the only shadow is the review sheet's. */
+/* Design tokens — the layout rules come from design_handoff_ccna_android/README.md; the
+   colours below no longer do. The app now shares the web trainer's palette: Slate
+   neutrals and a gold accent, so that one product does not read as two.
+
+   What the handoff still governs holds: no gradient page background, no grid pattern,
+   no glow shadows. The only gradients allowed are the readiness bar and the result
+   scale; the only shadow is the review sheet's.
+
+   The app stays dark — this is a palette change, not a theme. Every surface, line and
+   text value below was solved to reproduce the contrast ratio the previous palette had
+   against --bg, so the depth ordering a phone screen depends on is unchanged; only the
+   hue moved from neutral-blue to slate. */
 
 :root {
-  /* ---- surfaces ---- */
-  --bg: #0e1013;
-  --surface: #16191e;
-  --surface-alt: #111418;
-  --bar: #111418;
-  --sheet: #14171c;
-  --elev: #1a1e24;
+  /* ---- surfaces ----
+     --bg is the web app's dark page ground (slate-900) exactly. The rest sit above it at
+     the same distances the old palette used. */
+  --bg: #0F172A;
+  --surface: #151F31;
+  --surface-alt: #121A2D;
+  --bar: #121A2D;
+  --sheet: #141D2F;
+  --elev: #192436;
 
   /* ---- lines ---- */
-  --border: #262b32;
-  --border-soft: #23272e;
-  --divider: #1c2027;
+  --border: #243042;
+  --border-soft: #212C3E;
+  /* One step above --border, for the things that have to hold their own line over a
+     card: the chart threshold and the unticked choice ring. Both used to hardcode it. */
+  --border-strong: #374559;
+  --divider: #1B2638;
 
   /* ---- text ---- */
-  --text: #e8eaed;
-  --text-2: #a8afba;
-  --text-3: #8c939e;
-  --text-4: #6f7681;
-  --text-disabled: #4d545e;
+  --text: #EDF2F7;
+  --text-2: #A8B5C7;
+  --text-3: #8999AE;
+  /* Clears AA against --elev, the lightest ground it lands on. The old palette had it
+     at 3.85 there, which put every chapter's "35 min · 9 questions" under the line. */
+  --text-4: #7C8BA1;
+  --text-disabled: #4A596D;
 
-  /* ---- accent ---- */
-  --primary: #7aa2ff;
-  --primary-strong: #3c6ae0;
-  --primary-bg: #182130;
-  --primary-border: #263457;
-  --primary-text: #9fb6e8;
-  --on-primary: #0e1013;
+  /* ---- accent: gold, the brand ----
+     --primary is the web's --gold and --on-primary its --on-gold, unchanged, so a button
+     here and a button there are the same button. --primary-text is the hue walked up
+     until it reads as text on a dark ground — the web's --gold-text in its dark theme. */
+  --primary: #C9A24A;
+  --primary-strong: #BD9846;
+  /* Slate lifted off --surface with a touch of the gold in it, not a gold tint over the
+     page. Gold is warm and this ground is cold, so a strong mix cancels to a flat grey
+     and a whole card painted in it looks washed out beside a plain one. The gold on
+     these cards is carried by the border and the text instead. */
+  --primary-bg: #232933;
+  --primary-border: #5D5137;
+  --primary-text: #D4AF61;
+  --on-primary: #0F172A;
 
-  /* ---- semantic ---- */
-  --ok: #58c08c;
-  --ok-text: #8fd4a8;
-  --ok-bg: #151f18;
-  --ok-border: #2f6b45;
-  --err: #f2777a;
-  --err-bg: #241a1c;
-  --err-border: #6b3236;
-  --warn: #e3b341;
-  --warn-bg: #221e14;
-  --warn-border: #4a3d1c;
+  /* ---- semantic ----
+     A verdict is read as text here as often as it is painted as a bar, so --ok and --err
+     are the web's teal and red walked up for a dark ground (its --teal-text/--red-text),
+     not the saturated fills. The tints below are mixed from the saturated ones, which is
+     what gives them a hue at all — mixing the pale text colours just yields grey. */
+  --ok: #7FD4C1;
+  --ok-text: #9BDFD0;
+  --ok-bg: #132534;
+  --ok-border: #1C4247;
+  --err: #E4B2AD;
+  --err-bg: #261D2C;
+  --err-border: #542A31;
+  /* The web has no separate warning hue: a flagged question and a middling domain score
+     are both simply gold there. Aliases rather than copied values, so this reads as the
+     decision it is — and so a later change to the gold cannot leave warn behind. */
+  --warn: var(--primary-text);
+  --warn-bg: var(--primary-bg);
+  --warn-border: var(--primary-border);
 
   /* ---- the two permitted gradients ---- */
-  --grad-readiness: linear-gradient(90deg, #3c6ae0, #7aa2ff);
-  --grad-scale: linear-gradient(90deg, #8a6a1e, #e3b341);
+  --grad-readiness: linear-gradient(90deg, #8A6A1E, #C9A24A);
+  --grad-scale: linear-gradient(90deg, #8A6A1E, #D4AF61);
   --shadow-sheet: 0 -18px 40px rgba(0, 0, 0, .5);
 
   /* ---- type ----

@@ -233,7 +233,7 @@
 .chip.sel { background: var(--primary-bg); border-color: var(--primary-strong); color: var(--text); }
 .chip.placed {
   background: var(--surface-alt);
-  border: 1px dashed #2c3138;
+  border: 1px dashed var(--border);
   color: var(--text-disabled);
   text-decoration: line-through;
 }
@@ -259,7 +259,7 @@
   padding: 7px 10px 7px 12px;
   border-radius: var(--r-chip);
   background: var(--elev);
-  border: 1px solid #2c3138;
+  border: 1px solid var(--border);
   font-family: var(--font-mono);
   font-size: 13.5px;
   color: var(--text);
@@ -305,7 +305,7 @@
   transition: transform 500ms ease-out;
 }
 .sheet-backdrop.in .sheet { transform: translateY(0); }
-.sheet-handle { width: 36px; height: 4px; border-radius: 2px; background: #2c3138; margin: 0 auto 14px; }
+.sheet-handle { width: 36px; height: 4px; border-radius: 2px; background: var(--border); margin: 0 auto 14px; }
 
 .review-verdict { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; margin-bottom: 14px; }
 .review-verdict > span:first-child { font-size: 17px; font-weight: 600; }
@@ -516,7 +516,7 @@
 
 .chart-plot { position: relative; height: var(--chart-h); }
 .chart-bars { display: flex; align-items: flex-end; gap: 10px; height: 100%; }
-.bar { flex: 1; border-radius: 5px 5px 0 0; background: #2c3138; }
+.bar { flex: 1; border-radius: 5px 5px 0 0; background: var(--border); }
 .bar.recent { background: var(--primary-strong); }
 .bar.now { background: var(--primary); }
 /* The daily-activity strip reads by goal met, not by recency — a day at or over the
@@ -528,7 +528,7 @@
 /* Drawn across the plot, with its label parked outside the bars on the right. */
 .chart-threshold {
   position: absolute; left: 0; right: 0;
-  border-top: 1px dashed #3a4048;
+  border-top: 1px dashed var(--border-strong);
   pointer-events: none;
 }
 .chart-threshold span {
@@ -683,8 +683,8 @@
 .onboard-lead { margin: 10px 0 22px; font-size: 14.5px; color: var(--text-2); line-height: 1.55; }
 .onboard-hint {
   margin-top: 18px; padding: 14px 16px;
-  background: #131720;
-  border: 1px dashed #2c3542;
+  background: var(--surface-alt);
+  border: 1px dashed var(--border);
   border-radius: var(--r-sm);
   font-size: var(--fs-caption); color: var(--text-2); line-height: 1.6;
 }
@@ -707,8 +707,10 @@
   flex: 0 0 22px; height: 22px;
   display: flex; align-items: center; justify-content: center;
   border-radius: 50%;
-  border: 1.5px solid #3a4048;
-  font-size: 12px; color: #fff;
+  border: 1.5px solid var(--border-strong);
+  /* Only ever drawn over the --primary-strong fill below, and gold takes dark ink:
+     white on it measures 2.7:1. Same reason the web has --on-gold. */
+  font-size: 12px; color: var(--on-primary);
 }
 .choice.on .choice-mark { background: var(--primary-strong); border-color: var(--primary-strong); }
 
@@ -813,7 +815,7 @@
   border-radius: var(--r-pill);
   background: rgba(0, 0, 0, .55);
   font-size: var(--fs-label);
-  color: #cfd4dc;
+  color: #CBD5E1;
   white-space: nowrap;
   pointer-events: none;
   transition: opacity 200ms ease-out;
