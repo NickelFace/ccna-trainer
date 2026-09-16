@@ -16,7 +16,21 @@
      the site is Russian by default and the Latin subsets are only pulled in for EN. -->
 <link rel="preload" href="assets/fonts/manrope-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/playfair-display-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=40">
+<!-- FOUC guard: sets data-theme before the first paint so the page never renders in the
+     wrong palette. Reads the persisted choice from localStorage; falls back to
+     prefers-color-scheme for the default 'system' option. Kept inline (not deferred) so
+     nothing in <body> ever paints against the untinted :root. -->
+<script>
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('ccna_theme'); } catch (e) { /* private mode */ }
+    if (t !== 'light' && t !== 'dark') {
+      t = (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
+<link rel="stylesheet" href="assets/css/styles.css?v=41">
 </head>
 <body>
 <!-- The shell app.js draws into: the sidebar is redrawn on every screen change, the screen
@@ -34,6 +48,10 @@
      (assets/js/shared/). Module scripts are deferred, so it has run and set window.Store
      before app.js routes on DOMContentLoaded. -->
 <script type="module" src="assets/js/store.js?v=23"></script>
-<script src="assets/js/app.js?v=62"></script>
+<!-- Theme controller: registers window.Theme so app.js (a classic script) can wire the
+     Settings toggle. The pre-paint script above has already put data-theme on <html>; this
+     module upgrades that to the live prefers-color-scheme listener when System is picked. -->
+<script type="module" src="assets/js/theme.js?v=1"></script>
+<script src="assets/js/app.js?v=63"></script>
 </body>
 </html>

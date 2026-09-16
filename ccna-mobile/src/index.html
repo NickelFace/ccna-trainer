@@ -5,8 +5,25 @@
 <!-- viewport-fit=cover is what makes env(safe-area-inset-*) report real values;
      without it Android reports 0 and the sticky panels sit under the system bars. -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-<meta name="color-scheme" content="dark">
+<meta name="color-scheme" content="dark light">
 <title>NetPath</title>
+<!-- FOUC guard: runs synchronously in <head> so the first paint already has the right
+     data-theme. The persisted choice ('system' | 'light' | 'dark') is stored in
+     Capacitor Preferences, which on Android is SharedPreferences and not readable from
+     JS. To avoid a mandatory async round-trip before paint, we mirror the choice in
+     localStorage on every set (see app/theme.js); localStorage inside Capacitor's
+     WebView is process-local and cheap. If neither exists (first launch), fall back to
+     prefers-color-scheme, matching the default 'system' choice. -->
+<script>
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('ccna_theme'); } catch (e) { /* private mode */ }
+    if (t !== 'light' && t !== 'dark') {
+      t = (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
 <link rel="stylesheet" href="app.css">
 </head>
 <body>
