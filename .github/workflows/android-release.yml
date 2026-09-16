@@ -73,6 +73,13 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4
+        with:
+          # The action's own default ('tools platform-tools') still asks for the legacy
+          # 'tools' package, which Google has stopped serving from the SDK repository —
+          # sdkmanager exits 1 trying to fetch it, before Gradle ever gets a turn. Nothing
+          # in this build actually uses that package (last shipped standalone `android`/
+          # `monitor` CLIs); platform-tools alone is what adb-dependent Gradle tasks want.
+          packages: 'platform-tools'
 
       - name: Work out the version
         id: version
