@@ -57,34 +57,50 @@ that was verified by running both implementations over the same inputs and compa
 
 ## Palette
 
-The app is dark, and only dark — there is no light theme and no switch. What changed is
-the hue: it used to run on a neutral-blue scheme of its own, and it now shares the web
-trainer's, so that one product does not read as two. Slate neutrals, gold accent.
+Dark and light, both sharing the web trainer's palette — Slate neutrals, gold accent —
+so that one product does not read as two. Dark stays the default: an existing install
+looks exactly as it did before the switch existed, until someone opens Профиль and picks
+otherwise.
 
-Everything lives in `src/styles/tokens.css`; `base.css` and `book.css` hold no colour at
-all and `screens.css` holds none either since the last few hardcoded borders became
-tokens. So a palette change is that one file.
+Everything lives in `src/styles/tokens.css`, which declares the whole dark set on `:root`
+and only what actually moves a second time under `[data-theme="light"]`. `--primary`,
+`--primary-strong`, `--on-primary` and the two gradients are not in that second block —
+gold paired with dark ink already reads on either ground (7.44:1 both ways), so only the
+neutral scale and the accent's *text* variant (`--primary-text`, walked down for a light
+page the same way `--gold-text` is on the web) have a light-mode value at all. `base.css`
+and `book.css` hold no colour, and `screens.css` holds none either — the switch is that
+one file.
 
 Two things are worth knowing before editing it:
 
 - **The surfaces are solved, not picked.** Each of `--surface`, `--elev`, `--border` and
-  the text steps was chosen to reproduce the contrast ratio the previous palette had
-  against `--bg`. The depth ordering a phone screen leans on is unchanged; only the hue
-  moved. If you retune one, keep its ratio to `--bg` rather than its hex.
-- **`--ok` and `--err` are the pale variants, not the saturated ones.** A verdict is read
-  as text here as often as it is painted as a bar, so they are the web's teal and red
-  walked up for a dark ground. The tints (`--ok-bg`, `--err-bg`) are mixed from the
-  *saturated* versions — mixing the pale ones into slate just yields grey.
+  the text steps reproduces the contrast ratio the *old* (blue) palette had against
+  `--bg` in dark; light has no such precedent to reproduce and is instead its own
+  self-consistent scale, `--bg` aside (see below). If you retune one, keep its ratio to
+  `--bg` rather than its hex.
+- **`--ok` and `--err` change roles between the two themes.** In dark they're the pale,
+  walked-up-for-a-dark-ground variants (a verdict is read as text as often as it's
+  painted as a bar); in light the web's own saturated teal/red already clear AA as text
+  on a light page, so there's no separate pale step to carry — `--ok-text` alone plays
+  that role, for the badges tinted from `--ok-bg`.
 
-`--warn` and its tint are aliases of the gold rather than values of their own. The web has
-no separate warning hue: a flagged question and a middling domain score are both simply
-gold there. Aliasing says that is a decision, and keeps a later change to the gold from
-leaving the warning colour behind.
+`--warn` and its tint are aliases of `--primary-text`/`--primary-bg`/`--primary-border`
+rather than values of their own, in *both* themes. The web has no separate warning hue: a
+flagged question and a middling domain score are both simply gold there. Aliasing says
+that is a decision, and keeps a later change to the gold from leaving the warning colour
+behind — in light this also means the alias just works, with nothing to redeclare.
 
-The icon and splash were already drawn in the brand's gold by `brand/generate.py` — this
-change brings the UI into line with them rather than the other way round. `capacitor.config.json`
-and `res/values/colors.xml` carry `--bg` for the launch window, so the splash hands over to
-the WebView without a flash; they have to move whenever `--bg` does.
+`--bg` in each theme matches the web trainer's own page ground exactly (dark's slate-900,
+light's slate-50) — everything else in the neutral scale is this app's own. The icon and
+splash were already drawn in the brand's gold by `brand/generate.py`; `capacitor.config.json`
+and `res/values/colors.xml` still carry dark's `--bg` for the launch window regardless of
+the chosen theme, so the splash hands over to the WebView without a flash — a themed
+splash is a separate `values-night/` + second drawable, not attempted here.
+
+Android draws its own status-bar and navigation-bar icons, so a light page with light
+(invisible-on-white) icons needs telling apart: `app/theme.js` calls
+`@capacitor/status-bar` on every theme change, native platform only. There is nothing to
+verify for it outside a device — the browser dev build has no system bars to recolour.
 
 ## Motion
 

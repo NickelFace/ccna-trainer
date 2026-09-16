@@ -1,15 +1,20 @@
 /* Design tokens — the layout rules come from design_handoff_ccna_android/README.md; the
-   colours below no longer do. The app now shares the web trainer's palette: Slate
-   neutrals and a gold accent, so that one product does not read as two.
+   colours below no longer do. The app shares the web trainer's palette: Slate neutrals
+   and a gold accent, so that one product does not read as two.
 
    What the handoff still governs holds: no gradient page background, no grid pattern,
    no glow shadows. The only gradients allowed are the readiness bar and the result
    scale; the only shadow is the review sheet's.
 
-   The app stays dark — this is a palette change, not a theme. Every surface, line and
-   text value below was solved to reproduce the contrast ratio the previous palette had
-   against --bg, so the depth ordering a phone screen depends on is unchanged; only the
-   hue moved from neutral-blue to slate. */
+   Dark is still the default and still the baseline every value below is written
+   against — every surface, line and text value reproduces the contrast ratio the old
+   (blue) palette had against --bg, so the depth ordering a phone screen depends on is
+   unchanged, only the hue moved. What is new is that dark is no longer the *only*
+   theme: [data-theme="light"] at the bottom of this file is the second half, switched
+   in app/theme.js. --primary, --primary-strong, --on-primary and the two gradients are
+   not redeclared there — gold paired with dark ink already reads on both grounds (7.44
+   either way), unlike the neutral scale, so the light block only overrides what
+   actually has to move. */
 
 :root {
   /* ---- surfaces ----
@@ -78,6 +83,17 @@
   --grad-scale: linear-gradient(90deg, #8A6A1E, #D4AF61);
   --shadow-sheet: 0 -18px 40px rgba(0, 0, 0, .5);
 
+  /* ---- backdrops & the one native-control filter ----
+     Named rather than left as literals in screens.css so the light theme has somewhere
+     to put its own values: a light backdrop needs far less added darkness to read as a
+     dim, and the browser draws a date/time picker's glyph dark-on-transparent by
+     default, which only wants inverting on a dark ground. */
+  --scrim: rgba(0, 0, 0, .35);          /* .sheet-backdrop.dim.in */
+  --scrim-strong: rgba(0, 0, 0, .55);   /* .dialog-backdrop */
+  --picker-filter: invert(.7);          /* date/time input's calendar-picker-indicator */
+
+  color-scheme: dark;
+
   /* ---- type ----
      Space Grotesk has no Cyrillic (Google Fonts ships it as latin/latin-ext/vietnamese
      only), so Manrope covers the Cyrillic ranges. Per-character fallback in the stack
@@ -121,4 +137,75 @@
   --safe-right: env(safe-area-inset-right, 0px);
 
   --tabbar-h: 64px;
+}
+
+/* ---- the light theme ----
+   Only what actually changes with the ground: surfaces, lines, text, the tinted/text
+   variants of the accent, and the two backdrops. Sizes, radii, type and the gold itself
+   stay in :root above and are simply inherited — see the file header for why.
+
+   [data-theme] rather than a mere `prefers-color-scheme` query: 'system' is resolved in
+   JS (app/theme.js), so the CSS only ever has to know light or dark, never "and also
+   whatever the OS says right now". */
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* ---- surfaces ----
+     --bg matches the web trainer's light page ground exactly, the same way dark's --bg
+     matches its slate-900. Cards go to a plain white rather than a step off --bg: the
+     old (dark) palette had --surface a shade *above* --bg because a card is meant to
+     lift off the page, and on a light ground "lifting" is brighter, not another grey. */
+  --bg: #F8FAFC;
+  --surface: #FFFFFF;
+  --surface-alt: #F1F3F6;
+  --bar: #FFFFFF;
+  --sheet: #FFFFFF;
+  --elev: #ECEFF4;
+
+  /* ---- lines ---- */
+  --border: #D7DCE4;
+  --border-soft: #E2E6EC;
+  --border-strong: #B9C1CD;
+  --divider: #E8EBF0;
+
+  /* ---- text ---- */
+  --text: #14181D;
+  --text-2: #495260;
+  --text-3: #5D6673;
+  --text-4: #656E7B;
+  --text-disabled: #9AA2AE;
+
+  /* ---- accent: still gold, but with a text-safe reading ----
+     --primary itself is not redeclared (see the file header). Everywhere gold has to
+     stand as *text on the page* rather than as a button's own fill — the tab label, a
+     selected option's letter, the onboarding step count — reads var(--primary-text)
+     instead, precisely because raw gold on a light ground measures 2.29:1 and this,
+     walked down to where the web's own --gold-text sits, measures 5.03. --primary-bg is
+     the mirror of dark's "--surface plus a touch of gold": on a light, cold-free ground
+     gold does not cancel out the way it did against dark slate, so the tint can just be
+     mixed straight of the saturated colour. */
+  --primary-bg: #FAF6ED;
+  --primary-border: #ECDEC0;
+  --primary-text: #846827;
+
+  /* ---- semantic ----
+     The web's exact light-theme teal and red: already solved to read as text on a
+     cream ground (4.69 / 5.24), and, unlike the dark theme, close enough to their own
+     tinted backgrounds and to each other that mobile does not need a separate "-text"
+     step for --err the way it does for --ok — the web doesn't either. */
+  --ok: #2E7D6F;
+  --ok-text: #2A7266;
+  --ok-bg: #EAF2F1;
+  --ok-border: #B6D2CD;
+  --err: #B3453A;
+  --err-bg: #F9F0EF;
+  --err-border: #E8C7C4;
+  /* --warn and its tint are var(--primary-text) / var(--primary-bg) / var(--primary-border)
+     at :root — custom properties resolve against the cascaded value on the same element,
+     so those aliases pick up this block's values automatically; nothing to redeclare. */
+
+  --scrim: rgba(20, 24, 29, .28);
+  --scrim-strong: rgba(20, 24, 29, .42);
+  --picker-filter: none;
+  --shadow-sheet: 0 -18px 40px rgba(20, 24, 29, .18);
 }

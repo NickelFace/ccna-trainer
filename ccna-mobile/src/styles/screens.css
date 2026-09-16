@@ -202,7 +202,11 @@
 .opt-tag.ok { color: var(--ok-text); }
 .opt-tag.err { color: var(--err); }
 .opt.sel { background: var(--primary-bg); border-color: var(--primary-strong); }
-.opt.sel .k { color: var(--primary); }
+/* --primary-text here and at the few other places gold has to stand as text rather
+   than as a fill's own colour (.match-status b, .grid-cell.cur, .onboard-step, the
+   active tab in base.css, .bk-qmark in book.css): raw --primary reads at 2.29:1 on
+   the light page, --primary-text at 5.03 — see tokens.css. */
+.opt.sel .k { color: var(--primary-text); }
 /* Correct but never picked: an outline only. The filled look is reserved for "this is
    what you chose" (.picked), so a missed option can't read as a confirmed answer. */
 .opt.correct { border-color: var(--ok-border); }
@@ -276,7 +280,7 @@
   font-size: var(--fs-caption);
   color: var(--text-2);
 }
-.match-status b { color: var(--primary); font-weight: 500; }
+.match-status b { color: var(--primary-text); font-weight: 500; }
 .match-cancel { min-height: var(--tap-sm); font-size: var(--fs-caption); color: var(--primary-text); }
 /* Why «Проверить» is still grey: how much of the answer is built, and how many items
    are meant to stay in the bank. */
@@ -291,7 +295,7 @@
 .sheet-backdrop { position: fixed; inset: 0; display: flex; align-items: flex-end; z-index: 40; touch-action: pan-y; }
 /* The dim fades in with the panel instead of appearing under it in one frame. */
 .sheet-backdrop.dim { background: rgba(0, 0, 0, 0); transition: background-color 500ms ease-out; }
-.sheet-backdrop.dim.in { background: rgba(0, 0, 0, .35); }
+.sheet-backdrop.dim.in { background: var(--scrim); }
 .sheet {
   width: 100%;
   max-height: 82%;
@@ -340,14 +344,14 @@
   font-size: var(--fs-caption);
 }
 .grid-cell.done { background: var(--elev); color: var(--text); }
-.grid-cell.cur { border-color: var(--primary-strong); color: var(--primary); }
+.grid-cell.cur { border-color: var(--primary-strong); color: var(--primary-text); }
 .grid-cell.flagged { border-color: var(--warn-border); }
 
 /* ---------------------------------------------------------- dialog */
 .dialog-backdrop {
   position: fixed; inset: 0; z-index: 60;
   display: flex; align-items: center; justify-content: center;
-  padding: 24px; background: rgba(0, 0, 0, .55);
+  padding: 24px; background: var(--scrim-strong);
 }
 .dialog {
   width: 100%; max-width: 340px;
@@ -628,7 +632,7 @@
   margin-bottom: 10px;
 }
 .date-input::-webkit-calendar-picker-indicator,
-.time-input::-webkit-calendar-picker-indicator { filter: invert(.7); }
+.time-input::-webkit-calendar-picker-indicator { filter: var(--picker-filter); }
 
 /* A reminder row is dead while the master switch is off — say so visually rather than
    hiding it, so the list still answers "что вообще может приходить". */
@@ -675,7 +679,7 @@
 
 /* ---------------------------------------------------------- onboarding + choice cards */
 .onboard { padding-top: 24px; }
-.onboard-step { display: block; color: var(--primary); margin-bottom: 14px; }
+.onboard-step { display: block; color: var(--primary-text); margin-bottom: 14px; }
 .onboard-title {
   font-size: var(--fs-onboard-title);
   font-weight: 600; line-height: 1.25; letter-spacing: -.5px;
