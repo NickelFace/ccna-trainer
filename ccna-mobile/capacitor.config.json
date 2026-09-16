@@ -2,14 +2,14 @@
   "appId": "com.nickelface.ccnatrainer",
   "appName": "NetPath",
   "webDir": "dist",
-  "backgroundColor": "#0e1013",
+  "backgroundColor": "#0F172A",
   "android": {
-    "backgroundColor": "#0e1013"
+    "backgroundColor": "#0F172A"
   },
   "plugins": {
     "LocalNotifications": {
       "smallIcon": "ic_stat_notify",
-      "iconColor": "#7C93FF"
+      "iconColor": "#C9A24A"
     }
   }
 }

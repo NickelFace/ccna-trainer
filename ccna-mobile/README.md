@@ -55,6 +55,37 @@ The engine was lifted out of the web app's `assets/js/app.js` without changing b
 that was verified by running both implementations over the same inputs and comparing
 9732 results.
 
+## Palette
+
+The app is dark, and only dark — there is no light theme and no switch. What changed is
+the hue: it used to run on a neutral-blue scheme of its own, and it now shares the web
+trainer's, so that one product does not read as two. Slate neutrals, gold accent.
+
+Everything lives in `src/styles/tokens.css`; `base.css` and `book.css` hold no colour at
+all and `screens.css` holds none either since the last few hardcoded borders became
+tokens. So a palette change is that one file.
+
+Two things are worth knowing before editing it:
+
+- **The surfaces are solved, not picked.** Each of `--surface`, `--elev`, `--border` and
+  the text steps was chosen to reproduce the contrast ratio the previous palette had
+  against `--bg`. The depth ordering a phone screen leans on is unchanged; only the hue
+  moved. If you retune one, keep its ratio to `--bg` rather than its hex.
+- **`--ok` and `--err` are the pale variants, not the saturated ones.** A verdict is read
+  as text here as often as it is painted as a bar, so they are the web's teal and red
+  walked up for a dark ground. The tints (`--ok-bg`, `--err-bg`) are mixed from the
+  *saturated* versions — mixing the pale ones into slate just yields grey.
+
+`--warn` and its tint are aliases of the gold rather than values of their own. The web has
+no separate warning hue: a flagged question and a middling domain score are both simply
+gold there. Aliasing says that is a decision, and keeps a later change to the gold from
+leaving the warning colour behind.
+
+The icon and splash were already drawn in the brand's gold by `brand/generate.py` — this
+change brings the UI into line with them rather than the other way round. `capacitor.config.json`
+and `res/values/colors.xml` carry `--bg` for the launch window, so the splash hands over to
+the WebView without a flash; they have to move whenever `--bg` does.
+
 ## Motion
 
 Everything that moves does so on `transform` and `opacity` only, so the compositor can run
