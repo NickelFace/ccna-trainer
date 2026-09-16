@@ -16,12 +16,19 @@ import { LEVELS, LEVELS_EN } from '../../engine/ai-prompt.js';
 import { daysUntil } from '../../engine/localdate.js';
 import { dayKey } from '../../engine/stats.js';
 import { DEFAULT_TIME, requestPermission, reschedule } from '../notify.js';
+import { applyTheme } from '../theme.js';
 import { t, getLang, setLang, pluralWord, WORDS } from '../i18n.js';
 
 // The onboarding presets, as a plain list — the pace a learner picks is one of these four
 // far more often than an arbitrary number, and a number pad for "вопросов в день" invites
 // a 200 nobody will hold to.
 const GOALS = [15, 20, 30, 60];
+
+const THEME_OPTIONS = () => [
+  { value: 'light', title: t('profile.theme.light.title'), note: t('profile.theme.light.note') },
+  { value: 'dark', title: t('profile.theme.dark.title'), note: t('profile.theme.dark.note') },
+  { value: 'system', title: t('profile.theme.system.title'), note: t('profile.theme.system.note') },
+];
 
 const LEVEL_OPTIONS = () => [
   { value: 'first', title: t('onboarding.level.first.title'), note: t('onboarding.level.first.note') },
@@ -124,6 +131,17 @@ export const profile = {
         <span class="choice-mark">${p.level === o.value ? '✓' : ''}</span>
       </button>`).join('');
 
+    // Same markup as the level picker above — a set of choices, one of them on — not a
+    // new pattern just because the thing being chosen is a colour scheme.
+    const themes = THEME_OPTIONS().map(o => `
+      <button class="choice${p.theme === o.value ? ' on' : ''}" data-set-theme="${o.value}" type="button">
+        <span class="choice-text">
+          <span class="choice-title">${esc(o.title)}</span>
+          <span class="choice-note">${esc(o.note)}</span>
+        </span>
+        <span class="choice-mark">${p.theme === o.value ? '✓' : ''}</span>
+      </button>`).join('');
+
     // A goal restored from a backup (or an older build) can sit outside the presets —
     // show it rather than silently drawing none of the chips as selected.
     const goals = [...new Set([...GOALS, p.dailyGoal])].sort((a, b) => a - b);
@@ -136,6 +154,10 @@ export const profile = {
         <div class="card-head"><span>${esc(t('profile.plan.title'))}</span></div>
         <p class="plan-line">${esc(planLine(p))}</p>
       </div>
+
+      <div class="label spaced">${esc(t('profile.theme'))}</div>
+      <div class="choices">${themes}</div>
+      <p class="muted lead">${esc(t('profile.theme.hint'))}</p>
 
       <div class="label spaced">${esc(t('profile.examDate'))}</div>
       <div class="card">
@@ -173,6 +195,13 @@ export const profile = {
       if (langBtn) {
         setLang(langBtn);
         ctx.router.renderTabs();
+        return ctx.router.render();
+      }
+
+      const themeBtn = e.target.closest('[data-set-theme]')?.dataset.setTheme;
+      if (themeBtn) {
+        store.patchProfile({ theme: themeBtn });
+        applyTheme(themeBtn);
         return ctx.router.render();
       }
 

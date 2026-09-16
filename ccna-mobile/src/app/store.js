@@ -53,6 +53,9 @@ const DEFAULT_PROFILE = {
   lang: 'ru',
   aiTarget: null,
   fontScale: 1,         // question text size, cycled by the "Aa Размер" control
+  theme: 'dark',         // 'light' | 'dark' | 'system' — switched in Профиль, see app/theme.js.
+                          // Defaults to 'dark' rather than 'system' so an existing install
+                          // looks exactly as it did before this field existed.
   onboarded: false,
   examPreset: 'full',
   exam: {},             // runtime switches, see RUN_SWITCHES in screens/exam.js
@@ -60,6 +63,9 @@ const DEFAULT_PROFILE = {
   // switch, not the OS permission: a granted permission with the switch off stays silent.
   notify: { enabled: false, daily: true, weeklyMock: true, time: '19:00' },
 };
+
+const THEMES = ['light', 'dark', 'system'];
+export const validTheme = (v) => THEMES.includes(v);
 
 // `validGoal` is shared: that number is a denominator everywhere it is shown ("N из 0" on
 // the home screen, a divide-by-zero-shaped plan line in Профиль), and the site sets it too.
@@ -73,6 +79,7 @@ export const mergeProfile = (stored) => {
     ...DEFAULT_PROFILE,
     ...p,
     dailyGoal: validGoal(p.dailyGoal) ? p.dailyGoal : DEFAULT_PROFILE.dailyGoal,
+    theme: validTheme(p.theme) ? p.theme : DEFAULT_PROFILE.theme,
     notify: { ...DEFAULT_PROFILE.notify, ...(p.notify && typeof p.notify === 'object' ? p.notify : {}) },
   };
 };

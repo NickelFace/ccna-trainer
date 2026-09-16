@@ -292,7 +292,7 @@
   line-height: 1.5;
   color: var(--text);
 }
-.bk-qmark { flex: 0 0 14px; color: var(--primary); }
+.bk-qmark { flex: 0 0 14px; color: var(--primary-text); }
 .bk-qh[aria-expanded="true"] { color: var(--text-2); }
 .bk-qa {
   padding: 0 14px 14px 38px;

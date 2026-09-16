@@ -3,6 +3,7 @@
 // progress sync, and only when a sync key has been set up.
 import { router } from './router.js';
 import { store, bindPersistOnPause, bindResume } from './store.js';
+import { applyTheme, bindSystemTheme } from './theme.js';
 import { autoSyncer } from '../../../ccna-exam-simulator/assets/js/shared/sync.js?v=23';
 import { reschedule, initNotificationListener } from './notify.js';
 import { scorable } from '../engine/select.js';
@@ -55,6 +56,11 @@ function redrawIfSafe() {
 async function boot() {
   try {
     const [bank] = await Promise.all([loadBank(), store.load()]);
+
+    // The theme lives in the profile store.load() just populated, and this is the
+    // earliest point it's readable — before router.init() draws the first screen below.
+    applyTheme();
+    bindSystemTheme();
 
     // A session stored against an older bank (build_data.py renumbers questions) would
     // resolve to undefined mid-exam. Drop it rather than crash on the first render.

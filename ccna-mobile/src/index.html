@@ -5,7 +5,11 @@
 <!-- viewport-fit=cover is what makes env(safe-area-inset-*) report real values;
      without it Android reports 0 and the sticky panels sit under the system bars. -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-<meta name="color-scheme" content="dark">
+<!-- Both now, not just dark: app/theme.js sets data-theme on <html> before app.css is
+     ever painted with a wrong scrollbar/control colour. This meta is what the WebView
+     goes by for the one frame before that — it has to admit both, or a light-mode
+     picker would render dark-on-dark until the attribute lands. -->
+<meta name="color-scheme" content="light dark">
 <title>NetPath</title>
 <link rel="stylesheet" href="app.css">
 </head>

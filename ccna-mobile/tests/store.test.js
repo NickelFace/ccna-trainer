@@ -27,3 +27,24 @@ test('dailyGoal validation does not disturb the notify merge', () => {
   assert.equal(p.notify.daily, false);
   assert.equal(p.notify.weeklyMock, true);   // default, not present in the stored object
 });
+
+// A profile written before `theme` existed, or one restored from a device that never
+// set it, has to land on 'dark' — the app looked exactly like that before this field
+// existed, and an install that never opens Профиль should never see it move.
+test('a profile without a theme merges to dark', () => {
+  assert.equal(mergeProfile({}).theme, 'dark');
+  assert.equal(mergeProfile(null).theme, 'dark');
+});
+
+// Same guard as dailyGoal: a restored backup or a hand-edited preference file is the one
+// way this can arrive as anything other than what Профиль itself ever writes.
+test('a garbage theme from a restored backup falls back to dark', () => {
+  for (const junk of ['sepia', 'Light', 0, 1, null, undefined, {}, []]) {
+    assert.equal(mergeProfile({ theme: junk }).theme, 'dark', `junk: ${JSON.stringify(junk)}`);
+  }
+});
+
+test('a valid theme from a backup is kept as-is', () => {
+  assert.equal(mergeProfile({ theme: 'light' }).theme, 'light');
+  assert.equal(mergeProfile({ theme: 'system' }).theme, 'system');
+});

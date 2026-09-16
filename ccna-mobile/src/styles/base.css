@@ -158,8 +158,8 @@ button { background: none; border: 0; cursor: pointer; }
   font-size: var(--fs-label);
   color: var(--text-3);
 }
-.tab[aria-selected="true"] .ind { background: var(--primary); }
-.tab[aria-selected="true"] .lbl { color: var(--primary); font-weight: 600; }
+.tab[aria-selected="true"] .ind { background: var(--primary-text); }
+.tab[aria-selected="true"] .lbl { color: var(--primary-text); font-weight: 600; }
 
 /* ---- primitives shared by every screen ---- */
 .screen-title {
