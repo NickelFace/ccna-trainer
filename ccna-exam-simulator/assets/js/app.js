@@ -27,8 +27,11 @@ const byN = () => BY_N || (BY_N = new Map(DATA.map(q => [q.n, q])));
 // The NetPath mark: the same three bars as brand/generate.py, on the same 86-unit grid,
 // kept as data rather than a pasted <svg> string. It used to live in landing.js and moved
 // here when the landing was removed — the sidebar lockup is the only place it is drawn now.
+// The two neutral bars take currentColor rather than the ink they are given in the PNG and
+// favicon exports: those sit on grounds the site does not control, this one sits on the
+// sidebar and has to turn over with it when the theme does.
 const BARS = [[8, 58, 20, 20, 7], [33, 38, 20, 40, 7], [58, 12, 20, 66, 7]];
-const MARK_INK = ['#16181D', '#16181D', '#C9A24A'];
+const MARK_INK = ['currentColor', 'currentColor', '#C9A24A'];
 const mark = size =>
   `<svg width="${size}" height="${size}" viewBox="0 0 86 86" aria-hidden="true">` +
   BARS.map(([x, y, w, h, r], i) =>
@@ -36,6 +39,48 @@ const mark = size =>
   '</svg>';
 
 const BRAND = 'NetPath';
+
+// ============================ THEME ============================
+// Light and dark are one stylesheet: every colour in it comes from a token and the two
+// themes are two sets of values for the same tokens, so switching is an attribute on <html>
+// and nothing on screen has to be redrawn. Three states rather than two, because "follow
+// the OS" is a choice someone can want back after picking a side: `auto` leaves the
+// attribute off and the @media block decides, light and dark pin it and outrank the OS.
+// The same three are read by the boot script in index.html, which runs before the first
+// paint — app.js is far too late to keep the page from flashing the other theme.
+const THEMES = ['auto', 'light', 'dark'];
+const DARK_Q = '(prefers-color-scheme: dark)';
+
+function initialTheme() {
+  let saved = null;
+  try { saved = localStorage.getItem('ccna_theme'); } catch { /* blocked storage */ }
+  return THEMES.includes(saved) ? saved : 'auto';
+}
+let THEME = initialTheme();
+
+function applyTheme() {
+  const root = document.documentElement;
+  if (THEME === 'auto') root.removeAttribute('data-theme');
+  else root.setAttribute('data-theme', THEME);
+  // A phone paints its address bar from this, so it has to name the theme the page settled
+  // on rather than the one the OS asked for.
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.content =
+    THEME === 'dark' || (THEME === 'auto' && matchMedia(DARK_Q).matches) ? '#0F172A' : '#F8FAFC';
+}
+
+function setTheme(theme) {
+  if (!THEMES.includes(theme) || theme === THEME) return;
+  THEME = theme;
+  try { localStorage.setItem('ccna_theme', theme); } catch { /* blocked storage */ }
+  applyTheme();
+  renderSide();                          // only the switch moves; the CSS does the rest
+}
+
+// While the choice is `auto` the OS can change underneath the page. The stylesheet follows
+// on its own; the address-bar colour is the one thing that has to be told.
+matchMedia(DARK_Q).addEventListener?.('change', () => { if (THEME === 'auto') applyTheme(); });
+applyTheme();
 
 // ============================ I18N ============================
 // UI-chrome translation. Default stays Russian — EN is an opt-in toggle (the pill in the
@@ -320,6 +365,8 @@ const I18N = {
     nav_history: 'История',
     nav_progress: 'Прогресс',
     side_offline: 'офлайн · без бэкенда',
+    theme_group: 'Оформление',
+    theme_auto: 'авто', theme_light: 'день', theme_dark: 'ночь',
     ready_title: 'Прогноз готовности',
     ready_scale: 'шкала 300–1000 · порог 825 · по последним {0} ответам',
     ready_delta: '{0} за неделю',
@@ -599,6 +646,8 @@ const I18N = {
     nav_history: 'History',
     nav_progress: 'Progress',
     side_offline: 'offline · no backend',
+    theme_group: 'Appearance',
+    theme_auto: 'auto', theme_light: 'day', theme_dark: 'night',
     ready_title: 'Readiness forecast',
     ready_scale: 'scale 300–1000 · pass 825 · over the last {0} answers',
     ready_delta: '{0} this week',
@@ -810,11 +859,21 @@ function renderSide() {
           ${['ru', 'en'].map(l => `<span class="lang-opt${l === LANG ? ' on' : ''}"
             data-lang="${l}">${l.toUpperCase()}</span>`).join('')}
         </div>
+        <div class="theme-switch" role="group" aria-label="${t('theme_group')}">
+          ${THEMES.map(m => `<span class="theme-opt${m === THEME ? ' on' : ''}" role="button"
+            tabindex="0" data-theme="${m}" aria-pressed="${m === THEME}">${t('theme_' + m)}</span>`).join('')}
+        </div>
         <span class="note">${t('side_offline')}</span>
       </div>
     </div>`;
   box.querySelectorAll('[data-nav]').forEach(b => b.onclick = () => goScreen(b.dataset.nav));
   box.querySelectorAll('[data-lang]').forEach(b => b.onclick = () => setLang(b.dataset.lang));
+  // A <span role="button"> gets no keyboard activation of its own, and this is the only
+  // control in the sidebar that is not a real <button>: it has to match the pills beside it.
+  box.querySelectorAll('[data-theme]').forEach(b => {
+    b.onclick = () => setTheme(b.dataset.theme);
+    b.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); b.click(); } };
+  });
 }
 
 // Leaving a running exam through the sidebar is the same decision as leaving it through
@@ -3306,7 +3365,7 @@ document.addEventListener('keydown', e => {
 });
 
 // expose for inline onclick
-Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, finishPractice, setReviewFilter, setLang, openMode, goScreen, segPick, browseSims, historyScreen, progressScreen, weakScreen, startSrsRun, startWrongRun, startTopicRun, startAttemptRun, startWeakRun, bookScreen, chapterScreen, openAttempt, exportProgress, importProgress, runSync, makeSyncKey, copySyncKey, forgetSyncKey });
+Object.assign(window, { home, cfg, tglDom, tglType, startFullExam, startCustomExam, startPractice, pMove, eMove, eGo, eFlag, finishExam, finishPractice, setReviewFilter, setLang, setTheme, openMode, goScreen, segPick, browseSims, historyScreen, progressScreen, weakScreen, startSrsRun, startWrongRun, startTopicRun, startAttemptRun, startWeakRun, bookScreen, chapterScreen, openAttempt, exportProgress, importProgress, runSync, makeSyncKey, copySyncKey, forgetSyncKey });
 // An automatic sync that changed the history redraws the screen showing it — and only
 // that screen: pulling the ground out from under someone mid-question would be worse than
 // a stale list.
