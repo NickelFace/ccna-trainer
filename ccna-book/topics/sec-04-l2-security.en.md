@@ -1,6 +1,6 @@
 ---
 title: Layer 2 Security
-lead: Port security, DHCP snooping, and Dynamic ARP Inspection -- three mechanisms against three classic attacks inside a segment.
+lead: Port security, DHCP snooping, Dynamic ARP Inspection, IP Source Guard, and storm control -- mechanisms against the classic attacks inside a segment.
 ---
 
 ## Three attacks, three responses
@@ -110,6 +110,47 @@ ip arp inspection filter STATIC-HOSTS vlan 10
 > **DAI is useless without DHCP snooping** — it has nowhere to get the mapping table from.
 > On questions like "what must be enabled before DAI," the answer is always DHCP snooping
 > (or a static ARP ACL for hosts with static addressing).
+
+## IP Source Guard and storm control
+
+Two mechanisms that stand next to DHCP snooping and DAI in questions but cover different
+attacks.
+
+**IP Source Guard (IPSG)** is a source-address filter on an access port. It leans on the
+same binding table (`DHCP snooping binding`) as DAI, but inspects the **IP header of every
+frame** rather than ARP: if a host sends a packet with an address that was never assigned
+to it, the frame is dropped. That closes source-address spoofing — the "rogue client" that
+helped itself to a server's or a neighbor's IP.
+
+```cfg
+ip dhcp snooping
+ip dhcp snooping vlan 10
+!
+interface GigabitEthernet0/5
+ ip verify source                ! IPSG: check the source IP
+ ip verify source port-security  ! and the MAC as well
+```
+
+The ordering is the same as with DAI: **DHCP snooping runs first**, everything else builds
+on it. Hosts with static addresses need a manual binding
+(`ip source binding <mac> vlan <id> <ip> interface <if>`), otherwise IPSG cuts them off
+along with the attackers — exactly the scenario walked through below for DAI.
+
+**Storm control** caps the share of a port's bandwidth that broadcast, multicast or unknown
+unicast traffic may take. Above the threshold the excess is dropped (or the port is put in
+`err-disabled`), so a storm — from a loop, a failing NIC or a flood attack — doesn't take
+the whole segment down.
+
+```cfg
+interface GigabitEthernet0/5
+ storm-control broadcast level 5.00        ! no more than 5% of the bandwidth
+ storm-control action shutdown             ! or trap — a message only
+```
+
+> [!key] Remember
+> The "mechanism → attack" pairing asked verbatim: **DHCP snooping** for a rogue DHCP
+> server, **DAI** for ARP cache poisoning, **IP Source Guard** for source-address spoofing,
+> **storm control** for floods and storms.
 
 ## What else belongs to L2 security
 

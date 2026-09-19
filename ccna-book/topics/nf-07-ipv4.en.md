@@ -66,6 +66,25 @@ Key properties that get tested:
 > `172.16.0.0/12` is 172.16 … 172.31, **not** "all of 172." `172.32.5.1` is public,
 > `172.20.5.1` is private. That range boundary gets checked regularly.
 
+A separate run of questions asks **why** they are deployed, and there are exactly two valid
+reasons: **conserving public addresses** and **reducing the risk of attack from outside** —
+a host with a private address isn't directly reachable from the internet until NAT or a
+port forward is configured for it. From the same family, the correct characteristic:
+private addresses are used on hosts that **communicate only with other internal hosts**.
+
+The wrong options placed next to them:
+
+- "complies with **PCI DSS** regulations" (the payment card data standard) and "complies
+  with local law" — no standard mandates RFC 1918 specifically;
+- "reduces the forwarding table on network routers" — inside your own network those routes
+  don't go anywhere; what shrinks is the global internet table, not yours;
+- "enables secure connectivity over the internet" — that's a VPN, not an address type.
+
+> [!key] Remember
+> A private address is **not** a security control in itself, just an obstacle to direct
+> inbound connections. Traffic sent out through NAT is still in the clear, and what
+> protects it is encryption, not RFC 1918.
+
 ## Special addresses
 
 | Address | What it is |

@@ -116,6 +116,33 @@ gets more bandwidth than one physical link**. Copying one large file between two
 over a 4×1G channel still runs at 1 Gbps. If all traffic goes through a single router,
 hashing on MAC produces an imbalance — switch the algorithm to `src-dst-ip`.
 
+## Fine-tuning LACP
+
+Beyond the mode (`active`/`passive`), LACP has four parameters that get asked about on
+their own — each on the switch where it is configured:
+
+| Command | Where it applies | What it does |
+|---|---|---|
+| `lacp system-priority <1-65535>` | globally | which of the two neighbors **decides** which links join the bundle: the lower value wins |
+| `lacp port-priority <1-65535>` | on an interface | which link is preferred (lower is better) when the bundle may have fewer active links than are physically connected |
+| `lacp max-bundle <1-8>` | on the Port-channel interface | **how many links may be active**; the rest stay in hot standby |
+| `port-channel min-links <1-8>` | on the Port-channel interface | **how many links must be up** for the bundle to come up at all; drop below that and the whole Port-channel goes down |
+
+The last two are easy to mix up, and in questions the difference decides the answer:
+
+- "the channel must **stay up** when one link fails" → `port-channel min-links 1` (one
+  working link is enough to keep it alive);
+- "the Port-channel must **go down** when both Gigabit ports on SW2 fail" (because the
+  remaining bandwidth can't carry the traffic) → `port-channel min-links 2`: the bundle
+  demands two working links and goes down as soon as there are fewer;
+- "only one link should be active, the other is a backup" → `lacp max-bundle 1`, with
+  `lacp port-priority` deciding which link becomes the active one.
+
+The point of `min-links` isn't "how many are working" but **the threshold below which the
+bundle is useless**: if the application needs 2 Gbit/s, a bundle down to a single Gigabit
+link is better switched off entirely, so the traffic reroutes, than left in place
+overloaded.
+
 ## Layer 3 EtherChannel
 
 On an L3 switch, a channel can be pulled out of switching entirely:

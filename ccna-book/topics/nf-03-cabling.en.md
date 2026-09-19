@@ -56,8 +56,11 @@ An easier way to remember the rule: **a router and a PC belong to the same class
 "end" devices, transmitting on 1–2 pairs), while a switch and a hub belong to a different
 class. Same class → crossover.
 
-Modern equipment supports **Auto-MDIX**: the port itself detects which pair arrived and
-swaps its own transmitter and receiver accordingly. So in practice almost any cable will
+The port roles themselves are called **MDI** (an end device: PC, router) and **MDI-X** (a
+switch, which crosses the pairs internally) — a straight-through cable joins MDI to MDI-X,
+and a crossover is needed when both ends have the same role. Modern equipment supports
+**Auto-MDIX**: the port itself detects which pair arrived and swaps its own transmitter and
+receiver accordingly. So in practice almost any cable will
 work — but the exam asks about the wiring scheme, not about Auto-MDIX, and Auto-MDIX
 requires speed/duplex negotiation to be enabled.
 
@@ -108,6 +111,36 @@ The symptom of a duplex mismatch, from the user's point of view, is "the network
 it's really slow" — throughput drops by an order of magnitude, because the half-duplex side
 treats every incoming frame arriving during its own transmission as a collision and backs
 off.
+
+### The `show interface` header: reliability, txload, rxload
+
+Above the error counters sits a line that exhibit questions read more often than the errors
+themselves:
+
+```cli
+  MTU 1500 bytes, BW 10000000 Kbit/sec, DLY 10 usec,
+     reliability 255/255, txload 1/255, rxload 1/255
+```
+
+All three are fractions out of **255**, averaged over five minutes:
+
+| Field | How to read it |
+|---|---|
+| **reliability** | the share of error-free frames: **255/255 is perfect**, anything lower means errors on the line; 166/255 means a noticeable part of the traffic is being damaged |
+| **txload** | transmit load against the interface's bandwidth: 1/255 is an essentially idle link, 255/255 is a saturated one |
+| **rxload** | the same on receive |
+
+Hence the standard reading of "users report intermittent problems, here is `show
+interface`": if **txload and rxload are both 1/255**, the link is not congested — the "high
+utilization, needs more bandwidth" answer is out immediately, and `reliability` plus the
+error counters are where to look. And the other way round: zero errors with `rxload
+200/255` is honest congestion, not a physical fault.
+
+Two counters that aren't in the table above show up in the same output: **underruns** (the
+device couldn't feed the transmitter fast enough — the hardware itself is overloaded) and
+**dribble condition** (a frame that didn't end on a byte boundary; it usually appears next
+to CRC and points at the same physical cause). Both are rare, and both indicate a hardware
+rather than a logical problem.
 
 ## Interface states
 
@@ -224,6 +257,43 @@ Terms that appear in wording about physical installation:
 This explains the "100 meters" limit: 90 m of horizontal cabling plus patch cords on both
 ends. And it explains why the vertical run is built with fiber — the distances between
 floors and buildings exceed copper's limit, and risers are full of electrical interference.
+
+## What a cable is physically made of
+
+Some questions are not about distance and speed but about **how the cable itself is
+built** — they usually come as a "characteristic → cable type" drag and drop.
+
+**Optical fiber** is three layers around the light:
+
+| Layer | What it is |
+|---|---|
+| **Core** | the glass center the light travels through: **9 µm** in single-mode, **50 or 62.5 µm** in multimode |
+| **Cladding** | glass with a different refractive index around the core; it bounces the light back into the core by total internal reflection. Data does **not** travel through the cladding — that's a standard wrong option |
+| **Buffer and jacket** | the protective coating and the outer sheath — mechanics, nothing to do with transmission |
+
+Multimode classes in the standard: **OM1** is 62.5 µm, while **OM2/OM3/OM4/OM5** are all
+**50 µm** (they differ in bandwidth and reach at 10G/40G/100G). Hence the answer to "what
+do OM3 and OM4 have in common" — the same **50 µm** core diameter.
+
+Why single-mode "eliminates distortion from overlapping light pulses": in multimode's wide
+core the light takes several paths (modes) of different lengths, so pulses arrive smeared
+and, over distance, start overlapping — that is **modal dispersion**. A 9 µm core leaves
+effectively one mode and no such dispersion, which is why single-mode runs for tens of
+kilometers.
+
+**DWDM** (dense wavelength division multiplexing) and its simpler relative **CWDM**
+multiplex by wavelength: dozens of channels on different wavelengths share one fiber,
+turning a single pair of strands into hundreds of gigabits over hundreds of kilometers.
+They run over **single-mode** — which is the answer to the "used for DWDM systems spanning
+long distances" drag and drop.
+
+**Copper**: twisted pair is four twisted pairs in a common jacket, **UTP** unshielded and
+**STP/FTP** shielded. Coaxial (and outdoor or trunk copper) is described differently and
+also shows up in questions: a **conductor** (the center strand), **bedding** (the
+insulating layer around it) and **sheathing** (the outer protective jacket). The
+distinguishing properties of copper in those same tasks: it is **affected by electrical and
+magnetic interference**, it is **easy to tap into**, it **carries PoE** (fiber cannot
+deliver power), and it is **typical for small offices** on price.
 
 ## Transceivers and connectors
 

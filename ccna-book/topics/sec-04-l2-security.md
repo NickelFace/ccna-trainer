@@ -2,12 +2,12 @@
 id: sec-04-l2-security
 dom: SEC
 title: Безопасность второго уровня
-lead: Port security, DHCP snooping и Dynamic ARP Inspection: три механизма против трёх классических атак внутри сегмента.
+lead: Port security, DHCP snooping, Dynamic ARP Inspection, IP Source Guard и storm control: механизмы против классических атак внутри сегмента.
 blueprint: ["5.7"]
 minutes: 40
 match:
-  key: ["port security", "switchport port-security", "dhcp snooping", "dynamic arp inspection", "\\bDAI\\b", "err-?disable", "sticky", "mac flooding", "rogue dhcp", "arp spoof", "ip arp inspection", "unused ports.*default vlan"]
-  re: ["violation (mode|shutdown|restrict|protect)", "trusted port", "untrusted port", "binding table", "layer 2 attack", "maximum.*mac address", "ip arp inspection", "protect unused ports", "administratively shut down the ports"]
+  key: ["port security", "switchport port-security", "dhcp snooping", "dynamic arp inspection", "\\bDAI\\b", "err-?disable", "sticky", "mac flooding", "rogue dhcp", "arp spoof", "ip arp inspection", "unused ports.*default vlan", "ip verify source"]
+  re: ["violation (mode|shutdown|restrict|protect)", "trusted port", "untrusted port", "binding table", "layer 2 attack", "maximum.*mac address", "ip arp inspection", "protect unused ports", "administratively shut down the ports", "ip source guard", "storm.?control", "flood attack", "rogue client"]
 ---
 
 ## Три атаки и три ответа
@@ -116,6 +116,47 @@ ip arp inspection filter STATIC-HOSTS vlan 10
 > **DAI бесполезен без DHCP snooping** — ему неоткуда взять таблицу соответствий. В
 > вопросах «что нужно включить перед DAI» ответ всегда DHCP snooping (либо статические
 > ARP ACL для узлов со статикой).
+
+## IP Source Guard и storm control
+
+Два механизма, которые в вопросах стоят в одном ряду с DHCP snooping и DAI, но закрывают
+другие атаки.
+
+**IP Source Guard (IPSG)** — фильтр по адресу источника на access-порту. Он опирается на
+ту же таблицу привязок (`DHCP snooping binding`), что и DAI, но проверяет не ARP, а
+**IP-заголовок каждого кадра**: если хост шлёт пакет с адресом, который ему не выдавали,
+кадр отбрасывается. Так закрывается подмена адреса источника — «чужой клиент», который
+взял себе IP сервера или соседа.
+
+```cfg
+ip dhcp snooping
+ip dhcp snooping vlan 10
+!
+interface GigabitEthernet0/5
+ ip verify source                ! IPSG: проверять IP источника
+ ip verify source port-security  ! и MAC тоже
+```
+
+Порядок здесь такой же, как у DAI: **сначала работает DHCP snooping**, потом всё
+остальное. Для хостов со статическим адресом нужна ручная привязка
+(`ip source binding <mac> vlan <id> <ip> interface <if>`), иначе IPSG отрежет их вместе с
+нарушителями — ровно тот же сценарий, что разобран ниже для DAI.
+
+**Storm control** — лимит на долю полосы порта, которую может занять широковещательный,
+multicast- или unknown-unicast трафик. При превышении порога лишнее отбрасывается (или
+порт гасится в `err-disabled`), поэтому шторм — от петли, неисправной карты или
+флуд-атаки — не выносит весь сегмент.
+
+```cfg
+interface GigabitEthernet0/5
+ storm-control broadcast level 5.00        ! не больше 5 % полосы
+ storm-control action shutdown             ! или trap — только сообщение
+```
+
+> [!key] Запомнить
+> Связка «механизм → атака», которую спрашивают дословно: **DHCP snooping** — подставной
+> DHCP-сервер, **DAI** — отравление ARP-кэша, **IP Source Guard** — подделка адреса
+> источника, **storm control** — флуд и шторм.
 
 ## Что ещё относится к защите L2
 

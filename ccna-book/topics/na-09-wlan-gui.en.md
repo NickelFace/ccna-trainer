@@ -49,8 +49,39 @@ WLAN won't come up. An added server shows up in the list by default, but doesn't
 logins until its **Enabled** checkbox is checked — that's a separate flag, not just the
 server's presence in the list.
 
-Layer 3 is typically **Web Policy / Web Authentication**: the guest gets an address, but
-before going through the portal can only reach DNS and the authentication page.
+Layer 3 is typically **Web Policy**, and it comes in two flavours that questions
+distinguish:
+
+- **Web Authentication** — the guest gets an address, but until they enter a **username and
+  password** on the portal they can only reach DNS and the login page;
+- **Web Passthrough** — the same interception without credentials: the user is shown an
+  acceptable-use page, clicks accept and gets access (optionally after entering an email).
+  Typical for open guest networks in cafes and lobbies.
+
+For Web Passthrough, Layer 2 Security must be **None**: WPA2 encryption needs a key or
+802.1X, and a guest has neither — hence the "Set the Layer 2 Security to None" answer in
+tasks built on this scenario.
+
+### Auth Key Mgmt, Fast Transition, and PMF — the three fields read off a screenshot
+
+Below the WPA policy choice, the same Layer 2 block holds three more things, and they are
+exactly what exhibit questions ask you to change:
+
+- **Authentication Key Management** — a row of check boxes: **802.1X**, **CCKM**, **PSK**,
+  **FT 802.1X**, **FT PSK**. A "WPA2 Policy" box with no AKM selected means nothing: pick
+  **PSK** for Personal, **802.1X** for Enterprise, and the **FT**-prefixed entries are the
+  same two methods with 802.11r fast roaming. **CCKM** is the proprietary predecessor of
+  802.11r for legacy Cisco clients (see the wireless security chapter).
+- **Fast Transition** — Disabled / Enabled / Adaptive. The requirement "clients must use
+  802.11r" is met by **Fast Transition = Enable** *plus* **FT PSK** or **FT 802.1X** under
+  AKM; one field alone is not enough.
+- **Protected Management Frame → PMF** — Disabled / Optional / Required, which is
+  **802.11w**. "Enable 802.11w on the WLAN" = set it to **Required**; for a mixed fleet of
+  older devices on WPA2-PSK it is set to Disabled instead.
+
+Further down, the encryption block selects the cipher itself: **CCMP128 (AES)** is ordinary
+WPA2, while **CCMP256 / GCMP128 / GCMP256** are the WPA3 suites. **TKIP** stays unchecked
+unless the task explicitly requires supporting very old devices.
 
 ### Restricting access at the WLAN level
 
@@ -106,6 +137,24 @@ What shows up here in questions:
   controller.
 - **DHCP Addr. Assignment Required** — the client must get an address via DHCP; a static
   one won't be accepted.
+
+- **Maximum Allowed Clients** — the cap on simultaneous clients **for the whole WLAN**; the
+  separate **Maximum Allowed Clients Per AP Radio** field caps them on a single radio of a
+  single AP. "No more than 10 connections to the WLAN" is the first field, not the second.
+- **Wi-Fi Direct Clients Policy** — what to do with clients that speak Wi-Fi Direct (device
+  to device links bypassing the AP): Disabled / Allow / **Not-Allow**, the last one barring
+  such devices from the WLAN.
+- **Static IP Tunneling** — lets a client keep its static address when it moves to another
+  subnet: the traffic is tunneled back to its home controller. This is the answer to
+  "clients must retain their assigned IP addressing as they move across the campus."
+- **Coverage Hole Detection** — the AP watches clients with a weak signal and reports
+  coverage holes to the controller; it has nothing to do with VLAN assignment or security.
+- **MFP Client Protection** — Disabled / Optional / Required, Cisco's proprietary management
+  frame protection (the predecessor of 802.11w).
+- **Aironet IE** — Cisco's proprietary information elements in frames; legacy Aironet
+  clients need them, modern ones don't.
+- **Layer 2 ACL** — a MAC/EtherType filter applied to WLAN clients; not the same thing as
+  blocking peer-to-peer traffic.
 
 ## Deployment order
 

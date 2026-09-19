@@ -31,10 +31,34 @@ when it's needed). Every mitigation protects one of these three; every attack vi
 | **Phishing / social engineering** | deceives a person | user training |
 | **Malware, ransomware** | malicious software | antivirus/EDR, segmentation, backups |
 | **Privilege escalation** | gains rights beyond one's own | least privilege, patching, role separation |
+| **Zero-day** | exploitation of a vulnerability that **has no fix yet** | segmentation, behaviour-based IPS, a fast patch cycle once the fix ships |
+| **Piggybacking / tailgating** | following an employee into a restricted area; in Wi-Fi, an outsider joining the network | badge readers with anti-passback, training, 802.1X and a password on the wireless network |
 
 > [!key] Remember
 > No technical control stops social engineering — the correct answer to these questions is
 > always **user awareness training**.
+
+**Zero-day** is asked as "what is it," and the correct answer describes a moment in time
+rather than a technique: the vulnerability is **known and the fix isn't out yet**. Don't
+confuse it with DDoS (resource exhaustion), SQL injection (code inserted into a query) or
+MITM (inserting yourself into someone else's exchange) — those three sit right next to it
+in the options.
+
+The malware varieties listed in options: a **virus** (infects files and needs to be run), a
+**worm** (spreads across the network by itself), a **trojan** (poses as something useful),
+**ransomware** (encrypts data and demands payment), **spyware/adware** (watches the user
+and pushes ads). What works against all of them is **endpoint** protection, not link
+encryption — the standard substitution in Wi-Fi questions.
+
+Four Cisco IOS mechanisms against Layer 2 attacks get asked as a "mechanism → attack"
+pairing (details are in the L2 security chapter):
+
+| Mechanism | The attack it addresses |
+|---|---|
+| **DHCP snooping** | a rogue DHCP server handing out a bogus gateway |
+| **Dynamic ARP Inspection** | ARP cache poisoning |
+| **IP Source Guard** | a host forging its source address — "rogue clients on the network" |
+| **Storm control** | floods: broadcast, multicast or unicast storms |
 
 ## Security program
 
@@ -76,6 +100,12 @@ about it separately within the security domain — keep the short version handy:
   (the same idea in other words: "segregates a network into separate zones," "separates
   networks by security domains"), and by doing so **protects the internal network from the
   internet**.
+- **IDS and IPS** — intrusion detection and prevention systems: they analyze traffic for
+  signs of attack by signature and behaviour. An **IDS** sits off to the side (on a copy of
+  the traffic via SPAN) and only **alerts**; an **IPS** sits inline and can **drop** the
+  packet. Neither of them **separates networks by trust level** — that is the firewall's
+  job, which is why IPS is always the wrong option in "which device separates networks by
+  security domains" questions.
 - **Proxy / Web Security Appliance (WSA)** — an intermediary for web requests: it caches
   content (faster repeat access) and filters by site reputation/category. Caching speeds
   up **web traffic specifically**, not the network as a whole.

@@ -38,6 +38,28 @@ names.
 DHCP server there. That's a separate question in itself: "which command shows the MAC" →
 `ipconfig /all`.
 
+### The other `ipconfig /all` lines that show up in exhibits
+
+The full output is longer than the excerpt above, and questions love exactly those "extra"
+lines:
+
+```cli
+   Connection-specific DNS Suffix  . : example.local
+   Description . . . . . . . . . . . : Intel(R) Wireless-AC 9560
+   DHCPv6 IAID . . . . . . . . . . . : 123018303
+   DHCPv6 Client DUID. . . . . . . . : 00-01-00-01-25-3F-A1-7C-B8-76-3F-7C-57-DF
+   IPv4 Address. . . . . . . . . . . : 192.168.1.20(Preferred)
+   Link-local IPv6 Address . . . . . : fe80::a8bb:ccff:fedd:eeff%11(Preferred)
+```
+
+| Line | What it means |
+|---|---|
+| **Connection-specific DNS Suffix** | the domain Windows appends to short names on this adapter (`server1` → `server1.example.local`); handed out by DHCP option 15 |
+| **Description** | the adapter's name from its driver — it is how "whose output is this" questions tell a wired adapter from a wireless one |
+| **DHCPv6 IAID** | Identity Association ID: the number the client uses to tag **one specific interface** in DHCPv6 requests |
+| **DHCPv6 Client DUID** | DHCP Unique Identifier: the identifier of **the client as a whole**, shared across its interfaces; in DHCPv6 the server recognizes a client by its DUID, not by MAC |
+| **(Preferred)** next to an address | the address is **valid and in use** right now (as opposed to `(Duplicate)` or expired). "IPv4 Preferred" questions are about the client **asking for the same address** when it renews its lease — not about static addressing and not about DNS |
+
 ## macOS and Linux
 
 ```cli
@@ -99,6 +121,8 @@ C:\> ipconfig /flushdns       :: clear the name cache
 C:\> arp -a                   :: IP-to-MAC mappings
 C:\> getmac                   :: adapter MAC addresses
 C:\> route print              :: the host's routing table
+C:\> netstat -r               :: the same table — netstat -r and route print print identically
+C:\> netstat -an              :: open connections and listening ports
 C:\> tracert 8.8.8.8          :: hop-by-hop path (Linux/macOS — traceroute)
 C:\> nslookup www.cisco.com   :: DNS check
 ```

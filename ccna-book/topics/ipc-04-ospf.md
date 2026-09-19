@@ -6,8 +6,8 @@ lead: Соседства и что обязано совпасть, типы с�
 blueprint: ["3.4", "3.5"]
 minutes: 55
 match:
-  key: ["\\bOSPF\\b", "\\bDR\\b/\\bBDR\\b", "designated router", "router-?id", "hello (interval|timer)", "\\bLSA\\b", "\\bDBD\\b", "area 0"]
-  re: ["ospf", "adjacency", "neighbor state", "\\bFULL\\b state", "\\b2WAY\\b", "\\bEXSTART\\b", "point-to-point.*network type", "broadcast.*network type", "cost.*interface", "reference bandwidth", "passive-interface", "wildcard.*network"]
+  key: ["\\bOSPF\\b", "\\bDR\\b/\\bBDR\\b", "designated router", "router-?id", "hello (interval|timer)", "\\bLSA\\b", "\\bDBD\\b", "area 0", "ip ospf priority", "default-information originate", "ospf network type"]
+  re: ["ospf", "adjacency", "neighbor state", "\\bFULL\\b state", "\\b2WAY\\b", "\\bEXSTART\\b", "point-to-point.*network type", "broadcast.*network type", "cost.*interface", "reference bandwidth", "passive-interface", "wildcard.*network", "ip ospf priority", "ospf priority", "default-information originate", "which type of ospf network", "type of ospf network does this interface"]
 ---
 
 ## Что делает OSPF
@@ -41,6 +41,26 @@ interface GigabitEthernet0/1
 - В `network` используется **wildcard-маска**, а не обычная. `0.0.0.255` = /24.
 - `passive-interface` — интерфейс остаётся в объявлениях, но hello по нему не шлются:
   так подключают LAN пользователей, чтобы не рассылать служебный трафик в их сегмент.
+
+### Маршрут по умолчанию через OSPF
+
+Своего «default» OSPF не придумывает: роутер, у которого есть выход наружу, объявляет его
+соседям командой **`default-information originate`** в режиме `router ospf`. Ключевое
+условие, которое и спрашивают: объявлять **нечего, пока у самого роутера нет маршрута
+`0.0.0.0/0`** в таблице — обычно статического, на провайдера.
+
+```cfg
+ip route 0.0.0.0 0.0.0.0 10.10.10.18     ! свой выход наружу
+!
+router ospf 1
+ default-information originate            ! объявить его остальным
+```
+
+Отсюда типичная задача: «`default-information originate` настроена на R1, а филиалы всё
+равно не видят интернет» — на R1 забыли сам статический маршрут по умолчанию. Вариант
+`default-information originate always` объявляет default **независимо** от наличия
+маршрута; им пользуются осознанно, потому что он же и притягивает трафик в чёрную дыру,
+если выхода на самом деле нет.
 
 ## Router ID
 
@@ -91,9 +111,15 @@ Loopback предпочитают потому, что он никогда не 
 
 | Тип сети | Где | DR/BDR | Hello/Dead |
 |---|---|---|---|
-| **Broadcast** | Ethernet | да | 10/40 |
-| **Point-to-point** | serial, `ip ospf network point-to-point` | нет | 10/40 |
-| Non-broadcast (NBMA) | Frame Relay | да, соседей задают вручную | 30/120 |
+| **Broadcast** | Ethernet — **по умолчанию** | да | 10/40 |
+| **Point-to-point** | serial с PPP или HDLC — **по умолчанию**; на Ethernet — вручную `ip ospf network point-to-point` | нет | 10/40 |
+| Non-broadcast (NBMA) | Frame Relay — по умолчанию | да, соседей задают вручную | 30/120 |
+| Point-to-multipoint | задаётся вручную поверх NBMA-среды | нет | 30/120 |
+
+Тип **не выбирают** для каждого интерфейса руками — он берётся из среды: объявили в OSPF
+гигабитный Ethernet-интерфейс — тип **broadcast**; объявили serial с инкапсуляцией PPP —
+**point-to-point**. Проверяется одной командой: `show ip ospf interface` печатает
+`Network Type BROADCAST` или `POINT_TO_POINT` в третьей строке.
 
 В broadcast-сети из N роутеров без DR было бы N(N−1)/2 смежностей. **DR** — центр
 синхронизации: все строят полные смежности только с DR и BDR.
@@ -104,8 +130,26 @@ Loopback предпочитают потому, что он никогда не 
    может).
 2. При равенстве — наибольший **router-id**.
 
+Приоритет задаётся на интерфейсе, а не в процессе:
+
+```cfg
+interface GigabitEthernet0/1
+ ip ospf priority 100      ! больше всех на сегменте → станет DR
+!
+interface GigabitEthernet0/2
+ ip ospf priority 0        ! никогда не станет ни DR, ни BDR
+```
+
 Выборы **не вытесняющие**: появившийся позже роутер с лучшим приоритетом DR не отберёт —
-нужно перезапустить процесс. Это ещё один любимый вопрос.
+нужно перезапустить процесс (`clear ip ospf process` на всех роутерах сегмента либо
+погасить и поднять интерфейс текущего DR). Это ещё один любимый вопрос: «поставили
+priority 100, а DR не сменился» — команда верна, не хватает перезапуска.
+
+> [!trap] Ловушка
+> В задачах «сделать R3 назначенным роутером в сети 10.0.4.0/24» половина ошибок — не в
+> значении приоритета, а в **выборе интерфейса**: команда применяется к тому интерфейсу,
+> который смотрит в названную подсеть, и любой другой интерфейс того же роутера на выборы
+> в этом сегменте не влияет.
 
 На линке между двумя роутерами Ethernet часто ставят `ip ospf network point-to-point` —
 и выборы DR не проводятся вовсе, соседство поднимается быстрее.

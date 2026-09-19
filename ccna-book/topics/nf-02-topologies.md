@@ -6,7 +6,7 @@ lead: Двух- и трёхуровневая иерархия, spine-leaf, WAN,
 blueprint: ["1.2"]
 minutes: 30
 match:
-  key: ["three-tier", "two-tier", "spine-leaf|spine and leaf|spine-and-leaf", "collapsed-?core", "\\bSOHO\\b", "access layer", "distribution layer", "access.*(core|distribution).*access"]
+  key: ["three-tier", "two-tier", "spine-leaf|spine and leaf|spine-and-leaf", "collapsed-?core", "\\bSOHO\\b", "access layer", "distribution layer", "access.*(core|distribution).*access", "\\bCPE\\b", "demarcation"]
   re: ["three-tier", "two-tier", "collapsed-?core", "spine-leaf", "spine and leaf", "spine-and-leaf", "access layer", "distribution layer", "core layer", "campus", "\\bSOHO\\b", "on-premise", "on-premises", "cloud", "topology architecture", "star topology", "full mesh", "partial mesh", "leased line", "\\bWAN\\b design", "data center design", "east-west", "north-south", "additional access ports", "interconnected.*spine", "point-to-point wan", "wan architecture.*scalab", "bandwidth of a t1", "\\bT1\\b point-to-point"]
   not: ["ospf", "spanning-tree", "wireless mesh"]
 ---
@@ -209,6 +209,22 @@ STP не участвует в переключении. Это стандарт
 
 Резервирование WAN считают так же, как в кампусе: два канала **разных технологий и разных
 операторов**, иначе «два канала» одного провайдера падают одной аварией.
+
+### Как называют устройства на стыке с провайдером
+
+Словарь границы сети встречается в условиях задач как само собой разумеющееся — роутер в
+схеме может называться не «R1», а **CPE**:
+
+| Термин | Что это |
+|---|---|
+| **CPE** (customer premises equipment) | оборудование **на площадке клиента**, которым тот владеет и управляет: пограничный роутер, модем, ONT. Именно его настраивают в задачах «подключить офис к двум провайдерам» |
+| **Demarcation point** (демаркация) | точка, где кончается ответственность провайдера и начинается ответственность клиента — физически обычно розетка или кросс в серверной |
+| **CO** (central office) | площадка провайдера, куда приходит канал |
+| **Last mile** | участок от демаркации до ближайшего узла провайдера |
+
+Для CCNA практическая польза одна: увидев в вопросе «CPE», читать это как «наш
+пограничный роутер» — все команды (плавающий статический маршрут, два default route с
+разной AD, NAT наружу) настраиваются именно на нём.
 
 ## On-premise и облако
 

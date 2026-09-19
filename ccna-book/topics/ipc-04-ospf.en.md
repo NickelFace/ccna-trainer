@@ -37,6 +37,26 @@ What matters here:
   aren't sent out it: this is how user LANs get connected without flooding control
   traffic into their segment.
 
+### A default route through OSPF
+
+OSPF doesn't invent a default of its own: the router that has the way out advertises it to
+its neighbors with **`default-information originate`** under `router ospf`. The key
+condition, and the one that gets asked: there is **nothing to advertise until the router
+itself has a `0.0.0.0/0` route** in its table — usually a static one toward the provider.
+
+```cfg
+ip route 0.0.0.0 0.0.0.0 10.10.10.18     ! the local way out
+!
+router ospf 1
+ default-information originate            ! advertise it to everyone else
+```
+
+Hence the classic task: "`default-information originate` is configured on R1 and the
+branches still have no internet" — the static default route itself is missing on R1. The
+`default-information originate always` form advertises the default **regardless** of
+whether such a route exists; it is used deliberately, because it also pulls traffic into a
+black hole when there is in fact no way out.
+
 ## Router ID
 
 Chosen in this order:
@@ -90,9 +110,16 @@ network).
 
 | Network type | Where | DR/BDR | Hello/Dead |
 |---|---|---|---|
-| **Broadcast** | Ethernet | yes | 10/40 |
-| **Point-to-point** | serial, `ip ospf network point-to-point` | no | 10/40 |
-| Non-broadcast (NBMA) | Frame Relay | yes, neighbors configured manually | 30/120 |
+| **Broadcast** | Ethernet — **the default** | yes | 10/40 |
+| **Point-to-point** | serial with PPP or HDLC — **the default**; on Ethernet, set manually with `ip ospf network point-to-point` | no | 10/40 |
+| Non-broadcast (NBMA) | Frame Relay — the default | yes, neighbors configured manually | 30/120 |
+| Point-to-multipoint | set manually on top of an NBMA medium | no | 30/120 |
+
+The type is **not** picked per interface by hand — it comes from the medium: advertise a
+Gigabit Ethernet interface in OSPF and the type is **broadcast**; advertise a serial
+interface with PPP encapsulation and it is **point-to-point**. One command verifies it:
+`show ip ospf interface` prints `Network Type BROADCAST` or `POINT_TO_POINT` on its third
+line.
 
 On a broadcast network of N routers, without a DR there would be N(N−1)/2 adjacencies.
 The **DR** is the synchronization hub: everyone builds full adjacencies only with the
@@ -103,9 +130,27 @@ DR election:
 1. Highest **interface priority** (default 1; priority 0 means it can't participate).
 2. On a tie — highest **router ID**.
 
+The priority is set on the interface, not in the process:
+
+```cfg
+interface GigabitEthernet0/1
+ ip ospf priority 100      ! highest on the segment → becomes the DR
+!
+interface GigabitEthernet0/2
+ ip ospf priority 0        ! will never be DR or BDR
+```
+
 Elections are **non-preemptive**: a router that shows up later with a better priority
-won't take over as DR — the process has to be restarted first. This is another
-favorite exam question.
+won't take over as DR — the process has to be restarted first (`clear ip ospf process` on
+every router in the segment, or bounce the current DR's interface). That is another
+favorite question: "priority 100 was configured and the DR didn't change" — the command is
+right, the restart is missing.
+
+> [!trap] Trap
+> In "make R3 the designated router on 10.0.4.0/24" tasks, half the mistakes are not about
+> the priority value but about **which interface** it goes on: the command applies to the
+> interface facing the named subnet, and any other interface on the same router has no say
+> in that segment's election.
 
 On a link between two Ethernet routers, `ip ospf network point-to-point` is often set —
 no DR election happens at all, and the adjacency comes up faster.

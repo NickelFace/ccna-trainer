@@ -7,7 +7,7 @@ blueprint: ["4.8", "4.9"]
 minutes: 25
 match:
   key: ["\\bTFTP\\b", "\\bFTP\\b", "copy (running|startup|tftp|flash)", "\\bIOS\\b image", "\\bSCP\\b", "backup.*configuration", "restore.*configuration"]
-  re: ["\\bSSH\\b.*configur", "crypto key generate", "file.transfer", "flash:", "startup-config", "running-config", "boot system", "\\bNVRAM\\b"]
+  re: ["\\bSSH\\b.*configur", "crypto key generate", "pubkey-chain", "general-keys", "crypto key zeroize", "file.transfer", "flash:", "startup-config", "running-config", "boot system", "\\bNVRAM\\b"]
 ---
 
 ## SSH: настройка по шагам
@@ -23,6 +23,20 @@ line vty 0 15
  transport input ssh
  login local
 ```
+
+Формы команды генерации ключа, которые ставят вариантами:
+
+| Команда | Что делает |
+|---|---|
+| `crypto key generate rsa` | сгенерировать пару ключей; IOS спросит длину модуля интерактивно |
+| `crypto key generate rsa general-keys modulus 1024` | то же одной строкой: **general-keys** — пара общего назначения (для SSH), modulus — длина |
+| `crypto key zeroize rsa` | **удалить** ключи; SSH после этого перестаёт работать |
+| `ip ssh pubkey-chain` | режим, где прописывают **открытые ключи клиентов** для входа по ключу вместо пароля |
+
+Для SSH нужен именно **`crypto key generate rsa`**; `zeroize` — обратная операция, а
+`pubkey-chain` — уже про аутентификацию клиентов по ключу и без сгенерированной пары
+бессмысленна. Минимальный набор для SSHv2 целиком: **hostname → ip domain-name → crypto
+key generate rsa → ip ssh version 2 → line vty + transport input ssh + login local**.
 
 Порядок не случаен: имя ключа строится из **hostname + domain-name**, поэтому без первых
 двух команд третья не выполнится. Всё это подробно разбирается и в главе про доступ к

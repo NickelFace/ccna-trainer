@@ -6,8 +6,8 @@ lead: Как выбирается корень, порты и их роли, ч�
 blueprint: ["2.5"]
 minutes: 50
 match:
-  key: ["spanning.?tree", "\\bBPDU\\b", "root bridge", "root port", "portfast", "rapid pvst", "forwarding loop"]
-  re: ["spanning.?tree", "\\bSTP\\b", "\\bRSTP\\b", "rapid pvst", "\\bBPDU\\b", "root bridge", "root port", "designated port", "\\bblocking\\b", "portfast", "bpduguard", "bpdu guard", "root guard", "loop guard", "bridge (id|priority)", "\\bTCN\\b", "path cost", "alternate port", "forwarding loop", "preferred forwarding interface", "prevents?.*(a )?workstation.*dhcp", "802\\.1w", "learning.*forwarding.*state", "port transition"]
+  key: ["spanning.?tree", "\\bBPDU\\b", "root bridge", "root port", "portfast", "uplinkfast", "backbonefast", "rapid pvst", "forwarding loop"]
+  re: ["spanning.?tree", "\\bSTP\\b", "\\bRSTP\\b", "rapid pvst", "\\bBPDU\\b", "root bridge", "root port", "designated port", "\\bblocking\\b", "portfast", "uplinkfast", "backbonefast", "bpduguard", "bpdu guard", "root guard", "loop guard", "bridge (id|priority)", "\\bTCN\\b", "path cost", "alternate port", "forwarding loop", "preferred forwarding interface", "prevents?.*(a )?workstation.*dhcp", "802\\.1w", "learning.*forwarding.*state", "port transition"]
 ---
 
 ## Задача, которую решает STP
@@ -126,6 +126,24 @@ spanning-tree portfast bpduguard default
 errdisable recovery cause bpduguard
 errdisable recovery interval 300
 ```
+
+### PortFast, UplinkFast и BackboneFast — не одно и то же
+
+Три «ускорителя» с похожими именами постоянно стоят вариантами в одном вопросе, и
+различает их то, **чьё время** они экономят:
+
+| Механизм | Где | Что ускоряет |
+|---|---|---|
+| **PortFast** | access-порт к конечному устройству | включение **самого порта**: сразу forwarding, без listening/learning |
+| **UplinkFast** | коммутатор доступа с двумя аплинками | переключение **на резервный аплинк** при падении основного — за секунды вместо 30–50 |
+| **BackboneFast** | все коммутаторы | реакция на **косвенный** отказ, где-то в глубине сети: сокращает ожидание устаревания max age (20 с) |
+
+Вопрос формулируют почти всегда про PortFast: «сразу отправлять трафик подключённому
+серверу», «немедленно устанавливать соединение при подключении устройства», «пропустить
+состояния listening и learning» — всё это **PortFast**. UplinkFast и BackboneFast —
+дистракторы: они ускоряют сходимость дерева после отказа, а не включение порта, и оба —
+наследие классического PVST+: в Rapid PVST+ и RSTP их функциональность встроена в сам
+протокол и отдельно не настраивается.
 
 ## Чтение вывода
 

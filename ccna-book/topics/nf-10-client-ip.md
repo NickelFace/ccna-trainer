@@ -6,8 +6,8 @@ lead: ipconfig, ifconfig и ip — где Windows, macOS и Linux показыв
 blueprint: ["1.10"]
 minutes: 25
 match:
-  key: ["ipconfig", "ifconfig", "\\bip addr\\b", "\\ben0\\b", "nslookup"]
-  re: ["ipconfig", "ifconfig", "\\bip addr\\b", "\\ben0\\b", "\\beth0\\b", "networksetup", "verify.*ip configuration", "nslookup", "DHCP enabled", "client operating system", "\\bWindows\\b", "\\bmacOS\\b", "\\bLinux\\b.*(host|command)", "workstation.*(command|configuration)", "\\bPC\\b.*ip (configuration|settings)"]
+  key: ["ipconfig", "ifconfig", "\\bip addr\\b", "\\ben0\\b", "nslookup", "netstat", "connection-specific", "\\bDUID\\b", "\\bIAID\\b"]
+  re: ["ipconfig", "ifconfig", "\\bip addr\\b", "\\ben0\\b", "\\beth0\\b", "networksetup", "verify.*ip configuration", "nslookup", "DHCP enabled", "client operating system", "\\bWindows\\b", "\\bmacOS\\b", "\\bLinux\\b.*(host|command)", "workstation.*(command|configuration)", "\\bPC\\b.*ip (configuration|settings)", "netstat", "connection-specific dns suffix", "dhcpv6 (iaid|client duid)", "ipv4 preferred"]
 ---
 
 ## Три команды на три системы
@@ -42,6 +42,27 @@ Ethernet adapter Ethernet0:
 
 `ipconfig` без ключей покажет только адрес, маску и шлюз — MAC-адреса и DHCP-сервера там
 нет. Это отдельный вопрос: «какая команда покажет MAC» → `ipconfig /all`.
+
+### Остальные строки `ipconfig /all`, которые дают в экспонатах
+
+Полный вывод длиннее приведённого, и вопросы любят именно «лишние» строки:
+
+```cli
+   Connection-specific DNS Suffix  . : example.local
+   Description . . . . . . . . . . . : Intel(R) Wireless-AC 9560
+   DHCPv6 IAID . . . . . . . . . . . : 123018303
+   DHCPv6 Client DUID. . . . . . . . : 00-01-00-01-25-3F-A1-7C-B8-76-3F-7C-57-DF
+   IPv4 Address. . . . . . . . . . . : 192.168.1.20(Preferred)
+   Link-local IPv6 Address . . . . . : fe80::a8bb:ccff:fedd:eeff%11(Preferred)
+```
+
+| Строка | Что означает |
+|---|---|
+| **Connection-specific DNS Suffix** | домен, который Windows дописывает к коротким именам на этом адаптере (`server1` → `server1.example.local`); выдаётся DHCP-опцией 15 |
+| **Description** | название адаптера из драйвера — по нему отличают проводной адаптер от беспроводного в задачах «чей это вывод» |
+| **DHCPv6 IAID** | Identity Association ID: номер, которым клиент помечает **конкретный интерфейс** в запросах DHCPv6 |
+| **DHCPv6 Client DUID** | DHCP Unique Identifier: идентификатор **всего клиента**, общий для его интерфейсов; в DHCPv6 сервер опознаёт клиента по DUID, а не по MAC |
+| **(Preferred)** рядом с адресом | адрес **действителен и используется** прямо сейчас (в отличие от `(Duplicate)` или истёкшего). В вопросах про «IPv4 Preferred» речь о том, что клиент при продлении аренды **просит тот же самый адрес**, а не о статике и не о DNS |
 
 ## macOS и Linux
 
@@ -104,6 +125,8 @@ C:\> ipconfig /flushdns       :: очистить кэш имён
 C:\> arp -a                   :: соответствия IP → MAC
 C:\> getmac                   :: MAC-адреса адаптеров
 C:\> route print              :: таблица маршрутов узла
+C:\> netstat -r               :: она же — netstat -r и route print печатают одно и то же
+C:\> netstat -an              :: открытые соединения и слушающие порты
 C:\> tracert 8.8.8.8          :: путь по хопам (Linux/macOS — traceroute)
 C:\> nslookup www.cisco.com   :: проверка DNS
 ```

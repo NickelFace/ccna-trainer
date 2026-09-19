@@ -2,12 +2,12 @@
 id: sec-07-wireless-security
 dom: SEC
 title: Безопасность беспроводных сетей
-lead: WEP, WPA, WPA2 и WPA3, personal против enterprise, что такое SAE и как настраивают WPA2-PSK в GUI контроллера.
+lead: WEP, WPA, WPA2 и WPA3, personal против enterprise, SAE, Auth Key Mgmt и 802.11w/PMF, и как настраивают WPA2-PSK в GUI контроллера.
 blueprint: ["5.9", "5.10"]
 minutes: 30
 match:
-  key: ["\\bWPA[23]?\\b", "\\bWEP\\b", "\\bPSK\\b", "\\bSAE\\b", "wireless security", "\\bTKIP\\b", "\\bCCMP\\b", "personal.*enterprise", "wpa2.*psk", "wireless.*controller.*security setting", "management connections to a wireless lan controller"]
-  re: ["wireless.*encrypt", "pre-shared key.*wireless", "802\\.11i", "open authentication", "wireless authentication", "guest.*wireless.*secur", "wireless.*controller.*security", "management connections? to a.*wireless lan controller", "increase security for management"]
+  key: ["\\bWPA[23]?\\b", "\\bWEP\\b", "\\bPSK\\b", "\\bSAE\\b", "wireless security", "\\bTKIP\\b", "\\bCCMP\\b", "personal.*enterprise", "wpa2.*psk", "wireless.*controller.*security setting", "management connections to a wireless lan controller", "802\\.11w", "\\bPMF\\b", "protected management frame", "\\bCCKM\\b", "\\bMFP\\b", "auth(entication)? key management", "\\bOSEN\\b"]
+  re: ["wireless.*encrypt", "management frame protection", "enable 802\\.11w", "set the pmf option", "pre-shared key.*wireless", "802\\.11i", "open authentication", "wireless authentication", "guest.*wireless.*secur", "wireless.*controller.*security", "management connections? to a.*wireless lan controller", "increase security for management"]
 ---
 
 ## Почему в радио всё сложнее
@@ -32,10 +32,13 @@ match:
 - **WPA** — переходная мера на старом железе: тот же RC4, но ключ меняется на каждый пакет
   (TKIP).
 - **WPA2** — впервые настоящий **AES**; это ответ на вопросы «какой стандарт использует
-  AES».
+  AES». Точнее: CCMP использует **AES со 128-битным ключом**, поэтому в вариантах ответа
+  верен **AES-128**, а не AES-256 и не RC4.
 - **WPA3** — заменяет четырёхстороннее рукопожатие на **SAE** (Simultaneous Authentication
   of Equals, «dragonfly»): офлайн-перебор перехваченного хендшейка перестаёт работать,
-  добавляется forward secrecy. Плюс **OWE** для открытых сетей — шифрование без пароля.
+  добавляется forward secrecy. Плюс **OWE** для открытых сетей — шифрование без пароля, и
+  **обязательный PMF** (802.11w), из-за которого WPA3 «защищает от атак deauthentication и
+  disassociation» — ещё одна формулировка, которой спрашивают про его улучшения.
 
 ## Personal и Enterprise
 
@@ -52,6 +55,79 @@ match:
 > [!key] Запомнить
 > «Корпоративная сеть, доступ по учётным записям сотрудников» → **WPA2/WPA3-Enterprise +
 > RADIUS**. «Небольшая сеть, один пароль на всех» → **Personal (PSK/SAE)**.
+
+## Auth Key Mgmt: чем согласуют ключ
+
+Политика (WPA/WPA2/WPA3) и шифр (TKIP/AES-CCMP/GCMP) — это одно поле, а **способ
+согласования ключа** — другое: **Authentication Key Management (AKM)**. В вопросах со
+скриншотом контроллера их путают чаще всего, потому что галочка «WPA2 Policy» стоит, а
+сеть всё равно не настроена — не выбран AKM.
+
+| AKM | Что означает | Когда выбирают |
+|---|---|---|
+| **PSK** | общий пароль сети | Personal: дом, гостевая, IoT |
+| **802.1X** | учётная запись проверяется на RADIUS | Enterprise |
+| **SAE** | рукопожатие WPA3-Personal вместо PSK | WPA3 без RADIUS |
+| **FT PSK** | быстрый роуминг 802.11r поверх общего пароля | голос/видео в Personal-сети |
+| **FT 802.1X** | быстрый роуминг 802.11r поверх Enterprise | голос/видео в корпоративной сети |
+| **CCKM** | Cisco Centralized Key Management — проприетарный предшественник 802.11r | только старые клиенты Cisco (Aironet, телефоны) |
+
+**CCKM** решал ту же задачу, что и 802.11r: не проходить полный обмен ключами при переходе
+между точками. Разница в том, что он **проприетарный** и работает только с клиентами,
+которые его поддерживают, а 802.11r — стандарт. Поэтому в вопросе «клиенты должны
+использовать 802.11r» ответ всегда **Fast Transition + FT PSK/FT 802.1X**, а CCKM —
+отвлекающий вариант, даже если он тоже «про роуминг».
+
+Ещё один вариант из того же списка — **OSEN** (OSU Server-Only authenticated L2 Encryption
+Network), относящийся к Hotspot 2.0 / Passpoint. В обычных задачах на корпоративный или
+гостевой WLAN он не используется и стоит в вариантах ответа как шум.
+
+> [!key] Запомнить
+> «WPA2-PSK и пускать только конкретные устройства» — это **две** настройки: WPA2 Policy +
+> AES в Layer 2 Security и **MAC Filtering** рядом. Один PSK «только конкретных» не
+> отфильтрует.
+
+## Защита управляющих кадров: 802.11w (PMF) и MFP
+
+WPA2 шифрует **данные**, но управляющие кадры 802.11 (см. главу про архитектуру WLAN) —
+deauthentication, disassociation, action — уходят в эфир **открытыми и без подписи**.
+Отсюда самая простая атака на Wi-Fi: подделать deauth-кадр от имени точки и выбить
+клиента из сети — ни пароль, ни AES этому не мешают, потому что кадр вообще не
+защищён.
+
+**802.11w — Protected Management Frame (PMF)** закрывает именно эту дыру: управляющие
+кадры получают проверку целостности, и подделанный deauth клиент просто игнорирует.
+
+В GUI контроллера это блок **Protected Management Frame** с полем **PMF**:
+
+| Значение | Что происходит |
+|---|---|
+| **Disabled** | 802.11w выключен, кадры не защищены |
+| **Optional** | защиту используют клиенты, которые умеют; остальные подключаются как раньше |
+| **Required** | подключиться могут **только** клиенты с поддержкой 802.11w |
+
+Отсюда прямой ответ на вопрос «что настроить, чтобы включить 802.11w на WLAN» — **PMF =
+Required** (значение Optional включает механизм, но не требует его; в вопросах с формулировкой
+«enable 802.11w» ожидают именно Required). Обратная сторона: старый клиент без поддержки
+802.11w после этого в сеть не войдёт — поэтому в задачах на простой WPA2-PSK для смешанного
+парка устройств PMF, наоборот, **отключают**.
+
+В WPA3 обсуждать нечего: **PMF там обязателен** и выключить его нельзя — это часть
+стандарта, а не опция.
+
+**MFP (Management Frame Protection)** — проприетарный механизм Cisco, появившийся до
+802.11w и живущий в GUI отдельной строкой:
+
+- **Infrastructure MFP** — точка подписывает свои управляющие кадры, соседние точки
+  проверяют подпись и сообщают контроллеру о подделке. Это **обнаружение** атаки, а не
+  защита клиента.
+- **Client MFP** (в WLAN — `MFP Client Protection`: Disabled / Optional / Required) — то же
+  для кадров между точкой и клиентом, но требует клиента, который умеет MFP (исторически —
+  связка с CCKM).
+
+Практический вывод для экзамена: **802.11w/PMF — стандарт и правильный ответ**, MFP —
+Cisco-специфичный предшественник; путать их в вопросах про «защиту management-кадров» и
+есть цель дистракторов.
 
 ## Чего безопасность не даёт
 
@@ -198,6 +274,9 @@ ip access-list extended GUEST-ISOLATION
 - «Which two settings must be configured for WPA2-PSK on the WLC?» — Layer 2 Security
   WPA2 с AES и сам PSK.
 - «Is hiding the SSID a security control?» — нет.
+- «What must be configured to enable 802.11w on the WLAN?» — PMF = **Required**.
+- «Clients must use 802.11r» — Fast Transition + **FT PSK** (или FT 802.1X), не CCKM.
+- «WPA2-PSK и только определённые клиенты» — WPA2 Policy + **MAC Filtering**.
 - «Why is WEP not acceptable?» — статический ключ и слабый IV, восстанавливается из
   перехваченного трафика.
 - «Why can a WPA2-PSK password be attacked entirely offline?» — четырёхстороннее

@@ -6,8 +6,8 @@ lead: Порядок кликов при создании SSID: General, Securit
 blueprint: ["2.9"]
 minutes: 30
 match:
-  key: ["wlan id", "profile name", "QoS profile", "platinum|gold|silver|bronze", "interface/interface group", "layer 2 security", "p2p block", "mac filtering", "local eap", "aaa override", "ascii.*character"]
-  re: ["\\bWLAN\\b.*(create|configure|GUI)", "wlan id", "profile name", "\\bSSID\\b.*(WLC|controller|GUI)", "interface/interface group", "AAA servers tab", "QoS profile", "platinum|gold|silver|bronze", "layer 2 security", "\\bPSK\\b format", "broadcast ssid", "session timeout", "client exclusion", "band select", "wlan.*enable.*status", "p2p block", "mac filtering", "local eap", "aaa override", "ascii.*character", "lifetime.*second", "authenticate.*local database", "maximum allowed clients", "additional (task|vlan|security polic)", "characteristic.*encryption.*wireless"]
+  key: ["wlan id", "profile name", "QoS profile", "platinum|gold|silver|bronze", "interface/interface group", "layer 2 security", "p2p block", "mac filtering", "local eap", "aaa override", "ascii.*character", "auth key mgmt", "fast transition", "wi-fi direct", "static ip tunneling", "coverage hole", "\\bMFP\\b", "aironet ie"]
+  re: ["\\bWLAN\\b.*(create|configure|GUI)", "wlan id", "profile name", "\\bSSID\\b.*(WLC|controller|GUI)", "interface/interface group", "AAA servers tab", "QoS profile", "platinum|gold|silver|bronze", "layer 2 security", "\\bPSK\\b format", "broadcast ssid", "session timeout", "client exclusion", "band select", "wlan.*enable.*status", "p2p block", "mac filtering", "local eap", "aaa override", "ascii.*character", "lifetime.*second", "authenticate.*local database", "maximum allowed clients", "clients per ap radio", "auth key mgmt", "authentication key management", "fast transition", "wi-fi direct", "static ip tunneling", "coverage hole detection", "mfp client protection", "layer 2 acl", "additional (task|vlan|security polic)", "characteristic.*encryption.*wireless"]
 ---
 
 ## Что и в каком порядке заполняют
@@ -56,8 +56,39 @@ Servers** выбирают RADIUS-серверы аутентификации и
 пока рядом с ним не отмечено **Enabled** — это отдельная галочка, а не факт присутствия
 сервера в списке.
 
-Layer 3 обычно — **Web Policy / Web Authentication**: гость получает адрес, но до входа в
-портал ходит только к DNS и странице авторизации.
+Layer 3 обычно — **Web Policy**, и у него два варианта, которые различают в вопросах:
+
+- **Web Authentication** — гость получает адрес, но до ввода **логина и пароля** на
+  портале ходит только к DNS и странице авторизации;
+- **Web Passthrough** — тот же перехват, но **без учётных данных**: пользователю
+  показывают страницу с условиями использования, он нажимает «принять» и получает доступ
+  (опционально с вводом email). Типично для открытых гостевых сетей в кафе и холлах.
+
+Для Web Passthrough Layer 2 Security обязана быть **None**: шифрование WPA2 требует
+ключа или 802.1X, а у гостя их нет — отсюда и ответ «Set the Layer 2 Security to None» в
+задачах на этот сценарий.
+
+### Auth Key Mgmt, Fast Transition и PMF — три поля, которые читают со скриншота
+
+Под выбором политики WPA в том же блоке Layer 2 стоят ещё три вещи, и именно их просят
+поменять в вопросах с экспонатом:
+
+- **Authentication Key Management** — набор галочек: **802.1X**, **CCKM**, **PSK**,
+  **FT 802.1X**, **FT PSK**. Галочка «WPA2 Policy» без выбранного AKM ничего не значит: для
+  Personal отмечают **PSK**, для Enterprise — **802.1X**, а варианты с префиксом **FT** —
+  это те же два способа, но с быстрым роумингом 802.11r. **CCKM** — проприетарный
+  предшественник 802.11r для старых клиентов Cisco (см. главу про безопасность
+  беспроводных сетей).
+- **Fast Transition** — Disabled / Enabled / Adaptive. Требование «клиенты должны
+  использовать 802.11r» закрывается связкой **Fast Transition = Enable** плюс **FT PSK**
+  или **FT 802.1X** в AKM — одного поля мало.
+- **Protected Management Frame → PMF** — Disabled / Optional / Required, то самое
+  **802.11w**. «Enable 802.11w on the WLAN» = поставить **Required**; для смешанного парка
+  старых устройств на WPA2-PSK, наоборот, ставят Disabled.
+
+Ниже, в блоке шифрования, выбирают сам шифр: **CCMP128 (AES)** — обычный WPA2,
+**CCMP256/GCMP128/GCMP256** — наборы WPA3. **TKIP** оставляют снятым, если в задаче нет
+явного требования поддержать очень старые устройства.
 
 ### Ограничение доступа на уровне WLAN
 
@@ -113,6 +144,24 @@ SSID.
   контроллере.
 - **DHCP Addr. Assignment Required** — клиент обязан получить адрес по DHCP, статический
   не примут.
+
+- **Maximum Allowed Clients** — предел числа одновременных клиентов **на весь WLAN**;
+  отдельное поле **Maximum Allowed Clients Per AP Radio** ограничивает их на одном радио
+  одной точки. Требование «не больше 10 подключений к сети» — это первое поле, не второе.
+- **Wi-Fi Direct Clients Policy** — что делать с клиентами, умеющими Wi-Fi Direct (прямое
+  соединение устройств мимо точки): Disabled / Allow / **Not-Allow** — запрет таким
+  устройствам подключаться к WLAN.
+- **Static IP Tunneling** — разрешает клиенту сохранить свой статический адрес при переходе
+  в другую подсеть: трафик туннелируется на «родной» контроллер. Это ответ на требование
+  «клиент должен сохранять назначенный IP при перемещении по кампусу».
+- **Coverage Hole Detection** — точка отслеживает клиентов со слабым сигналом и сообщает
+  контроллеру о «дырах» в покрытии; к назначению VLAN и к безопасности отношения не имеет.
+- **MFP Client Protection** — Disabled / Optional / Required, проприетарная защита
+  управляющих кадров Cisco (предшественник 802.11w).
+- **Aironet IE** — фирменные информационные элементы Cisco в кадрах; нужны старым клиентам
+  Aironet, современным — нет.
+- **Layer 2 ACL** — фильтр по MAC/EtherType, применяемый к клиентам WLAN; не то же самое,
+  что запрет P2P-трафика.
 
 ## Порядок ввода в эксплуатацию
 

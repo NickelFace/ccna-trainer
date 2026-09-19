@@ -47,9 +47,21 @@ Breaking down the line `O 10.10.13.0/25 [110/6576] via 10.10.10.1, 06:58:21, Fas
 | `S` | static |
 | `S*` | static default route |
 | `O`, `IA`, `E1/E2` | OSPF: intra-area, inter-area, external |
+| `N1`, `N2` | OSPF NSSA external — external routes that reached a not-so-stubby area |
 | `D`, `EX` | EIGRP: internal, external |
 | `R` | RIP |
 | `B` | BGP |
+| `i`, `su`, `L1`, `L2`, `ia` | IS-IS: plain, summary, level-1, level-2, inter-area |
+| `o` | ODR (On-Demand Routing) — an ancient hub-and-spoke mechanism riding on CDP |
+| `U`, `P` | per-user static route and periodic downloaded static route (from a dial/AAA profile) |
+| `*` | candidate default — this route may become the gateway of last resort |
+
+The code legend is printed right above the table, and **its length is misleading**: it
+lists every source IOS can display at all, not the ones configured on this router. "Which
+routing protocol produced the route to 192.168.10.1" is answered **not from the legend but
+from the letter at the start of the route's line**: `D` is EIGRP, `O` is OSPF, `R` is RIP,
+`B` is BGP. The legend lines about NSSA, IS-IS, ODR and per-user routes mean nothing in the
+overwhelming majority of tasks — they are always printed.
 
 **C and L show up as a pair**: `C` is the interface's entire subnet, `L` is the
 interface's own address as a /32. Both appear only when the interface is up/up **and**

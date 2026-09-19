@@ -74,6 +74,12 @@ Rule of thumb: trust as close to the source as possible, but only sources you ca
 
 - **Congestion management** — what to do when a queue fills up: multiple queues and the
   order in which they're serviced.
+  - **FIFO** — a single queue, first come first served. The default behaviour on fast
+    interfaces, and the complete absence of QoS.
+  - **PQ (priority queuing)** — several strict-priority queues: while the high queue has
+    packets, the lower ones aren't served at all. Hence its flaw — low-priority traffic
+    can be starved indefinitely.
+  - **WFQ** — automatic fair sharing between flows, with no manual classification.
   - **CBWFQ** — guarantees each class a share of bandwidth.
   - **LLQ** — a priority queue layered on top of CBWFQ; **mandatory for voice**, because
     it's the only mechanism that gives predictably low latency.
@@ -81,6 +87,15 @@ Rule of thumb: trust as close to the source as possible, but only sources you ca
   **WRED** proactively drops some packets from less important classes so TCP sessions
   back off on their own. Without it you get **tail drop** — once the queue is full,
   everything gets dropped indiscriminately, voice included.
+
+> [!trap] Trap
+> When a question asks "which two tools provide congestion management," the right answers
+> come from the queueing list (**CBWFQ, PQ, LLQ, WFQ, FIFO**). Similar-looking acronyms
+> from other categories sit next to them: **CAR** and **FRTS** are policing and shaping
+> (rate limiting, not service order), **PBR** is policy-based routing (path selection), and
+> **WRED** is congestion **avoidance**. The difference is exactly what the mechanism does
+> with an already-full queue: manages it, limits what enters it, or solves an entirely
+> different problem.
 
 ## Policing and shaping
 

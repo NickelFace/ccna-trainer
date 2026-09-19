@@ -7,7 +7,7 @@ blueprint: ["2.3"]
 minutes: 25
 match:
   key: ["\\bCDP\\b", "\\bLLDP\\b", "discovery protocol", "no cdp (run|enable)", "no lldp"]
-  re: ["\\bCDP\\b", "\\bLLDP\\b", "cdp neighbor", "lldp neighbor", "discovery protocol", "LLDP-?MED", "show cdp", "show lldp", "no cdp (run|enable)", "no lldp (run|receive|transmit)", "\\bTLV\\b", "delay time", "multivendor", "neighbor.*(ip address|hardware platform|software version)", "topology.*mapp?ed"]
+  re: ["\\bCDP\\b", "\\bLLDP\\b", "cdp neighbor", "lldp neighbor", "discovery protocol", "LLDP-?MED", "show cdp", "show lldp", "no cdp (run|enable)", "no lldp (run|receive|transmit)", "\\bTLV\\b", "tlv-select", "lldp (timer|holdtime|reinit)", "delay time", "multivendor", "neighbor.*(ip address|hardware platform|software version)", "topology.*mapp?ed"]
 ---
 
 ## Зачем протоколы обнаружения
@@ -47,6 +47,23 @@ interface gi0/1
 
 У LLDP передача и приём управляются **раздельно** — это отдельный вопрос в банке. У CDP
 такого разделения нет.
+
+Ещё три глобальные команды LLDP, которые просят выбрать по условию задачи:
+
+```cfg
+lldp timer 60        ! как часто рассылать объявления (по умолчанию 30 с)
+lldp holdtime 180    ! сколько сосед хранит полученные данные (по умолчанию 120 с)
+lldp reinit 2        ! задержка перед повторной инициализацией порта
+!
+no lldp tlv-select management-address   ! не включать в объявления конкретный TLV
+```
+
+Различать их просто: **timer — как часто шлём**, **holdtime — сколько данные считаются
+актуальными** («обновляется каждые 3 минуты» = `holdtime 180`), **tlv-select** — **что
+именно** попадает в объявление. Последняя и есть ответ на задачу «скрыть IP-адрес
+управления в LLDP, не выключая сам протокол»: убирается TLV `management-address` на том
+коммутаторе, **чей адрес прячут**, — а не `no lldp transmit` на соседе, который выключил
+бы объявления целиком.
 
 ## Чтение вывода
 
