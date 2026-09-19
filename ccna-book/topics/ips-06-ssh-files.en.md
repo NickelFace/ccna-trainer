@@ -17,6 +17,20 @@ line vty 0 15
  login local
 ```
 
+The key-generation forms that show up as answer options:
+
+| Command | What it does |
+|---|---|
+| `crypto key generate rsa` | generate a key pair; IOS asks for the modulus length interactively |
+| `crypto key generate rsa general-keys modulus 1024` | the same in one line: **general-keys** is a general-purpose pair (what SSH uses), modulus is the length |
+| `crypto key zeroize rsa` | **delete** the keys; SSH stops working afterwards |
+| `ip ssh pubkey-chain` | the mode where **clients' public keys** are entered, for key-based login instead of a password |
+
+SSH specifically needs **`crypto key generate rsa`**; `zeroize` is the reverse operation,
+and `pubkey-chain` is about authenticating clients by key, which is meaningless without a
+generated pair. The complete minimum set for SSHv2: **hostname → ip domain-name → crypto
+key generate rsa → ip ssh version 2 → line vty + transport input ssh + login local**.
+
 The order isn't arbitrary: the key's name is built from **hostname + domain-name**, so
 the third command won't succeed without the first two. This is covered in detail in the
 chapter on device access as well — what matters here is that the same set of commands

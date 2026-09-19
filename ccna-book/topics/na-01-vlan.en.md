@@ -38,6 +38,15 @@ a design convention — and it's the assumption behind every exam question like 
 recommendation is to **avoid using VLAN 1 for user data** and to move management traffic
 to a dedicated VLAN instead.
 
+> [!trap] Trap
+> **Private VLAN** commands regularly turn up among the answer options — `switchport
+> private-vlan association host`, `vlan 10 / private-vlan isolated`. A private VLAN is a
+> separate "VLAN inside a VLAN" technology (**isolated** ports can't see each other,
+> **community** ports see only their own group, a **promiscuous** port sees everyone; used
+> in hosting and guest networks). It is **not in the CCNA scope**, it is not used on
+> ordinary access ports or trunks, and in questions about VLANs, a voice port or a native
+> VLAN those options are always wrong — recognizing them by sight is enough.
+
 ## Configuring an Access Port
 
 ```cfg
@@ -75,6 +84,23 @@ interface GigabitEthernet0/5
  spanning-tree portfast
  mls qos trust cos                ! trust the phone's marking
 ```
+
+The forms of the `switchport voice vlan` command that appear as answer options:
+
+| Form | What it tells the phone |
+|---|---|
+| `switchport voice vlan 20` | voice goes **in a separate VLAN 20**, tagged. This is the standard answer whenever the task names a voice VLAN |
+| `switchport voice vlan dot1p` | voice goes **in VLAN 0**: the tag exists only to carry the CoS priority, with no VLAN number |
+| `switchport voice vlan untagged` | voice is **untagged**, sharing the access VLAN with data |
+| `switchport voice vlan none` | the phone is told nothing and uses its own settings |
+
+Next to it sits a second command — **`switchport priority extend`** — which is about how
+the phone treats traffic from **the PC plugged into its own port**:
+
+- `switchport priority extend cos 7` — re-mark the PC's traffic with the given CoS;
+- `switchport priority extend trust` — **trust** the marking the PC set itself and pass it
+  through unchanged. That is the answer to "the port must transmit packets using the same
+  priority they were received with from the device behind the phone."
 
 Key fact: **voice traffic arrives tagged with 802.1Q, user traffic arrives untagged**,
 even though the port is formally still an access port. The phone learns the voice VLAN

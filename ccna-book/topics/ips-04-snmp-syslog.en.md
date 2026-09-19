@@ -115,6 +115,50 @@ The syslog port is **UDP 514**.
 Classic question: "I connected over SSH and don't see messages that show up on the
 console" → needs the `terminal monitor` command.
 
+> [!key] Remember
+> SNMP is **monitoring and managing devices over UDP** at the application layer (ports
+> 161/162). Options saying "over TCP," "at the transport layer" or "over SSH" are wrong.
+> Alongside SNMP and syslog, modern controllers (Cisco DNA Center) also collect data via
+> **streaming telemetry** — the device pushes metrics continuously instead of waiting to
+> be polled; "how does DNA Center gather data from the network" is answered by exactly
+> that set: **SNMP, syslog and streaming telemetry**.
+
+## IP SLA: active measurement
+
+SNMP and syslog answer the question "what does the device report about itself." **IP SLA**
+answers a different one: "what actually happens to traffic" — the router **generates** probe
+packets itself and measures what became of them.
+
+| IP SLA operation | What it measures |
+|---|---|
+| `icmp-echo` | reachability and round-trip delay to a host |
+| `udp-jitter` | delay, **jitter** and loss — the voice traffic profile |
+| `udp-jitter codec g711ulaw` | the same plus a calculated **MOS** voice quality score |
+| `http`, `dns`, `tcp-connect` | the response time of a specific service |
+
+That yields two questions asked almost verbatim:
+
+- "what determines whether the QoS on the network is sufficient to support IP services" →
+  **IP SLA**: of the usual list (CDP, LLDP, EEM, IP SLA) it is the only one that actually
+  measures delay and jitter along the path;
+- "what is required for an IP SLA to measure UDP jitter" → **NTP**. Jitter is computed from
+  send and receive timestamps taken on **two different devices**, so their clocks have to
+  be synchronized; without common time the numbers are meaningless (see the NTP chapter).
+
+```cfg
+ip sla 10
+ udp-jitter 10.1.1.1 16384 codec g711ulaw
+ frequency 30
+ip sla schedule 10 life forever start-time now
+```
+
+The far-end router has to be an **IP SLA responder** (`ip sla responder`) — that's what
+puts accurate timestamps on the return path.
+
+Results are read with `show ip sla statistics`, and the same result feeds route **tracking**
+(`track`), for when a backup link should take over on quality degradation rather than on an
+interface going down.
+
 ## Walkthrough: a complete SNMP poll from request to response
 
 The NMS wants to know the state of interface `GigabitEthernet0/1` on a router.

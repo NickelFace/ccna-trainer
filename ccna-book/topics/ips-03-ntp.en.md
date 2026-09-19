@@ -95,6 +95,19 @@ How to read it:
 - `Time source is NTP` in `show clock` means the time came from NTP, not a manual
   setting (`Time source is user configuration`).
 
+## Who else needs common time
+
+Logs are the most visible consumer of synchronized time, but not the only one:
+
+- **IP SLA** with the `udp-jitter` operation computes jitter from timestamps taken on **two
+  different devices** — without NTP the measurement is meaningless (which is why "what is
+  required to measure UDP jitter" is answered with NTP, not CDP/LLDP/EEM).
+- **Certificates** (SSH, HTTPS, 802.1X with EAP-TLS) are validated against their validity
+  period: a drifted clock reports "certificate not yet valid" for a perfectly good
+  certificate.
+- **Kerberos and AAA** reject requests whose time is off by more than the allowed skew.
+- **Schedules**: `time-range` in an ACL and the task scheduler fire at the wrong time.
+
 ## Tying it to logs
 
 The whole point of this topic shows up in syslog: without NTP, every device sets its own

@@ -1,6 +1,6 @@
 ---
 title: Wireless Network Security
-lead: WEP, WPA, WPA2, and WPA3, personal versus enterprise, what SAE is, and how to configure WPA2-PSK in the controller GUI.
+lead: WEP, WPA, WPA2, and WPA3, personal versus enterprise, SAE, Auth Key Mgmt and 802.11w/PMF, and how to configure WPA2-PSK in the controller GUI.
 ---
 
 ## Why everything is harder over radio
@@ -25,8 +25,11 @@ What specifically gets asked:
 - **WPA** — a transitional fix for old hardware: still RC4, but the key changes on every
   packet (TKIP).
 - **WPA2** — the first standard with real **AES**; this is the answer to "which standard
-  uses AES."
-- **WPA3** — replaces the four-way handshake with **SAE** (Simultaneous Authentication of
+  uses AES." More precisely: CCMP uses **AES with a 128-bit key**, so among the options
+  **AES-128** is correct, not AES-256 and not RC4.
+- **WPA3** — mandates **PMF** (802.11w), which is why it "defends against deauthentication
+  and disassociation attacks" — another phrasing used to ask about its improvements. It
+  also replaces the four-way handshake with **SAE** (Simultaneous Authentication of
   Equals, "dragonfly"): offline brute forcing of a captured handshake no longer works, and
   forward secrecy is added. Plus **OWE** for open networks — encryption without a password.
 
@@ -45,6 +48,78 @@ In WPA3, these modes are called **WPA3-Personal** (SAE instead of PSK) and
 > [!key] Remember
 > "Corporate network, access via employee accounts" → **WPA2/WPA3-Enterprise +
 > RADIUS**. "Small network, one shared password" → **Personal (PSK/SAE)**.
+
+## Auth Key Mgmt: how the key is negotiated
+
+The policy (WPA/WPA2/WPA3) and the cipher (TKIP/AES-CCMP/GCMP) are one field; **how the key
+is negotiated** is another one: **Authentication Key Management (AKM)**. In controller
+screenshot questions these two get confused more than anything else, because the "WPA2
+Policy" box is ticked and the network still isn't configured, since no AKM was selected.
+
+| AKM | What it means | When it is chosen |
+|---|---|---|
+| **PSK** | a shared network password | Personal: home, guest, IoT |
+| **802.1X** | the account is checked against RADIUS | Enterprise |
+| **SAE** | the WPA3-Personal handshake instead of PSK | WPA3 without RADIUS |
+| **FT PSK** | 802.11r fast roaming on top of a shared password | voice/video on a Personal network |
+| **FT 802.1X** | 802.11r fast roaming on top of Enterprise | voice/video on a corporate network |
+| **CCKM** | Cisco Centralized Key Management, the proprietary predecessor of 802.11r | only legacy Cisco clients (Aironet, phones) |
+
+**CCKM** solved the same problem as 802.11r: skip the full key exchange when moving between
+access points. The difference is that it is **proprietary** and works only with clients that
+support it, while 802.11r is a standard. So when a question says "clients must use
+802.11r," the answer is always **Fast Transition + FT PSK / FT 802.1X**, and CCKM is the
+distractor, even though it is also "about roaming."
+
+One more entry in that same list is **OSEN** (OSU Server-Only authenticated L2 Encryption
+Network), which belongs to Hotspot 2.0 / Passpoint. Ordinary corporate or guest WLAN tasks
+never use it; it sits in the answer options as noise.
+
+> [!key] Remember
+> "WPA2-PSK and let only specific devices in" is **two** settings: WPA2 Policy + AES under
+> Layer 2 Security, and **MAC Filtering** next to it. A PSK alone filters nobody.
+
+## Protecting management frames: 802.11w (PMF) and MFP
+
+WPA2 encrypts **data**, but 802.11 management frames (see the WLAN architecture chapter) —
+deauthentication, disassociation, action — go over the air **in the clear and unsigned**.
+Hence the simplest Wi-Fi attack there is: forge a deauth frame on behalf of the AP and kick
+a client off the network. Neither the password nor AES gets in the way, because the frame
+isn't protected at all.
+
+**802.11w — Protected Management Frame (PMF)** closes exactly that hole: management frames
+get an integrity check, and a forged deauth is simply ignored by the client.
+
+In the controller GUI this is the **Protected Management Frame** block with a **PMF** field:
+
+| Value | What happens |
+|---|---|
+| **Disabled** | 802.11w is off, frames are unprotected |
+| **Optional** | clients that support it use the protection; the rest connect as before |
+| **Required** | **only** clients that support 802.11w can connect |
+
+That gives the direct answer to "what must be configured to enable 802.11w on the WLAN" —
+**PMF = Required** (Optional turns the mechanism on but doesn't demand it; a question worded
+"enable 802.11w" expects Required). The flip side: a legacy client without 802.11w support
+will no longer join — which is why tasks about plain WPA2-PSK for a mixed device fleet
+**disable** PMF instead.
+
+With WPA3 there is nothing to discuss: **PMF is mandatory** there and cannot be turned off,
+because it is part of the standard rather than an option.
+
+**MFP (Management Frame Protection)** is a Cisco-proprietary mechanism that predates 802.11w
+and lives on its own line in the GUI:
+
+- **Infrastructure MFP** — the AP signs its own management frames, neighboring APs validate
+  the signature and report forgeries to the controller. That is attack **detection**, not
+  client protection.
+- **Client MFP** (on a WLAN, `MFP Client Protection`: Disabled / Optional / Required) — the
+  same for frames between the AP and the client, but it needs a client that speaks MFP
+  (historically, paired with CCKM).
+
+The practical exam takeaway: **802.11w/PMF is the standard and the right answer**, MFP is the
+Cisco-specific predecessor, and mixing them up in "protect the management frames" questions
+is exactly what the distractors are for.
 
 ## What doesn't actually provide security
 
@@ -191,6 +266,9 @@ ip access-list extended GUEST-ISOLATION
 - "Which two settings must be configured for WPA2-PSK on the WLC?" — Layer 2 Security
   WPA2 with AES, and the PSK itself.
 - "Is hiding the SSID a security control?" — no.
+- "What must be configured to enable 802.11w on the WLAN?" — PMF = **Required**.
+- "Clients must use 802.11r" — Fast Transition + **FT PSK** (or FT 802.1X), not CCKM.
+- "WPA2-PSK and only specific clients" — WPA2 Policy + **MAC Filtering**.
 - "Why is WEP not acceptable?" — a static key and a weak IV, recoverable from captured
   traffic.
 - "Why can a WPA2-PSK password be attacked entirely offline?" — the four-way handshake is

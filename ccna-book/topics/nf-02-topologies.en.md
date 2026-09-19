@@ -201,6 +201,22 @@ What gets asked about these:
 WAN redundancy is figured the same way as in a campus: two links on **different technologies
 and different carriers**, or "two links" from one provider both go down in the same outage.
 
+### What the devices at the provider boundary are called
+
+The vocabulary of the network edge appears in question stems as a given — the router in a
+diagram may be labeled not "R1" but **CPE**:
+
+| Term | What it is |
+|---|---|
+| **CPE** (customer premises equipment) | equipment **on the customer's site**, owned and managed by the customer: the edge router, a modem, an ONT. It is what gets configured in "connect the office to two providers" tasks |
+| **Demarcation point** | where the provider's responsibility ends and the customer's begins — physically, usually a jack or a patch panel in the comms room |
+| **CO** (central office) | the provider's facility the circuit lands in |
+| **Last mile** | the stretch from the demarcation point to the provider's nearest node |
+
+For CCNA the practical value is simple: when a question says "CPE," read it as "our edge
+router" — every command involved (a floating static route, two default routes with
+different ADs, NAT outward) is configured right there.
+
 ## On-premises and cloud
 
 | | On-premises | Cloud |

@@ -42,6 +42,23 @@ interface gi0/1
 LLDP controls transmit and receive **separately** — a favorite distinction in exam
 questions. CDP has no such split.
 
+Three more global LLDP commands come up as options to pick from a requirement:
+
+```cfg
+lldp timer 60        ! how often advertisements are sent (default 30 s)
+lldp holdtime 180    ! how long a neighbor keeps the received data (default 120 s)
+lldp reinit 2        ! delay before a port reinitializes LLDP
+!
+no lldp tlv-select management-address   ! leave a specific TLV out of the advertisements
+```
+
+Telling them apart is easy: **timer is how often we send**, **holdtime is how long the data
+stays valid** ("refreshed every 3 minutes" = `holdtime 180`), and **tlv-select** is **what
+goes into** the advertisement. The last one answers "hide the management IP address in LLDP
+without disabling the protocol": the `management-address` TLV is removed on the switch
+**whose address is being hidden**, not with `no lldp transmit` on the neighbor, which would
+suppress the advertisements entirely.
+
 ## Reading the Output
 
 ```cli

@@ -63,9 +63,20 @@ How an AP looks for its controller (in order): a previously saved address → DH
 | **Rogue detector** | listens on the wired network, matching MACs of foreign APs |
 | **Bridge / Mesh** | a bridge between buildings, or a wireless mesh network |
 | **SE-Connect** | spectrum analysis |
+| **OfficeExtend (OEAP)** | a special case of FlexConnect for work from home: the AP sits at the employee's house and reaches the office WLC over the internet |
 
 FlexConnect answers the question about a branch with a thin WAN link: hauling all user
-traffic to a central WLC and back makes no sense, so it's switched locally instead.
+traffic to a central WLC and back makes no sense, so it's switched locally instead. Plus a
+second property that gets asked on its own: when the WAN goes down, a FlexConnect AP with
+local switching **keeps serving clients** by itself, while an AP in Local mode cannot work
+without its controller.
+
+**OfficeExtend** is FlexConnect moved outside the corporate network: the AP is taken to an
+employee's home, where it builds an encrypted **DTLS** tunnel to the office controller over
+ordinary residential internet (usually from behind the provider's NAT), and a personal SSID
+for home devices can run alongside the corporate one. The difference you are asked to name:
+**OfficeExtend is indoor APs with internal antennas only**, whereas FlexConnect works on
+both indoor and outdoor models.
 
 ## Centralized vs. distributed traffic
 

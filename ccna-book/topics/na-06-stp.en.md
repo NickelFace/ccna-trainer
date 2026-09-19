@@ -122,6 +122,24 @@ errdisable recovery cause bpduguard
 errdisable recovery interval 300
 ```
 
+### PortFast, UplinkFast, and BackboneFast are not the same thing
+
+Three similarly named accelerators constantly appear as options in one question, and what
+separates them is **whose time** they save:
+
+| Mechanism | Where | What it speeds up |
+|---|---|---|
+| **PortFast** | an access port to an end device | bringing **the port itself** up: straight to forwarding, no listening/learning |
+| **UplinkFast** | an access switch with two uplinks | failing over **to the backup uplink** when the primary dies — seconds instead of 30–50 |
+| **BackboneFast** | every switch | reacting to an **indirect** failure somewhere deeper in the network: it cuts the wait for max age (20 s) to expire |
+
+The question is almost always about PortFast: "send traffic to a connected server
+immediately," "establish a connection as soon as the device is plugged in," "skip the
+listening and learning states" — all of that is **PortFast**. UplinkFast and BackboneFast
+are the distractors: they speed up tree convergence after a failure, not port startup, and
+both are legacy PVST+ features — in Rapid PVST+ and RSTP that behaviour is built into the
+protocol and isn't configured separately.
+
 ## Reading the output
 
 ```cli

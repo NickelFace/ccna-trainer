@@ -92,6 +92,22 @@ about it, and what's actually true:
 > must be unique on every access point" are all wrong. There's one network name for the
 > whole ESS.
 
+A separate run of questions is built on one recurring set of wrong options — worth knowing
+by sight, because "What is a characteristic of an SSID / of encryption in wireless
+networks?" keeps coming back with different distractors:
+
+| Wrong option | Why it's wrong |
+|---|---|
+| "eliminates piggybacking" | **Piggybacking** (tailgating in the physical world: walking in through a door behind an employee) means an outsider using your network. A password and 802.1X work against that; a network name doesn't |
+| "protects against spyware" | **Spyware/adware** is malware on the device itself; neither the SSID nor radio encryption touches it — that's antivirus/EDR territory |
+| "uses ciphers to detect and prevent zero-day attacks" | A **zero-day** is exploitation of a vulnerability that has no fix yet; encryption doesn't "detect attacks" at all, it hides content |
+| "requires PoE", "allows easy file sharing" | nothing to do with the network name |
+
+The correct statements in that same family are short: an SSID **associates a name with a
+wireless network** and **is advertised in beacon frames by default**; encryption
+**prevents the interception of data as it transits the network** — it changes the data so
+that only the AP and the client understand it.
+
 ## 802.11 Standards
 
 | Standard | Marketing name | Band | Speed order of magnitude |

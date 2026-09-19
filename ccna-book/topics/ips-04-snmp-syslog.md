@@ -6,8 +6,8 @@ lead: Опрос и trap, версии SNMP и почему v3, уровни с�
 blueprint: ["4.4", "4.5"]
 minutes: 30
 match:
-  key: ["\\bSNMP\\b", "\\bsyslog\\b", "\\btrap\\b", "\\bMIB\\b", "severity level", "logging (host|trap|buffered)", "community string", "\\bOID\\b"]
-  re: ["network management.*(monitor|protocol)", "\\bget\\b.*\\bset\\b.*agent", "informational message", "emergenc|alert|critical.*level", "log message.*level"]
+  key: ["\\bSNMP\\b", "\\bsyslog\\b", "\\btrap\\b", "\\bMIB\\b", "severity level", "logging (host|trap|buffered)", "community string", "\\bOID\\b", "ip sla"]
+  re: ["network management.*(monitor|protocol)", "\\bget\\b.*\\bset\\b.*agent", "informational message", "emergenc|alert|critical.*level", "log message.*level", "ip sla", "udp jitter", "measure.*jitter", "qos.*sufficient.*support ip services"]
 ---
 
 ## SNMP: опрос устройств
@@ -118,6 +118,52 @@ Syslog logging: enabled
 
 Классический вопрос: «подключился по SSH и не вижу сообщений, которые видны на консоли» →
 нужна команда `terminal monitor`.
+
+> [!key] Запомнить
+> SNMP — это **мониторинг и управление устройствами поверх UDP**, работающий на
+> прикладном уровне (порты 161/162). Формулировки «поверх TCP», «на транспортном уровне»,
+> «поверх SSH» в вариантах неверны. Рядом с SNMP и syslog современные контроллеры (Cisco
+> DNA Center) собирают данные ещё и через **streaming telemetry** — устройство само
+> непрерывно шлёт метрики, а не ждёт опроса; в вопросе «как DNA Center собирает данные с
+> сети» правильный ответ перечисляет именно этот набор: **SNMP, syslog и streaming
+> telemetry**.
+
+## IP SLA: активные измерения
+
+SNMP и syslog отвечают на вопрос «что устройство о себе сообщает». **IP SLA** отвечает на
+другой: «а как на самом деле ходит трафик» — роутер сам **генерирует** пробные пакеты и
+измеряет, что с ними стало.
+
+| Операция IP SLA | Что меряет |
+|---|---|
+| `icmp-echo` | доступность и круговая задержка до узла |
+| `udp-jitter` | задержку, **джиттер** и потери — профиль голосового трафика |
+| `udp-jitter codec g711ulaw` | то же плюс расчётный **MOS** — оценка качества голоса |
+| `http`, `dns`, `tcp-connect` | время отклика конкретной службы |
+
+Отсюда два вопроса, которые встречаются дословно:
+
+- «чем проверить, что QoS в сети достаточен для IP-услуг (голос, видео)» → **IP SLA**: он
+  единственный из списка (CDP, LLDP, EEM, IP SLA) действительно измеряет задержку и
+  джиттер вдоль пути;
+- «что требуется, чтобы IP SLA измерял UDP jitter» → **NTP**. Джиттер считается по
+  разнице моментов отправки и приёма на **двух разных устройствах**, поэтому их часы
+  обязаны быть синхронизированы; без общего времени цифры бессмысленны (см. главу про
+  NTP).
+
+```cfg
+ip sla 10
+ udp-jitter 10.1.1.1 16384 codec g711ulaw
+ frequency 30
+ip sla schedule 10 life forever start-time now
+```
+
+Второй роутер при этом должен быть **IP SLA responder** (`ip sla responder`) — именно он
+проставляет точные метки времени на обратном пути.
+
+Результат читают командой `show ip sla statistics`; его же используют как условие для
+**отслеживания маршрута** (`track`) — когда резервный канал должен подняться не по факту
+падения интерфейса, а по ухудшению качества.
 
 ## Разбор: полный SNMP-опрос от запроса до ответа
 

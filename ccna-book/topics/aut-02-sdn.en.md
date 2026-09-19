@@ -33,8 +33,19 @@ complete view of the network.
 - **Northbound** — "up," toward applications and people. Usually a **REST API**: used
   by scripts, orchestration systems, and self-service portals.
 - **Southbound** — "down," toward devices: **NETCONF** (XML over SSH), **RESTCONF**
-  (HTTP+JSON), **OpenFlow**, **gRPC/gNMI**, and in transitional deployments, plain SSH
-  commands.
+  (HTTP+JSON), **OpenFlow**, **OpFlex**, **gRPC/gNMI**, and in transitional deployments,
+  plain SSH commands.
+
+Two southbound protocols differ in the direction of control: **OpenFlow** is "imperative" —
+the controller writes specific flow-table entries into the device; **OpFlex** (proprietary,
+from Cisco ACI) is "declarative" — the controller states the **policy** and the device
+decides how to implement it.
+
+> [!trap] Trap
+> When a question asks for the two **northbound** APIs in an SDN, the answers are **REST**
+> and **SOAP** (both application-facing), while **OpenFlow**, **OpFlex** and **NETCONF**
+> sit next to them as southbound. The one subtlety: NETCONF/RESTCONF can technically work
+> in either direction, but CCNA questions always count them as southbound.
 
 The direction is easy to remember from the picture: applications on top, hardware on
 the bottom.
