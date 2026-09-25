@@ -6,7 +6,7 @@ lead: DORA, аренда, relay через ip helper-address, роль DNS и т
 blueprint: ["4.3", "4.6"]
 minutes: 35
 match:
-  key: ["\\bDHCP\\b", "\\bDNS\\b", "ip helper-address", "\\bDORA\\b", "dhcp (pool|relay|server|client)", "excluded-address", "name resolution"]
+  key: ["\\bDHCP\\b", "\\bDNS\\b", "(implement|reasons? to (use|implement)|benefits? of) dhcp", "ip helper-address", "\\bDORA\\b", "authoritative", "resolver", "server types?", "web server", "dhcp (pool|relay|server|client)", "excluded-address", "name resolution"]
   re: ["discover.*offer.*request.*ack", "lease", "default-router", "domain-name server", "resolve.*name", "\\bA record\\b", "nslookup"]
 ---
 
@@ -109,6 +109,15 @@ DNS переводит имя в адрес. Без него связность 
   **CNAME** (псевдоним), **MX** (почта), **PTR** (обратная зона).
 - Разрешение идёт по иерархии: кэш клиента → указанный DNS-сервер → рекурсивный обход от
   корневых серверов.
+- Серверов в этой цепочке два типа: **resolver** (рекурсивный — тот, что прописан у
+  клиента; он обходит иерархию и кэширует ответ) и **authoritative** (авторитетный — тот,
+  кто хранит саму зону и даёт по ней окончательный ответ). Разрешение имени в адрес
+  поддерживают именно они двое; web-сервер, файловый сервер и гипервизор в этой роли не
+  участвуют, хотя регулярно попадаются в вариантах ответа.
+
+Соседние роли серверов, которые спрашивают тут же: **web-сервер** отдаёт приложение по
+**HTTP/HTTPS**; **file/FTP-сервер** хранит файлы для скачивания; **почтовый** принимает и
+отдаёт почту (SMTP/IMAP); **DHCP** раздаёт адреса; **AAA** проверяет учётные данные.
 
 ```cfg
 ip name-server 8.8.8.8

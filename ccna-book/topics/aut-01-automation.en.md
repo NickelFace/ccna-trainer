@@ -41,6 +41,12 @@ rollout matter.
 | What the engineer needs to know | CLI syntax | intent and the data model |
 | Example | classic campus network | Catalyst Center (DNA Center), SD-Access, SD-WAN, Meraki |
 
+The controller-based model *is* the **SDN architecture**: the controller is the single
+centralized point of management, it holds the control plane for the whole network and
+pushes policy down to ordinary switches and routers (questions call them "off-the-shelf"
+devices — the model needs no special hardware). How this is split across planes, and
+through which APIs, is in the SDN chapter.
+
 Important detail: the controller does **not** eliminate the protocols running on
 devices — it sets their policy and collects their state. In the controller-based
 model, devices still forward packets themselves.

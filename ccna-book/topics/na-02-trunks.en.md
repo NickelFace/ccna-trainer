@@ -25,6 +25,14 @@ grow to 1522 bytes — switches allow for this (baby giant).
 The tag exists **only inside the trunk**: before a switch forwards a frame out an access
 port, it strips the tag. The end device usually has no idea VLANs exist at all.
 
+Trunks are not only for switch-to-switch links. Two cases the question bank keeps coming
+back to: the port facing a **WLC distribution port** — the controller hands client traffic
+from several WLANs to the network, each in its own VLAN, and a trunk gives them all one
+link; and the port facing an **autonomous access point**, which carries a client VLAN and
+its own management traffic at the same time, so that port is a trunk too (an AP in
+lightweight/local mode needs only an access port, since all of its traffic leaves through
+CAPWAP in a single VLAN).
+
 ## Native VLAN
 
 In 802.1Q, one VLAN on the trunk travels **untagged** — this is the **native VLAN**,
@@ -140,7 +148,7 @@ tagging on top of Layer 2 doesn't work — that's where **VXLAN** comes in: an e
 2 frame is wrapped inside a UDP packet and carried across an ordinary IP network, much
 like GRE, but with a 24-bit identifier (VNI) instead of a 12-bit VLAN ID, so it supports
 orders of magnitude more segments than the 4094 limit. This is exactly the protocol that
-forms the **data plane of an SD-Access fabric** between edge nodes at different
+forms the **data plane of an SD-Access (SDA) fabric** between edge nodes at different
 sites — covered in more depth in the SDN chapter, but the connection is worth seeing here:
 VXLAN is to a routed Layer 3 network roughly what 802.1Q is to a single switched segment.
 

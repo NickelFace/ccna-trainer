@@ -6,7 +6,7 @@ lead: Зачем сети единое время, что такое stratum, к
 blueprint: ["4.2"]
 minutes: 20
 match:
-  key: ["\\bNTP\\b", "stratum", "ntp server", "ntp master", "clock synchron", "clock set"]
+  key: ["\\bNTP\\b", "stratum", "ntp server", "ntp master", "ntp (source|access-group|authenticate)", "clock synchron", "clock set"]
   re: ["time synchron", "network time protocol", "timestamp.*log", "\\bUTC\\b.*clock", "show ntp", "clock set", "configuring the date and time"]
 ---
 
@@ -52,10 +52,22 @@ ntp authentication-key 1 md5 S3cretKey
 ntp trusted-key 1
 ntp server 10.0.0.10 key 1
 
+! Адрес-источник в пакетах NTP и кто вообще имеет право спрашивать время
+ntp source Loopback0
+ntp access-group serve-only 10
+
 ! Часовой пояс и переход на летнее время
 clock timezone AEST 10 0
 clock summer-time AEDT recurring
 ```
+
+**`ntp source`** заставляет устройство слать пакеты NTP с адреса указанного интерфейса —
+обычно Loopback, чтобы адрес не менялся при падении физического линка (то же делает
+`ntp server <addr> source <intf>` для одного сервера). **`ntp access-group`** ограничивает,
+кому отвечать: `serve-only <acl>` — раздавать время только перечисленным в ACL и не
+принимать от них настройку, `peer` — полный доступ, `query-only` — только управляющие
+запросы. Оба встречаются в задачах вида «сервер должен раздавать время только своей
+подсети и слать пакеты с loopback».
 
 Если NTP по каким-то причинам недоступен, время можно выставить и вручную, прямо в
 привилегированном (EXEC) режиме — не в конфигурации:

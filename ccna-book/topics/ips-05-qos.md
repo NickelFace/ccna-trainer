@@ -6,7 +6,7 @@ lead: Per-hop behavior, DSCP и CoS, EF и AF, policing против shaping и 
 blueprint: ["4.7"]
 minutes: 35
 match:
-  key: ["\\bQoS\\b", "\\bDSCP\\b", "\\bCoS\\b", "polic(ing|er)", "shaping", "per-hop behavior", "\\bPHB\\b", "\\bEF\\b|expedited forwarding", "assured forwarding", "\\bLLQ\\b", "traffic classification", "marking"]
+  key: ["ip sla", "media session snooping", "call admission control", "(platinum|gold|silver|bronze).*(qos|profile|wlan)", "\\bQoS\\b", "\\bDSCP\\b", "\\bCoS\\b", "polic(ing|er)", "shaping", "per-hop behavior", "\\bPHB\\b", "\\bEF\\b|expedited forwarding", "assured forwarding", "\\bLLQ\\b", "traffic classification", "marking"]
   re: ["priority queue", "congestion (management|avoidance)", "\\bWRED\\b", "weighted random early detection", "jitter", "voice traffic requirement", "trust boundary", "bandwidth guarantee"]
 ---
 
@@ -15,6 +15,11 @@ match:
 Полоса не бесконечна, а трафик неоднороден: копирование резервной копии и телефонный
 разговор конкурируют за одну очередь. QoS не создаёт полосу — он **решает, кого
 обслуживать первым, когда её не хватает**.
+
+Проверяют, хватает ли сети на эти требования, не «на слух», а **IP SLA**: маршрутизатор
+сам генерирует пробный трафик (icmp-echo, udp-jitter, http) до заданной цели и измеряет
+задержку, джиттер и потери. Именно IP SLA — ответ на вопрос «чем определить, достаточно ли
+QoS в сети для поддержки IP-сервисов»; подробнее о нём — в главе про SNMP и syslog.
 
 Требования, которые надо помнить наизусть (голос, односторонняя передача):
 
@@ -64,6 +69,13 @@ match:
 
 CoS живёт только внутри тега VLAN, поэтому **на access-порту без тега его нет** — при
 выходе за пределы L2 маркировка должна быть в DSCP.
+
+В беспроводной сети те же классы называются **профилями QoS** контроллера: **platinum**
+(голос), **gold** (видео), **silver** (обычные данные, по умолчанию), **bronze** (фон).
+Профиль назначают на WLAN, и голосовой WLAN ставят в platinum. Чтобы контроллер видел
+сами звонки — а не просто трафик с нужной меткой — на WLAN включают **Media Session
+Snooping**: он отслеживает SIP-сигнализацию на заданных портах и только тогда работает
+SIP-based Call Admission Control.
 
 ## Граница доверия
 

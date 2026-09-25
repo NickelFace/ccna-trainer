@@ -47,6 +47,33 @@ to a dedicated VLAN instead.
 > ordinary access ports or trunks, and in questions about VLANs, a voice port or a native
 > VLAN those options are always wrong — recognizing them by sight is enough.
 
+## VTP: Propagating VLANs Across a Domain
+
+**VTP** (VLAN Trunking Protocol) distributes the VLAN list across switches so the same
+VLANs do not have to be created by hand on each one. Advertisements travel **over trunks
+only**, and the **VTP domain name** has to match (plus the password, if one is set).
+
+| Mode | Creates/deletes VLANs locally | Accepts advertisements | Forwards others' |
+|---|---|---|---|
+| **server** | yes | yes | yes |
+| **client** | no | yes | yes |
+| **transparent** | yes, but only for itself | no | yes, forwards unchanged |
+
+The detail that matters is the **revision number**: every change to the VLAN database
+increments it, and a switch accepts a database whose number is **higher** than its own.
+Hence the classic outage: a previously used switch with a high revision is added to the
+network and **overwrites the VLAN database of the whole domain**. An old switch is
+therefore reset to revision 0 before it goes in — by flipping it to `transparent` and back,
+or by changing the domain name — and joins with a **lower** number.
+
+A normal-range VLAN can only be created in **server** or **transparent** mode: a client
+does not edit its own database.
+
+> [!note] VTP and the exam
+> VTP is not in the CCNA 200-301 blueprint, but it does show up in the question bank. Four
+> facts are enough: the domain name must match everywhere, advertisements travel over
+> trunks, the revision number decides, and VLANs are created in server/transparent mode.
+
 ## Configuring an Access Port
 
 ```cfg

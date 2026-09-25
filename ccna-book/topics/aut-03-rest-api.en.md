@@ -15,6 +15,12 @@ REST is an architectural style built on top of HTTP. The traits that get asked a
 - Data is usually **JSON**, occasionally XML.
 - Cacheability and a layered architecture.
 
+Where a REST API sits in the SDN architecture: it is the **northbound** interface — the one
+an application uses to reach "up" to the controller (GET, POST, PUT, DELETE over network
+resources). Downward, to the devices themselves, the controller speaks over a
+**southbound** interface — NETCONF, RESTCONF, OpenFlow, SNMP. More on the planes and the
+controller is in the SDN chapter.
+
 ## Methods and CRUD
 
 | Method | CRUD | What it does | Idempotent |
@@ -80,6 +86,14 @@ The components you'll be asked to identify:
 | **Token / Bearer** | `X-Auth-Token: …` or `Authorization: Bearer …` | log in first, then send the token on every request |
 | **API key** | a key in a header or parameter | simple, but easy to leak |
 | **OAuth 2.0** | exchanged for an access token | for service-to-service integrations |
+
+
+**JWT** (JSON Web Token) is the most common format for such a token: three dot-separated
+parts (header, payload, signature), where the payload is base64url **encoded** JSON, not
+encrypted. Anyone can read its contents; the signature only guarantees it was not tampered
+with. Hence the exam wording: a JWT is **encoded**, not encrypted, and it is used for
+**authentication** (the server learns from it who is calling). Secrets do not go in the
+payload.
 
 A typical flow with a Cisco controller: POST to `/api/system/v1/auth/token` with Basic
 login → get a token back → every subsequent request carries that token.

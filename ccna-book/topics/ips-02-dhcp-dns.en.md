@@ -106,6 +106,16 @@ user's point of view "the internet doesn't work."
   **CNAME** (alias), **MX** (mail), **PTR** (reverse zone).
 - Resolution follows a hierarchy: client cache → configured DNS server → recursive walk
   starting from the root servers.
+- Two server types take part in that chain: the **resolver** (the recursive one configured
+  on the client; it walks the hierarchy and caches the answer) and the **authoritative**
+  server (the one that holds the zone itself and gives the final answer for it). Those two
+  are what support name-to-address resolution; a web server, a file server or a hypervisor
+  play no part in it, although they turn up as options regularly.
+
+Neighbouring server roles, asked about in the same breath: a **web server** delivers an
+application over **HTTP/HTTPS**; a **file/FTP server** stores files for download; a **mail
+server** accepts and hands out mail (SMTP/IMAP); **DHCP** hands out addresses; **AAA**
+checks credentials.
 
 ```cfg
 ip name-server 8.8.8.8

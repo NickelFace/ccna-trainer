@@ -101,6 +101,26 @@ versatility, IPsec provides protection.
 **DMVPN** takes the idea further: dynamic, any-to-any tunnels between branches instead of
 a rigid hub-and-spoke, built on top of GRE + IPsec + NHRP.
 
+**GETVPN** (Group Encrypted Transport VPN) is the other technology for large networks, and
+it works the opposite way: there are no tunnels at all. Every router in the group gets a
+shared key from a key server (GDOI) and encrypts the payload while **preserving the
+original IP headers**. Traffic stays routable by the network as usual, which is why GETVPN
+is used on private networks (MPLS VPN, a private WAN) that need any-to-any connectivity
+without tunnel overhead. It does not work across the public internet: the private addresses
+in those preserved headers are not routable there.
+
+| | Topology | Tunnels | Where it is used |
+|---|---|---|---|
+| **Site-to-site IPsec** | point-to-point | yes, one per pair | a handful of sites |
+| **DMVPN** | hub-and-spoke plus dynamic spoke-to-spoke | yes, GRE/IPsec | many branches over the internet |
+| **GETVPN** | any-to-any | none, tunnel-less | private WAN/MPLS, many sites |
+
+> [!note] Exam fact
+> For a large number of branch offices Cisco recommends **DMVPN and GETVPN**, not a pile of
+> ordinary site-to-site tunnels: classic site-to-site needs a full mesh of tunnels and does
+> not scale. Remote-access and clientless (SSL) VPN are about individual users, not about
+> linking offices.
+
 ## What shows up in the configuration
 
 ```cfg

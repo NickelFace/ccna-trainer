@@ -6,7 +6,7 @@ lead: Методы HTTP и CRUD, коды ответов, заголовки и 
 blueprint: ["6.5"]
 minutes: 30
 match:
-  key: ["\\bREST\\b", "\\bAPI\\b", "\\bCRUD\\b", "HTTP (verb|method)", "\\bGET\\b.*\\bPOST\\b", "\\bPUT\\b|\\bPATCH\\b|\\bDELETE\\b", "status code", "\\b(200|201|400|401|403|404|500)\\b", "stateless", "\\bJSON\\b payload", "authentication.*api", "bearer token", "\\bRESTCONF\\b", "\\bNETCONF\\b"]
+  key: ["\\bREST\\b", "\\bAPI\\b", "\\bCRUD\\b", "HTTP (verb|method)", "\\bGET\\b.*\\bPOST\\b", "\\bPUT\\b|\\bPATCH\\b|\\bDELETE\\b", "status code", "\\b(200|201|400|401|403|404|500)\\b", "stateless", "\\bJSON\\b payload", "authentication.*api", "bearer token", "\\bJWT\\b", "json web token", "\\bRESTCONF\\b", "\\bNETCONF\\b"]
   re: ["api call", "endpoint.*uri", "request.*response.*header", "content-type", "token.*api", "basic auth", "\\bwebhook\\b"]
 ---
 
@@ -21,6 +21,11 @@ REST — архитектурный стиль поверх HTTP. Признак
 - **Единообразный интерфейс**: одни и те же методы HTTP для любых ресурсов.
 - Данные обычно в **JSON**, реже в XML.
 - Кэшируемость и слоистость архитектуры.
+
+Где именно REST API стоит в SDN-архитектуре: это **northbound**-интерфейс — им пользуется
+приложение, обращаясь «вверх», к контроллеру (GET, POST, PUT, DELETE над ресурсами сети).
+Вниз, к самим устройствам, контроллер говорит по **southbound**-интерфейсу — NETCONF,
+RESTCONF, OpenFlow, SNMP. Подробнее о плоскостях и контроллере — в главе про SDN.
 
 ## Методы и CRUD
 
@@ -87,6 +92,13 @@ X-Auth-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6...
 | **Token / Bearer** | `X-Auth-Token: …` или `Authorization: Bearer …` | сначала логин, потом токен во всех запросах |
 | **API key** | ключ в заголовке или параметре | просто, но ключ легко утекает |
 | **OAuth 2.0** | обмен на access token | для интеграций между сервисами |
+
+**JWT** (JSON Web Token) — самый частый формат такого токена: три части через точку
+(заголовок, payload, подпись), где payload — это **закодированный** в base64url JSON, а не
+зашифрованный. Прочитать его содержимое может кто угодно; подпись лишь гарантирует, что
+его не подменили. Отсюда формулировка в вопросах: JWT — **encoded**, а не encrypted, и
+используется для **аутентификации** (сервер по нему узнаёт, кто пришёл). Секретов в payload
+не хранят.
 
 Типичный сценарий с контроллером Cisco: POST на `/api/system/v1/auth/token` с Basic-логином
 → в ответ токен → все дальнейшие запросы с этим токеном.

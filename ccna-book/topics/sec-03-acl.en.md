@@ -35,6 +35,10 @@ access-list 10 permit any
 interface GigabitEthernet0/1
  ip access-group 10 out
 
+! Named standard: the same list, with a name instead of a number
+ip access-list standard MGMT-ONLY
+ permit 203.0.113.0 0.0.0.255
+!
 ! Named extended: HR can't reach the DB server, everything else is allowed
 ip access-list extended HR-FILTER
  deny tcp 10.1.5.0 0.0.0.255 host 10.9.9.10 eq 1433
@@ -46,6 +50,30 @@ interface GigabitEthernet0/0
 
 Named lists are preferable: a meaningful name, and lines can be edited by sequence number
 (`no 20`, `15 permit …`) without rewriting the whole list.
+
+A standard list can be named too: `ip access-list standard <name>`, then `permit`/`deny`
+lines matching on the source only. The name can even be a number — `ip access-list standard
+99` creates the same list 99 that `access-list 99 …` does. The `access-list <number>` form
+and the `ip access-list` form are two ways of writing the same thing, and they cannot be
+mixed inside one answer: `ip access-list standard 99 permit …` on a single line is not a
+command.
+
+An extended list names the protocol and the port after the addresses. A port is given as a
+number or as a name — IOS accepts both and prints the name in its output:
+
+| Service | Port | How it is written in an ACL |
+|---|---|---|
+| HTTP | 80 | `eq 80` or `eq www` |
+| HTTPS | 443 | `eq 443` |
+| SSH | 22 | `eq 22` |
+| Telnet | 23 | `eq telnet` |
+| DNS | 53 | `eq domain` (both TCP and UDP) |
+| FTP | 21 | `eq ftp` |
+| SMTP | 25 | `eq smtp` |
+
+The port belongs to whichever side it is **written next to**: `deny tcp any host
+10.30.0.100 eq 80` blocks requests to the web server, whereas `eq 80` after the source
+address would mean traffic **from** the server.
 
 ## Wildcard mask
 

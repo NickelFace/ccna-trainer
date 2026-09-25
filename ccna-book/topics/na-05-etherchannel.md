@@ -6,7 +6,7 @@ lead: Как несколько линков превращаются в оди�
 blueprint: ["2.4"]
 minutes: 30
 match:
-  key: ["etherchannel", "port-?channel", "\\bLACP\\b", "\\bPAgP\\b", "channel-group", "min-links", "max-bundle", "lacp port-priority", "lacp system-priority"]
+  key: ["single logical link", "aggregate \\d* ?(ports|links|interfaces)", "(etherchannel|channel-group).*(\\bWLC\\b|\\bLAG\\b)", "(\\bWLC\\b|\\bLAG\\b).*(etherchannel|channel-group)", "etherchannel", "port-?channel", "\\bLACP\\b", "\\bPAgP\\b", "channel-group", "min-links", "max-bundle", "lacp port-priority", "lacp system-priority"]
   re: ["etherchannel", "port-?channel", "\\bLACP\\b", "\\bPaGP\\b", "\\bPAgP\\b", "channel-group", "link aggregation", "\\bLAG\\b", "active.*passive.*mode", "load.?balanc.*(link|channel)", "min-links", "max-bundle", "port-priority", "system-priority", "stays? up when one of the links fails"]
 ---
 
@@ -49,6 +49,11 @@ match:
 > говорит вообще ни с кем — с ним другая сторона тоже обязана быть `on`.
 
 Смешивать LACP и PAgP на одном канале нельзя.
+
+Отдельный случай — **WLC**: контроллер объединяет свои порты в **LAG** и в согласовании не
+участвует вовсе, ни по LACP, ни по PAgP. Поэтому на коммутаторе порты к контроллеру
+собирают только режимом **`on`** (`channel-group N mode on`), а балансировку рекомендуют
+`src-dst-ip`. Подробности — в главе «Проводная сторона беспроводной сети».
 
 ## Настройка
 

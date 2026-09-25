@@ -7,7 +7,7 @@ blueprint: ["1.3", "1.4"]
 minutes: 40
 match:
   key: ["duplex", "fiber", "copper", "crossover", "\\bCRC\\b", "late collision", "auto-?negotiation", "excessive collision", "\\bDWDM\\b", "cladding", "micron", "bedding.*sheathing", "txload|rxload"]
-  re: ["fiber", "optic", "copper", "cabling", "cable", "single-?mode", "multimode", "\\bUTP\\b", "straight-through", "crossover", "duplex", "half duplex", "full duplex", "speed mismatch", "\\bCRC\\b", "runt", "giant", "late collision", "input errors", "interface counters", "auto-?negotiation", "\\bMDIX\\b", "\\bSFP\\b", "twisted pair", "attenuation", "\\bRJ-?45\\b", "console cable", "\\bEMI\\b", "excessive collision", "16 failed transmission", "signal frequency", "times per minute", "\\bDWDM\\b", "\\bCWDM\\b", "cladding", "core diameter", "micron", "conductor.*bedding", "single wavelength", "overlapping light pulses", "txload", "rxload", "reliability \\d+/255", "\\bOM[1-5]\\b"]
+  re: ["fiber", "optic", "copper", "cabling", "cable", "single-?mode", "multimode", "\\bUTP\\b", "straight-through", "crossover", "duplex", "half duplex", "full duplex", "speed mismatch", "\\bCRC\\b", "runt", "giant", "late collision", "input errors", "interface counters", "auto-?negotiation", "\\bMDIX\\b", "\\bSFP\\b", "\\bGBIC\\b", "twisted pair", "attenuation", "\\bRJ-?45\\b", "console cable", "\\bEMI\\b", "excessive collision", "16 failed transmission", "signal frequency", "times per minute", "\\bDWDM\\b", "\\bCWDM\\b", "cladding", "core diameter", "micron", "conductor.*bedding", "single wavelength", "overlapping light pulses", "txload", "rxload", "reliability \\d+/255", "\\bOM[1-5]\\b"]
   not: ["ospf", "\\bACL\\b", "wireless client"]
 ---
 
@@ -300,6 +300,7 @@ OM3 и OM4» — одинаковый диаметр ядра **50 мкм**.
 
 | Модуль | Скорость | Что вставляют |
 |---|---|---|
+| **GBIC** | 1 Гбит/с | предшественник SFP, крупнее; оптика под разъём **SC** |
 | **SFP** | 1 Гбит/с | оптика (SX/LX/ZX) или медь (1000BASE-T) |
 | **SFP+** | 10 Гбит/с | оптика SR/LR/ER, DAC-кабель |
 | **SFP28** | 25 Гбит/с | оптика, DAC |
@@ -317,6 +318,11 @@ OM3 и OM4» — одинаковый диаметр ядра **50 мкм**.
 Разъёмы, которые называют в вопросах: **RJ-45** для меди, **LC** (маленький сдвоенный) и
 **SC** (квадратный) для оптики, **MPO/MTP** — многоволоконный для 40G/100G, **ST** —
 старый байонетный.
+
+Разъём определяется **формой модуля, а не стандартом оптики**: у SFP/SFP+ это всегда
+**LC**, у старого **GBIC** — **SC**. Поэтому связка «коммутатор с GBIC 1000BASE-SX ↔
+коммутатор с SFP 1000BASE-SX» требует гибридного патч-корда **LC–SC**: волокно одно и то
+же (многомод), различаются только разъёмы на концах.
 
 > [!key] Запомнить
 > В оптике всегда **две жилы**: одна на передачу, другая на приём. Если линк не поднимается

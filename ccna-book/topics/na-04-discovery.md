@@ -6,7 +6,7 @@ lead: Как устройство узнаёт, кто у него на сосе
 blueprint: ["2.3"]
 minutes: 25
 match:
-  key: ["\\bCDP\\b", "\\bLLDP\\b", "discovery protocol", "no cdp (run|enable)", "no lldp"]
+  key: ["\\bCDP\\b", "\\bLLDP\\b", "discovery protocol", "no cdp (run|enable)", "no lldp", "tlv-select", "type length value", "lldp (run|port-description)"]
   re: ["\\bCDP\\b", "\\bLLDP\\b", "cdp neighbor", "lldp neighbor", "discovery protocol", "LLDP-?MED", "show cdp", "show lldp", "no cdp (run|enable)", "no lldp (run|receive|transmit)", "\\bTLV\\b", "tlv-select", "lldp (timer|holdtime|reinit)", "delay time", "multivendor", "neighbor.*(ip address|hardware platform|software version)", "topology.*mapp?ed"]
 ---
 
@@ -64,6 +64,16 @@ no lldp tlv-select management-address   ! не включать в объявл�
 управления в LLDP, не выключая сам протокол»: убирается TLV `management-address` на том
 коммутаторе, **чей адрес прячут**, — а не `no lldp transmit` на соседе, который выключил
 бы объявления целиком.
+
+Сами TLV — это поля объявления: `port-description`, `system-name`, `system-description`,
+`system-capabilities`, `management-address`. Включают и выключают их по одному — либо
+через `lldp tlv-select <tlv>`, либо одноимённой глобальной командой (`lldp
+port-description` — отправлять TLV с описанием порта). В вопросах это формулируют как
+«настроить LLDP на отправку такого-то type length value (TLV)».
+
+`lldp run` — одна и та же команда и на коммутаторе, и на маршрутизаторе **ISR**: LLDP
+включается глобально и по умолчанию выключен на обеих платформах (в отличие от CDP,
+который включён из коробки).
 
 ## Чтение вывода
 

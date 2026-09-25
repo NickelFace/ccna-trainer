@@ -6,7 +6,7 @@ lead: Как включают точки и контроллер: access или 
 blueprint: ["2.7"]
 minutes: 30
 match:
-  key: ["dynamic interface", "distribution system port", "\\bLAG\\b", "service port", "virtual interface", "wlan component", "multigigabit", "poe mode"]
+  key: ["dynamic interface", "distribution system", "\\bLAG\\b", "service port", "\\bWLC\\b port|port on the \\bWLC\\b", "virtual interface", "wlan component", "multigigabit", "poe mode"]
   re: ["management interface", "dynamic interface", "virtual interface", "service port", "\\bLAG\\b", "distribution system port", "switch port.*access point", "access point.*switch port", "trunk.*access point", "wlan.*vlan mapping", "wireless.*vlan.*map", "controller.*port.*configur", "wlan component", "multigigabit", "802\\.3bz", "2\\.5.?g(bps|b)|5.?g(bps|b)", "poe mode", "power.?devices? detection", "load-?balancing.*wlc", "switch load-?balancing"]
 ---
 

@@ -6,7 +6,7 @@ lead: Site-to-site против remote-access, что даёт IPsec, зачем
 blueprint: ["5.5"]
 minutes: 30
 match:
-  key: ["\\bVPN\\b", "\\bIPsec\\b", "site-to-site", "remote.?access vpn", "\\bIKE\\b", "\\bESP\\b", "\\bAH\\b", "tunnel mode", "\\bGRE\\b", "\\bDMVPN\\b", "component.*\\bPKI\\b", "\\bPKI\\b", "certificate error", "trusted third-party certificate", "certificate authority"]
+  key: ["\\bVPN\\b", "\\bIPsec\\b", "site-to-site", "remote.?access vpn", "\\bIKE\\b", "\\bESP\\b", "\\bAH\\b", "tunnel mode", "\\bGRE\\b", "\\bDMVPN\\b", "\\bGET.?VPN\\b", "group encrypted transport", "component.*\\bPKI\\b", "\\bPKI\\b", "certificate error", "trusted third-party certificate", "certificate authority"]
   re: ["encrypt.*tunnel", "secure.*over.*internet", "vpn client", "\\bSSL\\b vpn", "anyconnect", "pre-shared key", "diffie-hellman", "\\bPKI\\b", "\\bCRL\\b", "certificate.*(error|authority)", "trusted third-party certificate", "internal ca signed certificate", "guest portal.*certificate"]
 ---
 
@@ -105,6 +105,25 @@ IPsec — защиту.
 
 **DMVPN** — развитие идеи: динамические туннели «каждый с каждым» между филиалами вместо
 жёсткой звезды, поверх GRE + IPsec + NHRP.
+
+**GETVPN** (Group Encrypted Transport VPN) — вторая технология для больших сетей, но
+устроенная иначе: туннелей нет вообще. Все маршрутизаторы группы получают общий ключ от
+key server (GDOI) и шифруют полезную нагрузку, **сохраняя исходные IP-заголовки**. Поэтому
+трафик остаётся маршрутизируемым сетью как обычно — GETVPN применяют в приватных сетях
+(MPLS-VPN, собственная WAN), где нужен any-to-any без оверхеда туннелей. В публичном
+интернете он не работает: приватные адреса в сохранённых заголовках там не маршрутизируются.
+
+| | Топология | Туннели | Где применяют |
+|---|---|---|---|
+| **Site-to-site IPsec** | точка-точка | да, по одному на пару | несколько площадок |
+| **DMVPN** | hub-and-spoke + динамический spoke-to-spoke | да, GRE/IPsec | много филиалов через интернет |
+| **GETVPN** | any-to-any | нет, tunnel-less | приватная WAN/MPLS, много площадок |
+
+> [!note] Экзаменационный факт
+> Для большого числа филиалов Cisco рекомендует именно **DMVPN и GETVPN**, а не набор
+> обычных site-to-site туннелей: классический site-to-site требует полной сетки туннелей
+> и не масштабируется. Remote-access и clientless (SSL) VPN — это про отдельных
+> пользователей, а не про связь офисов.
 
 ## Что видно в конфигурации
 

@@ -9,6 +9,12 @@ Bandwidth isn't unlimited, and traffic isn't uniform: a backup copy job and a ph
 compete for the same queue. QoS doesn't create bandwidth — it **decides who gets served
 first when there isn't enough to go around**.
 
+Whether the network actually meets those requirements is measured, not guessed at, with
+**IP SLA**: the router generates probe traffic of its own (icmp-echo, udp-jitter, http)
+toward a target and measures delay, jitter and loss. IP SLA is the answer to "which feature
+or protocol determines whether the QoS on the network is sufficient to support IP
+services"; there is more on it in the SNMP and syslog chapter.
+
 Requirements worth memorizing (voice, one-way):
 
 | Parameter | Voice | Video |
@@ -59,6 +65,13 @@ dropped).
 
 CoS only lives inside the VLAN tag, so **it doesn't exist on an untagged access port** —
 once traffic leaves L2, marking has to live in DSCP.
+
+On the wireless side the same classes are called the controller's **QoS profiles**:
+**platinum** (voice), **gold** (video), **silver** (normal data, the default), **bronze**
+(background). A profile is assigned to a WLAN, and the voice WLAN is set to platinum. For
+the controller to see the calls themselves — rather than just traffic carrying the right
+marking — **Media Session Snooping** is enabled on the WLAN: it tracks SIP signaling on
+the configured ports, and only then does SIP-based Call Admission Control work.
 
 ## Trust boundary
 

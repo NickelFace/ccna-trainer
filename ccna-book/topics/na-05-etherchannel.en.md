@@ -45,6 +45,12 @@ The compatibility table exams ask about directly:
 
 You can't mix LACP and PAgP on the same channel.
 
+A case of its own is the **WLC**: the controller bundles its ports into a **LAG** and takes
+no part in negotiation at all, neither LACP nor PAgP. So on the switch, the ports facing
+the controller are bundled with mode **`on`** only (`channel-group N mode on`), and the
+recommended load-balancing method is `src-dst-ip`. Details are in the chapter on the wired
+side of the wireless network.
+
 ## Configuration
 
 ```cfg

@@ -6,8 +6,8 @@ lead: Router-on-a-stick с подынтерфейсами, SVI на L3-комм�
 blueprint: ["2.1"]
 minutes: 30
 match:
-  key: ["inter-?vlan", "router-on-a-stick", "subinterface", "encapsulation dot1q \\d", "no switchport", "ip routing", "interface vlan \\d"]
-  re: ["inter-?vlan", "router-on-a-stick", "subinterface", "encapsulation dot1q \\d", "\\bSVI\\b", "interface vlan \\d", "ip routing", "no switchport", "routed port", "layer 3 switch", "route between vlan", "communicate between vlan", "different vlans?.*communicate", "gateway for.*vlan"]
+  key: ["inter-?vlan", "router-on-a-stick", "sub-?interface", "encapsulation dot1q \\d", "no switchport", "ip routing", "interface vlan \\d"]
+  re: ["inter-?vlan", "router-on-a-stick", "sub-?interface", "encapsulation dot1q \\d", "\\bSVI\\b", "interface vlan \\d", "ip routing", "no switchport", "routed port", "layer 3 switch", "route between vlan", "communicate between vlan", "different vlans?.*communicate", "gateway for.*vlan"]
 ---
 
 ## Три способа и когда какой

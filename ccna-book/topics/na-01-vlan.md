@@ -6,8 +6,8 @@ lead: Зачем делить коммутатор на логические с�
 blueprint: ["2.1"]
 minutes: 35
 match:
-  key: ["voice vlan", "switchport access vlan", "default vlan", "vlan database", "access port", "broadcast domain"]
-  re: ["\\bVLAN\\b", "access port", "voice vlan", "default vlan", "switchport mode access", "switchport access vlan", "vlan database", "\\bSVI\\b", "data vlan", "vlan.*assign", "show vlan", "broadcast domain", "vlan arrangement", "vlan port mode"]
+  key: ["voice vlan", "switchport access vlan", "default vlan", "vlan database", "access port", "broadcast domain", "\\bVTP\\b"]
+  re: ["\\bVLAN\\b", "access port", "voice vlan", "default vlan", "switchport mode access", "switchport access vlan", "vlan database", "\\bVTP\\b", "revision number", "\\bSVI\\b", "data vlan", "vlan.*assign", "show vlan", "broadcast domain", "vlan arrangement", "vlan port mode"]
   not: ["spanning-?tree", "\\bWLAN\\b"]
 ---
 
@@ -53,6 +53,32 @@ VLAN 20 — 192.168.20.0/24».
 > гостевых сетях). В объём CCNA она **не входит**, на обычных access-портах и транках не
 > используется, и в задачах на VLAN, голосовой порт или native VLAN такие варианты всегда
 > неверны — достаточно узнавать их в лицо.
+
+## VTP: распространение VLAN по домену
+
+**VTP** (VLAN Trunking Protocol) раздаёт список VLAN по коммутаторам, чтобы не заводить
+одни и те же VLAN руками на каждом. Объявления ходят **только по транкам**, и совпасть
+должно **имя VTP-домена** (а если задан пароль — то и он).
+
+| Режим | Создаёт/удаляет VLAN локально | Принимает объявления | Пересылает чужие |
+|---|---|---|---|
+| **server** | да | да | да |
+| **client** | нет | да | да |
+| **transparent** | да, но только у себя | нет | да, пересылает не изменяя |
+
+Ключевая деталь — **revision number**: у каждого изменения базы VLAN номер растёт, и
+коммутатор принимает базу с **бо́льшим** номером, чем у него. Отсюда классическая авария:
+бывший в работе коммутатор с высоким revision вносят в сеть, и он **перетирает VLAN у
+всего домена**. Поэтому старый коммутатор перед вводом сбрасывают в revision 0 — режимом
+`transparent` и обратно либо сменой имени домена — и заводят с **меньшим** номером.
+
+Создать VLAN нормального диапазона можно только в режиме **server** или **transparent**:
+клиент свою базу не редактирует.
+
+> [!note] VTP и экзамен
+> В блюпринте CCNA 200-301 VTP нет, но в банке вопросов он встречается. Помнить достаточно
+> четыре факта: домен у всех одинаковый, объявления идут по транкам, решает revision
+> number, а VLAN создаются в server/transparent.
 
 ## Настройка access-порта
 

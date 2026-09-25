@@ -178,6 +178,19 @@ router ospf 1
 Or cost is set by hand: `ip ospf cost 5`. A route's metric is the **sum of the outgoing
 interface costs** along the path to the network.
 
+Cost only decides things **inside OSPF**. When routes from different sources compete for a
+slot in the table the order is different, and it gets asked alongside an exhibit — "how
+does the router handle traffic to such-and-such address":
+
+1. **Longest prefix match** — the longest matching prefix wins first; a /28 from OSPF beats
+   a /24 from a static route simply because it is more specific.
+2. If the prefixes are the same length, **administrative distance** decides: connected 0,
+   static 1, eBGP 20, EIGRP 90, **OSPF 110**, RIP 120.
+3. Only when the AD is equal too (that is, within one protocol) does the metric decide —
+   for OSPF, the cost.
+
+A full walkthrough with `show ip route` output is in the routing table chapter.
+
 ## Reading the output
 
 ```cli
@@ -265,6 +278,20 @@ router ospf 1
 Checking order: `show ip ospf interface` (is the interface participating, and with
 what timers) → `show ip ospf neighbor` (which state it's stuck in) → `show ip protocols`
 (which networks are being advertised).
+
+A question of its own asks **what displays the link-state database itself**: that is `show
+ip ospf database` — the list of LSAs, the area-wide topology that SPF runs against. Not to
+be confused with `show ip ospf neighbor` (the neighbors) or `show ip route ospf` (the
+routes already computed).
+
+Timers, when they have to be changed, are set on the interface, and must be changed on
+**both sides**:
+
+```cfg
+interface gi0/1
+ ip ospf hello-interval 5
+ ip ospf dead-interval 20
+```
 
 ## Troubleshooting: neighbor is visible but stuck in INIT
 

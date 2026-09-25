@@ -46,7 +46,7 @@ The reverse task — "expanding" an address — comes up too: `2001:db8::1` is
 
 | Type | Prefix | Meaning |
 |---|---|---|
-| Global unicast | 2000::/3 | routable on the internet |
+| Global unicast (**GUA**) | 2000::/3 | routable on the internet |
 | Unique local (ULA) | FC00::/7 (in practice FD00::/8) | the "private" counterpart of RFC 1918, not routed externally |
 | Link-local | FE80::/10 | mandatory on every interface, valid only within the local link |
 | Multicast | FF00::/8 | group of recipients |

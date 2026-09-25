@@ -6,7 +6,7 @@ lead: Стандартные и расширенные, wildcard-маски, п�
 blueprint: ["5.6"]
 minutes: 45
 match:
-  key: ["access-list", "\\bACL\\b", "access-group", "permit.*deny", "wildcard", "extended access", "standard access", "named access-list"]
+  key: ["access-list", "\\bACL\\b", "access-group", "permit.*deny", "wildcard", "extended access", "standard access", "named access-list", "ip access-list (standard|extended)"]
   re: ["deny any", "implicit deny", "apply.*inbound|outbound", "filter traffic", "access-class", "packet.*permitted|denied"]
 ---
 
@@ -42,6 +42,10 @@ access-list 10 permit any
 interface GigabitEthernet0/1
  ip access-group 10 out
 
+! Стандартный именованный: тот же список, но с именем вместо номера
+ip access-list standard MGMT-ONLY
+ permit 203.0.113.0 0.0.0.255
+!
 ! Расширенный именованный: HR не ходит к серверу БД, остальное можно
 ip access-list extended HR-FILTER
  deny tcp 10.1.5.0 0.0.0.255 host 10.9.9.10 eq 1433
@@ -53,6 +57,29 @@ interface GigabitEthernet0/0
 
 Именованные списки предпочтительнее: понятное имя, и строки можно редактировать по
 номерам (`no 20`, `15 permit …`) без переписывания всего списка.
+
+Именованным бывает и стандартный список: `ip access-list standard <имя>`, дальше строки
+`permit`/`deny` только по источнику. Имя может быть и числом — `ip access-list standard
+99` создаёт тот же список 99, что и `access-list 99 …`. Форма с `access-list <номер>` и
+форма с `ip access-list` — это два способа записать одно и то же, смешивать их в одном
+варианте ответа нельзя: `ip access-list standard 99 permit …` в одну строку — не команда.
+
+В расширенном списке после адресов указывают протокол и порт. Порт задаётся числом или
+именем — IOS понимает и то и другое и в выводе показывает имя:
+
+| Сервис | Порт | Как пишут в ACL |
+|---|---|---|
+| HTTP | 80 | `eq 80` или `eq www` |
+| HTTPS | 443 | `eq 443` |
+| SSH | 22 | `eq 22` |
+| Telnet | 23 | `eq telnet` |
+| DNS | 53 | `eq domain` (и TCP, и UDP) |
+| FTP | 21 | `eq ftp` |
+| SMTP | 25 | `eq smtp` |
+
+Порт относится к той стороне, **рядом с которой он написан**: `deny tcp any host
+10.30.0.100 eq 80` — запрет обращений к веб-серверу, а `eq 80` после адреса источника
+означал бы трафик **от** сервера.
 
 ## Wildcard-маска
 

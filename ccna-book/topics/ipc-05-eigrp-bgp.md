@@ -6,7 +6,7 @@ lead: Чем EIGRP отличается от OSPF, что такое feasible su
 blueprint: ["3.0"]
 minutes: 35
 match:
-  key: ["\\bEIGRP\\b", "\\bBGP\\b", "feasible (successor|distance)", "autonomous system.*(eigrp|bgp)", "\\bDUAL\\b", "\\bAS.?path\\b"]
+  key: ["distance.?vector", "link.?state protocol", "\\bEIGRP\\b", "\\bBGP\\b", "feasible (successor|distance)", "autonomous system.*(eigrp|bgp)", "\\bDUAL\\b", "\\bAS.?path\\b"]
   re: ["eigrp", "\\bbgp\\b", "successor", "neighbor.*remote-as", "\\bIGP\\b vs \\bEGP\\b", "hold time.*eigrp", "variance", "peering"]
 ---
 

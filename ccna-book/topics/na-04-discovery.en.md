@@ -59,6 +59,15 @@ without disabling the protocol": the `management-address` TLV is removed on the 
 **whose address is being hidden**, not with `no lldp transmit` on the neighbor, which would
 suppress the advertisements entirely.
 
+The TLVs themselves are the fields of an advertisement: `port-description`, `system-name`,
+`system-description`, `system-capabilities`, `management-address`. They are enabled and
+disabled one at a time, either through `lldp tlv-select <tlv>` or through the global
+command of the same name (`lldp port-description` — send the port description TLV).
+Questions word this as "configure LLDP to send the such-and-such type length value (TLV)".
+
+`lldp run` is the same command on a switch and on an **ISR** router: LLDP is enabled
+globally and is off by default on both platforms, unlike CDP, which is on out of the box.
+
 ## Reading the Output
 
 ```cli

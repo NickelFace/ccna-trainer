@@ -71,6 +71,11 @@ second property that gets asked on its own: when the WAN goes down, a FlexConnec
 local switching **keeps serving clients** by itself, while an AP in Local mode cannot work
 without its controller.
 
+That also settles how the switch port under such an AP must be configured: in **local mode**
+all traffic leaves through the CAPWAP tunnel in a single VLAN, so an **access** port is
+enough; in **FlexConnect** the AP puts the client VLANs onto the wired network itself, with
+tags, so the port has to be a **trunk**.
+
 **OfficeExtend** is FlexConnect moved outside the corporate network: the AP is taken to an
 employee's home, where it builds an encrypted **DTLS** tunnel to the office controller over
 ordinary residential internet (usually from behind the provider's NAT), and a personal SSID
@@ -97,6 +102,11 @@ both indoor and outdoor models.
 
 That's exactly why the answer to "why use a WLC with 50 APs" isn't "speed" — it's
 **centralized management, roaming, and automatic RF planning**.
+
+It also answers "how do you securely manage an AP in lightweight mode": you do not connect
+to the AP at all — it is managed **through the controller's GUI over HTTPS** (or over SSH
+to the controller's CLI). Enabling **HTTPS** on the WLC is what makes it generate its own
+local SSL certificate for web administration; HTTP management is turned off.
 
 ## 802.11 management frames and roaming between APs
 

@@ -46,10 +46,22 @@ ntp authentication-key 1 md5 S3cretKey
 ntp trusted-key 1
 ntp server 10.0.0.10 key 1
 
+! Source address in NTP packets, and who is even allowed to ask for the time
+ntp source Loopback0
+ntp access-group serve-only 10
+
 ! Time zone and daylight saving
 clock timezone AEST 10 0
 clock summer-time AEDT recurring
 ```
+
+**`ntp source`** makes the device send NTP packets from the address of the named interface,
+usually a loopback, so the address does not change when a physical link goes down (`ntp
+server <addr> source <intf>` does the same for a single server). **`ntp access-group`**
+limits who gets an answer: `serve-only <acl>` serves time to the hosts in the ACL and
+accepts no configuration from them, `peer` is full access, `query-only` allows control
+queries only. Both show up in tasks worded as "the server must serve time only to its own
+subnet and source its packets from the loopback".
 
 If NTP is unavailable for some reason, the time can also be set manually, right from
 privileged (EXEC) mode — not from configuration mode:

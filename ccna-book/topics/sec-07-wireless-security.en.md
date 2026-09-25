@@ -14,7 +14,7 @@ baseline requirement, and a weak scheme is broken by passive eavesdropping alone
 | Standard | Year | Encryption | Integrity | Status |
 |---|---|---|---|---|
 | **WEP** | 1997 | RC4, static key | CRC-32 | broken, must not be used |
-| **WPA** | 2003 | TKIP (RC4 with key rotation) | MIC | obsolete |
+| **WPA** (WPA1) | 2003 | TKIP (RC4 with key rotation) | MIC | obsolete |
 | **WPA2** | 2004 | **AES-CCMP** | CCMP | today's baseline minimum |
 | **WPA3** | 2018 | AES-GCMP, **SAE** | GCMP | the modern choice |
 

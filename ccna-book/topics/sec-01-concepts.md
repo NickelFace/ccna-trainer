@@ -7,7 +7,7 @@ blueprint: ["5.1", "5.2"]
 minutes: 35
 fallback: true
 match:
-  key: ["threat", "vulnerabilit", "exploit", "mitigation", "social engineering", "phishing", "\\bDoS\\b|denial of service", "brute.?force", "\\bMITM\\b|man-in-the-middle", "security (program|awareness)", "\\bCIA\\b triad", "role of a firewall", "function of a firewall", "stateful inspection", "security posture", "proxy caching"]
+  key: ["next-?generation (ips|ids|firewall)", "multi-?factor|multifactor", "authenticator app", "second factor", "threat", "vulnerabilit", "exploit", "mitigation", "social engineering", "phishing", "\\bDoS\\b|denial of service", "syn flood", "half.?open", "brute.?force", "\\bMITM\\b|man-in-the-middle", "security (program|awareness)", "\\bCIA\\b triad", "role of a firewall", "function of a firewall", "stateful inspection", "security posture", "proxy caching"]
   re: ["attack", "malware", "ransomware", "spoofing", "security policy", "user training", "physical access control", "least privilege", "defense in depth", "role of a firewall", "function.*firewall", "stateful inspection", "segregates.*(network|zone)", "separates networks", "security domains", "protects.*internal network", "security posture", "proxy caching", "unused (or unnecessary )?(ports|interfaces|services)"]
 ---
 
@@ -32,6 +32,7 @@ match:
 | Атака | Суть | Чем защищаются |
 |---|---|---|
 | **DoS / DDoS** | перегрузить сервис или канал | фильтрация, rate limit, защита провайдера |
+| **SYN flood** | частный случай DoS: поток SYN без завершения рукопожатия, у сервера кончаются полуоткрытые TCP-сессии | SYN cookies, ограничение числа полуоткрытых сессий, rate limit |
 | **Spoofing** | подделка адреса (IP, MAC, ARP, DHCP) | DAI, DHCP snooping, uRPF, port security |
 | **Man-in-the-middle** | встраивание в чужой обмен | шифрование, DAI, 802.1X |
 | **Reconnaissance** | разведка: сканирование, сбор данных | ограничение CDP/LLDP, ACL, IPS |

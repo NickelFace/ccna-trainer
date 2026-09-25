@@ -24,6 +24,7 @@ when it's needed). Every mitigation protects one of these three; every attack vi
 | Attack | What it does | Mitigated by |
 |---|---|---|
 | **DoS / DDoS** | overwhelms a service or link | filtering, rate limiting, provider-side protection |
+| **SYN flood** | a specific kind of DoS: a stream of SYNs that never completes the handshake, exhausting the server's half-open TCP resources | SYN cookies, a cap on half-open sessions, rate limiting |
 | **Spoofing** | forges an address (IP, MAC, ARP, DHCP) | DAI, DHCP snooping, uRPF, port security |
 | **Man-in-the-middle** | inserts itself into someone else's exchange | encryption, DAI, 802.1X |
 | **Reconnaissance** | scanning and information gathering | restricting CDP/LLDP, ACLs, IPS |

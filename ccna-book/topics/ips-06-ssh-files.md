@@ -6,7 +6,7 @@ lead: Настройка SSH по шагам, чем TFTP отличается �
 blueprint: ["4.8", "4.9"]
 minutes: 25
 match:
-  key: ["\\bTFTP\\b", "\\bFTP\\b", "copy (running|startup|tftp|flash)", "\\bIOS\\b image", "\\bSCP\\b", "backup.*configuration", "restore.*configuration"]
+  key: ["\\bTFTP\\b", "\\bFTP\\b", "copy (running|startup|tftp|flash)", "\\bIOS\\b image", "\\bSCP\\b", "back ?up.*configuration", "restore.*configuration", "copy function"]
   re: ["\\bSSH\\b.*configur", "crypto key generate", "pubkey-chain", "general-keys", "crypto key zeroize", "file.transfer", "flash:", "startup-config", "running-config", "boot system", "\\bNVRAM\\b"]
 ---
 

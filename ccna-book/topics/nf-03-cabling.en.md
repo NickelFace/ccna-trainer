@@ -302,6 +302,7 @@ transceiver plugs in, and it's the transceiver that determines the medium and th
 
 | Module | Speed | What plugs in |
 |---|---|---|
+| **GBIC** | 1 Gbps | the predecessor of SFP, physically larger; fiber with an **SC** connector |
 | **SFP** | 1 Gbps | fiber (SX/LX/ZX) or copper (1000BASE-T) |
 | **SFP+** | 10 Gbps | SR/LR/ER fiber, DAC cable |
 | **SFP28** | 25 Gbps | fiber, DAC |
@@ -319,6 +320,11 @@ tens of meters.
 Connector types named in questions: **RJ-45** for copper, **LC** (small duplex) and **SC**
 (square) for fiber, **MPO/MTP** — multi-fiber, for 40G/100G, **ST** — the old bayonet-style
 connector.
+
+The connector follows the **module's form factor, not the optical standard**: SFP and SFP+
+are always **LC**, the older **GBIC** is **SC**. So a switch with a 1000BASE-SX GBIC
+connecting to a switch with a 1000BASE-SX SFP needs a hybrid **LC-to-SC** patch cord: the
+fiber is the same (multimode), only the connectors on the two ends differ.
 
 > [!key] Remember
 > Fiber always uses **two strands**: one to transmit, one to receive. If a link won't come up
