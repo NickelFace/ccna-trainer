@@ -92,8 +92,8 @@
       "is typically used for DWDM optical systems spanning long distances"
     ],
     "buckets": [
-      {"label": "single-mode fiber", "correct": ["is ideal over longer distances with little loss of integrity", "uses a single wavelength on light"]},
-      {"label": "multimode fiber", "correct": ["is typically used for DWDM optical systems spanning long distances", "has a core diameter of either 62.5 or 50 microns"]}
+      {"label": "single-mode fiber", "correct": ["is ideal over longer distances with little loss of integrity", "uses a single wavelength on light", "is typically used for DWDM optical systems spanning long distances"]},
+      {"label": "multimode fiber", "correct": ["has a core diameter of either 62.5 or 50 microns"]}
     ]
   },
   "1144": {

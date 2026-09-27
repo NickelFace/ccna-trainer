@@ -72,8 +72,8 @@
       {"label": "manages access points", "correct": ["wireless LAN controller"]},
       {"label": "provides Wi-Fi devices with a connection to a wired network", "correct": ["access point"]},
       {"label": "used for out-of-band management", "correct": ["service port"]},
-      {"label": "used for guest authentication", "correct": ["dynamic interface"]},
-      {"label": "applied to the WLAN for wireless client communication", "correct": ["virtual interface"]}
+      {"label": "used for guest authentication", "correct": ["virtual interface"]},
+      {"label": "applied to the WLAN for wireless client communication", "correct": ["dynamic interface"]}
     ]
   },
   "989": {

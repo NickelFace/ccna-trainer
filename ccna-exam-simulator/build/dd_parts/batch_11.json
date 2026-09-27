@@ -57,12 +57,12 @@
     ],
     "buckets": [
       {"label": "Cisco DNA Center", "correct": [
-        "provides greater flexibility for custom and non-standard configurations",
+        "orchestrates background device configuration",
         "supports centralized software management",
         "supports open APIs"
       ]},
       {"label": "Traditional", "correct": [
-        "orchestrates background device configuration",
+        "provides greater flexibility for custom and non-standard configurations",
         "relies on per-device management",
         "uses individual software management"
       ]}

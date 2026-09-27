@@ -62,8 +62,8 @@
     "buckets": [
       {"label": "Active", "correct": ["is forwarding packets"]},
       {"label": "Learn", "correct": ["is waiting to hear from the neighbor device"]},
-      {"label": "Listen", "correct": ["is transmitting and receiving hello packets"]},
-      {"label": "Speak", "correct": ["has heard from the neighbor device and is receiving hello packets"]},
+      {"label": "Listen", "correct": ["has heard from the neighbor device and is receiving hello packets"]},
+      {"label": "Speak", "correct": ["is transmitting and receiving hello packets"]},
       {"label": "Standby", "correct": ["is ready to forward packets if the device that is currently forwarding packets fails"]}
     ]
   },
@@ -77,8 +77,8 @@
       "uses northbound APIs"
     ],
     "buckets": [
-      {"label": "Traditional Campus Device Management", "correct": ["leverages Cisco Prime Infrastructure", "reduces the workload for enterprise customers", "requires manual configuration of complex protocols"]},
-      {"label": "Cisco DNA Center", "correct": ["lacks support for SDA", "uses algorithms to detect security threats", "uses northbound APIs"]}
+      {"label": "Traditional Campus Device Management", "correct": ["leverages Cisco Prime Infrastructure", "requires manual configuration of complex protocols", "lacks support for SDA"]},
+      {"label": "Cisco DNA Center", "correct": ["uses algorithms to detect security threats", "uses northbound APIs", "reduces the workload for enterprise customers"]}
     ]
   },
   "1081": {
