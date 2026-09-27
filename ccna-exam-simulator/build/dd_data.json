@@ -2288,13 +2288,13 @@
    {
     "label": "man-in-the-middle spoofing attack",
     "correct": [
-     "Disable Dynamic Trunking Protocol – switch-spoofing VLAN-hopping attack"
+     "Configure the DHCP snooping feature"
     ]
    },
    {
     "label": "switch-spoofing VLAN-hopping attack",
     "correct": [
-     "Configure the DHCP snooping feature"
+     "Disable Dynamic Trunking Protocol – switch-spoofing VLAN-hopping attack"
     ]
    }
   ]

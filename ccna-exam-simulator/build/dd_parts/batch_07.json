@@ -50,8 +50,8 @@
     "buckets": [
       {"label": "802.1q double-tagging VLAN-hopping attack", "correct": ["Configure the native VLAN with a nondefault VLAN"]},
       {"label": "MAC flooding attack", "correct": ["Configure the 802.1x authentication protocol"]},
-      {"label": "man-in-the-middle spoofing attack", "correct": ["Disable Dynamic Trunking Protocol – switch-spoofing VLAN-hopping attack"]},
-      {"label": "switch-spoofing VLAN-hopping attack", "correct": ["Configure the DHCP snooping feature"]}
+      {"label": "man-in-the-middle spoofing attack", "correct": ["Configure the DHCP snooping feature"]},
+      {"label": "switch-spoofing VLAN-hopping attack", "correct": ["Disable Dynamic Trunking Protocol – switch-spoofing VLAN-hopping attack"]}
     ]
   },
   "1059": {"skip": "simulation"},
