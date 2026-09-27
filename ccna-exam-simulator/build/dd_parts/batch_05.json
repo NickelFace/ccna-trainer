@@ -63,8 +63,8 @@
       "802.11n 5 Ghz"
     ],
     "buckets": [
-      {"label": "J Non-Overlapping Channels", "correct": ["802.11a", "802.11b", "802.11n 2.4 GHz"]},
-      {"label": "2J Non-Overlapping Channels", "correct": ["802.11g", "802.11n 5 Ghz"]}
+      {"label": "3 Non-Overlapping Channels", "correct": ["802.11b", "802.11g", "802.11n 2.4 GHz"]},
+      {"label": "23 Non-Overlapping Channels", "correct": ["802.11a", "802.11n 5 Ghz"]}
     ]
   },
   "960": {
@@ -92,8 +92,8 @@
       "is typically used for DWDM optical systems spanning long distances"
     ],
     "buckets": [
-      {"label": "single-mode fiber", "correct": ["is ideal over longer distances with little loss of integrity", "uses a single wavelength on light"]},
-      {"label": "multimode fiber", "correct": ["is typically used for DWDM optical systems spanning long distances", "has a core diameter of either 62.5 or 50 microns"]}
+      {"label": "single-mode fiber", "correct": ["is ideal over longer distances with little loss of integrity", "uses a single wavelength on light", "is typically used for DWDM optical systems spanning long distances"]},
+      {"label": "multimode fiber", "correct": ["has a core diameter of either 62.5 or 50 microns"]}
     ]
   },
   "1144": {

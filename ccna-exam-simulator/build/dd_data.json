@@ -532,8 +532,7 @@
    "agentless",
    "provision",
    "pull",
-   "push",
-   "post"
+   "push"
   ],
   "buckets": [
    {
@@ -551,19 +550,13 @@
    {
     "label": "easy-to-manage deployment option that may lack scalability",
     "correct": [
-     "provision"
-    ]
-   },
-   {
-    "label": "device hardware that runs without embedded management features",
-    "correct": [
      "agentless"
     ]
    },
    {
     "label": "to automatically install or deploy a configuration or update",
     "correct": [
-     "post"
+     "provision"
     ]
    }
   ]
@@ -1626,17 +1619,17 @@
   ],
   "buckets": [
    {
-    "label": "J Non-Overlapping Channels",
+    "label": "3 Non-Overlapping Channels",
     "correct": [
-     "802.11a",
      "802.11b",
+     "802.11g",
      "802.11n 2.4 GHz"
     ]
    },
    {
-    "label": "2J Non-Overlapping Channels",
+    "label": "23 Non-Overlapping Channels",
     "correct": [
-     "802.11g",
+     "802.11a",
      "802.11n 5 Ghz"
     ]
    }
@@ -1695,13 +1688,13 @@
     "label": "single-mode fiber",
     "correct": [
      "is ideal over longer distances with little loss of integrity",
-     "uses a single wavelength on light"
+     "uses a single wavelength on light",
+     "is typically used for DWDM optical systems spanning long distances"
     ]
    },
    {
     "label": "multimode fiber",
     "correct": [
-     "is typically used for DWDM optical systems spanning long distances",
      "has a core diameter of either 62.5 or 50 microns"
     ]
    }
@@ -2567,13 +2560,13 @@
    {
     "label": "used for guest authentication",
     "correct": [
-     "dynamic interface"
+     "virtual interface"
     ]
    },
    {
     "label": "applied to the WLAN for wireless client communication",
     "correct": [
-     "virtual interface"
+     "dynamic interface"
     ]
    }
   ]
@@ -3401,17 +3394,17 @@
    {
     "label": "Cisco DNA Center",
     "correct": [
-     "provides greater flexibility for custom and non-standard configurations",
      "supports centralized software management",
-     "supports open APIs"
+     "supports open APIs",
+     "orchestrates background device configuration"
     ]
    },
    {
     "label": "Traditional",
     "correct": [
-     "orchestrates background device configuration",
      "relies on per-device management",
-     "uses individual software management"
+     "uses individual software management",
+     "provides greater flexibility for custom and non-standard configurations"
     ]
    }
   ]
@@ -3749,13 +3742,13 @@
    {
     "label": "Listen",
     "correct": [
-     "is transmitting and receiving hello packets"
+     "has heard from the neighbor device and is receiving hello packets"
     ]
    },
    {
     "label": "Speak",
     "correct": [
-     "has heard from the neighbor device and is receiving hello packets"
+     "is transmitting and receiving hello packets"
     ]
    },
    {
@@ -3780,16 +3773,16 @@
     "label": "Traditional Campus Device Management",
     "correct": [
      "leverages Cisco Prime Infrastructure",
-     "reduces the workload for enterprise customers",
-     "requires manual configuration of complex protocols"
+     "requires manual configuration of complex protocols",
+     "lacks support for SDA"
     ]
    },
    {
     "label": "Cisco DNA Center",
     "correct": [
-     "lacks support for SDA",
      "uses algorithms to detect security threats",
-     "uses northbound APIs"
+     "uses northbound APIs",
+     "reduces the workload for enterprise customers"
     ]
    }
   ]
