@@ -63,8 +63,8 @@
       "802.11n 5 Ghz"
     ],
     "buckets": [
-      {"label": "J Non-Overlapping Channels", "correct": ["802.11a", "802.11b", "802.11n 2.4 GHz"]},
-      {"label": "2J Non-Overlapping Channels", "correct": ["802.11g", "802.11n 5 Ghz"]}
+      {"label": "3 Non-Overlapping Channels", "correct": ["802.11b", "802.11g", "802.11n 2.4 GHz"]},
+      {"label": "23 Non-Overlapping Channels", "correct": ["802.11a", "802.11n 5 Ghz"]}
     ]
   },
   "960": {
