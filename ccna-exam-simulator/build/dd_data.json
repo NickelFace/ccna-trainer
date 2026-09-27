@@ -2270,7 +2270,7 @@
    "Configure the 802.1x authentication protocol",
    "Configure the DHCP snooping feature",
    "Configure the native VLAN with a nondefault VLAN",
-   "Disable Dynamic Trunking Protocol – switch-spoofing VLAN-hopping attack"
+   "Disable Dynamic Trunking Protocol"
   ],
   "buckets": [
    {
@@ -2294,7 +2294,7 @@
    {
     "label": "switch-spoofing VLAN-hopping attack",
     "correct": [
-     "Disable Dynamic Trunking Protocol – switch-spoofing VLAN-hopping attack"
+     "Disable Dynamic Trunking Protocol"
     ]
    }
   ]
