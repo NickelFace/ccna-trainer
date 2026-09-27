@@ -532,8 +532,7 @@
    "agentless",
    "provision",
    "pull",
-   "push",
-   "post"
+   "push"
   ],
   "buckets": [
    {
@@ -551,19 +550,13 @@
    {
     "label": "easy-to-manage deployment option that may lack scalability",
     "correct": [
-     "provision"
-    ]
-   },
-   {
-    "label": "device hardware that runs without embedded management features",
-    "correct": [
      "agentless"
     ]
    },
    {
     "label": "to automatically install or deploy a configuration or update",
     "correct": [
-     "post"
+     "provision"
     ]
    }
   ]
